@@ -1,0 +1,74 @@
+            try RecordCommand.parse(["--duration", "1", "--platform", "ios", "--simulator", "Fake", "--output", "clip.mp4"])
+        ) { error in
+            XCTAssertEqual(RecordCommand.exitCode(for: error), .validationFailure, "\(error)")
+            XCTAssertTrue(RecordCommand.message(for: error).contains("must end in .mov"), RecordCommand.message(for: error))
+        }
+    }
+
+    /// A05: a static screen gives screenrecord one frame at 0 ms and a zero
+    /// duration. The last frame is held to --duration, so 1000 ms resolves to it.
+    func testAndroidStaticScreenRecordingHoldsTheLastFrameToTheRequestedDuration() async throws {
+        let dir = try makeAndroidProject()
+        defer { restoreDirectory(dir) }
+        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "1000,2000"])
+        let fake = FakeDevicePlatform(platform: .android)
+        fake.recordingData = try XCTUnwrap(Data(base64Encoded: ScreenrecordFixture.staticScreenBase64))
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        try await command.run()
+
+        let report = try JSONSerialization.jsonObject(with: Data(contentsOf: URL(fileURLWithPath: ".grantiva/recordings/recording.json"))) as? [String: Any]
+        let frames = try XCTUnwrap(report?["frames"] as? [[String: Any]])
+        XCTAssertEqual(frames.map { $0["requestedMilliseconds"] as? Int }, [1000, 2000])
+        XCTAssertEqual(frames.map { $0["actualMilliseconds"] as? Int }, [0, 0], "the held frame is the one shown")
+        // K34-b: the report says when the screen last changed and how long the track ran before the hold.
+        XCTAssertEqual(report?["lastFrameMilliseconds"] as? Int, 0)
+        XCTAssertEqual(report?["recordedMilliseconds"] as? Int, 0)
+        for frame in frames {
+            XCTAssertTrue(FileManager.default.fileExists(atPath: try XCTUnwrap(frame["path"] as? String)))
+        }
+        let duration = try await AVURLAsset(url: URL(fileURLWithPath: ".grantiva/recordings/recording.mp4")).load(.duration)
+        XCTAssertEqual(CMTimeGetSeconds(duration), 2, accuracy: 0.01)
+    }
+
+    /// L60: simctl's idle-screen movie (one 40/600 s sample, headers at
+    /// 3.045 s) goes through the same hold as Android: 3.000 s by every box,
+    /// the timing fields in the report, the held frame at every request.
+    func testIOSStaticScreenRecordingIsHeldToExactlyTheRequestedDuration() async throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("record-ios-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let previous = FileManager.default.currentDirectoryPath
+        FileManager.default.changeCurrentDirectoryPath(dir.path)
+        defer { restoreDirectory((dir, previous)) }
+        var command = try RecordCommand.parse([
+            "--platform", "ios", "--simulator", "Fake", "--duration", "3", "--frames-at", "0,1500,2900",
+        ])
+        let fake = FakeDevicePlatform(platform: .ios)
+        fake.recordingData = try XCTUnwrap(Data(base64Encoded: SimctlRecordingFixture.idleScreenBase64))
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        try await command.run()
+            "The recording's last frame is at 0ms; it was held to the requested 3.0s. "
+                + "The simulator records a frame only when the screen changes, so this is expected for an idle screen."
+        )
+        XCTAssertFalse(note.contains("screenrecord"))
+        XCTAssertFalse(note.contains("connected"))
+    }
+
+    /// K84: a frame past --duration is refused before anything is recorded.
+    func testAndroidFrameBeyondTheRequestedDurationIsRefusedBeforeRecording() throws {
+        XCTAssertThrowsError(try RecordCommand.parse(["--duration", "2", "--frames-at", "2500"])) { error in
+            XCTAssertEqual(RecordCommand.message(for: error), "--frames-at 2500 is past --duration 2 (2000 ms).")
+        }
+    }
+
+    // MARK: - K34: the held-frame note and its statistics
+
+    /// K34-a: frames at 0 ms and 50 ms held to 2 s: the last frame is at 50 ms,
+    /// the value the JSON report gives for a frame requested after it.
+    func testHeldRecordingNoteNamesTheLastFramesStart() throws {
+        let timing = MP4LastFrameHold.Timing(frameCount: 2, lastFrameSeconds: 0.050, recordedSeconds: 0.100)
+        let note = try XCTUnwrap(RecordCommand.heldRecordingNote(timing: timing, requestedSeconds: 2))
+        XCTAssertTrue(note.contains("last frame is at 50ms"), note)
+        XCTAssertFalse(note.contains("100ms"), note)
+    }
+
+    /// K34-b: the note prints when the last frame stays on screen for more

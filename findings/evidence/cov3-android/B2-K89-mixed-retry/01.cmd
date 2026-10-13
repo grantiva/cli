@@ -1,0 +1,1 @@
+/Users/kyle/.grantiva-qa/bin/grantiva diff approve Home --json; echo approve-home-exit=$?; find .grantiva/baselines/android -maxdepth 1 -type f -print; /Users/kyle/.grantiva-qa/bin/grantiva diff compare; echo mixed-text-exit=$?; /Users/kyle/.grantiva-qa/bin/grantiva diff compare --json; echo mixed-json-exit=$?

@@ -1,0 +1,55 @@
+{
+  "id": "flow-000",
+  "name": "live-stays",
+  "sourceFile": ".maestro/live-stays.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T02:22:17.002825-07:00",
+  "endTime": "2026-10-13T02:22:20.652888-07:00",
+  "duration": 3650,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp (clearState)",
+      "status": "passed",
+      "startTime": "2026-10-13T02:22:17.007905-07:00",
+      "endTime": "2026-10-13T02:22:18.415905-07:00",
+      "duration": 1408,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "extendedWaitUntil",
+      "yaml": "extendedWaitUntil: notVisible text=\"Landmarks\"",
+      "status": "failed",
+      "startTime": "2026-10-13T02:22:18.417111-07:00",
+      "endTime": "2026-10-13T02:22:20.462111-07:00",
+      "duration": 2045,
+      "error": {
+        "type": "unknown",
+        "message": "Element still visible: text='Landmarks' after 2s (cause: element should not be visible; still matched \"Landmarks\" at (43,311 283x74))"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 1726,
+    "p50": 1408,
+    "p95": 2045,
+    "max": 2045,
+    "slowestType": "extendedWaitUntil"
+  },
+  "artifacts": {}
+}

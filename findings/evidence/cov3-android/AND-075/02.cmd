@@ -1,0 +1,1 @@
+/Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/99-crash.yaml --logs >/dev/null 2>&1; echo failure-exit=$?; sleep 1; ps -ax -o pid=,args= | grep '[a]db.*emulator-5554.*logcat' || echo no-logcat-process

@@ -1,0 +1,135 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' devices -l
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' devices -l
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' emu avd name
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' emu avd name
+Using emulator: cov3-android (emulator-5554)
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'wm size'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'wm size'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'wm density'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'wm density'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'pm list packages '\''com.kylebrowning.landmarks'\'''
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'pm list packages '\''com.kylebrowning.landmarks'\'''
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/01-browse.yaml
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings get global sysui_demo_allowed'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings get global sysui_demo_allowed'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings get global window_animation_scale'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings get global window_animation_scale'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings get global transition_animation_scale'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings get global transition_animation_scale'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings get global animator_duration_scale'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings get global animator_duration_scale'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings get system accelerometer_rotation'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings get system accelerometer_rotation'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings get system user_rotation'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings get system user_rotation'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put global sysui_demo_allowed 1'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put global sysui_demo_allowed 1'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'am broadcast -a com.android.systemui.demo -e command enter'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'am broadcast -a com.android.systemui.demo -e command enter'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'am broadcast -a com.android.systemui.demo -e command clock -e hhmm 0941'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'am broadcast -a com.android.systemui.demo -e command clock -e hhmm 0941'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'am broadcast -a com.android.systemui.demo -e command battery -e level 100 -e plugged false'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'am broadcast -a com.android.systemui.demo -e command battery -e level 100 -e plugged false'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'am broadcast -a com.android.systemui.demo -e command notifications -e visible false'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'am broadcast -a com.android.systemui.demo -e command notifications -e visible false'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'am broadcast -a com.android.systemui.demo -e command network -e wifi show -e level 4'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'am broadcast -a com.android.systemui.demo -e command network -e wifi show -e level 4'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'am broadcast -a com.android.systemui.demo -e command network -e mobile show -e datatype none -e level 4'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'am broadcast -a com.android.systemui.demo -e command network -e mobile show -e datatype none -e level 4'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put global window_animation_scale 0'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put global window_animation_scale 0'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put global transition_animation_scale 0'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put global transition_animation_scale 0'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put global animator_duration_scale 0'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put global animator_duration_scale 0'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put system accelerometer_rotation 0'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put system accelerometer_rotation 0'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put system user_rotation 0'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put system user_rotation 0'
+[debug] 2026-10-12T20:21:35Z com.grantiva.cli: $ /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform android --device emulator-5554 --no-ansi --no-app-install test --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-996CF69D-F612-47DE-93B3-9BC77895794C --flatten --artifacts failure --fail-fast /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-6B808541-5150-4059-AB4E-D542D8ED1FA7/0/01-browse.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.2s)
+    ✓ assertVisible: text="Landmarks" (399ms)
+    ✓ assertVisible: text="Featured" (576ms)
+    ✓ takeScreenshot (137ms)
+    ✓ tapOn: text="Golden Gate Bridge" (222ms)
+    ✓ assertVisible: text="San Francisco, CA" (620ms)
+    ✓ assertVisible: text="Plan Visit" (32ms)
+    ✓ takeScreenshot (132ms)
+✓ 01-browse 3.4s
+
+  [1/1] 01-browse (.maestro/01-browse.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.2s)
+    ✓ assertVisible: text="Landmarks" (399ms)
+    ✓ assertVisible: text="Featured" (576ms)
+    ✓ takeScreenshot (137ms)
+    ✓ tapOn: text="Golden Gate Bridge" (222ms)
+    ✓ assertVisible: text="San Francisco, CA" (620ms)
+    ✓ assertVisible: text="Plan Visit" (32ms)
+    ✓ takeScreenshot (132ms)
+✓ 01-browse 3.4s
+
+  8 steps passing (3.4s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  01-browse                      ✓ PASS       8      8      0      0       3.4s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0       3.4s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: exit 0: /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform android --device emulator-5554 --no-ansi --no-app-install test --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-996CF69D-F612-47DE-93B3-9BC77895794C --flatten --artifacts failure --fail-fast /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-6B808541-5150-4059-AB4E-D542D8ED1FA7/0/01-browse.yaml
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' devices -l
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' devices -l
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'am broadcast -a com.android.systemui.demo -e command exit'
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'am broadcast -a com.android.systemui.demo -e command exit'
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put global sysui_demo_allowed 0'
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put global sysui_demo_allowed 0'
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put global window_animation_scale 1.0'
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put global window_animation_scale 1.0'
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put global transition_animation_scale 1.0'
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put global transition_animation_scale 1.0'
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings delete global animator_duration_scale'
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings delete global animator_duration_scale'
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put system accelerometer_rotation 1'
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put system accelerometer_rotation 1'
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put system user_rotation 0'
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put system user_rotation 0'
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'io.appium.uiautomator2.server'
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'io.appium.uiautomator2.server'
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'io.appium.uiautomator2.server.test'
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'io.appium.uiautomator2.server.test'
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' forward --list
+[debug] 2026-10-12T20:21:40Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/platform-tools/adb' -s 'emulator-5554' forward --list

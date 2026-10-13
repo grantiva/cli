@@ -1,0 +1,71 @@
+        element: [String: Any],
+        rules: [String],
+        platform: Platform,
+        inLabelledFocusGroup: Bool = false,
+        violations: inout [[String: String]]
+    ) {
+        // On Android, Compose draws a button as a clickable parent holding its
+        // text plus a non-clickable, empty `android.widget.Button` stub. TalkBack
+        // focuses the parent and reads the merged text, so the stub is not a
+        // control of its own: skip it when a labelled clickable ancestor exists.
+        let focusTarget = element["clickable"] as? Bool == true || element["focusable"] as? Bool == true
+        if platform == .android && inLabelledFocusGroup && element["clickable"] as? Bool == false && !focusTarget {
+            for child in element["children"] as? [[String: Any]] ?? [] {
+                checkViolations(element: child, rules: rules, platform: platform, inLabelledFocusGroup: true, violations: &violations)
+            }
+            return
+        }
+
+        let type = element["type"] as? String ?? ""
+        let label = element["label"] as? String ?? ""
+        let name = element["name"] as? String ?? ""
+        let enabled = element["enabled"] as? Bool ?? true
+
+        let isInteractive = Self.isInteractive(element)
+
+        // Rule: missing_label
+        // On Android a clickable container (a Compose or View row) usually
+        // carries its text in a child, which TalkBack reads for the row.
+        // Known widget classes keep the strict own-label rule.
+        let labelledContainer = platform == .android && !androidInteractiveTypes.contains(type)
+            && !iosInteractiveTypes.contains(type) && hasDescendantLabel(element)
+        if rules.contains("missing_label") && isInteractive && enabled && !labelledContainer {
+            if label.isEmpty && name.isEmpty {
+                violations.append([
+                    "rule": "missing_label",
+                    "type": type,
+                    "message": "Interactive element of type \(type) has no accessibility label or name.",
+                ])
+            }
+        }
+
+        // Rule: small_tap_target
+        if rules.contains("small_tap_target") && isInteractive && enabled {
+            if let frame = element["frame"] as? [String: Any],
+               let w = Self.frameNumber(frame["width"]), let h = Self.frameNumber(frame["height"]) {
+                let minimum = minimumTapTarget(for: platform)
+                let unit = platform == .ios ? "pt" : "dp"
+                if w < minimum || h < minimum {
+                    let desc = label.isEmpty ? (name.isEmpty ? type : name) : label
+                    violations.append([
+                        "rule": "small_tap_target",
+                        "type": type,
+                        "element": desc,
+                        "size": "\(Int(w))x\(Int(h))",
+                        "message": "Tap target \"\(desc)\" is \(Int(w))x\(Int(h))\(unit), below the \(Int(minimum))x\(Int(minimum))\(unit) minimum.",
+                    ])
+                }
+            }
+        }
+
+        // Recurse into children
+        // A clickable or focusable node starts its own focus group: its
+        // descendants are covered only if it carries a label, whatever an
+        // outer group says.
+        let childrenInLabelledFocusGroup = focusTarget
+            ? platform == .android && (!label.isEmpty || !name.isEmpty || hasDescendantLabel(element))
+            : inLabelledFocusGroup
+        if let children = element["children"] as? [[String: Any]] {
+            for child in children {
+                checkViolations(
+                    element: child, rules: rules, platform: platform,

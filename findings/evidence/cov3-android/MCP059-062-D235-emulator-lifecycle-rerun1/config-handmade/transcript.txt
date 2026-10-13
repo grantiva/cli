@@ -1,0 +1,9 @@
+>> {"method": "initialize", "params": {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "round3", "version": "1"}}, "id": 1, "jsonrpc": "2.0"}
+<< [0.0s] {"id": 1, "jsonrpc": "2.0", "result": {"capabilities": {"resources": {"listChanged": false, "subscribe": true}, "tools": {"listChanged": false}}, "instructions": "Grantiva MCP server for iOS simulator and Android emulator automation. Use grantiva_* tools to interact with the device: tap, swipe, type, take screenshots, inspect the accessibility tree, build and run apps, manage simulators and emulators, and run visual regression tests.", "protocolVersion": "2025-03-26", "serverInfo": {"name": "grantiva", "version": "2.1.0"}}}
+>> {"method": "notifications/initialized", "params": {}}
+>> {"method": "tools/call", "params": {"name": "grantiva_emulator_delete", "arguments": {"name": "cov3-mcp-life-cfg-handmade"}}, "id": 2, "jsonrpc": "2.0"}
+<< [0.1s] {"id": 2, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: AVD \"cov3-mcp-life-cfg-handmade\" was not created by Grantiva (grantiva emulator ensure). Pass force: true to delete it anyway.", "type": "text"}], "isError": true}}
+>> {"method": "tools/call", "params": {"name": "grantiva_emulator_delete", "arguments": {"name": "cov3-mcp-life-cfg-handmade", "force": true}}, "id": 3, "jsonrpc": "2.0"}
+<< [0.6s] {"id": 3, "jsonrpc": "2.0", "result": {"content": [{"text": "{\"deleted\":true,\"name\":\"cov3-mcp-life-cfg-handmade\"}", "type": "text"}]}}
+nonjson_lines=0 server_alive=True
+exit=0

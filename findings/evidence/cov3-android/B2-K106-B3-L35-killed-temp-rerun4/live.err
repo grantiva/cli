@@ -1,0 +1,70 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov3-android (emulator-5554)
+Using pre-built binary: app-free-debug.apk
+Installing com.kylebrowning.landmarks...
+Running 1 flow(s) in one UIAutomator2 session: .maestro/11-slow.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 11-slow (11-slow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.3s)
+    ✓ tapOn: text="Deep Links" (908ms)
+    ✓ tapOn: text="Slow Screen" (767ms)
+    ✓ assertVisible: text="Loading…" (638ms)
+    ✓ extendedWaitUntil: visible text="Loaded after delay" (2.5s)
+    ✓ takeScreenshot (126ms)
+✓ 11-slow 6.2s
+
+  [1/1] 11-slow (.maestro/11-slow.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.3s)
+    ✓ tapOn: text="Deep Links" (908ms)
+    ✓ tapOn: text="Slow Screen" (767ms)
+    ✓ assertVisible: text="Loading…" (638ms)
+    ✓ extendedWaitUntil: visible text="Loaded after delay" (2.5s)
+    ✓ takeScreenshot (126ms)
+✓ 11-slow 6.2s
+
+  6 steps passing (6.2s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  11-slow                        ✓ PASS       6      6      0      0       6.2s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       6      6      0      0       6.2s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+
+  UIAutomator2 keep-alive: session=70304-1791893403544598000
+  /tmp/grantiva-sessions/70304-1791893403544598000.grantiva
+    Press Ctrl-C to release.
+
+[grantiva] received SIGINT — releasing the keep-alive hold
+
+  Releasing UIAutomator2 session...

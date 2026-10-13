@@ -1,0 +1,86 @@
+           isGrantivaProcess(pid: claim.pid, psOutput: psOutput),
+           kill(claim.pid, 0) == 0 || errno == EPERM {
+            targets.append(ReapedProcess(
+                pid: claim.pid,
+                processGroup: claim.pid,
+                kind: .grantiva,
+                command: "grantiva (lease holder for \(udid))"
+            ))
+        }
+
+        reap(&targets, gracePeriod: gracePeriod)
+
+        // A dying runner can start a `simctl diagnose` for the device after
+        // the first snapshot was taken. Look once more and reap new diagnose
+        // processes only: a fresh `grantiva run` started in the grace window
+        // is someone else's and must survive.
+        if !targets.isEmpty {
+            let known = Set(targets.map(\.pid))
+            var late = processes(owning: udid, psOutput: try await takeSnapshot(), excludingPID: getpid())
+                .filter { $0.kind == .diagnose && !known.contains($0.pid) }
+            reap(&late, gracePeriod: gracePeriod)
+            targets += late
+        }
+
+        // `leaseHeld` was read before reaping; the file goes either way.
+        SimulatorLease.removeLeaseFile(udid: udid, directory: leaseDirectory)
+        let leaseReleased = leaseHeld
+
+        // A killed run never ran its cleanup: remove the temp dirs its claim
+        // named, once the run and its runner are gone.
+        let temporaryDirectoriesRemoved = claim.map(removeTemporaryDirectories(of:)) ?? []
+
+        // Clear only stale capacity records for this device. The record of a
+        // session that still owns other simulators is not stale: dropping it
+        // would hide a booted device from `teardown --session-id`.
+        let (cleared, kept) = (try? capacity.removeStale(udid: udid, isProcessAlive: isProcessAlive)) ?? (0, [])
+
+        // The killed keep-alive runner never got to remove its session files.
+        let runnerPids = targets.filter { $0.kind == .runner }.map(\.pid)
+        let removedFiles = sessions.removeSessions(udid: udid, runnerPids: runnerPids)
+
+        // The device's WDA state; the runners using it were reaped above.
+        let homes = WDADeviceHome.removeAll(runnerBase: runnerBase ?? RunnerManager.baseDir, deviceID: udid)
+
+        return ForceTeardownResult(
+            udid: udid,
+            processes: targets,
+            leaseReleased: leaseReleased,
+            capacityRecordsCleared: cleared,
+            capacityRecordsKept: kept,
+            sessionFilesRemoved: removedFiles,
+            deviceHomesRemoved: homes.removed,
+            deviceHomeFailures: homes.failures,
+            temporaryDirectoriesRemoved: temporaryDirectoriesRemoved
+        )
+    }
+
+    /// Removes the temp directories `claim` recorded when neither its process
+    /// nor its runner is alive. Only directories Grantiva creates in the temp
+    /// directory (`grantiva-…`) are touched, so a claim can never name a
+    /// preserved `--report-dir` or anything else for removal.
+    static func removeTemporaryDirectories(of claim: SimulatorLeaseClaim) -> [String] {
+        guard !claim.isLive else { return [] }
+        let fm = FileManager.default
+        let temp = fm.temporaryDirectory.resolvingSymlinksInPath().path
+        var removed: [String] = []
+        for path in claim.temporaryDirectories ?? [] {
+            let url = URL(fileURLWithPath: path).standardizedFileURL
+            let resolved = url.resolvingSymlinksInPath().path
+            guard url.lastPathComponent.hasPrefix("grantiva-"),
+                  resolved.hasPrefix(temp + "/"),
+                  fm.fileExists(atPath: path),
+                  (try? fm.removeItem(atPath: path)) != nil
+            else { continue }
+            removed.append(path)
+        }
+        return removed
+    }
+
+    /// SIGINT each target (and its process group, unless it is ours), wait up
+    /// to `gracePeriod` for them to exit, then SIGKILL the survivors.
+    private static func reap(_ targets: inout [ReapedProcess], gracePeriod: TimeInterval) {
+        let ownGroup = getpgrp()
+        for index in targets.indices {
+            let target = targets[index]
+            guard target.pid != getpid() else { continue }

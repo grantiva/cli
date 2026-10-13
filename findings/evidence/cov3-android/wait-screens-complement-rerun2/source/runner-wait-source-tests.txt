@@ -1,0 +1,81 @@
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-10-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-11-func TestExecuteWait_Duration(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-12-	fr := &FlowRunner{ctx: context.Background()}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-13-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-14-	start := time.Now()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go:15:	res := fr.executeWait(&flow.WaitStep{DurationMs: 60})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-16-	elapsed := time.Since(start)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-17-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-18-	if !res.Success {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-19-		t.Fatalf("expected success, got: %v", res.Error)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-20-	}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-24-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-25-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-26-func TestExecuteWait_ZeroIsNoop(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-27-	fr := &FlowRunner{ctx: context.Background()}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-28-	start := time.Now()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go:29:	res := fr.executeWait(&flow.WaitStep{DurationMs: 0})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-30-	if !res.Success {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-31-		t.Fatalf("expected success for zero wait, got: %v", res.Error)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-32-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-33-	if time.Since(start) > 20*time.Millisecond {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-34-		t.Error("zero wait should return immediately")
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-45-		time.Sleep(30 * time.Millisecond)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-46-		cancel()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-47-	}()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-48-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-49-	start := time.Now()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go:50:	res := fr.executeWait(&flow.WaitStep{DurationMs: 10000})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-51-	elapsed := time.Since(start)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-52-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-53-	if res.Success {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-54-		t.Error("expected failure when the run is cancelled mid-wait")
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/wait_test.go-55-	}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-628-		opts, _ := extractTapOptions(step)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-629-		result = fr.executeTapWithOptions(step, opts)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-630-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-631-	// Plain time delay - handled here, no driver involved. Honours run
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-632-	// cancellation so Ctrl-C during a long wait stops the run promptly.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go:633:	case *flow.WaitStep:
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go:634:		result = fr.executeWait(s)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-635-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-636-	// All other steps - delegate to driver
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-637-	default:
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-638-		result = fr.driver.Execute(step)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-639-	}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-1713-	case *flow.TapOnStep, *flow.DoubleTapOnStep, *flow.LongPressOnStep:
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-1714-		fr.script.ExpandStep(step)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-1715-		opts, _ := extractTapOptions(step)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-1716-		result = fr.executeTapWithOptions(step, opts)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-1717-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go:1718:	case *flow.WaitStep:
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go:1719:		result = fr.executeWait(s)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-1720-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-1721-	default:
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-1722-		// Expand variables before driver execution
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-1723-		fr.script.ExpandStep(step)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-1724-		result = fr.driver.Execute(step)
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-1990-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-1991-	return fmt.Sprintf("failOnConsoleError: %d JS error(s) detected:\n%s",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-1992-		len(errs), strings.Join(errs, "\n"))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-1993-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-1994-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go:1995:// executeWait pauses the flow for the step's duration. It waits on the run
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-1996-// context so a cancelled run (Ctrl-C) stops the wait immediately instead of
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-1997-// blocking for the full duration. A zero duration is a no-op success.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go:1998:func (fr *FlowRunner) executeWait(step *flow.WaitStep) *core.CommandResult {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-1999-	if step.DurationMs <= 0 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-2000-		return &core.CommandResult{Success: true, Message: "wait: 0ms"}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-2001-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-2002-	d := time.Duration(step.DurationMs) * time.Millisecond
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go:2003:	timer := time.NewTimer(d)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-2004-	defer timer.Stop()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-2005-	select {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-2006-	case <-timer.C:
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-2007-		return &core.CommandResult{Success: true, Message: fmt.Sprintf("Waited %dms", step.DurationMs)}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/executor/flow_runner.go-2008-	case <-fr.ctx.Done():

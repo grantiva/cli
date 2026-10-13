@@ -1,0 +1,88 @@
+{
+  "id": "flow-000",
+  "name": "12-env-precedence-cli",
+  "sourceFile": ".maestro/coverage/12-env-precedence-cli.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T02:45:30.845376-07:00",
+  "endTime": "2026-10-12T02:46:02.63491-07:00",
+  "duration": 31789,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T02:45:30.870384-07:00",
+      "endTime": "2026-10-12T02:45:42.228384-07:00",
+      "duration": 11358,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-12T02:45:42.230059-07:00",
+      "endTime": "2026-10-12T02:45:44.401059-07:00",
+      "duration": 2171,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Deep Links",
+        "bounds": {
+          "x": 734,
+          "y": 2127,
+          "width": 346,
+          "height": 210
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"from-cli\"",
+      "status": "failed",
+      "startTime": "2026-10-12T02:45:44.402093-07:00",
+      "endTime": "2026-10-12T02:46:01.852093-07:00",
+      "duration": 17450,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "from-cli"
+        }
+      },
+      "error": {
+        "type": "assertion",
+        "message": "Element not visible: text='from-cli' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: \"from step\", \"Deep Links\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-002-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-002-hierarchy.xml"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 10326,
+    "p50": 11358,
+    "p95": 17450,
+    "max": 17450,
+    "slowestType": "assertVisible"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,44 @@
+appId: com.kylebrowning.landmarks
+---
+- launchApp
+# regex over the whole text
+- tapOn: "Golden Gate.*"
+- assertVisible: "San Francisco, CA"
+- launchApp
+# {text:} and exact
+# exact: the regex form matches, the same string with exact: true matches nothing
+- assertVisible:
+    text: "Golden Gate.*"
+- assertNotVisible:
+    text: "Golden Gate.*"
+    exact: true
+- tapOn:
+    text: "Lakes"
+    exact: true
+- assertVisible: ".*Lake.*"
+- assertNotVisible: "Lake"
+- tapOn:
+    text: "Lake Tahoe"
+    exact: true
+- assertVisible: "Sierra Nevada, CA"
+- launchApp
+# index: Lakes lists Lake Tahoe, Mono Lake, Crater Lake in that order
+- tapOn: "Lakes"
+- tapOn:
+    text: "(Lake .*|.* Lake)"
+    index: 1
+- assertVisible: "Lee Vining, CA"
+- launchApp
+# non-ASCII label
+- tapOn: "Deep Links"
+- tapOn: "Mountains → Yosemite Valley"
+- assertVisible: "Yosemite Valley"
+- launchApp
+# id selector
+- tapOn: "Deep Links"
+- tapOn: "Caching Demo"
+- assertVisible:
+    id: "clock"
+- tapOn:
+    id: "clock"
+- takeScreenshot: "Selectors"

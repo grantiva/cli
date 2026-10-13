@@ -1,0 +1,1 @@
+/Users/kyle/.grantiva-qa/bin/grantiva record --device emulator-5554 --duration 2; echo exit=$?; /Users/kyle/.grantiva-qa/bin/grantiva record --emulator cov3-android --duration 2; echo exit=$?; /Users/kyle/.grantiva-qa/bin/grantiva record --duration 2 --verbose 2>&1 | grep -m3 'emulator-5554\|screenrecord'

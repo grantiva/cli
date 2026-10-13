@@ -1,0 +1,118 @@
+{
+  "id": "flow-000",
+  "name": "14-runflow",
+  "sourceFile": ".maestro/coverage/14-runflow.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T01:47:54.809534-07:00",
+  "endTime": "2026-10-13T01:48:00.583126-07:00",
+  "duration": 5773,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T01:47:54.814406-07:00",
+      "endTime": "2026-10-13T01:47:56.208406-07:00",
+      "duration": 1394,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "runFlow",
+      "yaml": "runFlow: 14-runflow-sub.yaml",
+      "status": "passed",
+      "startTime": "2026-10-13T01:47:56.209343-07:00",
+      "endTime": "2026-10-13T01:47:57.710343-07:00",
+      "duration": 1501,
+      "artifacts": {},
+      "subCommands": [
+        {
+          "id": "sub-0",
+          "index": 0,
+          "type": "tapOn",
+          "yaml": "tapOn: text=\"Deep Links\"",
+          "status": "passed",
+          "startTime": "2026-10-13T01:47:56.209618-07:00",
+          "endTime": "2026-10-13T01:47:57.100795-07:00",
+          "duration": 891,
+          "artifacts": {}
+        },
+        {
+          "id": "sub-1",
+          "index": 1,
+          "type": "assertVisible",
+          "yaml": "assertVisible: text=\"Caching Demo\"",
+          "status": "passed",
+          "startTime": "2026-10-13T01:47:57.100808-07:00",
+          "endTime": "2026-10-13T01:47:57.711037-07:00",
+          "duration": 610,
+          "artifacts": {}
+        }
+      ]
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T01:47:57.71171-07:00",
+      "endTime": "2026-10-13T01:47:59.15071-07:00",
+      "duration": 1439,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "runFlow",
+      "yaml": "runFlow: 14-runflow-sub.yaml",
+      "status": "passed",
+      "startTime": "2026-10-13T01:47:59.151933-07:00",
+      "endTime": "2026-10-13T01:48:00.581933-07:00",
+      "duration": 1430,
+      "artifacts": {},
+      "subCommands": [
+        {
+          "id": "sub-0",
+          "index": 0,
+          "type": "tapOn",
+          "yaml": "tapOn: text=\"Deep Links\"",
+          "status": "passed",
+          "startTime": "2026-10-13T01:47:59.152259-07:00",
+          "endTime": "2026-10-13T01:47:59.949465-07:00",
+          "duration": 797,
+          "artifacts": {}
+        },
+        {
+          "id": "sub-1",
+          "index": 1,
+          "type": "assertVisible",
+          "yaml": "assertVisible: text=\"Caching Demo\"",
+          "status": "passed",
+          "startTime": "2026-10-13T01:47:59.94948-07:00",
+          "endTime": "2026-10-13T01:48:00.582593-07:00",
+          "duration": 633,
+          "artifacts": {}
+        }
+      ]
+    }
+  ],
+  "stepLatency": {
+    "count": 6,
+    "mean": 960,
+    "p50": 797,
+    "p95": 1439,
+    "max": 1439,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

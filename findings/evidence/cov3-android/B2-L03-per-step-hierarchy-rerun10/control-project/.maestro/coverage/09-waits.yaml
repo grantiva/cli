@@ -1,0 +1,13 @@
+appId: com.kylebrowning.landmarks
+---
+- launchApp
+- tapOn: "Deep Links"
+- tapOn: "Slow Screen"
+- assertVisible: "Loading…"
+- extendedWaitUntil:
+    notVisible: "Loading…"
+    timeout: 10000
+- assertVisible: "Loaded after delay"
+- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000

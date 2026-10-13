@@ -1,0 +1,62 @@
+{
+  "id": "flow-000",
+  "name": "l05-absent",
+  "sourceFile": ".maestro/coverage/l05-absent.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T04:31:36.693316-07:00",
+  "endTime": "2026-10-13T04:31:45.32536-07:00",
+  "duration": 8632,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp (clearState)",
+      "status": "passed",
+      "startTime": "2026-10-13T04:31:36.698257-07:00",
+      "endTime": "2026-10-13T04:31:38.067257-07:00",
+      "duration": 1369,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"No Such\"",
+      "status": "failed",
+      "startTime": "2026-10-13T04:31:38.068046-07:00",
+      "endTime": "2026-10-13T04:31:45.174046-07:00",
+      "duration": 7106,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "No Such",
+          "optional": true
+        }
+      },
+      "error": {
+        "type": "element_not_found",
+        "message": "Element not found: text='No Such' (cause: context deadline exceeded: element not found; closest on-screen texts: \"Wifi signal full.,No internet\", \"Phone signal full.\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 4237,
+    "p50": 1369,
+    "p95": 7106,
+    "max": 7106,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,95 @@
+{
+  "id": "flow-000",
+  "name": "02-exact-negative",
+  "sourceFile": ".maestro/coverage/02-exact-negative.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T23:30:34.916037-07:00",
+  "endTime": "2026-10-12T23:30:54.997611-07:00",
+  "duration": 20081,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T23:30:34.92159-07:00",
+      "endTime": "2026-10-12T23:30:36.45059-07:00",
+      "duration": 1529,
+      "artifacts": {
+        "screenshotBefore": "assets/flow-000/cmd-000-before.png",
+        "screenshotAfter": "assets/flow-000/cmd-000-after.png"
+      }
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Golden Gate.*\"",
+      "status": "passed",
+      "startTime": "2026-10-12T23:30:36.585295-07:00",
+      "endTime": "2026-10-12T23:30:37.442295-07:00",
+      "duration": 857,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate.*"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0249-0000-003f00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {
+        "screenshotBefore": "assets/flow-000/cmd-001-before.png",
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Golden Gate.*\", exact=true",
+      "status": "failed",
+      "startTime": "2026-10-12T23:30:37.57963-07:00",
+      "endTime": "2026-10-12T23:30:54.83763-07:00",
+      "duration": 17258,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate.*"
+        }
+      },
+      "error": {
+        "type": "assertion",
+        "message": "Element not visible: text='Golden Gate.*', exact=true (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: \"Golden Gate Bridge\", \"Categories\", \"Battery 100 percent.\")"
+      },
+      "artifacts": {
+        "screenshotBefore": "assets/flow-000/cmd-002-before.png",
+        "screenshotAfter": "assets/flow-000/cmd-002-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-002-hierarchy.xml"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 6548,
+    "p50": 1529,
+    "p95": 17258,
+    "max": 17258,
+    "slowestType": "assertVisible"
+  },
+  "artifacts": {}
+}

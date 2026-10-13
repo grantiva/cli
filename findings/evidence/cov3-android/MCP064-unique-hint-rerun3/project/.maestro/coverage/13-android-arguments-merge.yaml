@@ -1,0 +1,10 @@
+appId: com.kylebrowning.landmarks
+---
+- launchApp:
+    arguments:
+      LANDMARKS_SEED: empty
+    environment:
+      LANDMARKS_NOTE: merged
+- assertVisible: "No landmarks yet"
+- tapOn: "Deep Links"
+- assertVisible: "merged"

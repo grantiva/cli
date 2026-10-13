@@ -1,0 +1,748 @@
+05:11:41.369635 [INFO] === Test execution started ===
+05:11:41.369702 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/N2-16-restore-dead-complement-rerun4/run/report
+05:11:41.369706 [INFO] Platform: android
+05:11:41.369710 [INFO] Driver: uiautomator2
+05:11:41.369966 [INFO] Validated 1 flow(s)
+05:11:41.369984 [INFO] Single device execution mode
+05:11:41.369989 [INFO] Starting flow execution (parallel: false, devices: [])
+05:11:41.369994 [INFO] Creating driver for single device execution
+05:11:41.369998 [INFO] Connecting to Android device: emulator-5556
+05:11:41.459984 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5556, Emulator: true
+05:11:42.622641 [INFO] Starting UIAutomator2 server on device emulator-5556
+05:11:43.186067 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5556.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5556.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5556.sock' not found
+05:11:43.198368 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+05:11:45.827326 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+05:11:45.887437 [INFO] Session created successfully: 48d0d5bb-9f50-417e-814a-0bf30ff44c53
+05:11:46.160590 [INFO] Driver created: android on google sdk_gphone64_arm64
+05:11:46.162165 [INFO] === Starting flow: 11-slow ===
+05:11:46.162170 [INFO] Flow file: .maestro/11-slow.yaml
+05:11:46.162173 [INFO] Total steps: 6
+05:11:46.184171 [DEBUG] Executing step 0: launchApp
+05:11:46.403122 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+05:11:46.403162 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 42ms
+05:11:47.592571 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.093s after launch, pids [3674], drawn=false crashed=false (read 71ms)
+05:11:47.921282 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.416s after launch, pids [3674], drawn=true crashed=false (read 77ms)
+05:11:47.921357 [DEBUG] Step 0 completed successfully (1737ms): launchApp
+05:11:47.921792 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+05:11:47.922018 [DEBUG] Flutter: parallel search (text="Deep Links", id="")
+05:11:47.980395 [DEBUG] Flutter: com.kylebrowning.landmarks has no libflutter.so; not searching the Flutter VM
+05:11:47.980448 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+05:11:48.204302 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 30ms)
+05:11:48.204354 [DEBUG] crash check during a lookup in flight for 282ms: crashed=false (took 30ms)
+05:11:49.955920 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: error: closed
+); sending each on its own
+05:11:50.005178 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 1.581s)
+05:11:50.005217 [DEBUG] crash check during a lookup in flight for 2.083s: crashed=false (took 1.581s)
+05:11:50.016582 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device offline
+); sending each on its own
+05:11:50.062213 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 57ms)
+05:11:50.062246 [DEBUG] crash check during a lookup in flight for 2.14s: crashed=false (took 57ms)
+05:11:50.191021 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device offline
+); sending each on its own
+05:11:50.241302 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 67ms)
+05:11:50.241339 [DEBUG] crash check during a lookup in flight for 2.319s: crashed=false (took 67ms)
+05:11:50.437910 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:50.487965 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 64ms)
+05:11:50.488009 [DEBUG] crash check during a lookup in flight for 2.566s: crashed=false (took 64ms)
+05:11:50.696742 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:50.751574 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 79ms)
+05:11:50.751604 [DEBUG] crash check during a lookup in flight for 2.83s: crashed=false (took 79ms)
+05:11:50.936649 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:50.984197 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 60ms)
+05:11:50.984252 [DEBUG] crash check during a lookup in flight for 3.062s: crashed=false (took 60ms)
+05:11:51.199719 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:51.254184 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 81ms)
+05:11:51.254218 [DEBUG] crash check during a lookup in flight for 3.332s: crashed=false (took 81ms)
+05:11:51.448594 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:51.506775 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 85ms)
+05:11:51.506812 [DEBUG] crash check during a lookup in flight for 3.585s: crashed=false (took 85ms)
+05:11:51.695281 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:51.753640 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 79ms)
+05:11:51.753676 [DEBUG] crash check during a lookup in flight for 3.832s: crashed=false (took 80ms)
+05:11:51.945036 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:52.004220 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 80ms)
+05:11:52.004253 [DEBUG] crash check during a lookup in flight for 4.082s: crashed=false (took 80ms)
+05:11:52.193379 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:52.246252 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 72ms)
+05:11:52.246291 [DEBUG] crash check during a lookup in flight for 4.324s: crashed=false (took 72ms)
+05:11:52.448251 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:52.503291 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 79ms)
+05:11:52.503327 [DEBUG] crash check during a lookup in flight for 4.581s: crashed=false (took 79ms)
+05:11:52.691559 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:52.745005 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 71ms)
+05:11:52.745038 [DEBUG] crash check during a lookup in flight for 4.823s: crashed=false (took 71ms)
+05:11:52.941148 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:52.990894 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 67ms)
+05:11:52.990926 [DEBUG] crash check during a lookup in flight for 5.069s: crashed=false (took 67ms)
+05:11:53.196758 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:53.252633 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 78ms)
+05:11:53.252664 [DEBUG] crash check during a lookup in flight for 5.331s: crashed=false (took 79ms)
+05:11:53.444578 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:53.498658 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 75ms)
+05:11:53.498695 [DEBUG] crash check during a lookup in flight for 5.577s: crashed=false (took 75ms)
+05:11:53.695378 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:53.751213 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 79ms)
+05:11:53.751232 [DEBUG] crash check during a lookup in flight for 5.829s: crashed=false (took 79ms)
+05:11:53.945957 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:53.998963 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 75ms)
+05:11:53.998993 [DEBUG] crash check during a lookup in flight for 6.077s: crashed=false (took 75ms)
+05:11:54.194436 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:54.251918 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 80ms)
+05:11:54.251950 [DEBUG] crash check during a lookup in flight for 6.33s: crashed=false (took 80ms)
+05:11:54.442217 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:54.496312 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 73ms)
+05:11:54.496341 [DEBUG] crash check during a lookup in flight for 6.574s: crashed=false (took 73ms)
+05:11:54.694386 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:54.747236 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 75ms)
+05:11:54.747267 [DEBUG] crash check during a lookup in flight for 6.825s: crashed=false (took 75ms)
+05:11:54.937974 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:54.987006 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 63ms)
+05:11:54.987030 [DEBUG] crash check during a lookup in flight for 7.065s: crashed=false (took 63ms)
+05:11:55.192369 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:55.246558 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 72ms)
+05:11:55.246589 [DEBUG] crash check during a lookup in flight for 7.324s: crashed=false (took 72ms)
+05:11:55.439175 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:55.495459 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 73ms)
+05:11:55.495492 [DEBUG] crash check during a lookup in flight for 7.573s: crashed=false (took 73ms)
+05:11:55.687268 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:55.736208 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 62ms)
+05:11:55.736224 [DEBUG] crash check during a lookup in flight for 7.814s: crashed=false (took 62ms)
+05:11:55.948177 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:56.004742 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 81ms)
+05:11:56.004771 [DEBUG] crash check during a lookup in flight for 8.083s: crashed=false (took 81ms)
+05:11:56.195618 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:56.250630 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+05:11:56.250654 [DEBUG] crash check during a lookup in flight for 8.329s: crashed=false (took 76ms)
+05:11:56.436070 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:56.481887 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 58ms)
+05:11:56.481917 [DEBUG] crash check during a lookup in flight for 8.56s: crashed=false (took 58ms)
+05:11:56.694566 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:56.748223 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 74ms)
+05:11:56.748255 [DEBUG] crash check during a lookup in flight for 8.826s: crashed=false (took 74ms)
+05:11:56.936902 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:56.984301 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 60ms)
+05:11:56.984325 [DEBUG] crash check during a lookup in flight for 9.062s: crashed=false (took 60ms)
+05:11:57.186676 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:57.236719 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 63ms)
+05:11:57.236748 [DEBUG] crash check during a lookup in flight for 9.315s: crashed=false (took 63ms)
+05:11:57.445332 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:57.501680 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 78ms)
+05:11:57.501708 [DEBUG] crash check during a lookup in flight for 9.58s: crashed=false (took 78ms)
+05:11:57.690514 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:57.741067 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 67ms)
+05:11:57.741096 [DEBUG] crash check during a lookup in flight for 9.819s: crashed=false (took 67ms)
+05:11:57.945985 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:58.000902 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 77ms)
+05:11:58.000934 [DEBUG] crash check during a lookup in flight for 10.079s: crashed=false (took 77ms)
+05:11:58.194640 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:58.249150 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 75ms)
+05:11:58.249180 [DEBUG] crash check during a lookup in flight for 10.327s: crashed=false (took 75ms)
+05:11:58.439073 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:58.490446 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 66ms)
+05:11:58.490479 [DEBUG] crash check during a lookup in flight for 10.568s: crashed=false (took 66ms)
+05:11:58.697242 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:58.752040 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 78ms)
+05:11:58.752068 [DEBUG] crash check during a lookup in flight for 10.83s: crashed=false (took 78ms)
+05:11:58.947361 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:59.000418 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+05:11:59.000453 [DEBUG] crash check during a lookup in flight for 11.078s: crashed=false (took 76ms)
+05:11:59.197948 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:59.253750 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 80ms)
+05:11:59.253783 [DEBUG] crash check during a lookup in flight for 11.332s: crashed=false (took 80ms)
+05:11:59.444612 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:59.499265 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 75ms)
+05:11:59.499311 [DEBUG] crash check during a lookup in flight for 11.577s: crashed=false (took 75ms)
+05:11:59.696101 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:11:59.752935 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 79ms)
+05:11:59.752968 [DEBUG] crash check during a lookup in flight for 11.831s: crashed=false (took 79ms)
+05:11:59.945478 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:00.001023 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 77ms)
+05:12:00.001056 [DEBUG] crash check during a lookup in flight for 12.079s: crashed=false (took 77ms)
+05:12:00.193412 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:00.247581 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 73ms)
+05:12:00.247623 [DEBUG] crash check during a lookup in flight for 12.325s: crashed=false (took 73ms)
+05:12:00.439680 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:00.491553 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 69ms)
+05:12:00.491600 [DEBUG] crash check during a lookup in flight for 12.569s: crashed=false (took 69ms)
+05:12:00.696375 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:00.750676 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 77ms)
+05:12:00.750715 [DEBUG] crash check during a lookup in flight for 12.829s: crashed=false (took 77ms)
+05:12:00.945855 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:01.001022 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 77ms)
+05:12:01.001058 [DEBUG] crash check during a lookup in flight for 13.079s: crashed=false (took 77ms)
+05:12:01.186460 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:01.232818 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 59ms)
+05:12:01.232869 [DEBUG] crash check during a lookup in flight for 13.311s: crashed=false (took 59ms)
+05:12:01.446115 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:01.503744 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 81ms)
+05:12:01.503777 [DEBUG] crash check during a lookup in flight for 13.582s: crashed=false (took 81ms)
+05:12:01.693148 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:01.748037 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+05:12:01.748068 [DEBUG] crash check during a lookup in flight for 13.826s: crashed=false (took 76ms)
+05:12:01.947332 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:02.001000 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 77ms)
+05:12:02.001029 [DEBUG] crash check during a lookup in flight for 14.079s: crashed=false (took 77ms)
+05:12:02.190285 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:02.240486 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 66ms)
+05:12:02.240520 [DEBUG] crash check during a lookup in flight for 14.318s: crashed=false (took 66ms)
+05:12:02.448439 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:02.505195 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 81ms)
+05:12:02.505239 [DEBUG] crash check during a lookup in flight for 14.583s: crashed=false (took 81ms)
+05:12:02.694357 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:02.748449 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 75ms)
+05:12:02.748484 [DEBUG] crash check during a lookup in flight for 14.826s: crashed=false (took 75ms)
+05:12:02.942727 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:02.995302 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 72ms)
+05:12:02.995330 [DEBUG] crash check during a lookup in flight for 15.073s: crashed=false (took 72ms)
+05:12:03.195630 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:03.254115 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 80ms)
+05:12:03.254132 [DEBUG] crash check during a lookup in flight for 15.332s: crashed=false (took 80ms)
+05:12:03.446720 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:03.500825 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 77ms)
+05:12:03.500862 [DEBUG] crash check during a lookup in flight for 15.579s: crashed=false (took 77ms)
+05:12:03.696053 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:03.753360 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 79ms)
+05:12:03.753405 [DEBUG] crash check during a lookup in flight for 15.831s: crashed=false (took 79ms)
+05:12:03.944887 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:04.000346 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 77ms)
+05:12:04.000380 [DEBUG] crash check during a lookup in flight for 16.078s: crashed=false (took 77ms)
+05:12:04.190557 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:04.239775 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 66ms)
+05:12:04.239806 [DEBUG] crash check during a lookup in flight for 16.318s: crashed=false (took 66ms)
+05:12:04.447600 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:04.502129 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 78ms)
+05:12:04.502162 [DEBUG] crash check during a lookup in flight for 16.58s: crashed=false (took 78ms)
+05:12:04.695461 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:04.752952 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 79ms)
+05:12:04.752991 [DEBUG] crash check during a lookup in flight for 16.831s: crashed=false (took 79ms)
+05:12:04.948265 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:05.000538 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+05:12:05.000572 [DEBUG] crash check during a lookup in flight for 17.078s: crashed=false (took 76ms)
+05:12:05.194793 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:05.251165 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 77ms)
+05:12:05.251204 [DEBUG] crash check during a lookup in flight for 17.329s: crashed=false (took 77ms)
+05:12:05.443692 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:05.499389 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 75ms)
+05:12:05.499435 [DEBUG] crash check during a lookup in flight for 17.577s: crashed=false (took 75ms)
+05:12:05.695262 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:05.750102 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+05:12:05.750133 [DEBUG] crash check during a lookup in flight for 17.828s: crashed=false (took 76ms)
+05:12:05.945382 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:05.999729 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+05:12:05.999760 [DEBUG] crash check during a lookup in flight for 18.078s: crashed=false (took 76ms)
+05:12:06.190036 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:06.238522 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 64ms)
+05:12:06.238550 [DEBUG] crash check during a lookup in flight for 18.316s: crashed=false (took 64ms)
+05:12:06.439011 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:06.488462 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 66ms)
+05:12:06.488487 [DEBUG] crash check during a lookup in flight for 18.566s: crashed=false (took 66ms)
+05:12:06.693232 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:06.746967 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 73ms)
+05:12:06.747004 [DEBUG] crash check during a lookup in flight for 18.825s: crashed=false (took 73ms)
+05:12:06.943386 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:06.995629 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 71ms)
+05:12:06.995654 [DEBUG] crash check during a lookup in flight for 19.073s: crashed=false (took 71ms)
+05:12:07.186351 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:07.231436 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 57ms)
+05:12:07.231465 [DEBUG] crash check during a lookup in flight for 19.309s: crashed=false (took 57ms)
+05:12:07.445247 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:07.500061 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+05:12:07.500090 [DEBUG] crash check during a lookup in flight for 19.578s: crashed=false (took 76ms)
+05:12:07.690480 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:07.740082 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 66ms)
+05:12:07.740121 [DEBUG] crash check during a lookup in flight for 19.818s: crashed=false (took 66ms)
+05:12:07.945510 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:08.001032 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 77ms)
+05:12:08.001061 [DEBUG] crash check during a lookup in flight for 20.079s: crashed=false (took 77ms)
+05:12:08.199289 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:08.254977 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 81ms)
+05:12:08.255008 [DEBUG] crash check during a lookup in flight for 20.333s: crashed=false (took 81ms)
+05:12:08.444135 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:08.496765 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 73ms)
+05:12:08.496796 [DEBUG] crash check during a lookup in flight for 20.575s: crashed=false (took 73ms)
+05:12:08.696290 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:08.753350 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 79ms)
+05:12:08.753383 [DEBUG] crash check during a lookup in flight for 20.831s: crashed=false (took 79ms)
+05:12:08.946905 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:09.001249 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 78ms)
+05:12:09.001281 [DEBUG] crash check during a lookup in flight for 21.079s: crashed=false (took 78ms)
+05:12:09.197410 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:09.256480 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 82ms)
+05:12:09.256511 [DEBUG] crash check during a lookup in flight for 21.334s: crashed=false (took 82ms)
+05:12:09.446115 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:09.501150 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 77ms)
+05:12:09.501183 [DEBUG] crash check during a lookup in flight for 21.579s: crashed=false (took 77ms)
+05:12:09.694990 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:09.756556 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 84ms)
+05:12:09.756578 [DEBUG] crash check during a lookup in flight for 21.834s: crashed=false (took 84ms)
+05:12:09.941651 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:09.993763 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 70ms)
+05:12:09.993791 [DEBUG] crash check during a lookup in flight for 22.072s: crashed=false (took 70ms)
+05:12:10.196178 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:10.255328 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 81ms)
+05:12:10.255373 [DEBUG] crash check during a lookup in flight for 22.333s: crashed=false (took 81ms)
+05:12:10.448496 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:10.504051 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 80ms)
+05:12:10.504076 [DEBUG] crash check during a lookup in flight for 22.582s: crashed=false (took 80ms)
+05:12:10.695191 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:10.754077 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 80ms)
+05:12:10.754114 [DEBUG] crash check during a lookup in flight for 22.832s: crashed=false (took 80ms)
+05:12:10.945334 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:11.002004 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 80ms)
+05:12:11.002040 [DEBUG] crash check during a lookup in flight for 23.08s: crashed=false (took 80ms)
+05:12:11.192381 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:11.245509 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 71ms)
+05:12:11.245539 [DEBUG] crash check during a lookup in flight for 23.323s: crashed=false (took 71ms)
+05:12:11.437289 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:11.485253 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 61ms)
+05:12:11.485284 [DEBUG] crash check during a lookup in flight for 23.563s: crashed=false (took 61ms)
+05:12:11.696393 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:11.752216 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 78ms)
+05:12:11.752247 [DEBUG] crash check during a lookup in flight for 23.83s: crashed=false (took 78ms)
+05:12:11.945947 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:11.999450 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 75ms)
+05:12:11.999480 [DEBUG] crash check during a lookup in flight for 24.077s: crashed=false (took 75ms)
+05:12:12.193726 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:12.247766 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 74ms)
+05:12:12.247798 [DEBUG] crash check during a lookup in flight for 24.326s: crashed=false (took 74ms)
+05:12:12.447609 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:12.505108 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 81ms)
+05:12:12.505146 [DEBUG] crash check during a lookup in flight for 24.583s: crashed=false (took 81ms)
+05:12:12.694831 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:12.752317 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 79ms)
+05:12:12.752358 [DEBUG] crash check during a lookup in flight for 24.83s: crashed=false (took 79ms)
+05:12:12.937163 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:12.985478 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 63ms)
+05:12:12.985496 [DEBUG] crash check during a lookup in flight for 25.063s: crashed=false (took 63ms)
+05:12:13.196746 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:13.254744 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 80ms)
+05:12:13.254778 [DEBUG] crash check during a lookup in flight for 25.333s: crashed=false (took 81ms)
+05:12:13.442766 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:13.493551 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 69ms)
+05:12:13.493581 [DEBUG] crash check during a lookup in flight for 25.571s: crashed=false (took 69ms)
+05:12:13.693324 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:13.747811 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 74ms)
+05:12:13.747847 [DEBUG] crash check during a lookup in flight for 25.826s: crashed=false (took 74ms)
+05:12:13.948183 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:14.004118 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 80ms)
+05:12:14.004157 [DEBUG] crash check during a lookup in flight for 26.082s: crashed=false (took 80ms)
+05:12:14.195327 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:14.250961 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 77ms)
+05:12:14.250996 [DEBUG] crash check during a lookup in flight for 26.329s: crashed=false (took 77ms)
+05:12:14.445738 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:14.499520 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 75ms)
+05:12:14.499552 [DEBUG] crash check during a lookup in flight for 26.577s: crashed=false (took 75ms)
+05:12:14.694638 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:14.750443 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+05:12:14.750486 [DEBUG] crash check during a lookup in flight for 26.828s: crashed=false (took 76ms)
+05:12:14.945133 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:14.998608 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+05:12:14.998644 [DEBUG] crash check during a lookup in flight for 27.076s: crashed=false (took 76ms)
+05:12:15.186266 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:15.232852 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 59ms)
+05:12:15.232888 [DEBUG] crash check during a lookup in flight for 27.311s: crashed=false (took 59ms)
+05:12:15.442842 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:15.494319 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 70ms)
+05:12:15.494354 [DEBUG] crash check during a lookup in flight for 27.572s: crashed=false (took 70ms)
+05:12:15.687723 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:15.739434 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 65ms)
+05:12:15.739461 [DEBUG] crash check during a lookup in flight for 27.817s: crashed=false (took 65ms)
+05:12:15.938574 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:15.986291 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 62ms)
+05:12:15.986324 [DEBUG] crash check during a lookup in flight for 28.064s: crashed=false (took 62ms)
+05:12:16.185425 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:16.231810 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 59ms)
+05:12:16.231847 [DEBUG] crash check during a lookup in flight for 28.31s: crashed=false (took 59ms)
+05:12:16.436476 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:16.483831 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 60ms)
+05:12:16.483859 [DEBUG] crash check during a lookup in flight for 28.562s: crashed=false (took 60ms)
+05:12:16.686836 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:16.736242 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 62ms)
+05:12:16.736270 [DEBUG] crash check during a lookup in flight for 28.814s: crashed=false (took 62ms)
+05:12:16.937342 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:16.984256 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 60ms)
+05:12:16.984286 [DEBUG] crash check during a lookup in flight for 29.062s: crashed=false (took 60ms)
+05:12:17.186919 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:17.232490 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 58ms)
+05:12:17.232516 [DEBUG] crash check during a lookup in flight for 29.31s: crashed=false (took 58ms)
+05:12:17.435821 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:17.483075 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 59ms)
+05:12:17.483111 [DEBUG] crash check during a lookup in flight for 29.561s: crashed=false (took 59ms)
+05:12:17.684707 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:17.731310 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 59ms)
+05:12:17.731492 [DEBUG] crash check during a lookup in flight for 29.809s: crashed=false (took 59ms)
+05:12:17.937304 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:17.984157 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 60ms)
+05:12:17.984186 [DEBUG] crash check during a lookup in flight for 30.062s: crashed=false (took 60ms)
+05:12:18.185785 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:18.232773 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 59ms)
+05:12:18.232809 [DEBUG] crash check during a lookup in flight for 30.311s: crashed=false (took 59ms)
+05:12:18.435807 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:18.483248 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 59ms)
+05:12:18.483281 [DEBUG] crash check during a lookup in flight for 30.561s: crashed=false (took 59ms)
+05:12:18.687456 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:18.736054 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 62ms)
+05:12:18.736081 [DEBUG] crash check during a lookup in flight for 30.814s: crashed=false (took 62ms)
+05:12:18.936567 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:18.985243 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 61ms)
+05:12:18.985287 [DEBUG] crash check during a lookup in flight for 31.063s: crashed=false (took 61ms)
+05:12:19.190410 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:19.238565 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 64ms)
+05:12:19.238592 [DEBUG] crash check during a lookup in flight for 31.316s: crashed=false (took 64ms)
+05:12:19.445400 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:19.500343 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+05:12:19.500380 [DEBUG] crash check during a lookup in flight for 31.578s: crashed=false (took 76ms)
+05:12:19.696961 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:19.753912 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 80ms)
+05:12:19.753946 [DEBUG] crash check during a lookup in flight for 31.832s: crashed=false (took 80ms)
+05:12:19.946118 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:19.999073 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 75ms)
+05:12:19.999102 [DEBUG] crash check during a lookup in flight for 32.077s: crashed=false (took 75ms)
+05:12:20.193441 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:20.248623 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+05:12:20.248652 [DEBUG] crash check during a lookup in flight for 32.326s: crashed=false (took 76ms)
+05:12:20.445373 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:20.501785 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 78ms)
+05:12:20.501816 [DEBUG] crash check during a lookup in flight for 32.58s: crashed=false (took 78ms)
+05:12:20.694977 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:20.748206 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 74ms)
+05:12:20.748242 [DEBUG] crash check during a lookup in flight for 32.826s: crashed=false (took 74ms)
+05:12:20.934628 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:20.978703 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 56ms)
+05:12:20.978737 [DEBUG] crash check during a lookup in flight for 33.057s: crashed=false (took 56ms)
+05:12:21.192813 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:21.246077 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 72ms)
+05:12:21.246107 [DEBUG] crash check during a lookup in flight for 33.324s: crashed=false (took 72ms)
+05:12:21.442359 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:21.499837 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+05:12:21.499869 [DEBUG] crash check during a lookup in flight for 33.578s: crashed=false (took 76ms)
+05:12:21.685889 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:21.733607 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 61ms)
+05:12:21.733637 [DEBUG] crash check during a lookup in flight for 33.811s: crashed=false (took 61ms)
+05:12:21.946538 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:22.000412 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+05:12:22.000440 [DEBUG] crash check during a lookup in flight for 34.078s: crashed=false (took 76ms)
+05:12:22.195923 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:22.250086 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+05:12:22.250116 [DEBUG] crash check during a lookup in flight for 34.328s: crashed=false (took 76ms)
+05:12:22.447665 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:22.504712 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 80ms)
+05:12:22.504745 [DEBUG] crash check during a lookup in flight for 34.583s: crashed=false (took 80ms)
+05:12:22.697490 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:22.755142 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 81ms)
+05:12:22.755187 [DEBUG] crash check during a lookup in flight for 34.833s: crashed=false (took 81ms)
+05:12:22.947089 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:23.000730 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+05:12:23.000765 [DEBUG] crash check during a lookup in flight for 35.079s: crashed=false (took 76ms)
+05:12:23.186205 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:23.232579 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 59ms)
+05:12:23.232615 [DEBUG] crash check during a lookup in flight for 35.31s: crashed=false (took 59ms)
+05:12:23.449368 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:23.504594 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 80ms)
+05:12:23.504622 [DEBUG] crash check during a lookup in flight for 35.582s: crashed=false (took 80ms)
+05:12:23.694193 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:23.746169 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 72ms)
+05:12:23.746198 [DEBUG] crash check during a lookup in flight for 35.824s: crashed=false (took 72ms)
+05:12:23.949252 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:24.002239 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 78ms)
+05:12:24.002267 [DEBUG] crash check during a lookup in flight for 36.08s: crashed=false (took 78ms)
+05:12:24.193626 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:24.249808 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+05:12:24.249847 [DEBUG] crash check during a lookup in flight for 36.328s: crashed=false (took 76ms)
+05:12:24.444621 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:24.497073 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 75ms)
+05:12:24.497100 [DEBUG] crash check during a lookup in flight for 36.575s: crashed=false (took 75ms)
+05:12:24.781942 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:24.826839 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 59ms)
+05:12:24.826868 [DEBUG] crash check during a lookup in flight for 311ms: crashed=false (took 59ms)
+05:12:25.040188 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:25.095178 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 78ms)
+05:12:25.095205 [DEBUG] crash check during a lookup in flight for 579ms: crashed=false (took 78ms)
+05:12:25.285344 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:25.338882 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 71ms)
+05:12:25.338916 [DEBUG] crash check during a lookup in flight for 823ms: crashed=false (took 71ms)
+05:12:25.540073 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:25.595827 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 78ms)
+05:12:25.595857 [DEBUG] crash check during a lookup in flight for 1.08s: crashed=false (took 78ms)
+05:12:25.783017 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:25.829699 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 61ms)
+05:12:25.829742 [DEBUG] crash check during a lookup in flight for 1.314s: crashed=false (took 62ms)
+05:12:26.030582 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:26.079576 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 62ms)
+05:12:26.079600 [DEBUG] crash check during a lookup in flight for 1.563s: crashed=false (took 62ms)
+05:12:26.285122 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:26.338165 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 70ms)
+05:12:26.338199 [DEBUG] crash check during a lookup in flight for 1.822s: crashed=false (took 70ms)
+05:12:26.541708 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:26.597736 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 79ms)
+05:12:26.597781 [DEBUG] crash check during a lookup in flight for 2.082s: crashed=false (took 80ms)
+05:12:26.787964 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:26.840536 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 73ms)
+05:12:26.840580 [DEBUG] crash check during a lookup in flight for 2.324s: crashed=false (took 73ms)
+05:12:27.040338 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:27.093715 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 77ms)
+05:12:27.093747 [DEBUG] crash check during a lookup in flight for 2.578s: crashed=false (took 77ms)
+05:12:27.291147 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:27.347801 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 80ms)
+05:12:27.347830 [DEBUG] crash check during a lookup in flight for 2.832s: crashed=false (took 80ms)
+05:12:27.530631 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:27.580978 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 63ms)
+05:12:27.580997 [DEBUG] crash check during a lookup in flight for 3.065s: crashed=false (took 63ms)
+05:12:27.788034 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:27.838939 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 71ms)
+05:12:27.838971 [DEBUG] crash check during a lookup in flight for 3.323s: crashed=false (took 71ms)
+05:12:28.040975 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:28.094365 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 77ms)
+05:12:28.094399 [DEBUG] crash check during a lookup in flight for 3.578s: crashed=false (took 77ms)
+05:12:28.289080 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:28.349152 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 81ms)
+05:12:28.349191 [DEBUG] crash check during a lookup in flight for 3.833s: crashed=false (took 81ms)
+05:12:28.538467 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:28.593083 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 75ms)
+05:12:28.593118 [DEBUG] crash check during a lookup in flight for 4.077s: crashed=false (took 75ms)
+05:12:28.789571 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:28.843344 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 75ms)
+05:12:28.843375 [DEBUG] crash check during a lookup in flight for 4.327s: crashed=false (took 75ms)
+05:12:29.041036 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:29.095364 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 77ms)
+05:12:29.095398 [DEBUG] crash check during a lookup in flight for 4.579s: crashed=false (took 77ms)
+05:12:29.290389 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:29.350174 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 82ms)
+05:12:29.350206 [DEBUG] crash check during a lookup in flight for 4.834s: crashed=false (took 82ms)
+05:12:29.539432 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:29.594096 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+05:12:29.594130 [DEBUG] crash check during a lookup in flight for 5.078s: crashed=false (took 76ms)
+05:12:29.786072 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:29.836921 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 69ms)
+05:12:29.836974 [DEBUG] crash check during a lookup in flight for 5.321s: crashed=false (took 69ms)
+05:12:30.041439 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:30.098620 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 80ms)
+05:12:30.098693 [DEBUG] crash check during a lookup in flight for 5.582s: crashed=false (took 80ms)
+05:12:30.288798 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:30.343266 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 75ms)
+05:12:30.343312 [DEBUG] crash check during a lookup in flight for 5.827s: crashed=false (took 75ms)
+05:12:30.537186 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:30.590888 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 74ms)
+05:12:30.590927 [DEBUG] crash check during a lookup in flight for 6.075s: crashed=false (took 74ms)
+05:12:30.787667 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:30.841691 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 73ms)
+05:12:30.841735 [DEBUG] crash check during a lookup in flight for 6.326s: crashed=false (took 73ms)
+05:12:31.041440 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:31.096054 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 78ms)
+05:12:31.096092 [DEBUG] crash check during a lookup in flight for 6.58s: crashed=false (took 78ms)
+05:12:31.291436 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:31.343782 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 75ms)
+05:12:31.343827 [DEBUG] crash check during a lookup in flight for 6.828s: crashed=false (took 76ms)
+05:12:31.539896 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:31.593848 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+05:12:31.593884 [DEBUG] crash check during a lookup in flight for 7.078s: crashed=false (took 76ms)
+05:12:31.783416 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:31.832333 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 64ms)
+05:12:31.832367 [DEBUG] crash check during a lookup in flight for 7.316s: crashed=false (took 64ms)
+05:12:32.030886 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:32.085627 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 67ms)
+05:12:32.085673 [DEBUG] crash check during a lookup in flight for 7.569s: crashed=false (took 67ms)
+05:12:32.290210 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:32.345579 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 77ms)
+05:12:32.345613 [DEBUG] crash check during a lookup in flight for 7.829s: crashed=false (took 77ms)
+05:12:32.539237 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:32.590764 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 72ms)
+05:12:32.590803 [DEBUG] crash check during a lookup in flight for 8.075s: crashed=false (took 73ms)
+05:12:32.786383 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:32.843496 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+05:12:32.843544 [DEBUG] crash check during a lookup in flight for 8.327s: crashed=false (took 76ms)
+05:12:33.042367 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:33.096947 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 79ms)
+05:12:33.096987 [DEBUG] crash check during a lookup in flight for 8.581s: crashed=false (took 79ms)
+05:12:33.287726 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:33.339013 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 71ms)
+05:12:33.339050 [DEBUG] crash check during a lookup in flight for 8.823s: crashed=false (took 71ms)
+05:12:33.530634 [DEBUG] shell batch of 2 commands unreadable (err=adb shell pidof 'com.kylebrowning.landmarks' || true; echo @@grantiva-batch@@; logcat -b events -d -s am_crash -t '10-13 05:11:46.000': exit status 1: adb: device 'emulator-5556' not found
+); sending each on its own
+05:12:33.577042 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 59ms)
+05:12:33.577068 [DEBUG] crash check during a lookup in flight for 9.061s: crashed=false (took 59ms)
+05:12:33.789913 [ERROR] Step 1 failed (45867ms): tapOn: text="Deep Links" - Error: Element not found: text='Deep Links': UIAutomator2 server on emulator-5556 stopped responding (socket missing); retried 7 times over 9.2s
+05:12:52.388394 [INFO] === Flow completed: 11-slow (status: failed, duration: 66224ms, passed: 1, failed: 1, skipped: 4) ===
+05:12:52.389305 [DEBUG] failed to close client during cleanup: send request: Delete "http://localhost/session/48d0d5bb-9f50-417e-814a-0bf30ff44c53": dial unix /tmp/uia2-emulator-5556.sock: connect: no such file or directory
+05:12:52.401251 [WARN] failed to force-stop io.appium.uiautomator2.server: adb shell am force-stop io.appium.uiautomator2.server: exit status 1: adb: device 'emulator-5556' not found
+05:12:52.413069 [WARN] failed to force-stop io.appium.uiautomator2.server.test: adb shell am force-stop io.appium.uiautomator2.server.test: exit status 1: adb: device 'emulator-5556' not found
+05:12:52.741305 [WARN] failed to remove socket forward for /tmp/uia2-emulator-5556.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5556.sock: exit status 1: adb: error: device 'emulator-5556' not found
+05:12:52.759423 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5556.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5556.sock: exit status 1: adb: error: device 'emulator-5556' not found
+05:12:52.773785 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: device 'emulator-5556' not found
+05:12:52.773840 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+05:12:52.774042 [INFO] Generating reports...
+05:12:52.774662 [INFO] Shutting down devices started by maestro-runner...
+05:12:52.774681 [INFO] Shutting down all tracked emulators
+05:12:52.774690 [INFO] Shutting down all tracked simulators

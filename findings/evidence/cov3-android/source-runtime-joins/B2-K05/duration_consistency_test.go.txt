@@ -1,0 +1,112 @@
+// numbers: the duration handed to OnStepComplete is the command duration the
+// FlowWriter records, passing or failing, even when the failure artifacts
+// take a while to capture (they are not part of the step's duration); and the
+// flow total handed to OnFlowEnd is the flow duration in the report, setup
+// included.
+func TestStepAndFlowDurationsAgreeAcrossOutputs(t *testing.T) {
+	tests := []struct {
+		name        string
+		failAtTap   bool
+		wantSkipped int
+	}{
+		{name: "passing flow", failAtTap: false},
+		{name: "failing step with slow failure artifacts", failAtTap: true, wantSkipped: 1},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			driver := &slowSetupDriver{
+				setup: 150 * time.Millisecond,
+				mockDriver: &mockDriver{
+					executeFunc: func(step flow.Step) *core.CommandResult {
+						time.Sleep(20 * time.Millisecond)
+						if _, ok := step.(*flow.TapOnStep); ok && tc.failAtTap {
+							return &core.CommandResult{Success: false, Error: errString("element not found")}
+						}
+						return core.SuccessResult("ok", nil)
+					},
+					screenshotFunc: func() ([]byte, error) {
+						time.Sleep(300 * time.Millisecond)
+						return []byte{0x89, 0x50, 0x4E, 0x47}, nil
+					},
+				},
+			}
+
+			var stepDurations []int64
+			var flowDuration int64
+			outDir := t.TempDir()
+			runner := New(driver, RunnerConfig{
+				OutputDir:     outDir,
+				Artifacts:     ArtifactOnFailure,
+				Device:        report.Device{ID: "test", Platform: "android"},
+				App:           report.App{ID: "com.test"},
+				RunnerVersion: "1.0.0",
+				DriverName:    "mock",
+				OnStepComplete: func(idx int, desc string, passed bool, durationMs int64, msg string) {
+					stepDurations = append(stepDurations, durationMs)
+				},
+				OnFlowEnd: func(name string, passed bool, durationMs int64, errMsg string) {
+					flowDuration = durationMs
+				},
+			})
+
+			flows := []flow.Flow{{
+				SourcePath: "durations.yaml",
+				Config:     flow.Config{Name: "Durations", AppID: "com.test"},
+				Steps: []flow.Step{
+					&flow.LaunchAppStep{BaseStep: flow.BaseStep{StepType: flow.StepLaunchApp}},
+					&flow.TapOnStep{BaseStep: flow.BaseStep{StepType: flow.StepTapOn}, Selector: flow.Selector{Text: "Go"}},
+					&flow.AssertVisibleStep{BaseStep: flow.BaseStep{StepType: flow.StepAssertVisible}, Selector: flow.Selector{Text: "Done"}},
+				},
+			}}
+
+			result, err := runner.Run(context.Background(), flows)
+			if err != nil {
+				t.Fatalf("Run() error = %v", err)
+			}
+
+			detail := readFlowDetail(t, outDir)
+			if got, want := len(stepDurations), 3-tc.wantSkipped; got != want {
+				t.Fatalf("step callbacks = %d, want %d", got, want)
+			}
+			for i, live := range stepDurations {
+				cmd := detail.Commands[i]
+				if cmd.Duration == nil {
+					t.Fatalf("command %d has no duration in the report", i)
+				}
+				if *cmd.Duration != live {
+					t.Errorf("command %d (%s): live %dms, report %dms; want equal", i, cmd.Type, live, *cmd.Duration)
+				}
+				if cmd.StartTime == nil || cmd.EndTime == nil {
+					t.Fatalf("command %d has no start/end time", i)
+				}
+				if span := cmd.EndTime.Sub(*cmd.StartTime).Milliseconds(); span != *cmd.Duration {
+					t.Errorf("command %d: endTime-startTime %dms, duration %dms; want equal", i, span, *cmd.Duration)
+				}
+			}
+			// The step sleeps 20ms and the failure capture 300ms; a duration
+			// under 200ms can only be the step's own time, even on a loaded host.
+			if tc.failAtTap && stepDurations[1] >= 200 {
+				t.Errorf("failing step duration %dms includes the failure artifact capture", stepDurations[1])
+			}
+			var stepSum int64
+			for _, d := range stepDurations {
+				stepSum += d
+			}
+
+			if detail.Duration == nil {
+				t.Fatal("flow has no duration in the report")
+			}
+			if *detail.Duration != flowDuration {
+				t.Errorf("flow: live %dms, report %dms; want equal", flowDuration, *detail.Duration)
+			}
+			if got := result.FlowResults[0].Duration; got != flowDuration {
+				t.Errorf("flow: table %dms, live %dms; want equal", got, flowDuration)
+			}
+			// The flow clock starts before the per-flow session setup and
+			// covers every step.
+			if driver.setupAt.IsZero() || detail.StartTime.After(driver.setupAt) {
+				t.Errorf("flow start %v is after the session setup at %v; setup left out", detail.StartTime, driver.setupAt)
+			}
+			if flowDuration < stepSum+driver.setup.Milliseconds() {
+				t.Errorf("flow duration %dms is shorter than its steps (%dms) plus setup (%dms)",
+					flowDuration, stepSum, driver.setup.Milliseconds())

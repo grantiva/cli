@@ -1,0 +1,11 @@
+appId: com.kylebrowning.landmarks
+---
+- launchApp: {clearState: true}
+- tapOn: "Profile"
+- tapOn: "Gesture Lab"
+- tapOn: "Gesture Taps"
+- assertVisible: "Taps: 0"
+- assertVisible: "Double taps: 0"
+- doubleTapOn: {id: "gesture-pad"}
+- assertVisible: "Double taps: 1"
+- assertVisible: "Taps: 0"

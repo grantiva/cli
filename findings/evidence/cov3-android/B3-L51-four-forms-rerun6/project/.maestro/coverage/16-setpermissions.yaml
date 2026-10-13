@@ -1,0 +1,10 @@
+appId: com.kylebrowning.landmarks
+---
+- launchApp
+- setPermissions:
+    permissions:
+      all: allow
+# granting permissions on iOS terminates the app, so relaunch before scrolling
+- launchApp
+- scroll
+- takeScreenshot: "Permissions Set"

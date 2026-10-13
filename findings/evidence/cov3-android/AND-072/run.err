@@ -1,0 +1,66 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov3-android (emulator-5554)
+Skipping build and install (--no-build)
+Streaming emulator logs (tag: Landmarks)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/08-caching.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 08-caching (08-caching.yaml)
+────────────────────────────────────────────────────────────
+[log] --------- beginning of main
+[log] 10-12 14:55:10.242 I/Landmarks( 4452): launch action=android.intent.action.MAIN data=null extras=[none] env=[LANDMARKS_SEED=null, LANDMARKS_CRASH_ON_LAUNCH=null, LANDMARKS_NOTE=null]
+    ✓ launchApp (1.5s)
+    ✓ tapOn: text="Deep Links" (908ms)
+    ✓ tapOn: text="Caching Demo" (802ms)
+    ✓ assertVisible: text="Cache Policy" (628ms)
+    ✓ tapOn: text="Fetch with Policy" (155ms)
+    ✓ takeScreenshot (133ms)
+    ✓ tapOn: text="Clear Cache" (181ms)
+✓ 08-caching 4.3s
+
+  [1/1] 08-caching (.maestro/08-caching.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.5s)
+    ✓ tapOn: text="Deep Links" (908ms)
+    ✓ tapOn: text="Caching Demo" (802ms)
+    ✓ assertVisible: text="Cache Policy" (628ms)
+    ✓ tapOn: text="Fetch with Policy" (155ms)
+    ✓ takeScreenshot (133ms)
+    ✓ tapOn: text="Clear Cache" (181ms)
+✓ 08-caching 4.3s
+
+  7 steps passing (4.3s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  08-caching                     ✓ PASS       7      7      0      0       4.3s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       7      7      0      0       4.3s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+

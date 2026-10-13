@@ -1,0 +1,108 @@
+{
+  "artifacts" : {
+
+  },
+  "commands" : [
+    {
+      "artifacts" : {
+
+      },
+      "duration" : 1376,
+      "endTime" : "2026-10-13T02:08:58.921213-07:00",
+      "id" : "cmd-000",
+      "index" : 0,
+      "startTime" : "2026-10-13T02:08:57.545213-07:00",
+      "status" : "passed",
+      "type" : "launchApp",
+      "yaml" : "launchApp"
+    },
+    {
+      "artifacts" : {
+
+      },
+      "endTime" : "2026-10-13T09:08:59Z",
+      "error" : {
+        "message" : "Runner interrupted",
+        "type" : "timeout"
+      },
+      "id" : "cmd-001",
+      "index" : 1,
+      "label" : "Wait for the app to draw",
+      "startTime" : "2026-10-13T02:08:58.922517-07:00",
+      "status" : "failed",
+      "type" : "extendedWaitUntil",
+      "yaml" : "extendedWaitUntil: visible text=\".+\""
+    },
+    {
+      "artifacts" : {
+
+      },
+      "id" : "cmd-002",
+      "index" : 2,
+      "params" : {
+        "selector" : {
+          "type" : "text",
+          "value" : "Deep Links"
+        }
+      },
+      "status" : "skipped",
+      "type" : "tapOn",
+      "yaml" : "tapOn: text=\"Deep Links\""
+    },
+    {
+      "artifacts" : {
+
+      },
+      "id" : "cmd-003",
+      "index" : 3,
+      "status" : "skipped",
+      "type" : "waitForAnimationToEnd",
+      "yaml" : "waitForAnimationToEnd"
+    },
+    {
+      "artifacts" : {
+
+      },
+      "id" : "cmd-004",
+      "index" : 4,
+      "label" : "Wait 45s",
+      "status" : "skipped",
+      "type" : "evalScript",
+      "yaml" : "evalScript"
+    },
+    {
+      "artifacts" : {
+
+      },
+      "id" : "cmd-005",
+      "index" : 5,
+      "status" : "skipped",
+      "type" : "waitForAnimationToEnd",
+      "yaml" : "waitForAnimationToEnd"
+    },
+    {
+      "artifacts" : {
+
+      },
+      "id" : "cmd-006",
+      "index" : 6,
+      "status" : "skipped",
+      "type" : "takeScreenshot",
+      "yaml" : "takeScreenshot"
+    }
+  ],
+  "device" : {
+    "id" : "emulator-5554",
+    "isSimulator" : true,
+    "name" : "google sdk_gphone64_arm64",
+    "osVersion" : "35",
+    "platform" : "android"
+  },
+  "endTime" : "2026-10-13T09:08:59Z",
+  "error" : "Runner interrupted",
+  "id" : "flow-000",
+  "name" : "screens",
+  "sourceFile" : "screens",
+  "startTime" : "2026-10-13T02:08:57.539659-07:00",
+  "status" : "interrupted"
+}

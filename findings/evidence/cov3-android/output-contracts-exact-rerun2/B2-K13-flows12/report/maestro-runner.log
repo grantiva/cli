@@ -1,0 +1,502 @@
+22:46:37.450358 [INFO] === Test execution started ===
+22:46:37.450425 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/output-contracts-exact-rerun2/B2-K13-flows12/report
+22:46:37.450431 [INFO] Platform: android
+22:46:37.450435 [INFO] Driver: uiautomator2
+22:46:37.451507 [INFO] Validated 12 flow(s)
+22:46:37.451536 [INFO] Single device execution mode
+22:46:37.451541 [INFO] Starting flow execution (parallel: false, devices: [])
+22:46:37.451545 [INFO] Creating driver for single device execution
+22:46:37.451549 [INFO] Connecting to Android device: emulator-5554
+22:46:37.531985 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+22:46:37.553632 [INFO] Starting UIAutomator2 server on device emulator-5554
+22:46:37.957046 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+22:46:37.969310 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+22:46:38.530565 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+22:46:38.539179 [INFO] Session created successfully: 3486af39-10ee-4e22-91ca-7c2d360da217
+22:46:38.590218 [INFO] Driver created: android on google sdk_gphone64_arm64
+22:46:38.595041 [INFO] === Starting flow: 01-browse ===
+22:46:38.595047 [INFO] Flow file: .maestro/01-browse.yaml
+22:46:38.595050 [INFO] Total steps: 8
+22:46:38.599843 [DEBUG] Executing step 0: launchApp
+22:46:38.832204 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+22:46:38.832252 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 37ms
+22:46:40.139858 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.254s after launch, pids [8102], drawn=true crashed=false (read 28ms)
+22:46:40.139924 [DEBUG] Step 0 completed successfully (1540ms): launchApp
+22:46:40.140306 [DEBUG] Executing step 1: assertVisible: text="Landmarks"
+22:46:40.140526 [DEBUG] Flutter: parallel search (text="Landmarks", id="")
+22:46:40.173084 [DEBUG] Flutter: com.kylebrowning.landmarks has no libflutter.so; not searching the Flutter VM
+22:46:40.173129 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+22:46:40.339963 [DEBUG] Step 1 completed successfully (199ms): assertVisible: text="Landmarks"
+22:46:40.340429 [DEBUG] Executing step 2: assertVisible: text="Featured"
+22:46:40.629763 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 37ms)
+22:46:40.629819 [DEBUG] crash check during a lookup in flight for 289ms: crashed=false (took 37ms)
+22:46:40.885639 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 43ms)
+22:46:40.885690 [DEBUG] crash check during a lookup in flight for 545ms: crashed=false (took 43ms)
+22:46:40.912053 [DEBUG] Step 2 completed successfully (571ms): assertVisible: text="Featured"
+22:46:40.912564 [DEBUG] Executing step 3: takeScreenshot
+22:46:41.048722 [DEBUG] Step 3 completed successfully (136ms): takeScreenshot
+22:46:41.048995 [DEBUG] Executing step 4: tapOn: text="Golden Gate Bridge"
+22:46:41.259978 [DEBUG] Step 4 completed successfully (210ms): tapOn: text="Golden Gate Bridge"
+22:46:41.260345 [DEBUG] Executing step 5: assertVisible: text="San Francisco, CA"
+22:46:41.292098 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 31ms)
+22:46:41.571167 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 27ms)
+22:46:41.571208 [DEBUG] crash check during a lookup in flight for 279ms: crashed=false (took 27ms)
+22:46:41.828942 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 35ms)
+22:46:41.829006 [DEBUG] crash check during a lookup in flight for 537ms: crashed=false (took 35ms)
+22:46:41.881399 [DEBUG] Step 5 completed successfully (621ms): assertVisible: text="San Francisco, CA"
+22:46:41.881891 [DEBUG] Executing step 6: assertVisible: text="Plan Visit"
+22:46:41.915818 [DEBUG] Step 6 completed successfully (33ms): assertVisible: text="Plan Visit"
+22:46:41.916391 [DEBUG] Executing step 7: takeScreenshot
+22:46:42.048450 [DEBUG] Step 7 completed successfully (132ms): takeScreenshot
+22:46:42.051095 [INFO] === Flow completed: 01-browse (status: passed, duration: 3453ms, passed: 8, failed: 0, skipped: 0) ===
+22:46:42.051105 [INFO] === Starting flow: 02-favorite ===
+22:46:42.051108 [INFO] Flow file: .maestro/02-favorite.yaml
+22:46:42.051111 [INFO] Total steps: 13
+22:46:42.053957 [DEBUG] Executing step 0: launchApp
+22:46:42.230212 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+22:46:42.230257 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 61ms
+22:46:43.495040 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.197s after launch, pids [8263], drawn=true crashed=false (read 40ms)
+22:46:43.495093 [DEBUG] Step 0 completed successfully (1441ms): launchApp
+22:46:43.495596 [DEBUG] Executing step 1: tapOn: text="Lake Tahoe"
+22:46:43.495853 [DEBUG] Flutter: parallel search (text="Lake Tahoe", id="")
+22:46:43.520503 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+22:46:43.777557 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 31ms)
+22:46:43.777598 [DEBUG] crash check during a lookup in flight for 282ms: crashed=false (took 31ms)
+22:46:44.049083 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 51ms)
+22:46:44.049130 [DEBUG] crash check during a lookup in flight for 553ms: crashed=false (took 51ms)
+22:46:44.450356 [DEBUG] Step 1 completed successfully (954ms): tapOn: text="Lake Tahoe"
+22:46:44.450757 [DEBUG] Executing step 2: tapOn: text="Favorite"
+22:46:44.487005 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 36ms)
+22:46:44.766755 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 29ms)
+22:46:44.767009 [DEBUG] crash check during a lookup in flight for 280ms: crashed=false (took 29ms)
+22:46:45.024283 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 35ms)
+22:46:45.024344 [DEBUG] crash check during a lookup in flight for 537ms: crashed=false (took 35ms)
+22:46:45.772683 [DEBUG] Step 2 completed successfully (1321ms): tapOn: text="Favorite"
+22:46:45.773679 [DEBUG] Executing step 3: assertVisible: text="Unfavorite"
+22:46:45.815256 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 40ms)
+22:46:45.874427 [DEBUG] Step 3 completed successfully (100ms): assertVisible: text="Unfavorite"
+22:46:45.877445 [DEBUG] Executing step 4: tapOn: text="Landmarks"
+22:46:46.027414 [DEBUG] Step 4 completed successfully (149ms): tapOn: text="Landmarks"
+22:46:46.027809 [DEBUG] Executing step 5: tapOn: text="Favorites"
+22:46:46.054083 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 26ms)
+22:46:46.330501 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+22:46:46.330536 [DEBUG] crash check during a lookup in flight for 276ms: crashed=false (took 24ms)
+22:46:46.583368 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 27ms)
+22:46:46.583436 [DEBUG] crash check during a lookup in flight for 529ms: crashed=false (took 27ms)
+22:46:46.775899 [DEBUG] Step 5 completed successfully (748ms): tapOn: text="Favorites"
+22:46:46.776432 [DEBUG] Executing step 6: assertVisible: text="Lake Tahoe"
+22:46:47.054035 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 26ms)
+22:46:47.054090 [DEBUG] crash check during a lookup in flight for 277ms: crashed=false (took 26ms)
+22:46:47.306755 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 28ms)
+22:46:47.306855 [DEBUG] crash check during a lookup in flight for 530ms: crashed=false (took 28ms)
+22:46:47.330555 [DEBUG] Step 6 completed successfully (554ms): assertVisible: text="Lake Tahoe"
+22:46:47.331063 [DEBUG] Executing step 7: takeScreenshot
+22:46:47.477554 [DEBUG] Step 7 completed successfully (146ms): takeScreenshot
+22:46:47.478204 [DEBUG] Executing step 8: swipe: LEFT from text="Lake Tahoe"
+22:46:47.517739 [INFO] swipe left: held drag (246,500) -> (0,500) over 300 ms
+22:46:48.209723 [DEBUG] Step 8 completed successfully (731ms): swipe: LEFT from text="Lake Tahoe"
+22:46:48.210163 [DEBUG] Executing step 9: tapOn: text="Remove from favorites"
+22:46:48.247582 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 37ms)
+22:46:48.377148 [DEBUG] Step 9 completed successfully (166ms): tapOn: text="Remove from favorites"
+22:46:48.377616 [DEBUG] Executing step 10: assertNotVisible: text="Lake Tahoe"
+22:46:48.659429 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 31ms)
+22:46:48.920657 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 42ms)
+22:46:49.072416 [DEBUG] Step 10 completed successfully (694ms): assertNotVisible: text="Lake Tahoe"
+22:46:49.072876 [DEBUG] Executing step 11: assertVisible: text="Landmarks you favorite will appear here."
+22:46:49.098142 [DEBUG] Step 11 completed successfully (25ms): assertVisible: text="Landmarks you favorite will appear here."
+22:46:49.098581 [DEBUG] Executing step 12: takeScreenshot
+22:46:49.229503 [DEBUG] Step 12 completed successfully (130ms): takeScreenshot
+22:46:49.232655 [INFO] === Flow completed: 02-favorite (status: passed, duration: 7178ms, passed: 13, failed: 0, skipped: 0) ===
+22:46:49.232665 [INFO] === Starting flow: 03-edit ===
+22:46:49.232669 [INFO] Flow file: .maestro/03-edit.yaml
+22:46:49.232672 [INFO] Total steps: 9
+22:46:49.235925 [DEBUG] Executing step 0: launchApp
+22:46:49.398647 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+22:46:49.398713 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 41ms
+22:46:50.690374 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.229s after launch, pids [8492], drawn=true crashed=false (read 34ms)
+22:46:50.690435 [DEBUG] Step 0 completed successfully (1454ms): launchApp
+22:46:50.690880 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+22:46:50.691082 [DEBUG] Flutter: parallel search (text="Deep Links", id="")
+22:46:50.713999 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+22:46:50.966294 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+22:46:50.966345 [DEBUG] crash check during a lookup in flight for 275ms: crashed=false (took 23ms)
+22:46:51.220740 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 28ms)
+22:46:51.220825 [DEBUG] crash check during a lookup in flight for 530ms: crashed=false (took 28ms)
+22:46:51.475168 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 32ms)
+22:46:51.475199 [DEBUG] crash check during a lookup in flight for 784ms: crashed=false (took 32ms)
+22:46:51.592646 [DEBUG] Step 1 completed successfully (901ms): tapOn: text="Deep Links"
+22:46:51.593127 [DEBUG] Executing step 2: tapOn: text="Edit Landmark"
+22:46:51.871815 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 27ms)
+22:46:51.871865 [DEBUG] crash check during a lookup in flight for 278ms: crashed=false (took 27ms)
+22:46:52.139206 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 44ms)
+22:46:52.139251 [DEBUG] crash check during a lookup in flight for 546ms: crashed=false (took 44ms)
+22:46:52.375140 [DEBUG] Step 2 completed successfully (782ms): tapOn: text="Edit Landmark"
+22:46:52.375552 [DEBUG] Executing step 3: assertVisible: text="Edit Landmark"
+22:46:52.406079 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 30ms)
+22:46:52.683124 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+22:46:52.683160 [DEBUG] crash check during a lookup in flight for 277ms: crashed=false (took 25ms)
+22:46:52.959347 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 51ms)
+22:46:52.959424 [DEBUG] crash check during a lookup in flight for 553ms: crashed=false (took 51ms)
+22:46:53.022851 [DEBUG] Step 3 completed successfully (647ms): assertVisible: text="Edit Landmark"
+22:46:53.023196 [DEBUG] Executing step 4: tapOn: text="Name"
+22:46:53.175162 [DEBUG] Step 4 completed successfully (151ms): tapOn: text="Name"
+22:46:53.175593 [DEBUG] Executing step 5: inputText: " Renamed"
+22:46:55.112290 [DEBUG] Step 5 completed successfully (1936ms): inputText: " Renamed"
+22:46:55.112757 [DEBUG] Executing step 6: tapOn: text="Done"
+22:46:55.175243 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+22:46:55.995607 [DEBUG] Step 6 completed successfully (882ms): tapOn: text="Done"
+22:46:55.995987 [DEBUG] Executing step 7: assertVisible: text="Golden Gate Bridge Renamed"
+22:46:56.031742 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 35ms)
+22:46:56.310603 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 27ms)
+22:46:56.310656 [DEBUG] crash check during a lookup in flight for 279ms: crashed=false (took 27ms)
+22:46:56.565909 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 32ms)
+22:46:56.565944 [DEBUG] crash check during a lookup in flight for 534ms: crashed=false (took 32ms)
+22:46:56.705652 [DEBUG] Step 7 completed successfully (709ms): assertVisible: text="Golden Gate Bridge Renamed"
+22:46:56.706417 [DEBUG] Executing step 8: takeScreenshot
+22:46:56.846917 [DEBUG] Step 8 completed successfully (140ms): takeScreenshot
+22:46:56.850651 [INFO] === Flow completed: 03-edit (status: passed, duration: 7614ms, passed: 9, failed: 0, skipped: 0) ===
+22:46:56.850665 [INFO] === Starting flow: 04-discard ===
+22:46:56.850668 [INFO] Flow file: .maestro/04-discard.yaml
+22:46:56.850670 [INFO] Total steps: 13
+22:46:56.853791 [DEBUG] Executing step 0: launchApp
+22:46:57.042994 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+22:46:57.043031 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 49ms
+22:46:58.301964 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.182s after launch, pids [8730], drawn=true crashed=false (read 44ms)
+22:46:58.302003 [DEBUG] Step 0 completed successfully (1448ms): launchApp
+22:46:58.302362 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+22:46:58.302631 [DEBUG] Flutter: parallel search (text="Deep Links", id="")
+22:46:58.328149 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+22:46:58.589004 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 34ms)
+22:46:58.589060 [DEBUG] crash check during a lookup in flight for 286ms: crashed=false (took 34ms)
+22:46:58.829861 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+22:46:58.829913 [DEBUG] crash check during a lookup in flight for 527ms: crashed=false (took 25ms)
+22:46:59.082497 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 28ms)
+22:46:59.082548 [DEBUG] crash check during a lookup in flight for 780ms: crashed=false (took 28ms)
+22:46:59.389614 [DEBUG] Step 1 completed successfully (1087ms): tapOn: text="Deep Links"
+22:46:59.390267 [DEBUG] Executing step 2: tapOn: text="Edit Landmark"
+22:46:59.418219 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 28ms)
+22:46:59.694428 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+22:46:59.694497 [DEBUG] crash check during a lookup in flight for 276ms: crashed=false (took 24ms)
+22:46:59.950546 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 30ms)
+22:46:59.950621 [DEBUG] crash check during a lookup in flight for 532ms: crashed=false (took 30ms)
+22:47:00.209858 [DEBUG] Step 2 completed successfully (819ms): tapOn: text="Edit Landmark"
+22:47:00.210399 [DEBUG] Executing step 3: tapOn: text="Location"
+22:47:00.244206 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 34ms)
+22:47:00.519197 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+22:47:00.519248 [DEBUG] crash check during a lookup in flight for 275ms: crashed=false (took 23ms)
+22:47:00.769714 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+22:47:00.769771 [DEBUG] crash check during a lookup in flight for 526ms: crashed=false (took 24ms)
+22:47:00.943084 [DEBUG] Step 3 completed successfully (732ms): tapOn: text="Location"
+22:47:00.943505 [DEBUG] Executing step 4: inputText: "X"
+22:47:02.444951 [DEBUG] Step 4 completed successfully (1501ms): inputText: "X"
+22:47:02.445342 [DEBUG] Executing step 5: tapOn: text="Cancel"
+22:47:02.509133 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+22:47:02.693694 [DEBUG] Step 5 completed successfully (248ms): tapOn: text="Cancel"
+22:47:02.694079 [DEBUG] Executing step 6: assertVisible: text="You have unsaved changes that will be lost."
+22:47:02.968524 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+22:47:02.968579 [DEBUG] crash check during a lookup in flight for 274ms: crashed=false (took 23ms)
+22:47:03.220019 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+22:47:03.220064 [DEBUG] crash check during a lookup in flight for 526ms: crashed=false (took 24ms)
+22:47:03.469403 [DEBUG] Step 6 completed successfully (775ms): assertVisible: text="You have unsaved changes that will be lost."
+22:47:03.469807 [DEBUG] Executing step 7: takeScreenshot
+22:47:03.628812 [DEBUG] Step 7 completed successfully (159ms): takeScreenshot
+22:47:03.629077 [DEBUG] Executing step 8: tapOn: text="Keep Editing"
+22:47:03.652330 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+22:47:03.927819 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+22:47:03.927863 [DEBUG] crash check during a lookup in flight for 275ms: crashed=false (took 23ms)
+22:47:04.184312 [DEBUG] Step 8 completed successfully (555ms): tapOn: text="Keep Editing"
+22:47:04.184808 [DEBUG] Executing step 9: assertVisible: text="Edit Landmark"
+22:47:04.218509 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 33ms)
+22:47:04.494545 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+22:47:04.494591 [DEBUG] crash check during a lookup in flight for 276ms: crashed=false (took 24ms)
+22:47:04.780604 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 60ms)
+22:47:04.780663 [DEBUG] crash check during a lookup in flight for 562ms: crashed=false (took 60ms)
+22:47:04.884647 [DEBUG] Step 9 completed successfully (699ms): assertVisible: text="Edit Landmark"
+22:47:04.885070 [DEBUG] Executing step 10: tapOn: text="Cancel"
+22:47:05.630367 [DEBUG] Step 10 completed successfully (745ms): tapOn: text="Cancel"
+22:47:05.630840 [DEBUG] Executing step 11: tapOn: text="Discard"
+22:47:05.694384 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 63ms)
+22:47:05.969884 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+22:47:05.969949 [DEBUG] crash check during a lookup in flight for 275ms: crashed=false (took 23ms)
+22:47:06.226717 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 30ms)
+22:47:06.226772 [DEBUG] crash check during a lookup in flight for 532ms: crashed=false (took 30ms)
+22:47:06.485269 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 39ms)
+22:47:06.485324 [DEBUG] crash check during a lookup in flight for 791ms: crashed=false (took 39ms)
+22:47:06.741181 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 46ms)
+22:47:06.741229 [DEBUG] crash check during a lookup in flight for 1.047s: crashed=false (took 46ms)
+22:47:06.979799 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 33ms)
+22:47:06.979878 [DEBUG] crash check during a lookup in flight for 1.285s: crashed=false (took 33ms)
+22:47:07.130221 [DEBUG] Step 11 completed successfully (1499ms): tapOn: text="Discard"
+22:47:07.130684 [DEBUG] Executing step 12: assertVisible: text="Deep Links"
+22:47:07.411897 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 29ms)
+22:47:07.411937 [DEBUG] crash check during a lookup in flight for 281ms: crashed=false (took 29ms)
+22:47:07.668231 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 35ms)
+22:47:07.668302 [DEBUG] crash check during a lookup in flight for 537ms: crashed=false (took 35ms)
+22:47:07.775175 [DEBUG] Step 12 completed successfully (644ms): assertVisible: text="Deep Links"
+22:47:07.782304 [INFO] === Flow completed: 04-discard (status: passed, duration: 10925ms, passed: 13, failed: 0, skipped: 0) ===
+22:47:07.782316 [INFO] === Starting flow: 05-category ===
+22:47:07.782319 [INFO] Flow file: .maestro/05-category.yaml
+22:47:07.782321 [INFO] Total steps: 6
+22:47:07.789077 [DEBUG] Executing step 0: launchApp
+22:47:07.995879 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+22:47:07.995928 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 34ms
+22:47:09.233665 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.173s after launch, pids [9046], drawn=true crashed=false (read 33ms)
+22:47:09.233776 [DEBUG] Step 0 completed successfully (1444ms): launchApp
+22:47:09.234505 [DEBUG] Executing step 1: tapOn: text="Lakes"
+22:47:09.234986 [DEBUG] Flutter: parallel search (text="Lakes", id="")
+22:47:09.260773 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+22:47:09.520343 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 34ms)
+22:47:09.520416 [DEBUG] crash check during a lookup in flight for 285ms: crashed=false (took 34ms)
+22:47:09.762870 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 26ms)
+22:47:09.762905 [DEBUG] crash check during a lookup in flight for 528ms: crashed=false (took 26ms)
+22:47:10.038246 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 51ms)
+22:47:10.038301 [DEBUG] crash check during a lookup in flight for 803ms: crashed=false (took 51ms)
+22:47:10.285499 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 48ms)
+22:47:10.285658 [DEBUG] crash check during a lookup in flight for 1.051s: crashed=false (took 49ms)
+22:47:10.458791 [DEBUG] Step 1 completed successfully (1224ms): tapOn: text="Lakes"
+22:47:10.459218 [DEBUG] Executing step 2: assertVisible: text="Lake Tahoe"
+22:47:10.735344 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+22:47:10.735416 [DEBUG] crash check during a lookup in flight for 276ms: crashed=false (took 24ms)
+22:47:11.000806 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 39ms)
+22:47:11.000844 [DEBUG] crash check during a lookup in flight for 541ms: crashed=false (took 40ms)
+22:47:11.078702 [DEBUG] Step 2 completed successfully (619ms): assertVisible: text="Lake Tahoe"
+22:47:11.079178 [DEBUG] Executing step 3: assertVisible: text="Mono Lake"
+22:47:11.106372 [DEBUG] Step 3 completed successfully (27ms): assertVisible: text="Mono Lake"
+22:47:11.106824 [DEBUG] Executing step 4: assertNotVisible: text="Golden Gate Bridge"
+22:47:11.223072 [DEBUG] Step 4 completed successfully (116ms): assertNotVisible: text="Golden Gate Bridge"
+22:47:11.223493 [DEBUG] Executing step 5: takeScreenshot
+22:47:11.367573 [DEBUG] Step 5 completed successfully (144ms): takeScreenshot
+22:47:11.370859 [INFO] === Flow completed: 05-category (status: passed, duration: 3585ms, passed: 6, failed: 0, skipped: 0) ===
+22:47:11.370870 [INFO] === Starting flow: 06-visit ===
+22:47:11.370873 [INFO] Flow file: .maestro/06-visit.yaml
+22:47:11.370876 [INFO] Total steps: 8
+22:47:11.373903 [DEBUG] Executing step 0: launchApp
+22:47:11.546421 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+22:47:11.546464 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 54ms
+22:47:12.777165 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.175s after launch, pids [9184], drawn=true crashed=false (read 31ms)
+22:47:12.777220 [DEBUG] Step 0 completed successfully (1403ms): launchApp
+22:47:12.778021 [DEBUG] Executing step 1: tapOn: text="Half Dome"
+22:47:12.778283 [DEBUG] Flutter: parallel search (text="Half Dome", id="")
+22:47:12.802222 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+22:47:13.052511 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+22:47:13.052599 [DEBUG] crash check during a lookup in flight for 274ms: crashed=false (took 23ms)
+22:47:13.316837 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 36ms)
+22:47:13.316867 [DEBUG] crash check during a lookup in flight for 539ms: crashed=false (took 36ms)
+22:47:13.564351 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 34ms)
+22:47:13.564382 [DEBUG] crash check during a lookup in flight for 786ms: crashed=false (took 34ms)
+22:47:13.725430 [DEBUG] Step 1 completed successfully (947ms): tapOn: text="Half Dome"
+22:47:13.725872 [DEBUG] Executing step 2: tapOn: text="Plan Visit"
+22:47:14.001060 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+22:47:14.001082 [DEBUG] crash check during a lookup in flight for 275ms: crashed=false (took 24ms)
+22:47:14.272025 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 45ms)
+22:47:14.272073 [DEBUG] crash check during a lookup in flight for 546ms: crashed=false (took 45ms)
+22:47:14.491639 [DEBUG] Step 2 completed successfully (765ms): tapOn: text="Plan Visit"
+22:47:14.492070 [DEBUG] Executing step 3: assertVisible: text="Visit Scheduled!"
+22:47:14.523597 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 31ms)
+22:47:14.578089 [DEBUG] Step 3 completed successfully (86ms): assertVisible: text="Visit Scheduled!"
+22:47:14.578510 [DEBUG] Executing step 4: assertVisible: text="You're all set to visit Half Dome."
+22:47:14.604065 [DEBUG] Step 4 completed successfully (25ms): assertVisible: text="You're all set to visit Half Dome."
+22:47:14.604405 [DEBUG] Executing step 5: takeScreenshot
+22:47:14.737872 [DEBUG] Step 5 completed successfully (133ms): takeScreenshot
+22:47:14.738227 [DEBUG] Executing step 6: tapOn: text="Done"
+22:47:14.882069 [DEBUG] Step 6 completed successfully (143ms): tapOn: text="Done"
+22:47:14.882470 [DEBUG] Executing step 7: assertVisible: text="Half Dome"
+22:47:14.921393 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 39ms)
+22:47:14.958046 [DEBUG] Step 7 completed successfully (75ms): assertVisible: text="Half Dome"
+22:47:14.962332 [INFO] === Flow completed: 06-visit (status: passed, duration: 3587ms, passed: 8, failed: 0, skipped: 0) ===
+22:47:14.962342 [INFO] === Starting flow: 07-deeplink ===
+22:47:14.962345 [INFO] Flow file: .maestro/07-deeplink.yaml
+22:47:14.962348 [INFO] Total steps: 5
+22:47:14.965389 [DEBUG] Executing step 0: launchApp
+22:47:15.166293 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+22:47:15.166336 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 71ms
+22:47:16.432037 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.201s after launch, pids [9348], drawn=true crashed=false (read 34ms)
+22:47:16.432069 [DEBUG] Step 0 completed successfully (1466ms): launchApp
+22:47:16.432437 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+22:47:16.432646 [DEBUG] Flutter: parallel search (text="Deep Links", id="")
+22:47:16.456736 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+22:47:16.711400 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 27ms)
+22:47:16.711440 [DEBUG] crash check during a lookup in flight for 279ms: crashed=false (took 27ms)
+22:47:16.967608 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 33ms)
+22:47:16.967655 [DEBUG] crash check during a lookup in flight for 535ms: crashed=false (took 33ms)
+22:47:17.295707 [DEBUG] Step 1 completed successfully (863ms): tapOn: text="Deep Links"
+22:47:17.296888 [DEBUG] Executing step 2: tapOn: text="landmarks://category/lakes"
+22:47:17.323275 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 26ms)
+22:47:17.599815 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+22:47:17.599847 [DEBUG] crash check during a lookup in flight for 277ms: crashed=false (took 24ms)
+22:47:17.855962 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 31ms)
+22:47:17.856007 [DEBUG] crash check during a lookup in flight for 533ms: crashed=false (took 31ms)
+22:47:18.111167 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 36ms)
+22:47:18.111200 [DEBUG] crash check during a lookup in flight for 788ms: crashed=false (took 36ms)
+22:47:18.310193 [DEBUG] Step 2 completed successfully (1013ms): tapOn: text="landmarks://category/lakes"
+22:47:18.310609 [DEBUG] Executing step 3: assertVisible: text="Mono Lake"
+22:47:18.587798 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+22:47:18.587843 [DEBUG] crash check during a lookup in flight for 277ms: crashed=false (took 25ms)
+22:47:18.848789 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 37ms)
+22:47:18.848831 [DEBUG] crash check during a lookup in flight for 538ms: crashed=false (took 37ms)
+22:47:18.928671 [DEBUG] Step 3 completed successfully (618ms): assertVisible: text="Mono Lake"
+22:47:18.929163 [DEBUG] Executing step 4: takeScreenshot
+22:47:19.063790 [DEBUG] Step 4 completed successfully (134ms): takeScreenshot
+22:47:19.067518 [INFO] === Flow completed: 07-deeplink (status: passed, duration: 4101ms, passed: 5, failed: 0, skipped: 0) ===
+22:47:19.067530 [INFO] === Starting flow: 08-caching ===
+22:47:19.067533 [INFO] Flow file: .maestro/08-caching.yaml
+22:47:19.067536 [INFO] Total steps: 7
+22:47:19.070345 [DEBUG] Executing step 0: launchApp
+22:47:19.242403 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+22:47:19.242454 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 46ms
+22:47:20.525495 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.214s after launch, pids [9497], drawn=true crashed=false (read 35ms)
+22:47:20.525541 [DEBUG] Step 0 completed successfully (1455ms): launchApp
+22:47:20.525983 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+22:47:20.526215 [DEBUG] Flutter: parallel search (text="Deep Links", id="")
+22:47:20.552584 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+22:47:20.800290 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+22:47:20.800324 [DEBUG] crash check during a lookup in flight for 274ms: crashed=false (took 24ms)
+22:47:21.066830 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 38ms)
+22:47:21.066873 [DEBUG] crash check during a lookup in flight for 541ms: crashed=false (took 39ms)
+22:47:21.410753 [DEBUG] Step 1 completed successfully (884ms): tapOn: text="Deep Links"
+22:47:21.411221 [DEBUG] Executing step 2: tapOn: text="Caching Demo"
+22:47:21.436928 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+22:47:21.717756 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 29ms)
+22:47:21.717803 [DEBUG] crash check during a lookup in flight for 281ms: crashed=false (took 29ms)
+22:47:21.983214 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 44ms)
+22:47:21.983277 [DEBUG] crash check during a lookup in flight for 546ms: crashed=false (took 44ms)
+22:47:22.159080 [DEBUG] Step 2 completed successfully (747ms): tapOn: text="Caching Demo"
+22:47:22.159542 [DEBUG] Executing step 3: assertVisible: text="Cache Policy"
+22:47:22.440890 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 29ms)
+22:47:22.440929 [DEBUG] crash check during a lookup in flight for 281ms: crashed=false (took 29ms)
+22:47:22.693773 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 32ms)
+22:47:22.693827 [DEBUG] crash check during a lookup in flight for 534ms: crashed=false (took 32ms)
+22:47:22.796219 [DEBUG] Step 3 completed successfully (636ms): assertVisible: text="Cache Policy"
+22:47:22.796761 [DEBUG] Executing step 4: tapOn: text="Fetch with Policy"
+22:47:22.958864 [DEBUG] Step 4 completed successfully (162ms): tapOn: text="Fetch with Policy"
+22:47:22.959244 [DEBUG] Executing step 5: takeScreenshot
+22:47:23.100474 [DEBUG] Step 5 completed successfully (141ms): takeScreenshot
+22:47:23.101011 [DEBUG] Executing step 6: tapOn: text="Clear Cache"
+22:47:23.126390 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+22:47:23.293365 [DEBUG] Step 6 completed successfully (192ms): tapOn: text="Clear Cache"
+22:47:23.297915 [INFO] === Flow completed: 08-caching (status: passed, duration: 4226ms, passed: 7, failed: 0, skipped: 0) ===
+22:47:23.297925 [INFO] === Starting flow: 09-seed-empty ===
+22:47:23.297928 [INFO] Flow file: .maestro/09-seed-empty.yaml
+22:47:23.297931 [INFO] Total steps: 3
+22:47:23.308290 [DEBUG] Executing step 0: launchApp
+22:47:23.511154 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+22:47:23.511180 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 52ms
+22:47:24.739522 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.169s after launch, pids [9665], drawn=true crashed=false (read 28ms)
+22:47:24.739566 [DEBUG] Step 0 completed successfully (1431ms): launchApp
+22:47:24.739981 [DEBUG] Executing step 1: assertVisible: text="No landmarks yet"
+22:47:24.740194 [DEBUG] Flutter: parallel search (text="No landmarks yet", id="")
+22:47:24.763892 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+22:47:24.848182 [DEBUG] Step 1 completed successfully (108ms): assertVisible: text="No landmarks yet"
+22:47:24.848481 [DEBUG] Executing step 2: takeScreenshot
+22:47:24.977838 [DEBUG] Step 2 completed successfully (129ms): takeScreenshot
+22:47:24.981785 [INFO] === Flow completed: 09-seed-empty (status: passed, duration: 1680ms, passed: 3, failed: 0, skipped: 0) ===
+22:47:24.981795 [INFO] === Starting flow: 10-seed-many ===
+22:47:24.981798 [INFO] Flow file: .maestro/10-seed-many.yaml
+22:47:24.981800 [INFO] Total steps: 7
+22:47:24.984521 [DEBUG] Executing step 0: launchApp
+22:47:25.148632 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+22:47:25.148677 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 32ms
+22:47:26.363976 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.158s after launch, pids [9750], drawn=true crashed=false (read 28ms)
+22:47:26.364026 [DEBUG] Step 0 completed successfully (1379ms): launchApp
+22:47:26.364418 [DEBUG] Executing step 1: scroll: DOWN
+22:47:28.054507 [INFO] scroll down: dragged 1200 px in {0 432 1080 1632}, content moved 1179 px (measured=true)
+22:47:28.054546 [DEBUG] Step 1 completed successfully (1690ms): scroll: DOWN
+22:47:28.054973 [DEBUG] Executing step 2: scroll: DOWN
+22:47:29.117347 [INFO] scroll down: dragged 1200 px in {0 432 1080 1632}, content moved 1179 px (measured=true)
+22:47:29.117363 [DEBUG] Step 2 completed successfully (1062ms): scroll: DOWN
+22:47:29.117755 [DEBUG] Executing step 3: scroll: DOWN
+22:47:30.191106 [INFO] scroll down: dragged 1200 px in {0 432 1080 1632}, content moved 1179 px (measured=true)
+22:47:30.191135 [DEBUG] Step 3 completed successfully (1073ms): scroll: DOWN
+22:47:30.191571 [DEBUG] Executing step 4: scroll: DOWN
+22:47:31.341409 [INFO] scroll down: dragged 1200 px in {0 432 1080 1632}, content moved 1196 px (measured=true)
+22:47:31.341452 [DEBUG] Step 4 completed successfully (1149ms): scroll: DOWN
+22:47:31.341833 [DEBUG] Executing step 5: assertVisible: text="Landmark 28"
+22:47:31.342043 [DEBUG] Flutter: parallel search (text="Landmark 28", id="")
+22:47:31.366872 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+22:47:31.367648 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 26ms)
+22:47:31.401702 [DEBUG] Step 5 completed successfully (59ms): assertVisible: text="Landmark 28"
+22:47:31.402361 [DEBUG] Executing step 6: takeScreenshot
+22:47:31.537038 [DEBUG] Step 6 completed successfully (134ms): takeScreenshot
+22:47:31.541646 [INFO] === Flow completed: 10-seed-many (status: passed, duration: 6555ms, passed: 7, failed: 0, skipped: 0) ===
+22:47:31.541658 [INFO] === Starting flow: 11-slow ===
+22:47:31.541662 [INFO] Flow file: .maestro/11-slow.yaml
+22:47:31.541665 [INFO] Total steps: 6
+22:47:31.544227 [DEBUG] Executing step 0: launchApp
+22:47:31.699142 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+22:47:31.699202 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 43ms
+22:47:32.983766 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.224s after launch, pids [9845], drawn=true crashed=false (read 33ms)
+22:47:32.983830 [DEBUG] Step 0 completed successfully (1439ms): launchApp
+22:47:32.984251 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+22:47:32.984468 [DEBUG] Flutter: parallel search (text="Deep Links", id="")
+22:47:33.010667 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+22:47:33.273581 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 37ms)
+22:47:33.273644 [DEBUG] crash check during a lookup in flight for 289ms: crashed=false (took 37ms)
+22:47:33.511627 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+22:47:33.511702 [DEBUG] crash check during a lookup in flight for 527ms: crashed=false (took 25ms)
+22:47:33.775504 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 41ms)
+22:47:33.775556 [DEBUG] crash check during a lookup in flight for 791ms: crashed=false (took 41ms)
+22:47:34.129047 [DEBUG] Step 1 completed successfully (1144ms): tapOn: text="Deep Links"
+22:47:34.129470 [DEBUG] Executing step 2: tapOn: text="Slow Screen"
+22:47:34.155984 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 26ms)
+22:47:34.431524 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+22:47:34.431574 [DEBUG] crash check during a lookup in flight for 276ms: crashed=false (took 25ms)
+22:47:34.686074 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 28ms)
+22:47:34.686127 [DEBUG] crash check during a lookup in flight for 530ms: crashed=false (took 28ms)
+22:47:34.859117 [DEBUG] Step 2 completed successfully (729ms): tapOn: text="Slow Screen"
+22:47:34.859578 [DEBUG] Executing step 3: assertVisible: text="Loading…"
+22:47:35.137615 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 26ms)
+22:47:35.137661 [DEBUG] crash check during a lookup in flight for 278ms: crashed=false (took 26ms)
+22:47:35.394910 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 33ms)
+22:47:35.394953 [DEBUG] crash check during a lookup in flight for 535ms: crashed=false (took 33ms)
+22:47:35.495098 [DEBUG] Step 3 completed successfully (635ms): assertVisible: text="Loading…"
+22:47:35.495477 [DEBUG] Executing step 4: extendedWaitUntil: visible text="Loaded after delay"
+22:47:35.670234 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+22:47:35.971040 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+22:47:36.248161 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+22:47:36.525763 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+22:47:36.802823 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 26ms)
+22:47:37.069802 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+22:47:37.370931 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+22:47:37.640316 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+22:47:37.965989 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+22:47:38.000846 [DEBUG] Step 4 completed successfully (2505ms): extendedWaitUntil: visible text="Loaded after delay"
+22:47:38.001343 [DEBUG] Executing step 5: takeScreenshot
+22:47:38.133357 [DEBUG] Step 5 completed successfully (132ms): takeScreenshot
+22:47:38.138437 [INFO] === Flow completed: 11-slow (status: passed, duration: 6591ms, passed: 6, failed: 0, skipped: 0) ===
+22:47:38.138451 [INFO] === Starting flow: 12-quote-label ===
+22:47:38.138455 [INFO] Flow file: .maestro/12-quote-label.yaml
+22:47:38.138458 [INFO] Total steps: 5
+22:47:38.141257 [DEBUG] Executing step 0: launchApp
+22:47:38.359389 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+22:47:38.359456 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 68ms
+22:47:39.642740 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.231s after launch, pids [10042], drawn=true crashed=false (read 31ms)
+22:47:39.642770 [DEBUG] Step 0 completed successfully (1501ms): launchApp
+22:47:39.643213 [DEBUG] Executing step 1: tapOn: text="Mountains"
+22:47:39.643413 [DEBUG] Flutter: parallel search (text="Mountains", id="")
+22:47:39.666348 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+22:47:39.917887 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+22:47:39.917930 [DEBUG] crash check during a lookup in flight for 274ms: crashed=false (took 24ms)
+22:47:40.179027 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 34ms)
+22:47:40.179074 [DEBUG] crash check during a lookup in flight for 536ms: crashed=false (took 34ms)
+22:47:40.431197 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 36ms)
+22:47:40.431222 [DEBUG] crash check during a lookup in flight for 788ms: crashed=false (took 36ms)
+22:47:40.653098 [DEBUG] Step 1 completed successfully (1009ms): tapOn: text="Mountains"
+22:47:40.653611 [DEBUG] Executing step 2: tapOn: text="Mount "Denali""
+22:47:40.697334 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 43ms)
+22:47:40.974091 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+22:47:40.974134 [DEBUG] crash check during a lookup in flight for 277ms: crashed=false (took 25ms)
+22:47:41.229772 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 30ms)
+22:47:41.229797 [DEBUG] crash check during a lookup in flight for 532ms: crashed=false (took 30ms)
+22:47:41.431826 [DEBUG] Step 2 completed successfully (778ms): tapOn: text="Mount "Denali""
+22:47:41.432261 [DEBUG] Executing step 3: assertVisible: text="Alaska"
+22:47:41.513493 [DEBUG] Step 3 completed successfully (81ms): assertVisible: text="Alaska"
+22:47:41.513947 [DEBUG] Executing step 4: takeScreenshot
+22:47:41.647334 [DEBUG] Step 4 completed successfully (133ms): takeScreenshot
+22:47:41.652022 [INFO] === Flow completed: 12-quote-label (status: passed, duration: 3509ms, passed: 5, failed: 0, skipped: 0) ===
+22:47:42.066581 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+22:47:42.079558 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+22:47:42.079588 [INFO] Flow execution completed: 12 passed, 0 failed, 0 skipped
+22:47:42.080993 [INFO] Generating reports...
+22:47:42.084808 [INFO] Shutting down devices started by maestro-runner...
+22:47:42.084822 [INFO] Shutting down all tracked emulators
+22:47:42.084829 [INFO] Shutting down all tracked simulators

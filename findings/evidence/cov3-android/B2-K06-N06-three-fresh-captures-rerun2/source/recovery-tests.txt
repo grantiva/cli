@@ -1,0 +1,307 @@
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client.go-220-		return nil, fmt.Errorf("marshal command: %w", err)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client.go-221-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client.go-222-	return c.doRequest(ctx, body, readOnlyCommands[cmd.Command])
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client.go-223-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client.go-224-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client.go-225-// doRequest sends one command. On a transport failure (the runner process is
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client.go:226:// gone — connection refused, reset, EOF) it asks the reviver to relaunch the
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client.go-227-// runner, re-points at the new port, and then re-sends the command once, but
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client.go-228-// only when retryOnRevive is set (a read-only command). An action is not
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client.go-229-// re-sent; the relaunch alone keeps the next command working.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client.go-230-//
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client.go-231-// A request aborted by its own context (caller cancelled, or its deadline
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client.go-232-// passed) is NOT a transport failure: sendOnce returns the context error and
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-74-	c := newRetryClient(t, rt, "http://"+ln.Addr().String())
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-75-	var reconnects int32
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-76-	c.SetRecovery("emulator-5556", func() error { atomic.AddInt32(&reconnects, 1); return nil })
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-77-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-78-	data, err := c.Screenshot()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-79-	if err != nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go:80:		t.Fatalf("Screenshot() after two refusals: %v", err)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-81-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-82-	if string(data) != "png" {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-83-		t.Errorf("data = %q", data)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-84-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-85-	if got := atomic.LoadInt32(&rt.calls); got != 3 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-86-		t.Errorf("round trips = %d, want 3", got)
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-102-	_, err := c.Screenshot()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-103-	elapsed := time.Since(start)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-104-	if err == nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-105-		t.Fatal("expected an error")
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-106-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-107-	msg := err.Error()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go:108:	if !strings.HasPrefix(msg, "UIAutomator2 server on emulator-5556 stopped responding (connection refused); retried ") {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-109-		t.Errorf("error = %q", msg)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-110-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go:111:	if strings.Count(msg, "connection refused") != 1 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-112-		t.Errorf("the cause should appear once: %q", msg)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-113-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-114-	var unavailable *ServerUnavailableError
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-115-	if !errors.As(err, &unavailable) || unavailable.Retries < 2 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-116-		t.Errorf("want a ServerUnavailableError with retries, got %#v", err)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport_retry_test.go-117-	}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/session_retry_test.go-18-	if f.calls <= len(f.errs) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/session_retry_test.go-19-		return f.errs[f.calls-1]
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/session_retry_test.go-20-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/session_retry_test.go-21-	return nil
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/session_retry_test.go-22-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/session_retry_test.go-23-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/session_retry_test.go:24:// L48: a session start that fails in transport is retried once.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/session_retry_test.go-25-func TestCreateSessionRetriesOnceOnTransportFailure(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/session_retry_test.go:26:	f := &fakeSessionCreator{errs: []error{fmt.Errorf("send request: %w", errors.New("connection refused"))}}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/session_retry_test.go-27-	if err := createSessionWithRetry(f, uiautomator2.Capabilities{}, 0); err != nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/session_retry_test.go-28-		t.Fatalf("retry should have succeeded: %v", err)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/session_retry_test.go-29-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/session_retry_test.go-30-	if f.calls != 2 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/session_retry_test.go-31-		t.Fatalf("CreateSession called %d times, want 2", f.calls)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/session_retry_test.go-32-	}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-24-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-25-// ServerUnavailableError is a request that could not reach the UIAutomator2
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-26-// server, after any retries. It names the server and the device so the step
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-27-// line says what stopped responding instead of printing a raw socket error.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-28-type ServerUnavailableError struct {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-29-	Device  string        // device serial, "" when unknown
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go:30:	Reason  string        // "connection refused", "connection closed", ...
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-31-	Retries int           // retries made after the first attempt
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-32-	Elapsed time.Duration // time spent retrying
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-33-	// Replayable is false for an action the server may already have run
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-34-	// (a tap, a key press), which is never sent twice.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-35-	Replayable bool
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-36-	Err        error
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-42-		server += " on " + e.Device
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-43-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-44-	switch {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-45-	case !e.Replayable:
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-46-		return fmt.Sprintf("%s stopped responding (%s); not retried because the action may already have run", server, e.Reason)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-47-	case e.Retries == 1:
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go:48:		return fmt.Sprintf("%s stopped responding (%s); retried once", server, e.Reason)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-49-	default:
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-50-		return fmt.Sprintf("%s stopped responding (%s); retried %d times over %v", server, e.Reason, e.Retries, e.Elapsed.Round(100*time.Millisecond))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-51-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-52-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-53-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-54-func (e *ServerUnavailableError) Unwrap() error { return e.Err }
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-169-// connectionFailure classifies a transport error. ok is false for errors
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-170-// that are not a lost connection (timeouts, bad requests). sent reports
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-171-// whether the request may have reached the server.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-172-func connectionFailure(err error) (reason string, sent bool, ok bool) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-173-	switch {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-174-	case errors.Is(err, syscall.ECONNREFUSED):
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go:175:		return "connection refused", false, true
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-176-	case errors.Is(err, syscall.ENOENT):
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-177-		return "socket missing", false, true
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-178-	case errors.Is(err, syscall.ECONNRESET), errors.Is(err, syscall.EPIPE):
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-179-		return "connection reset", true, true
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-180-	case errors.Is(err, io.EOF), errors.Is(err, io.ErrUnexpectedEOF):
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/uiautomator2/transport.go-181-		return "connection closed", true, true
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands_test.go-253-		{"wrapped deadline", fmt.Errorf("element 'x' not found: %w", context.DeadlineExceeded), true},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands_test.go-254-		{"element not found", errors.New("element not found"), true},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands_test.go-255-		{"no elements match", errors.New("no elements match selector"), true},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands_test.go-256-		{"no such element", errors.New("no such element"), true},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands_test.go-257-		{"could not be located", errors.New("an element could not be located on the page"), true},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands_test.go-258-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands_test.go:259:		{"connection refused", errors.New("dial tcp: connection refused"), false},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands_test.go-260-		{"agent dead", errors.New("agent session closed unexpectedly"), false},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands_test.go-261-		{"http 500", errors.New("server returned 500 internal server error"), false},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands_test.go-262-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands_test.go-263-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands_test.go-264-	for _, tt := range tests {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands_test.go-265-		t.Run(tt.name, func(t *testing.T) {
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_revive_test.go-29-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_revive_test.go-30-// TestReviveRetriesReadOnlyCommand: a read-only command against a dead runner
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_revive_test.go-31-// relaunches (via the reviver) and re-sends on the new port, succeeding.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_revive_test.go-32-func TestReviveRetriesReadOnlyCommand(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_revive_test.go-33-	var deadHits, liveHits atomic.Int32
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_revive_test.go-34-	dead, deadPort := okServer(t, &deadHits)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_revive_test.go:35:	dead.Close() // runner is gone before the call — connection refused
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_revive_test.go-36-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_revive_test.go-37-	live, livePort := okServer(t, &liveHits)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_revive_test.go-38-	defer live.Close()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_revive_test.go-39-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_revive_test.go-40-	c := NewClient("127.0.0.1", deadPort)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_revive_test.go-41-	var revives atomic.Int32
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-271-		if err == nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-272-			if attempt > 1 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-273-				fmt.Fprintf(os.Stderr, "  ✓ Runner started on attempt %d/%d\n", attempt, maxStartupAttempts)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-274-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-275-			// Wire restart-on-crash: if the runner dies mid-session, the
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-276-			// next command relaunches it instead of the whole rest of the
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go:277:			// suite failing with "connection refused".
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-278-			newSupervisor(opts, xctestrun, logPath, client, handle)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-279-			return client, handle, nil
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-280-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-281-		// Deterministic configuration failures won't be fixed by retrying —
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-282-		// report the real error immediately (#118).
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-283-		var perm *permanentStartupError
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-390-	announceMidSessionDeath(handle, opts.SimulatorUDID, logPath)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-391-	return client, handle, nil
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-392-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-393-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-394-// announceMidSessionDeath logs when xcodebuild exits after the runner was
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-395-// declared ready without Stop being requested. Such deaths otherwise
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go:396:// surface only as "connection refused" on some later command, with no
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-397-// pointer to the evidence (the runner log's final lines say why it died).
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-398-func announceMidSessionDeath(handle *RunnerHandle, udid, logPath string) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-399-	go func() {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-400-		<-handle.waitDone
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-401-		if handle.stopping.Load() {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/setup.go-402-			return
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/appfile_url_test.go-36-		t.Errorf("redactURL leaked credentials: %q", got)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/appfile_url_test.go-37-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/appfile_url_test.go-38-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/appfile_url_test.go-39-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/appfile_url_test.go-40-func TestRedactErr(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/appfile_url_test.go-41-	raw := "https://s3.example.com/app.apk?X-Amz-Signature=TOPSECRETSIG"
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/appfile_url_test.go:42:	err := redactErr(fmt.Errorf("Get %q: connection refused", raw), raw)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/appfile_url_test.go-43-	if err == nil || strings.Contains(err.Error(), "TOPSECRETSIG") {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/appfile_url_test.go-44-		t.Errorf("redactErr leaked the signature: %v", err)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/appfile_url_test.go-45-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/appfile_url_test.go-46-	if redactErr(nil, raw) != nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/appfile_url_test.go-47-		t.Error("redactErr(nil) should be nil")
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/appfile_url_test.go-48-	}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands.go-1419-				if !d.atScrollContainerEdge(info.Bounds, direction) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands.go-1420-					return successResult(fmt.Sprintf("Element found after %d scrolls", i), info)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands.go-1421-				}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands.go-1422-				pendingHeight = info.Bounds.Height
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands.go-1423-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands.go-1424-		} else if err != nil && !isElementNotFoundError(err) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands.go:1425:			// Infrastructure failure (dead session, connection refused, etc.):
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands.go-1426-			// surface immediately rather than silently looping through all scrolls.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands.go-1427-			return errorResult(err, "Failed to find element")
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands.go-1428-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands.go-1429-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands.go-1430-		if sig, ok := d.scrollSurfaceSignature(); ok && progress.Observe(sig) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab/commands.go-1431-			return errorResult(fmt.Errorf("element not found"), fmt.Sprintf("Element not found: scrolling %s made no progress after %d scrolls (end of content?)", direction, i))
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_timeout_test.go-131-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_timeout_test.go-132-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_timeout_test.go-133-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_timeout_test.go-134-// TestClassifyRequestErrorFallback: a failure with both contexts live is the
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_timeout_test.go-135-// fallback (e.g. a transport error that should revive).
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_timeout_test.go-136-func TestClassifyRequestErrorFallback(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_timeout_test.go:137:	fallback := transportError{errors.New("connection refused")}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_timeout_test.go-138-	got := classifyRequestError(context.Background(), context.Background(), errors.New("x"), fallback)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_timeout_test.go-139-	if !isTransportError(got) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_timeout_test.go-140-		t.Errorf("got %v, want the transport fallback", got)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_timeout_test.go-141-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/devicelab_ios_legacy/client_timeout_test.go-142-}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/driver.go-533-		"session is not started",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/driver.go-534-		"invalid session id",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/driver.go-535-		"could not start app",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/driver.go-536-		"failed to launch",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/driver.go-537-		"no such session",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/driver.go-538-		"connection reset",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/driver.go:539:		"connection refused",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/driver.go-540-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/driver.go-541-	for _, s := range signals {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/driver.go-542-		if strings.Contains(combined, s) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/driver.go-543-			return true
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/driver.go-544-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/driver.go-545-	}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/crashloop_test.go-18-		{"nil result", nil, false},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/crashloop_test.go-19-		{"empty result", &core.CommandResult{}, false},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/crashloop_test.go-20-		{"app not in foreground", &core.CommandResult{Message: "Application is not in foreground state"}, true},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/crashloop_test.go-21-		{"app not running", &core.CommandResult{Message: "Application is not running"}, true},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/crashloop_test.go-22-		{"session lost", &core.CommandResult{Error: fmt.Errorf("session does not exist")}, true},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/crashloop_test.go-23-		{"invalid session", &core.CommandResult{Error: fmt.Errorf("invalid session id")}, true},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/crashloop_test.go:24:		{"connection refused", &core.CommandResult{Message: "post failed: connection refused"}, true},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/crashloop_test.go-25-		{"unrelated error", &core.CommandResult{Message: "element not found: id=submit"}, false},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/crashloop_test.go-26-		{"successful result", &core.CommandResult{Success: true, Message: "Tapped on element"}, false},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/crashloop_test.go-27-		{"case insensitive", &core.CommandResult{Message: "APPLICATION DIED unexpectedly"}, true},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/crashloop_test.go-28-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/crashloop_test.go-29-	for _, tc := range cases {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/crashloop_test.go-30-		t.Run(tc.name, func(t *testing.T) {
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-115-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-116-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-117-// K06 fix round 2: a screenshot that fails because the server is gone names
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-118-// the UIAutomator2 server once in the step line, not again as the cause.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-119-func TestScreenshotFailureNamesServerOnce(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-120-	down := &uiautomator2.ServerUnavailableError{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go:121:		Device: "emulator-5556", Reason: "connection refused", Retries: 5, Replayable: true,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go:122:		Err: errors.New("dial unix /tmp/uia2-emulator-5556.sock: connect: connection refused"),
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-123-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-124-	for _, step := range []flow.Step{&flow.TakeScreenshotStep{Path: "x"}, &flow.WaitForAnimationToEndStep{}} {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-125-		d := New(&MockUIA2Client{screenshotErr: down}, screen1080(), nil)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-126-		r := d.Execute(step)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-127-		if r.Success {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-128-			t.Fatalf("%T: want failure", step)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-129-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-130-		line := renderedFailure(r)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go:131:		if n := strings.Count(line, "UIAutomator2 server on emulator-5556 stopped responding"); n != 1 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-132-			t.Errorf("%T: server named %d times: %s", step, n, line)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-133-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-134-		if strings.Contains(line, "(cause:") {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-135-			t.Errorf("%T: cause repeated: %s", step, line)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-136-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-137-	}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/client_test.go-1272-func TestIsTransientAXError(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/client_test.go-1273-	cases := map[error]bool{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/client_test.go-1274-		nil: false,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/client_test.go-1275-		fmt.Errorf("WDA error: kAXErrorInvalidUIElement"): true,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/client_test.go-1276-		fmt.Errorf("WDA error: some failure (-25202)"):    true,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/client_test.go-1277-		fmt.Errorf("WDA error: no such element"):          false,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/client_test.go:1278:		fmt.Errorf("connection refused"):                  false,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/client_test.go-1279-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/client_test.go-1280-	for err, want := range cases {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/client_test.go-1281-		if got := isTransientAXError(err); got != want {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/client_test.go-1282-			t.Errorf("isTransientAXError(%v) = %v, want %v", err, got, want)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/client_test.go-1283-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/wda/client_test.go-1284-	}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/process.go-24-// that keep the default process. An app that renames its processes with
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/process.go-25-// android:process (":main", or a name of its own) has none called by its
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/process.go-26-// package, so when pidof finds nothing the process list is checked for
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/process.go-27-// "<package>:<suffix>" names and for any process running under the app's
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/process.go-28-// uid before the app is called gone.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/process.go-29-//
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/process.go:30:// Each device read is retried once, so a single dropped adb read is not
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/process.go-31-// taken for the app dying.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/process.go-32-func (d *Driver) appProcessState(appID string) processState {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/process.go-33-	// "|| true" keeps pidof's own not-found exit status (1) from looking
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/process.go-34-	// like a failed read: adb shell reports a non-zero exit as an error.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/process.go-35-	out, err := d.shellRetry("pidof " + shellQuote(appID) + " || true")
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/process.go-36-	if err != nil {
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-4253-		want bool
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-4254-	}{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-4255-		{"context deadline", context.DeadlineExceeded, true},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-4256-		{"wrapped deadline", fmt.Errorf("element 'x' not found: %w", context.DeadlineExceeded), true},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-4257-		{"element not found", errors.New("element not found"), true},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-4258-		{"no such element", errors.New("no such element: foo"), true},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go:4259:		{"connection refused", errors.New("dial tcp: connection refused"), false},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-4260-		{"http 500", errors.New("server returned 500"), false},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-4261-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-4262-	for _, tt := range tests {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-4263-		t.Run(tt.name, func(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-4264-			if got := isElementNotFoundError(tt.err); got != tt.want {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-4265-				t.Errorf("isElementNotFoundError(%q) = %v, want %v", tt.err, got, tt.want)
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1759-	return core.SuccessResult(msg, elem)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1760-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1761-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1762-func errorResult(err error, msg string) *core.CommandResult {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1763-	// An unreachable UIAutomator2 server is named once, in the step message
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1764-	// ("Failed to take screenshot: UIAutomator2 server on emulator-5556
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go:1765:	// stopped responding (connection refused); retried 5 times over 9.8s"),
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1766-	// not again as the cause (K06).
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1767-	// A request the server did not answer in time is named the same way
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1768-	// (L01), instead of net/http's "Client.Timeout exceeded" text twice.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1769-	var unavailable *uiautomator2.ServerUnavailableError
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1770-	var timedOut *uiautomator2.RequestTimeoutError
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1771-	var named error

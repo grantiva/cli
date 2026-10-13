@@ -1,0 +1,14 @@
+appId: com.kylebrowning.landmarks
+---
+- launchApp
+- tapOn: "Deep Links"
+- tapOn: "Edit Landmark"
+- tapOn: "Location"
+- inputText: " · Ünïcødé ✓"
+- assertVisible: "San Francisco, CA · Ünïcødé ✓"
+- tapOn: "Cancel"
+- tapOn: "Discard"
+# Discard leaves the editor without saving; iOS returns to the Landmarks tab, Android to Deep Links,
+# and both show the landmark under its unchanged name.
+- assertNotVisible: "San Francisco, CA · Ünïcødé ✓"
+- assertVisible: "Golden Gate Bridge"

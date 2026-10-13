@@ -1,0 +1,43 @@
+03:23:04.865713 [INFO] === Test execution started ===
+03:23:04.865775 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B3-L62-remove-five-rerun4/runs/2/continuation-report
+03:23:04.865780 [INFO] Platform: android
+03:23:04.865784 [INFO] Driver: uiautomator2
+03:23:04.866064 [INFO] Validated 1 flow(s)
+03:23:04.866088 [INFO] Single device execution mode
+03:23:04.866093 [INFO] Starting flow execution (parallel: false, devices: [])
+03:23:04.866097 [INFO] Creating driver for single device execution
+03:23:04.866101 [INFO] Connecting to Android device: emulator-5554
+03:23:04.959683 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+03:23:04.982246 [INFO] Starting UIAutomator2 server on device emulator-5554
+03:23:05.397245 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+03:23:05.412771 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+03:23:06.489366 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+03:23:06.499002 [INFO] Session created successfully: 99ce9727-796a-40b3-8e52-72267f922894
+03:23:06.554695 [INFO] Driver created: android on google sdk_gphone64_arm64
+03:23:06.556149 [INFO] === Starting flow: l62-continuation ===
+03:23:06.556154 [INFO] Flow file: .maestro/l62-continuation.yaml
+03:23:06.556157 [INFO] Total steps: 5
+03:23:06.562593 [DEBUG] Executing step 0: takeScreenshot
+03:23:06.697726 [DEBUG] Step 0 completed successfully (135ms): takeScreenshot
+03:23:06.698041 [DEBUG] Executing step 1: tapOn: text="Remove from favorites"
+03:23:06.698255 [DEBUG] Flutter: parallel search (text="Remove from favorites", id="")
+03:23:06.736442 [DEBUG] Flutter: com.kylebrowning.landmarks has no libflutter.so; not searching the Flutter VM
+03:23:06.736482 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+03:23:06.850175 [DEBUG] Step 1 completed successfully (152ms): tapOn: text="Remove from favorites"
+03:23:06.850582 [DEBUG] Executing step 2: assertNotVisible: text="Lake Tahoe"
+03:23:07.516057 [DEBUG] Step 2 completed successfully (665ms): assertNotVisible: text="Lake Tahoe"
+03:23:07.516420 [DEBUG] Executing step 3: assertVisible: text="Landmarks you favorite will appear here."
+03:23:07.539408 [DEBUG] Step 3 completed successfully (22ms): assertVisible: text="Landmarks you favorite will appear here."
+03:23:07.539899 [DEBUG] Executing step 4: takeScreenshot
+03:23:07.677230 [DEBUG] Step 4 completed successfully (137ms): takeScreenshot
+03:23:07.678527 [INFO] === Flow completed: l62-continuation (status: passed, duration: 1121ms, passed: 5, failed: 0, skipped: 0) ===
+03:23:07.680682 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+03:23:07.680775 [INFO] Generating reports...
+03:23:07.681502 [INFO] keep-alive: holding session 9309-1791886987681410000 (port 0)
+03:23:08.745754 [INFO] Received signal interrupt, releasing keep-alive session...
+03:23:08.745805 [INFO] keep-alive: released session 9309-1791886987681410000
+03:23:09.130589 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+03:23:09.143558 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+03:23:09.143587 [INFO] Shutting down devices started by maestro-runner...
+03:23:09.143592 [INFO] Shutting down all tracked emulators
+03:23:09.143600 [INFO] Shutting down all tracked simulators

@@ -1,0 +1,86 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov3-android (emulator-5554)
+Skipping build and install (--no-build)
+Streaming emulator logs
+Running 1 flow(s) in one UIAutomator2 session: .maestro/08-caching.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 08-caching (08-caching.yaml)
+────────────────────────────────────────────────────────────
+[log] --------- beginning of main
+[log] 10-12 14:55:43.967 I/wning.landmarks( 6420): Late-enabling -Xcheck:jni
+[log] 10-12 14:55:43.985 I/wning.landmarks( 6420): Using CollectorTypeCMC GC.
+[log] 10-12 14:55:44.029 W/ziparchive( 6420): Unable to open '/data/app/~~UG7iiLOTetsjoXhgixrr-Q==/com.kylebrowning.landmarks-g_1LF9-8gJIXpYPotga1Dg==/base.dm': No such file or directory
+[log] 10-12 14:55:44.030 W/ziparchive( 6420): Unable to open '/data/app/~~UG7iiLOTetsjoXhgixrr-Q==/com.kylebrowning.landmarks-g_1LF9-8gJIXpYPotga1Dg==/base.dm': No such file or directory
+[log] 10-12 14:55:44.242 I/Landmarks( 6420): launch action=android.intent.action.MAIN data=null extras=[none] env=[LANDMARKS_SEED=null, LANDMARKS_CRASH_ON_LAUNCH=null, LANDMARKS_NOTE=null]
+[log] 10-12 14:55:44.242 W/wning.landmarks( 6420): Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(boolean, kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+[log] 10-12 14:55:44.242 W/wning.landmarks( 6420): Common causes for lock verification issues are non-optimized dex code
+[log] 10-12 14:55:44.242 W/wning.landmarks( 6420): and incorrect proguard optimizations.
+[log] 10-12 14:55:44.242 W/wning.landmarks( 6420): Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate$default(androidx.compose.runtime.snapshots.SnapshotStateList, boolean, kotlin.jvm.functions.Function1, int, java.lang.Object) failed lock verification and will run slower.
+[log] 10-12 14:55:44.242 W/wning.landmarks( 6420): Method java.lang.Object androidx.compose.runtime.snapshots.SnapshotStateList.mutate(kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+[log] 10-12 14:55:44.243 W/wning.landmarks( 6420): Method void androidx.compose.runtime.snapshots.SnapshotStateList.update(boolean, kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+[log] 10-12 14:55:44.243 W/wning.landmarks( 6420): Method void androidx.compose.runtime.snapshots.SnapshotStateList.update$default(androidx.compose.runtime.snapshots.SnapshotStateList, boolean, kotlin.jvm.functions.Function1, int, java.lang.Object) failed lock verification and will run slower.
+[log] 10-12 14:55:44.269 W/HWUI    ( 6420): Unknown dataspace 0
+[log] 10-12 14:55:44.409 I/wning.landmarks( 6420): Compiler allocated 5250KB to compile void android.view.ViewRootImpl.performTraversals()
+[log] 10-12 14:55:44.561 I/EGL_emulation( 6420): Opening libGLESv1_CM_emulation.so
+[log] 10-12 14:55:44.562 I/EGL_emulation( 6420): Opening libGLESv2_emulation.so
+[log] 10-12 14:55:44.566 W/HWUI    ( 6420): Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+[log] 10-12 14:55:44.566 W/HWUI    ( 6420): Failed to initialize 101010-2 format, error = EGL_SUCCESS
+[log] 10-12 14:55:44.597 I/Gralloc4( 6420): mapper 4.x is not supported
+    ✓ launchApp (1.5s)
+    ✓ tapOn: text="Deep Links" (825ms)
+[log] 10-12 14:55:46.788 W/WindowOnBackDispatcher( 6420): OnBackInvokedCallback is not enabled for the application.
+[log] 10-12 14:55:46.788 W/WindowOnBackDispatcher( 6420): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+    ✓ tapOn: text="Caching Demo" (773ms)
+    ✓ assertVisible: text="Cache Policy" (747ms)
+    ✓ tapOn: text="Fetch with Policy" (160ms)
+    ✓ takeScreenshot (145ms)
+    ✓ tapOn: text="Clear Cache" (184ms)
+✓ 08-caching 4.4s
+
+  [1/1] 08-caching (.maestro/08-caching.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.5s)
+    ✓ tapOn: text="Deep Links" (825ms)
+    ✓ tapOn: text="Caching Demo" (773ms)
+    ✓ assertVisible: text="Cache Policy" (747ms)
+    ✓ tapOn: text="Fetch with Policy" (160ms)
+    ✓ takeScreenshot (145ms)
+    ✓ tapOn: text="Clear Cache" (184ms)
+✓ 08-caching 4.4s
+
+  7 steps passing (4.4s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  08-caching                     ✓ PASS       7      7      0      0       4.4s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       7      7      0      0       4.4s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+

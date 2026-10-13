@@ -1,0 +1,129 @@
+{
+  "id": "flow-000",
+  "name": "06-swipe-absolute",
+  "sourceFile": ".maestro/coverage/06-swipe-absolute.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T02:40:35.781542-07:00",
+  "endTime": "2026-10-12T02:40:50.880306-07:00",
+  "duration": 15098,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T02:40:35.806901-07:00",
+      "endTime": "2026-10-12T02:40:45.455901-07:00",
+      "duration": 9649,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-12T02:40:45.457525-07:00",
+      "endTime": "2026-10-12T02:40:47.984525-07:00",
+      "duration": 2527,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Deep Links",
+        "bounds": {
+          "x": 734,
+          "y": 2127,
+          "width": 346,
+          "height": 210
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Gesture Lab\"",
+      "status": "passed",
+      "startTime": "2026-10-12T02:40:47.985795-07:00",
+      "endTime": "2026-10-12T02:40:49.676795-07:00",
+      "duration": 1691,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Gesture Lab"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Gesture Lab",
+        "bounds": {
+          "x": 42,
+          "y": 359,
+          "width": 996,
+          "height": 126
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "swipe",
+      "yaml": "swipe: start=\"300, 600\" end=\"60, 600\"",
+      "status": "passed",
+      "startTime": "2026-10-12T02:40:49.678978-07:00",
+      "endTime": "2026-10-12T02:40:50.381978-07:00",
+      "duration": 703,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Last swipe: left\"",
+      "status": "passed",
+      "startTime": "2026-10-12T02:40:50.383669-07:00",
+      "endTime": "2026-10-12T02:40:50.879669-07:00",
+      "duration": 496,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Last swipe: left"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-00bd-0000-00d700000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 5,
+    "mean": 3013,
+    "p50": 1691,
+    "p95": 9649,
+    "max": 9649,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,1 @@
+/Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/coverage/cov3-targeted-gesture-retry/and-210-double-first.yaml --report-dir /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-210-targeted-retry/report; echo exit=$?

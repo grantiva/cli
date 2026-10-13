@@ -1,0 +1,26 @@
+platform: android
+module: app
+variant: freeDebug
+application_id: com.kylebrowning.landmarks
+emulator: cov3-android
+screens:
+  - name: Home
+    path: launch
+  - name: Content Description
+    path:
+      - tap: "Landmarks"
+      - tap: "Golden Gate Bridge"
+      - tap: "Favorite"
+  - name: Hint
+    path:
+      - tap: "Deep Links"
+      - tap: "Edit Landmark"
+      - tap: "Name"
+  - name: ID Whole
+    path:
+      - tap: "Deep Links"
+      - tap: "Caching Demo"
+      - tap: {id: "com.android.systemui:id/clock"}
+  - name: ID Suffix
+    path:
+      - tap: {id: "clock"}

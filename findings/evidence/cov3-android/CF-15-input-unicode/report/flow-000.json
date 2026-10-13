@@ -1,0 +1,208 @@
+{
+  "id": "flow-000",
+  "name": "15-input-unicode",
+  "sourceFile": ".maestro/coverage/15-input-unicode.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T02:51:06.382198-07:00",
+  "endTime": "2026-10-12T02:51:39.022785-07:00",
+  "duration": 32640,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T02:51:06.405841-07:00",
+      "endTime": "2026-10-12T02:51:16.556841-07:00",
+      "duration": 10151,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-12T02:51:16.558836-07:00",
+      "endTime": "2026-10-12T02:51:19.956836-07:00",
+      "duration": 3398,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Deep Links",
+        "bounds": {
+          "x": 734,
+          "y": 2127,
+          "width": 346,
+          "height": 210
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Edit Landmark\"",
+      "status": "passed",
+      "startTime": "2026-10-12T02:51:19.960065-07:00",
+      "endTime": "2026-10-12T02:51:22.184065-07:00",
+      "duration": 2224,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Edit Landmark"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Edit Landmark",
+        "bounds": {
+          "x": 42,
+          "y": 653,
+          "width": 996,
+          "height": 126
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Location\"",
+      "status": "passed",
+      "startTime": "2026-10-12T02:51:22.186024-07:00",
+      "endTime": "2026-10-12T02:51:23.896024-07:00",
+      "duration": 1710,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Location"
+        }
+      },
+      "element": {
+        "found": true,
+        "bounds": {
+          "x": 42,
+          "y": 558,
+          "width": 996,
+          "height": 168
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "inputText",
+      "yaml": "inputText: \" · Ünïcødé ✓\"",
+      "status": "failed",
+      "startTime": "2026-10-12T02:51:23.898458-07:00",
+      "endTime": "2026-10-12T02:51:33.101458-07:00",
+      "duration": 9203,
+      "params": {
+        "text": " · Ünïcødé ✓"
+      },
+      "error": {
+        "type": "unknown",
+        "message": "Failed to input text (cause: invalid argument: KeyCharacterMap.getEvents is unable to synthesize KeyEvent sequence out of '183' key code. Consider applying a patch to UiAutomator2 server code or try to synthesize the necessary key event(s) for it manually)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-004-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-004-hierarchy.xml"
+      }
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"San Francisco, CA · Ünïcødé ✓\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "San Francisco, CA · Ünïcødé ✓"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-006",
+      "index": 6,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Cancel\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Cancel"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-007",
+      "index": 7,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Discard\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Discard"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-008",
+      "index": 8,
+      "type": "assertNotVisible",
+      "yaml": "assertNotVisible: text=\"San Francisco, CA · Ünïcødé ✓\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "San Francisco, CA · Ünïcødé ✓"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-009",
+      "index": 9,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Golden Gate Bridge\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate Bridge"
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 5,
+    "mean": 5337,
+    "p50": 3398,
+    "p95": 10151,
+    "max": 10151,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

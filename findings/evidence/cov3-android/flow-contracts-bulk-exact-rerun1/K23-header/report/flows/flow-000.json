@@ -1,0 +1,86 @@
+{
+  "id": "flow-000",
+  "name": "16-setpermissions",
+  "sourceFile": "16-setpermissions.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T23:15:17.366733-07:00",
+  "endTime": "2026-10-12T23:15:21.912819-07:00",
+  "duration": 4546,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T23:15:17.372019-07:00",
+      "endTime": "2026-10-12T23:15:18.756019-07:00",
+      "duration": 1384,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "setPermissions",
+      "yaml": "setPermissions",
+      "status": "passed",
+      "startTime": "2026-10-12T23:15:18.756817-07:00",
+      "endTime": "2026-10-12T23:15:18.781817-07:00",
+      "duration": 25,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T23:15:18.783087-07:00",
+      "endTime": "2026-10-12T23:15:20.163087-07:00",
+      "duration": 1380,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "scroll",
+      "yaml": "scroll: DOWN",
+      "status": "passed",
+      "startTime": "2026-10-12T23:15:20.164349-07:00",
+      "endTime": "2026-10-12T23:15:21.778349-07:00",
+      "duration": 1614,
+      "params": {
+        "direction": "DOWN"
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-12T23:15:21.778949-07:00",
+      "endTime": "2026-10-12T23:15:21.911949-07:00",
+      "duration": 133,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-004-Permissions Set.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 5,
+    "mean": 907,
+    "p50": 1380,
+    "p95": 1614,
+    "max": 1614,
+    "slowestType": "scroll"
+  },
+  "artifacts": {}
+}

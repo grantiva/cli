@@ -1,0 +1,1 @@
+/Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --logs --flow .maestro/99-crash.yaml --report-dir /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-075-rerun-failure/report; rc=$?; echo run-exit=$rc; ps -axo pid,ppid,etime,command | grep '[a]db.*logcat' || true

@@ -1,0 +1,67 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov3-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/coverage/14-runflow.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 14-runflow (14-runflow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+      ▸ Run 14-runflow-sub.yaml
+        ✓ tapOn: text="Deep Links" (1.0s)
+        ✓ assertVisible: text="Caching Demo" (801ms)
+    ✓ runFlow: 14-runflow-sub.yaml (1.8s)
+    ✓ launchApp (1.5s)
+      ▸ Run 14-runflow-sub.yaml
+        ✓ tapOn: text="Deep Links" (1.3s)
+        ✓ assertVisible: text="Caching Demo" (607ms)
+    ✓ runFlow: 14-runflow-sub.yaml (1.9s)
+✓ 14-runflow 6.6s
+
+  [1/1] 14-runflow (.maestro/coverage/14-runflow.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ runFlow: 14-runflow-sub.yaml (1.8s)
+      ✓ tapOn: text="Deep Links" (1.0s)
+      ✓ assertVisible: text="Caching Demo" (801ms)
+    ✓ launchApp (1.5s)
+    ✓ runFlow: 14-runflow-sub.yaml (1.9s)
+      ✓ tapOn: text="Deep Links" (1.3s)
+      ✓ assertVisible: text="Caching Demo" (607ms)
+✓ 14-runflow 6.6s
+
+  6 steps passing (6.6s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  14-runflow                     ✓ PASS       6      6      0      0       6.6s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       6      6      0      0       6.6s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+

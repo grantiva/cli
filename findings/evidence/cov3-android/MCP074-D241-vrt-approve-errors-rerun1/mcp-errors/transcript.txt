@@ -1,0 +1,11 @@
+>> {"method": "initialize", "params": {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "round3-vrt-errors", "version": "1"}}, "id": 1, "jsonrpc": "2.0"}
+<< [0.0s] {"id": 1, "jsonrpc": "2.0", "result": {"capabilities": {"resources": {"listChanged": false, "subscribe": true}, "tools": {"listChanged": false}}, "instructions": "Grantiva MCP server for iOS simulator and Android emulator automation. Use grantiva_* tools to interact with the device: tap, swipe, type, take screenshots, inspect the accessibility tree, build and run apps, manage simulators and emulators, and run visual regression tests.", "protocolVersion": "2025-03-26", "serverInfo": {"name": "grantiva", "version": "2.1.0"}}}
+>> {"method": "notifications/initialized", "params": {}}
+>> {"method": "tools/call", "params": {"name": "grantiva_vrt_capture", "arguments": {}}, "id": 2, "jsonrpc": "2.0"}
+<< [0.0s] {"id": 2, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: grantiva-android.yml not found at /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/MCP074-D241-vrt-approve-errors-rerun1/empty/grantiva-android.yml. Create one with grantiva init --platform android.", "type": "text"}], "isError": true}}
+>> {"method": "tools/call", "params": {"name": "grantiva_vrt_compare", "arguments": {}}, "id": 3, "jsonrpc": "2.0"}
+<< [0.0s] {"id": 3, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No captures found in .grantiva/captures/android. Run: grantiva diff capture", "type": "text"}], "isError": true}}
+>> {"method": "tools/call", "params": {"name": "grantiva_vrt_approve", "arguments": {}}, "id": 4, "jsonrpc": "2.0"}
+<< [0.0s] {"id": 4, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No captures found in .grantiva/captures/android. Run: grantiva diff capture", "type": "text"}], "isError": true}}
+nonjson_lines=0 server_alive=True
+exit=0

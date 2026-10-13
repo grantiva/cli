@@ -1,0 +1,9 @@
+# B2-L03 Android final review
+
+The row is **PASS** by joining `B2-L03-per-step-hierarchy-rerun10` to the eligible six full-snapshot renderer repetitions in `B2-K07-N03-B2-L03-scroll-renderers-rerun1` and the exact runner source/tests already inventoried in `cov3-cli/findings/android-scroll-renderers-b2k07-n03-b2l03-review.md`.
+
+The new exact-session evidence records a hierarchy before and after each of four bare scrolls on both renderers. Software movement is -1179, -1195, -1187, and -1179 pixels; GPU movement is -1191, -1179, -1185, and -1179 pixels. Within-renderer spread is 16 and 12 pixels respectively, far below one 189-pixel row. Each transition has common indexed rows, so these values are directly observed displacement rather than the decoder's indexed-intercept fallback. Both flows exit 0 and final direct UIA2/CLI comparisons match 23/23 meaningful application nodes at the recorded 420 dpi.
+
+The earlier six full-snapshot runs supply the literal three software and three GPU repetitions: all pass, all land at Landmark 28, and all retain the unredacted pointer bodies from `(540,1848)` to `(540,648)` with the held endpoint. Exact `bare_scroll_verify_test.go` evidence supplies half-delivery top-up/short-scroll handling, one-row tolerance, list geometry, end bounding, and wait-for-list behavior; the other retained exact tests cover speed, spacing, and rejection of shell `input swipe`.
+
+The outer wrapper's final status is not a product or runtime failure. After both flows and targeted cleanup completed, its last primary-presence grep used zsh `$primary[[:space:]]` instead of `${primary}[[:space:]]`. The raw `adb-after.txt` retains `emulator-5554 device`, `avds-after.txt` excludes `cov3-android-l03-hierarchy-r3`, and `trap-delete.json` records `deleted:true`. `posthoc-wrapper-qualification.json` preserves this qualification without changing raw output.

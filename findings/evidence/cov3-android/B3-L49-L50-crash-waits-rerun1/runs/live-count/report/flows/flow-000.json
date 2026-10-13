@@ -1,0 +1,61 @@
+{
+  "id": "flow-000",
+  "name": "live-count",
+  "sourceFile": ".maestro/live-count.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T02:22:23.263163-07:00",
+  "endTime": "2026-10-13T02:22:41.92278-07:00",
+  "duration": 18659,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp (clearState)",
+      "status": "passed",
+      "startTime": "2026-10-13T02:22:23.267681-07:00",
+      "endTime": "2026-10-13T02:22:24.686681-07:00",
+      "duration": 1419,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Golden Gate Bridge\" (count: 1)",
+      "status": "failed",
+      "startTime": "2026-10-13T02:22:24.68808-07:00",
+      "endTime": "2026-10-13T02:22:41.76408-07:00",
+      "duration": 17076,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate Bridge"
+        }
+      },
+      "error": {
+        "type": "unknown",
+        "message": "expected 1 visible matches of 'Golden Gate Bridge', last observed 2"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 9247,
+    "p50": 1419,
+    "p95": 17076,
+    "max": 17076,
+    "slowestType": "assertVisible"
+  },
+  "artifacts": {}
+}

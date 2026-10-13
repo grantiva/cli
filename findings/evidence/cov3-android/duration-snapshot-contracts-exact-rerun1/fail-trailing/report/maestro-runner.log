@@ -1,0 +1,109 @@
+23:30:56.441005 [INFO] === Test execution started ===
+23:30:56.441068 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/duration-snapshot-contracts-exact-rerun1/fail-trailing/report
+23:30:56.441074 [INFO] Platform: android
+23:30:56.441077 [INFO] Driver: uiautomator2
+23:30:56.441303 [INFO] Validated 1 flow(s)
+23:30:56.441319 [INFO] Single device execution mode
+23:30:56.441323 [INFO] Starting flow execution (parallel: false, devices: [])
+23:30:56.441327 [INFO] Creating driver for single device execution
+23:30:56.441331 [INFO] Connecting to Android device: emulator-5554
+23:30:56.522983 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+23:30:56.545295 [INFO] Starting UIAutomator2 server on device emulator-5554
+23:30:56.970448 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+23:30:56.987298 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+23:30:58.085991 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+23:30:58.096777 [INFO] Session created successfully: 7361bed4-61f7-48ff-851c-f377e7d9cc0d
+23:30:58.155195 [INFO] Driver created: android on google sdk_gphone64_arm64
+23:30:58.157015 [INFO] === Starting flow: 02-exact-negative ===
+23:30:58.157020 [INFO] Flow file: .maestro/coverage/02-exact-negative.yaml
+23:30:58.157023 [INFO] Total steps: 3
+23:30:58.162773 [DEBUG] Executing step 0: launchApp
+23:30:58.448694 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+23:30:58.448739 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 24ms
+23:30:59.683453 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.166s after launch, pids [29416], drawn=true crashed=false (read 50ms)
+23:30:59.683551 [DEBUG] Step 0 completed successfully (1520ms): launchApp
+23:30:59.825172 [DEBUG] Executing step 1: assertVisible: text="Golden Gate.*"
+23:30:59.959253 [DEBUG] Flutter: parallel search (text="Golden Gate.*", id="")
+23:30:59.989937 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 31ms)
+23:30:59.997397 [DEBUG] Flutter: com.kylebrowning.landmarks has no libflutter.so; not searching the Flutter VM
+23:30:59.997448 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+23:31:00.274155 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 33ms)
+23:31:00.274214 [DEBUG] crash check during a lookup in flight for 284ms: crashed=false (took 33ms)
+23:31:00.535315 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 44ms)
+23:31:00.535372 [DEBUG] crash check during a lookup in flight for 545ms: crashed=false (took 44ms)
+23:31:00.698250 [DEBUG] Step 1 completed successfully (873ms): assertVisible: text="Golden Gate.*"
+23:31:00.837652 [DEBUG] Executing step 2: assertVisible: text="Golden Gate.*", exact=true
+23:31:00.999297 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:01.277397 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:01.530795 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+23:31:01.807710 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:02.080253 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:02.331030 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:02.598713 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:02.861136 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 26ms)
+23:31:03.131651 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:03.396052 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:03.662815 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:03.924987 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:04.174992 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:04.453791 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:04.720698 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:04.985541 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:05.257003 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:05.522841 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:05.785291 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+23:31:06.039602 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:06.314702 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:06.570205 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:06.846083 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:07.124226 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:07.396441 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:07.659261 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:07.913944 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:08.183990 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:08.459590 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:08.722149 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:08.984220 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:09.235025 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:09.497353 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:09.769650 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:10.032640 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:10.301529 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:10.565306 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:10.833919 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+23:31:11.089368 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+23:31:11.342042 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:11.598692 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:11.862778 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:12.132620 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+23:31:12.397974 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:12.656127 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:12.916236 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:13.203740 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 27ms)
+23:31:13.451502 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:13.711205 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:13.980313 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:14.250145 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:14.505522 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:14.775185 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 30ms)
+23:31:15.033247 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:15.305366 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+23:31:15.560492 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:15.814659 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:16.065632 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:16.339801 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:16.594088 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:16.848607 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:17.113858 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:17.386424 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:17.649846 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+23:31:17.904247 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+23:31:18.109405 [ERROR] Step 2 failed (17271ms): assertVisible: text="Golden Gate.*", exact=true - Error: Element not visible: text='Golden Gate.*', exact=true (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Golden Gate Bridge", "Categories", "Battery 100 percent.")
+23:31:18.266349 [INFO] === Flow completed: 02-exact-negative (status: failed, duration: 20106ms, passed: 2, failed: 1, skipped: 0) ===
+23:31:18.664794 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+23:31:18.679435 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+23:31:18.679478 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+23:31:18.679718 [INFO] Generating reports...
+23:31:18.681174 [INFO] Shutting down devices started by maestro-runner...
+23:31:18.681185 [INFO] Shutting down all tracked emulators
+23:31:18.681194 [INFO] Shutting down all tracked simulators

@@ -1,0 +1,64 @@
+{
+  "id": "flow-000",
+  "name": "template",
+  "sourceFile": "template.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T23:21:36.901248-07:00",
+  "endTime": "2026-10-12T23:21:38.459669-07:00",
+  "duration": 1558,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T23:21:36.907112-07:00",
+      "endTime": "2026-10-12T23:21:38.294112-07:00",
+      "duration": 1387,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "passed",
+      "startTime": "2026-10-12T23:21:38.294551-07:00",
+      "endTime": "2026-10-12T23:21:38.458551-07:00",
+      "duration": 164,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0223-0000-002f00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 775,
+    "p50": 164,
+    "p95": 1387,
+    "max": 1387,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,58 @@
+05:33:07.271383 [INFO] === Test execution started ===
+05:33:07.271447 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B2-L03-per-step-hierarchy-rerun10/evidence/gpu/report
+05:33:07.271452 [INFO] Platform: android
+05:33:07.271456 [INFO] Driver: uiautomator2
+05:33:07.271715 [INFO] Validated 1 flow(s)
+05:33:07.271732 [INFO] Single device execution mode
+05:33:07.271736 [INFO] Starting flow execution (parallel: false, devices: [])
+05:33:07.271741 [INFO] Creating driver for single device execution
+05:33:07.271745 [INFO] Connecting to Android device: emulator-5556
+05:33:07.351543 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5556, Emulator: true
+05:33:07.760510 [INFO] Starting UIAutomator2 server on device emulator-5556
+05:33:08.178274 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5556.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5556.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5556.sock' not found
+05:33:08.190639 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+05:33:09.271120 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+05:33:09.281235 [INFO] Session created successfully: 7eceff04-3217-46fa-90b0-c8caf371425a
+05:33:09.343406 [INFO] Driver created: android on google sdk_gphone64_arm64
+05:33:09.345014 [INFO] === Starting flow: l03-step-hierarchy ===
+05:33:09.345018 [INFO] Flow file: .maestro/coverage/l03-step-hierarchy.yaml
+05:33:09.345022 [INFO] Total steps: 10
+05:33:09.349418 [DEBUG] Executing step 0: launchApp (clearState)
+05:33:09.417558 [INFO] [uiautomator2] clearState com.kylebrowning.landmarks: cleared app data (pm clear, 0.0s)
+05:33:09.506871 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+05:33:09.506890 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 23ms
+05:33:10.722984 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.164s after launch, pids [4642], drawn=true crashed=false (read 29ms)
+05:33:10.723044 [DEBUG] Step 0 completed successfully (1373ms): launchApp (clearState)
+05:33:10.723493 [DEBUG] Executing step 1: wait: 10000ms
+05:33:20.725889 [DEBUG] Step 1 completed successfully (10002ms): wait: 10000ms
+05:33:20.727103 [DEBUG] Executing step 2: scroll: DOWN
+05:33:21.809482 [INFO] scroll down: dragged 1200 px in {0 432 1080 1632}, content moved 1191 px (measured=true)
+05:33:21.809524 [DEBUG] Step 2 completed successfully (1082ms): scroll: DOWN
+05:33:21.809985 [DEBUG] Executing step 3: wait: 5000ms
+05:33:26.812270 [DEBUG] Step 3 completed successfully (5002ms): wait: 5000ms
+05:33:26.812995 [DEBUG] Executing step 4: scroll: DOWN
+05:33:27.861418 [INFO] scroll down: dragged 1200 px in {0 432 1080 1632}, content moved 1179 px (measured=true)
+05:33:27.861436 [DEBUG] Step 4 completed successfully (1048ms): scroll: DOWN
+05:33:27.861814 [DEBUG] Executing step 5: wait: 5000ms
+05:33:32.864086 [DEBUG] Step 5 completed successfully (5002ms): wait: 5000ms
+05:33:32.864913 [DEBUG] Executing step 6: scroll: DOWN
+05:33:33.905609 [INFO] scroll down: dragged 1200 px in {0 432 1080 1632}, content moved 1185 px (measured=true)
+05:33:33.905626 [DEBUG] Step 6 completed successfully (1040ms): scroll: DOWN
+05:33:33.906124 [DEBUG] Executing step 7: wait: 5000ms
+05:33:38.908363 [DEBUG] Step 7 completed successfully (5002ms): wait: 5000ms
+05:33:38.908971 [DEBUG] Executing step 8: scroll: DOWN
+05:33:39.925072 [INFO] scroll down: dragged 1200 px in {0 432 1080 1632}, content moved 1179 px (measured=true)
+05:33:39.925095 [DEBUG] Step 8 completed successfully (1016ms): scroll: DOWN
+05:33:39.925517 [DEBUG] Executing step 9: wait: 5000ms
+05:33:44.927777 [DEBUG] Step 9 completed successfully (5002ms): wait: 5000ms
+05:33:44.930221 [INFO] === Flow completed: l03-step-hierarchy (status: passed, duration: 35583ms, passed: 10, failed: 0, skipped: 0) ===
+05:33:44.931928 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+05:33:44.932075 [INFO] Generating reports...
+05:33:44.933105 [INFO] keep-alive: holding session 85021-1791894824932916000 (port 0)
+05:33:45.292897 [INFO] Received signal interrupt, releasing keep-alive session...
+05:33:45.292956 [INFO] keep-alive: released session 85021-1791894824932916000
+05:33:45.678035 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5556.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5556.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5556.sock' not found
+05:33:45.689594 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+05:33:45.689626 [INFO] Shutting down devices started by maestro-runner...
+05:33:45.689631 [INFO] Shutting down all tracked emulators
+05:33:45.689643 [INFO] Shutting down all tracked simulators

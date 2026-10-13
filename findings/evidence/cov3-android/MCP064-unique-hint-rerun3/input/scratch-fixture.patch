@@ -1,0 +1,21 @@
+--- /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/MCP064-unique-hint-rerun3/input/EditLandmarkScreen.before.kt	2026-10-13 05:00:38
++++ /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/MCP064-unique-hint-rerun3/input/EditLandmarkScreen.after.kt	2026-10-13 05:00:38
+@@ -85,6 +85,18 @@
+ /** A text field that places the cursor at the end of its text when it gains focus. */
+ @Composable
+ private fun LabeledField(label: String, value: TextFieldValue, onChange: (TextFieldValue) -> Unit) {
++    if (label == "Name") {
++        androidx.compose.ui.viewinterop.AndroidView(
++            factory = { context -> android.widget.EditText(context).apply {
++                hint = "MCP064 Unique Hint"
++                contentDescription = "Name"
++                setText("Fixture value")
++                isSingleLine = true
++            } },
++            modifier = Modifier.fillMaxWidth(),
++        )
++        return
++    }
+     OutlinedTextField(
+         value = value,
+         onValueChange = onChange,

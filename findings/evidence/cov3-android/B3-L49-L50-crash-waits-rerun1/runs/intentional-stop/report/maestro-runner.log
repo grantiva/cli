@@ -1,0 +1,37 @@
+02:22:01.250335 [INFO] === Test execution started ===
+02:22:01.250403 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B3-L49-L50-crash-waits-rerun1/runs/intentional-stop/report
+02:22:01.250408 [INFO] Platform: android
+02:22:01.250412 [INFO] Driver: uiautomator2
+02:22:01.250644 [INFO] Validated 1 flow(s)
+02:22:01.250669 [INFO] Single device execution mode
+02:22:01.250675 [INFO] Starting flow execution (parallel: false, devices: [])
+02:22:01.250679 [INFO] Creating driver for single device execution
+02:22:01.250684 [INFO] Connecting to Android device: emulator-5554
+02:22:01.332758 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+02:22:01.354151 [INFO] Starting UIAutomator2 server on device emulator-5554
+02:22:01.772764 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+02:22:01.791086 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+02:22:02.352401 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+02:22:02.359832 [INFO] Session created successfully: c39dafa3-b489-438a-aed0-16641c447acf
+02:22:02.407762 [INFO] Driver created: android on google sdk_gphone64_arm64
+02:22:02.410252 [INFO] === Starting flow: intentional-stop ===
+02:22:02.410259 [INFO] Flow file: .maestro/intentional-stop.yaml
+02:22:02.410263 [INFO] Total steps: 3
+02:22:02.414756 [DEBUG] Executing step 0: launchApp (clearState)
+02:22:02.484897 [INFO] [uiautomator2] clearState com.kylebrowning.landmarks: cleared app data (pm clear, 0.0s)
+02:22:02.574856 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+02:22:02.574902 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 24ms
+02:22:03.784553 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.137s after launch, pids [18716], drawn=true crashed=false (read 54ms)
+02:22:03.784608 [DEBUG] Step 0 completed successfully (1369ms): launchApp (clearState)
+02:22:03.784994 [DEBUG] Executing step 1: stopApp
+02:22:03.815083 [DEBUG] Step 1 completed successfully (30ms): stopApp
+02:22:03.815510 [DEBUG] Executing step 2: assertNotVisible: text="Landmarks"
+02:22:08.817356 [ERROR] Step 2 failed (5001ms): assertNotVisible: text="Landmarks" - Error: Element still visible: text='Landmarks' after 5s (cause: element should not be visible; still matched "Landmarks" at (89,2253 167x42))
+02:22:08.996974 [INFO] === Flow completed: intentional-stop (status: failed, duration: 6585ms, passed: 2, failed: 1, skipped: 0) ===
+02:22:09.405367 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+02:22:09.420796 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+02:22:09.420842 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+02:22:09.421059 [INFO] Generating reports...
+02:22:09.421915 [INFO] Shutting down devices started by maestro-runner...
+02:22:09.421925 [INFO] Shutting down all tracked emulators
+02:22:09.421932 [INFO] Shutting down all tracked simulators

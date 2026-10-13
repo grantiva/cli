@@ -1,0 +1,1 @@
+/Users/kyle/.grantiva-qa/bin/grantiva diff capture --device emulator-5554 --no-build --json; echo exit=$?; find .grantiva/captures/android -maxdepth 1 -type f -print | sort

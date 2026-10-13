@@ -1,0 +1,199 @@
+{
+  "id": "flow-000",
+  "name": "double-first",
+  "sourceFile": ".maestro/double-first.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T02:18:12.689256-07:00",
+  "endTime": "2026-10-13T02:18:16.628182-07:00",
+  "duration": 3938,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp (clearState)",
+      "status": "passed",
+      "startTime": "2026-10-13T02:18:12.69436-07:00",
+      "endTime": "2026-10-13T02:18:14.12736-07:00",
+      "duration": 1433,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:18:14.127946-07:00",
+      "endTime": "2026-10-13T02:18:14.957946-07:00",
+      "duration": 830,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Deep Links",
+        "bounds": {
+          "x": 734,
+          "y": 2127,
+          "width": 346,
+          "height": 210
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Gesture Lab\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:18:14.959171-07:00",
+      "endTime": "2026-10-13T02:18:15.729171-07:00",
+      "duration": 770,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Gesture Lab"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Gesture Lab",
+        "bounds": {
+          "x": 42,
+          "y": 475,
+          "width": 996,
+          "height": 126
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Taps: 0\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:18:15.730622-07:00",
+      "endTime": "2026-10-13T02:18:16.358622-07:00",
+      "duration": 628,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Taps: 0"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0960-0000-00ca00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "doubleTapOn",
+      "yaml": "doubleTapOn: id=\"gesture-pad\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:18:16.359574-07:00",
+      "endTime": "2026-10-13T02:18:16.546574-07:00",
+      "duration": 187,
+      "params": {
+        "selector": {
+          "type": "id",
+          "value": "gesture-pad"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0960-0000-00c800000004",
+        "bounds": {
+          "x": 0,
+          "y": 432,
+          "width": 1080,
+          "height": 1842
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Double taps: 1\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:18:16.547235-07:00",
+      "endTime": "2026-10-13T02:18:16.602235-07:00",
+      "duration": 55,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Double taps: 1"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0960-0000-00cb00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-006",
+      "index": 6,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Taps: 0\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:18:16.602672-07:00",
+      "endTime": "2026-10-13T02:18:16.626672-07:00",
+      "duration": 24,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Taps: 0"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0960-0000-00ca00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 7,
+    "mean": 561,
+    "p50": 628,
+    "p95": 1433,
+    "max": 1433,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

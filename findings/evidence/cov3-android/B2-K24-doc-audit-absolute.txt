@@ -1,0 +1,29 @@
+Candidate source provenance
+8f2cff676b3c12e951478920fa20e600cdca4e29
+
+$ sed -n 30,44p /Users/kyle/Developer/grantiva-cli/.worktrees/release-main/docs/android.md
+    build_args: ["-PsomeFlag=1"]
+    screens: [...]                   # same shape as iOS
+    flows: [...]
+    diff: {...}
+
+`grantiva-android.yml` may instead be written in Maestro format, as `grantiva.yml` can on iOS
+(see the README's Maestro Compatibility section): the `appId:` header is the application ID,
+the Gradle side takes its defaults (module `app`, variant `debug`), and each `takeScreenshot`
+is a screen. Selectors take `{id: ...}` there (`tapOn: {id: clock}`), which UIAutomator2
+matches against the resource ID or test tag.
+
+A `run --flow` with no config and no `--application-id` launches the app the flow's literal
+`appId:` header names.
+
+A `variant` or `module` Gradle does not know fails the build with Gradle's reason and a line
+
+$ sed -n 178,185p /Users/kyle/Developer/grantiva-cli/.worktrees/release-main/README.md
+- assertVisible: "Welcome"
+- takeScreenshot: "Welcome"
+```
+
+Each `takeScreenshot` becomes a named screen capture point. Commands between screenshots become navigation steps. Supported Maestro commands: `tapOn`, `doubleTapOn`, `longPressOn`, `inputText`, `assertVisible`, `assertNotVisible`, `swipe` (`direction:`, optionally with `from:`, or `start:`/`end:` as `"x%, y%"`, plus `duration:`), `scroll`, `scrollUntilVisible` (kept as a scroll, with its `direction:` and `timeout:`), `runFlow` (a file, `{file: ...}`, or inline `{commands: [...]}`; a `takeScreenshot` inside a sub-flow is a screen like one in the parent), `extendedWaitUntil` (`visible:` or `notVisible:`, with its `timeout:` kept), `waitForAnimationToEnd`, `launchApp`, `stopApp`, `killApp`, and `takeScreenshot`. `grantiva-android.yml` may be written in the same Maestro format; its `appId:` is the application ID. Selectors accept a string or `{text: ...}` (matches text) or `{id: ...}` (matches the accessibility identifier). Any other command (`back`, scripting, permissions, etc.) is rejected before the run starts, with an error naming the file and line: `grantiva.yml:5: unsupported Maestro command 'back'`. Flows run with `grantiva run --flow` go to the runner as written and are not limited to this list.
+
+The app a `run --flow` run launches is chosen in this order: `--bundle-id` / `--application-id`, then `bundle_id` / `application_id` in the config file, then the ID read from `--app-file`, then the flow's own `appId:` header (ignored when it is a `${VARIABLE}` reference), then project detection (iOS). Project detection runs only when building: with `--no-build` it is skipped, so pass `--bundle-id` or give the flow a literal `appId:`.
+

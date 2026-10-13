@@ -1,0 +1,174 @@
+{
+  "artifacts" : {
+
+  },
+  "commands" : [
+    {
+      "artifacts" : {
+
+      },
+      "duration" : 1944,
+      "endTime" : "2026-10-13T02:06:29.416942-07:00",
+      "id" : "cmd-000",
+      "index" : 0,
+      "startTime" : "2026-10-13T02:06:27.472942-07:00",
+      "status" : "passed",
+      "type" : "launchApp",
+      "yaml" : "launchApp"
+    },
+    {
+      "artifacts" : {
+
+      },
+      "duration" : 608,
+      "element" : {
+        "bounds" : {
+          "height" : 0,
+          "width" : 0,
+          "x" : 0,
+          "y" : 0
+        },
+        "found" : true,
+        "id" : "00000000-0000-000a-0000-002f00000004"
+      },
+      "endTime" : "2026-10-13T02:06:30.025973-07:00",
+      "id" : "cmd-001",
+      "index" : 1,
+      "params" : {
+        "selector" : {
+          "type" : "text",
+          "value" : "Landmarks"
+        }
+      },
+      "startTime" : "2026-10-13T02:06:29.417973-07:00",
+      "status" : "passed",
+      "type" : "assertVisible",
+      "yaml" : "assertVisible: text=\"Landmarks\""
+    },
+    {
+      "artifacts" : {
+
+      },
+      "duration" : 440,
+      "element" : {
+        "bounds" : {
+          "height" : 0,
+          "width" : 0,
+          "x" : 0,
+          "y" : 0
+        },
+        "found" : true,
+        "id" : "00000000-0000-000a-0000-003900000004"
+      },
+      "endTime" : "2026-10-13T02:06:30.466924-07:00",
+      "id" : "cmd-002",
+      "index" : 2,
+      "params" : {
+        "selector" : {
+          "type" : "text",
+          "value" : "Featured"
+        }
+      },
+      "startTime" : "2026-10-13T02:06:30.026924-07:00",
+      "status" : "passed",
+      "type" : "assertVisible",
+      "yaml" : "assertVisible: text=\"Featured\""
+    },
+    {
+      "artifacts" : {
+        "screenshotAfter" : "assets/flow-000/cmd-003-after.png"
+      },
+      "duration" : 287,
+      "endTime" : "2026-10-13T02:06:30.755039-07:00",
+      "error" : {
+        "message" : "Failed to take screenshot: send request: Get \"http://localhost/session/6cc0f483-9245-4646-b1f9-a8c967f7d6e3/screenshot\": EOF (cause: send request: Get \"http://localhost/session/6cc0f483-9245-4646-b1f9-a8c967f7d6e3/screenshot\": EOF)",
+        "type" : "unknown"
+      },
+      "id" : "cmd-003",
+      "index" : 3,
+      "startTime" : "2026-10-13T02:06:30.468039-07:00",
+      "status" : "failed",
+      "type" : "takeScreenshot",
+      "yaml" : "takeScreenshot"
+    },
+    {
+      "artifacts" : {
+
+      },
+      "id" : "cmd-004",
+      "index" : 4,
+      "params" : {
+        "selector" : {
+          "type" : "text",
+          "value" : "Golden Gate Bridge"
+        }
+      },
+      "status" : "skipped",
+      "type" : "tapOn",
+      "yaml" : "tapOn: text=\"Golden Gate Bridge\""
+    },
+    {
+      "artifacts" : {
+
+      },
+      "id" : "cmd-005",
+      "index" : 5,
+      "params" : {
+        "selector" : {
+          "type" : "text",
+          "value" : "San Francisco, CA"
+        }
+      },
+      "status" : "skipped",
+      "type" : "assertVisible",
+      "yaml" : "assertVisible: text=\"San Francisco, CA\""
+    },
+    {
+      "artifacts" : {
+
+      },
+      "id" : "cmd-006",
+      "index" : 6,
+      "params" : {
+        "selector" : {
+          "type" : "text",
+          "value" : "Plan Visit"
+        }
+      },
+      "status" : "skipped",
+      "type" : "assertVisible",
+      "yaml" : "assertVisible: text=\"Plan Visit\""
+    },
+    {
+      "artifacts" : {
+
+      },
+      "id" : "cmd-007",
+      "index" : 7,
+      "status" : "skipped",
+      "type" : "takeScreenshot",
+      "yaml" : "takeScreenshot"
+    }
+  ],
+  "device" : {
+    "id" : "emulator-5556",
+    "isSimulator" : true,
+    "name" : "google sdk_gphone64_arm64",
+    "osVersion" : "35",
+    "platform" : "android"
+  },
+  "duration" : 3475,
+  "endTime" : "2026-10-13T02:06:30.941193-07:00",
+  "id" : "flow-000",
+  "name" : "01-browse",
+  "sourceFile" : ".maestro/01-browse.yaml",
+  "startTime" : "2026-10-13T02:06:27.465391-07:00",
+  "stepLatency" : {
+    "count" : 4,
+    "max" : 1944,
+    "mean" : 819,
+    "p50" : 440,
+    "p95" : 1944,
+    "slowestType" : "launchApp"
+  }
+}

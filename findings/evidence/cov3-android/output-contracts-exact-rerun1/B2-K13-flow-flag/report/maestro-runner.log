@@ -1,0 +1,58 @@
+22:38:44.275777 [INFO] === Test execution started ===
+22:38:44.275845 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/output-contracts-exact-rerun1/B2-K13-flow-flag/report
+22:38:44.275851 [INFO] Platform: android
+22:38:44.275856 [INFO] Driver: uiautomator2
+22:38:44.276105 [INFO] Validated 1 flow(s)
+22:38:44.276124 [INFO] Single device execution mode
+22:38:44.276128 [INFO] Starting flow execution (parallel: false, devices: [])
+22:38:44.276132 [INFO] Creating driver for single device execution
+22:38:44.276136 [INFO] Connecting to Android device: emulator-5554
+22:38:44.357344 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+22:38:44.379282 [INFO] Starting UIAutomator2 server on device emulator-5554
+22:38:44.800653 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+22:38:44.813590 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+22:38:45.891892 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+22:38:45.902437 [INFO] Session created successfully: 4b6218fc-9d67-4cb4-8fc0-db3dd82ad82c
+22:38:45.951794 [INFO] Driver created: android on google sdk_gphone64_arm64
+22:38:45.954207 [INFO] === Starting flow: 01-browse ===
+22:38:45.954215 [INFO] Flow file: .maestro/01-browse.yaml
+22:38:45.954219 [INFO] Total steps: 8
+22:38:45.959420 [DEBUG] Executing step 0: launchApp
+22:38:46.174889 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+22:38:46.174940 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 28ms
+22:38:47.412914 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.164s after launch, pids [21391], drawn=true crashed=false (read 55ms)
+22:38:47.412980 [DEBUG] Step 0 completed successfully (1453ms): launchApp
+22:38:47.413457 [DEBUG] Executing step 1: assertVisible: text="Landmarks"
+22:38:47.413710 [DEBUG] Flutter: parallel search (text="Landmarks", id="")
+22:38:47.444897 [DEBUG] Flutter: com.kylebrowning.landmarks has no libflutter.so; not searching the Flutter VM
+22:38:47.444948 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+22:38:47.538284 [DEBUG] Step 1 completed successfully (124ms): assertVisible: text="Landmarks"
+22:38:47.539111 [DEBUG] Executing step 2: assertVisible: text="Featured"
+22:38:47.838155 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 47ms)
+22:38:47.838201 [DEBUG] crash check during a lookup in flight for 299ms: crashed=false (took 47ms)
+22:38:48.073900 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 32ms)
+22:38:48.073976 [DEBUG] crash check during a lookup in flight for 535ms: crashed=false (took 33ms)
+22:38:48.107036 [DEBUG] Step 2 completed successfully (567ms): assertVisible: text="Featured"
+22:38:48.107520 [DEBUG] Executing step 3: takeScreenshot
+22:38:48.241461 [DEBUG] Step 3 completed successfully (133ms): takeScreenshot
+22:38:48.241723 [DEBUG] Executing step 4: tapOn: text="Golden Gate Bridge"
+22:38:48.459023 [DEBUG] Step 4 completed successfully (217ms): tapOn: text="Golden Gate Bridge"
+22:38:48.459770 [DEBUG] Executing step 5: assertVisible: text="San Francisco, CA"
+22:38:48.491363 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 31ms)
+22:38:48.779814 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 37ms)
+22:38:48.779884 [DEBUG] crash check during a lookup in flight for 288ms: crashed=false (took 37ms)
+22:38:49.053176 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 60ms)
+22:38:49.053231 [DEBUG] crash check during a lookup in flight for 562ms: crashed=false (took 60ms)
+22:38:49.079423 [DEBUG] Step 5 completed successfully (619ms): assertVisible: text="San Francisco, CA"
+22:38:49.079886 [DEBUG] Executing step 6: assertVisible: text="Plan Visit"
+22:38:49.108587 [DEBUG] Step 6 completed successfully (28ms): assertVisible: text="Plan Visit"
+22:38:49.109020 [DEBUG] Executing step 7: takeScreenshot
+22:38:49.238283 [DEBUG] Step 7 completed successfully (129ms): takeScreenshot
+22:38:49.239597 [INFO] === Flow completed: 01-browse (status: passed, duration: 3284ms, passed: 8, failed: 0, skipped: 0) ===
+22:38:49.649492 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+22:38:49.664250 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+22:38:49.664289 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+22:38:49.664529 [INFO] Generating reports...
+22:38:49.665494 [INFO] Shutting down devices started by maestro-runner...
+22:38:49.665505 [INFO] Shutting down all tracked emulators
+22:38:49.665512 [INFO] Shutting down all tracked simulators

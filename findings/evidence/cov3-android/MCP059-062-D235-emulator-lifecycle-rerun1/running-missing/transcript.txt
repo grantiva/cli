@@ -1,0 +1,11 @@
+>> {"method": "initialize", "params": {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "round3", "version": "1"}}, "id": 1, "jsonrpc": "2.0"}
+<< [0.0s] {"id": 1, "jsonrpc": "2.0", "result": {"capabilities": {"resources": {"listChanged": false, "subscribe": true}, "tools": {"listChanged": false}}, "instructions": "Grantiva MCP server for iOS simulator and Android emulator automation. Use grantiva_* tools to interact with the device: tap, swipe, type, take screenshots, inspect the accessibility tree, build and run apps, manage simulators and emulators, and run visual regression tests.", "protocolVersion": "2025-03-26", "serverInfo": {"name": "grantiva", "version": "2.1.0"}}}
+>> {"method": "notifications/initialized", "params": {}}
+>> {"method": "tools/call", "params": {"name": "grantiva_emulator_delete", "arguments": {"name": "cov3-android"}}, "id": 2, "jsonrpc": "2.0"}
+<< [0.0s] {"id": 2, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: Invalid argument: AVD \"cov3-android\" is running as emulator-5554. Run `grantiva emulator teardown --serial emulator-5554` first.", "type": "text"}], "isError": true}}
+>> {"method": "tools/call", "params": {"name": "grantiva_emulator_boot", "arguments": {"name": "cov3-round3-definitely-missing-avd"}}, "id": 3, "jsonrpc": "2.0"}
+<< [0.1s] {"id": 3, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: Invalid argument: No attached device has the serial \"cov3-round3-definitely-missing-avd\" (see `adb devices`) and no AVD has that name (see `emulator -list-avds`). AVDs: Pixel_8_API_35, cov3-android.", "type": "text"}], "isError": true}}
+>> {"method": "tools/call", "params": {"name": "grantiva_emulator_list", "arguments": {}}, "id": 4, "jsonrpc": "2.0"}
+<< [0.1s] {"id": 4, "jsonrpc": "2.0", "result": {"content": [{"text": "Name | Serial | State\nPixel_8_API_35 | - | Shutdown\ncov3-android | emulator-5554 | Booted", "type": "text"}]}}
+nonjson_lines=0 server_alive=True
+exit=0

@@ -1,0 +1,28 @@
+forces the platform when both config files exist.
+
+## Launch environment
+
+Android has no launch-time process environment, so `--env KEY=VALUE`, a flow header's
+`env:` block, and a `launchApp: environment:` map are delivered as string intent extras:
+Grantiva writes them into the staged flow's `launchApp: arguments:` (merging with any
+`arguments:` the step already has), which the runner passes to the launch intent. Read
+them with `intent.getStringExtra("KEY")`. `--env` wins over a value the step sets, which
+wins over the header `env:`.
+
+## Captures and baselines
+
+Android captures go to `.grantiva/captures/android/` and baselines to
+## Logs
+
+`grantiva run --logs` streams `logcat` filtered to the app's uid, starting at the device's
+current time (the logcat buffer is not cleared). `--logs-tag <tag>` keeps one tag.
+`--logs-level` maps to a minimum logcat priority, for the tag or for every tag:
+
+| `--logs-level`      | logcat filter |
+|---------------------|---------------|
+| (none) or `default` | `*:I`         |
+| `info`              | `*:I`         |
+| `debug`             | `*:D`         |
+
+Any other value is rejected. `--logs-predicate` is iOS-only.
+

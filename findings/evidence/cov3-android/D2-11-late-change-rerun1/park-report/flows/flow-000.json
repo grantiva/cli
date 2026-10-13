@@ -1,0 +1,91 @@
+{
+  "id": "flow-000",
+  "name": "park",
+  "sourceFile": ".maestro/park.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T03:30:26.912334-07:00",
+  "endTime": "2026-10-13T03:30:29.856739-07:00",
+  "duration": 2944,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T03:30:26.916841-07:00",
+      "endTime": "2026-10-13T03:30:28.400841-07:00",
+      "duration": 1484,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Landmarks\"",
+      "status": "passed",
+      "startTime": "2026-10-13T03:30:28.401573-07:00",
+      "endTime": "2026-10-13T03:30:29.260573-07:00",
+      "duration": 859,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Landmarks",
+        "bounds": {
+          "x": 89,
+          "y": 2253,
+          "width": 167,
+          "height": 42
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Featured\"",
+      "status": "passed",
+      "startTime": "2026-10-13T03:30:29.261985-07:00",
+      "endTime": "2026-10-13T03:30:29.855985-07:00",
+      "duration": 594,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Featured"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-01ec-0000-003900000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 979,
+    "p50": 859,
+    "p95": 1484,
+    "max": 1484,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

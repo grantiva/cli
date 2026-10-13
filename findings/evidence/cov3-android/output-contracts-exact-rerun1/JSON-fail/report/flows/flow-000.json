@@ -1,0 +1,88 @@
+{
+  "id": "flow-000",
+  "name": "02-exact-negative",
+  "sourceFile": ".maestro/coverage/02-exact-negative.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T22:38:58.65468-07:00",
+  "endTime": "2026-10-12T22:39:18.485881-07:00",
+  "duration": 19831,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T22:38:58.660911-07:00",
+      "endTime": "2026-10-12T22:39:00.192911-07:00",
+      "duration": 1532,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Golden Gate.*\"",
+      "status": "passed",
+      "startTime": "2026-10-12T22:39:00.193598-07:00",
+      "endTime": "2026-10-12T22:39:01.183598-07:00",
+      "duration": 990,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate.*"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0862-0000-003f00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Golden Gate.*\", exact=true",
+      "status": "failed",
+      "startTime": "2026-10-12T22:39:01.184888-07:00",
+      "endTime": "2026-10-12T22:39:18.332888-07:00",
+      "duration": 17148,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate.*"
+        }
+      },
+      "error": {
+        "type": "assertion",
+        "message": "Element not visible: text='Golden Gate.*', exact=true (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: \"Golden Gate Bridge\", \"Categories\", \"Battery 100 percent.\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-002-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-002-hierarchy.xml"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 6556,
+    "p50": 1532,
+    "p95": 17148,
+    "max": 17148,
+    "slowestType": "assertVisible"
+  },
+  "artifacts": {}
+}

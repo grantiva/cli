@@ -1,0 +1,81 @@
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B2-K110-explicit-runner-rerun4/report
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 02-favorite (02-favorite.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Lake Tahoe" (1.0s)
+    ✓ tapOn: text="Favorite" (1.4s)
+    ✓ assertVisible: text="Unfavorite" (82ms)
+    ✓ tapOn: text="Landmarks" (129ms)
+    ✓ tapOn: text="Favorites" (899ms)
+    ✓ assertVisible: text="Lake Tahoe" (815ms)
+    ✓ takeScreenshot (132ms)
+    ✓ swipe: LEFT from text="Lake Tahoe" (762ms)
+    ✓ tapOn: text="Remove from favorites" (387ms)
+    ✓ assertNotVisible: text="Lake Tahoe" (97ms)
+    ✗ assertVisible: text="Landmarks you favorite will appear here." (17.1s)
+      ╰─ Element not visible: text='Landmarks you favorite will appear here.' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Landmarks", "Remove from favorites", "Favorites")
+✗ 02-favorite 24.4s
+
+  [1/1] 02-favorite (/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-android/android/.maestro/02-favorite.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Lake Tahoe" (1.0s)
+    ✓ tapOn: text="Favorite" (1.4s)
+    ✓ assertVisible: text="Unfavorite" (82ms)
+    ✓ tapOn: text="Landmarks" (129ms)
+    ✓ tapOn: text="Favorites" (899ms)
+    ✓ assertVisible: text="Lake Tahoe" (815ms)
+    ✓ takeScreenshot (132ms)
+    ✓ swipe: LEFT from text="Lake Tahoe" (762ms)
+    ✓ tapOn: text="Remove from favorites" (387ms)
+    ✓ assertNotVisible: text="Lake Tahoe" (97ms)
+    ✗ assertVisible: text="Landmarks you favorite will appear here." (17.1s)
+      ╰─ Element not visible: text='Landmarks you favorite will appear here.' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Landmarks", "Remove from favorites", "Favorites")
+    - takeScreenshot (skipped)
+✗ 02-favorite 24.4s
+
+  11 steps passing (24.4s)
+  1 steps failing
+  1 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  02-favorite                    ✗ FAIL      13     11      1      1      24.4s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1      13     11      1      1      24.4s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B2-K110-explicit-runner-rerun4/report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B2-K110-explicit-runner-rerun4/report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B2-K110-explicit-runner-rerun4/report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B2-K110-explicit-runner-rerun4/report/allure-results
+
+  Built by Grantiva
+

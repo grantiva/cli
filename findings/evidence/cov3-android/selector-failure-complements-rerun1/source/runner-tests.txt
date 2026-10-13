@@ -1,0 +1,1219 @@
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-48-		})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-49-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-50-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-51-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:52:func TestBaseStep_Describe(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-53-	tests := []struct {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-54-		name     string
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-55-		stepType StepType
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-56-		expected string
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-62-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-63-	for _, tt := range tests {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-64-		t.Run(tt.name, func(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-65-			b := BaseStep{StepType: tt.stepType}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:66:			if got := b.Describe(); got != tt.expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:67:				t.Errorf("Describe()=%q, want %q", got, tt.expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-68-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-69-		})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-70-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-71-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-72-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:73:func TestUnsupportedStep_Describe(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-74-	s := UnsupportedStep{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-75-		BaseStep: BaseStep{StepType: "unknownCommand"},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-76-		Reason:   "not implemented",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-77-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-78-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-79-	expected := "unknownCommand (unsupported: not implemented)"
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:80:	if got := s.Describe(); got != expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:81:		t.Errorf("Describe()=%q, want %q", got, expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-82-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-83-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-84-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-85-func TestStepInterface(t *testing.T) {
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-163-		// Verify interface methods are callable
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-164-		_ = step.Type()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-165-		_ = step.IsOptional()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-166-		_ = step.Label()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:167:		_ = step.Describe()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-168-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-169-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-170-	if len(steps) == 0 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-171-		t.Error("expected at least one step type")
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-519-		})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-520-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-521-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-522-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:523:func TestTapOnStep_Describe(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-524-	s := TapOnStep{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-525-		BaseStep: BaseStep{StepType: StepTapOn},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-526-		Selector: Selector{Text: "Login"},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-527-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-528-	expected := `tapOn: text="Login"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:529:	if got := s.Describe(); got != expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:530:		t.Errorf("Describe() = %q, want %q", got, expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-531-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-532-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-533-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:534:func TestDoubleTapOnStep_Describe(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-535-	s := DoubleTapOnStep{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-536-		BaseStep: BaseStep{StepType: StepDoubleTapOn},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-537-		Selector: Selector{ID: "btn"},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-538-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-539-	expected := `doubleTapOn: id="btn"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:540:	if got := s.Describe(); got != expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:541:		t.Errorf("Describe() = %q, want %q", got, expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-542-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-543-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-544-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:545:func TestLongPressOnStep_Describe(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-546-	s := LongPressOnStep{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-547-		BaseStep: BaseStep{StepType: StepLongPressOn},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-548-		Selector: Selector{CSS: ".menu-item"},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-549-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-550-	expected := `longPressOn: css=".menu-item"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:551:	if got := s.Describe(); got != expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:552:		t.Errorf("Describe() = %q, want %q", got, expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-553-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-554-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-555-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:556:func TestAssertVisibleStep_Describe(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-557-	s := AssertVisibleStep{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-558-		BaseStep: BaseStep{StepType: StepAssertVisible},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-559-		Selector: Selector{Text: "Welcome"},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-560-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-561-	expected := `assertVisible: text="Welcome"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:562:	if got := s.Describe(); got != expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:563:		t.Errorf("Describe() = %q, want %q", got, expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-564-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-565-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-566-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:567:func TestAssertNotVisibleStep_Describe(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-568-	s := AssertNotVisibleStep{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-569-		BaseStep: BaseStep{StepType: StepAssertNotVisible},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-570-		Selector: Selector{ID: "error"},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-571-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-572-	expected := `assertNotVisible: id="error"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:573:	if got := s.Describe(); got != expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:574:		t.Errorf("Describe() = %q, want %q", got, expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-575-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-576-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-577-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:578:func TestInputTextStep_Describe(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-579-	s := InputTextStep{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-580-		BaseStep: BaseStep{StepType: StepInputText},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-581-		Text:     "user@example.com",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-582-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-583-	expected := `inputText: "user@example.com"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:584:	if got := s.Describe(); got != expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:585:		t.Errorf("Describe() = %q, want %q", got, expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-586-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-587-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-588-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:589:func TestLaunchAppStep_Describe(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-590-	tests := []struct {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-591-		name       string
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-592-		clearState bool
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-593-		expected   string
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-609-			s := LaunchAppStep{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-610-				BaseStep:   BaseStep{StepType: StepLaunchApp},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-611-				ClearState: tt.clearState,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-612-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:613:			if got := s.Describe(); got != tt.expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:614:				t.Errorf("Describe() = %q, want %q", got, tt.expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-615-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-616-		})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-617-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-618-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-619-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:620:func TestWaitUntilStep_Describe(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-621-	tests := []struct {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-622-		name     string
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-623-		step     WaitUntilStep
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-624-		expected string
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-649-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-650-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-651-	for _, tt := range tests {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-652-		t.Run(tt.name, func(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:653:			if got := tt.step.Describe(); got != tt.expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:654:				t.Errorf("Describe() = %q, want %q", got, tt.expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-655-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-656-		})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-657-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-658-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-659-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:660:func TestScrollUntilVisibleStep_Describe(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-661-	s := ScrollUntilVisibleStep{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-662-		BaseStep: BaseStep{StepType: StepScrollUntilVisible},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-663-		Element:  Selector{Text: "End of list"},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-664-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-665-	expected := `scrollUntilVisible: text="End of list"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:666:	if got := s.Describe(); got != expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:667:		t.Errorf("Describe() = %q, want %q", got, expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-668-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-669-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-670-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:671:func TestCopyTextFromStep_Describe(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-672-	s := CopyTextFromStep{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-673-		BaseStep: BaseStep{StepType: StepCopyTextFrom},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-674-		Selector: Selector{ID: "price_label"},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-675-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-676-	expected := `copyTextFrom: id="price_label"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:677:	if got := s.Describe(); got != expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:678:		t.Errorf("Describe() = %q, want %q", got, expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-679-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-680-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-681-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:682:func TestRunFlowStep_Describe(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-683-	tests := []struct {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-684-		name     string
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-685-		step     RunFlowStep
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-686-		expected string
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-703-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-704-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-705-	for _, tt := range tests {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-706-		t.Run(tt.name, func(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:707:			if got := tt.step.Describe(); got != tt.expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:708:				t.Errorf("Describe() = %q, want %q", got, tt.expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-709-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-710-		})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-711-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-712-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-713-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:714:func TestPressKeyStep_Describe(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-715-	s := PressKeyStep{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-716-		BaseStep: BaseStep{StepType: StepPressKey},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-717-		Key:      "Enter",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-718-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-719-	expected := "pressKey: Enter"
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:720:	if got := s.Describe(); got != expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:721:		t.Errorf("Describe() = %q, want %q", got, expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-722-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-723-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-724-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:725:func TestSwipeStep_Describe(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-726-	tests := []struct {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-727-		name     string
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-728-		step     SwipeStep
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-729-		expected string
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-746-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-747-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-748-	for _, tt := range tests {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-749-		t.Run(tt.name, func(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:750:			if got := tt.step.Describe(); got != tt.expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:751:				t.Errorf("Describe() = %q, want %q", got, tt.expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-752-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-753-		})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-754-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-755-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-756-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:757:func TestScrollStep_Describe(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-758-	tests := []struct {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-759-		name     string
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-760-		step     ScrollStep
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-761-		expected string
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-778-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-779-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-780-	for _, tt := range tests {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-781-		t.Run(tt.name, func(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:782:			if got := tt.step.Describe(); got != tt.expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:783:				t.Errorf("Describe() = %q, want %q", got, tt.expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-784-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-785-		})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-786-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-787-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-788-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:789:func TestSetPermissionsStep_Describe(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-790-	s := SetPermissionsStep{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-791-		BaseStep:    BaseStep{StepType: StepSetPermissions},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-792-		Permissions: map[string]string{"camera": "allow"},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-793-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-794-	expected := "setPermissions"
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:795:	if got := s.Describe(); got != expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:796:		t.Errorf("Describe() = %q, want %q", got, expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-797-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-798-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-799-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-800-func TestStepTypeConstants(t *testing.T) {
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-882-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-883-// A value that came through a variable is described by the variable, even
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-884-// after expansion has overwritten Text — a password must not reach the
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-885-// report, console or log as its value (upstream users hit this as #2512).
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:886:func TestInputTextDescribe_KeepsVariableAfterExpansion(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-887-	f, err := Parse([]byte("- inputText: ${PASSWORD}\n- inputText:\n    text: ${USER}\n    id: user\n- inputText: plain\n"), "t.yaml")
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-888-	if err != nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-889-		t.Fatal(err)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-890-	}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-893-	plain := f.Steps[2].(*InputTextStep)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-894-	// Simulate the expand pass.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-895-	scalar.Text, mapped.Text = "hunter2", "alice"
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-896-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:897:	if got := scalar.Describe(); got != `inputText: "${PASSWORD}"` {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-898-		t.Errorf("scalar: %s", got)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-899-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:900:	if got := mapped.Describe(); got != `inputText: "${USER}"` {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-901-		t.Errorf("map form: %s", got)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-902-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go:903:	if got := plain.Describe(); got != `inputText: "plain"` {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-904-		t.Errorf("a literal is still shown as written: %s", got)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-905-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step_test.go-906-}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-488-		})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-489-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-490-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-491-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go:492:func TestSelector_Describe(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-493-	tests := []struct {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-494-		name     string
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-495-		selector Selector
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-496-		expected string
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-530-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-531-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-532-	for _, tt := range tests {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-533-		t.Run(tt.name, func(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go:534:			got := tt.selector.Describe()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-535-			if got != tt.expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go:536:				t.Errorf("Describe()=%q, want %q", got, tt.expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-537-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-538-		})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-539-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-540-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-541-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go:542:func TestSelector_DescribeQuoted(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-543-	tests := []struct {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-544-		name     string
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-545-		selector Selector
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-546-		expected string
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-628-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-629-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-630-	for _, tt := range tests {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-631-		t.Run(tt.name, func(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go:632:			got := tt.selector.DescribeQuoted()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-633-			if got != tt.expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go:634:				t.Errorf("DescribeQuoted() = %q, want %q", got, tt.expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-635-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-636-		})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-637-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-638-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-639-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go:640:func TestSelector_DescribeQuoted_InsideOf(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-641-	s := Selector{InsideOf: &Selector{ID: "container"}}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go:642:	// InsideOf alone does not set text/id/css, so IsEmpty is false but DescribeQuoted returns ""
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go:643:	got := s.DescribeQuoted()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-644-	if got != "" {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go:645:		t.Errorf("DescribeQuoted() = %q, want empty for insideOf-only selector", got)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-646-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-647-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-648-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-649-func TestSelector_HasNonZeroIndex(t *testing.T) {
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-856-		})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-857-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-858-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-859-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go:860:func TestSelector_Describe_NewFields(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-861-	tests := []struct {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-862-		name     string
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-863-		selector Selector
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-864-		expected string
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-916-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-917-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-918-	for _, tt := range tests {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-919-		t.Run(tt.name, func(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go:920:			got := tt.selector.Describe()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-921-			if got != tt.expected {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go:922:				t.Errorf("Describe()=%q, want %q", got, tt.expected)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-923-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-924-		})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-925-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_test.go-926-}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard.go-171-// actually held focus. That silent misdirection is #139. So when the previous
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard.go-172-// step wasn't an input, fall back to asking whether the keyboard is up at all.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard.go-173-//
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard.go-174-// Ordering matters for cost: `wasInput` short-circuits, so the tap-after-typing
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard.go:175:// path pays exactly what it did before. Only taps that previously skipped the
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard.go-176-// check outright spend a dumpsys, and only to discover the keyboard is down.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard.go-177-// keyboardCheckAlongside runs checkKeyboardBlocking for a tap or an
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard.go-178-// assertVisible step. After an input step the keyboard is likely up, so it
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard.go-179-// runs first, as before, and its result is returned at once. Otherwise only
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-619-		case <-ctx.Done():
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-620-			if lastErr != nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-621-				return nil, nil, fmt.Errorf("%s: %w", ctx.Err(), lastErr)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-622-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go:623:			return nil, nil, fmt.Errorf("element '%s' not found: %w", sel.Describe(), ctx.Err())
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-624-		default:
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-625-			if err := crashed(); err != nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-626-				return nil, nil, err
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-627-			}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-670-			// first match by its own bounds, if it has any on screen.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-671-			elem := matches[0]
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-672-			fallback := &core.ElementInfo{ID: elem.ID(), Visible: true, Enabled: true}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-673-			if berr := withBounds(elem, fallback); berr != nil || fallback.Bounds.Width <= 0 || fallback.Bounds.Height <= 0 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go:674:				lastErr = fmt.Errorf("matched %q but neither the page source nor the element gives a place to tap: %v", sel.Describe(), err)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-675-				continue
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-676-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go:677:			logger.Warn("[uiautomator2] tap %s: the page source did not place the match (%v); tapping the first match's own bounds %+v", sel.Describe(), err, fallback.Bounds)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-678-			return nil, fallback, nil
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-679-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-680-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-681-}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-812-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-813-			if lastErr != nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-814-				return nil, nil, fmt.Errorf("%s: %w", ctx.Err(), lastErr)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-815-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go:816:			return nil, nil, fmt.Errorf("element '%s' not found: %w", sel.Describe(), ctx.Err())
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-817-		default:
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-818-			if err := crashed(); err != nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-819-				return nil, nil, err
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-820-			}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1069-		case <-ctx.Done():
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1070-			if lastErr != nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1071-				return nil, nil, fmt.Errorf("%s: %w", ctx.Err(), lastErr)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1072-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go:1073:			return nil, nil, fmt.Errorf("element '%s' not found: %w", sel.Describe(), ctx.Err())
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1074-		default:
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1075-			if err := crashed(); err != nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1076-				return nil, nil, err
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1077-			}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1449-		case <-ctx.Done():
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1450-			if lastErr != nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1451-				return nil, nil, fmt.Errorf("%s: %w", ctx.Err(), lastErr)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1452-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go:1453:			return nil, nil, fmt.Errorf("element '%s' not found: %w", sel.Describe(), ctx.Err())
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1454-		default:
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1455-			if err := crashed(); err != nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1456-				return nil, nil, err
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/driver.go-1457-			}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/wait_crash.go-182-// screenshot) may take once an element wait found the app crashed (L05).
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/wait_crash.go-183-// The wait cancelled its lookup, but the server keeps working on it and
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/wait_crash.go-184-// answers later requests only after it; on a software-rendered AVD that took
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/wait_crash.go-185-// 10 s. What is on screen after a crash is the launcher, so a capture that
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/wait_crash.go:186:// cannot be had within the bound is skipped rather than waited for.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/wait_crash.go-187-const crashCaptureBound = 1500 * time.Millisecond
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/wait_crash.go-188-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/wait_crash.go-189-// boundedCall runs call under a context derived from parent that is
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/wait_crash.go-190-// cancelled after bound, and returns when call answers or the bound passes,
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/envfile.go-12-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/envfile.go-13-// ParseEnvFile reads a `.env`-style file and returns the key/value pairs.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/envfile.go-14-//
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/envfile.go-15-// Format (matches the de-facto dotenv convention):
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/envfile.go:16://   - Blank lines and lines starting with `#` are skipped.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/envfile.go-17-//   - Each non-comment line is `KEY=VALUE` (whitespace around `=` allowed; key
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/envfile.go-18-//     and value are trimmed).
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/envfile.go-19-//   - Values may be wrapped in single or double quotes (`KEY='v'` / `KEY="v"`);
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/envfile.go-20-//     content inside quotes is taken verbatim (including `#`, spaces).
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go-1492-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go-1493-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go-1494-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go-1495-func TestHandleEmulatorStartup_EmptyPlatform(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go:1496:	// Empty platform should be treated as Android (not skipped)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go-1497-	cfg := &RunConfig{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go-1498-		Platform:          "",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go-1499-		StartEmulator:     "",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go-1500-		AutoStartEmulator: false,
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go-1749-		Status:       report.StatusPassed,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go-1750-		Duration:     500,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go-1751-		FlowResults: []executor.FlowResult{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go-1752-			{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go:1753:				Name:         "skipped-flow",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go-1754-				Status:       report.StatusSkipped,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go-1755-				StepsTotal:   0,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go-1756-				StepsSkipped: 0,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go-1757-				Duration:     0,
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-54-	// staleReads is how many text reads after a key action still report the
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-55-	// value from before it, as an accessibility tree that lags the IME does.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-56-	staleReads int
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-57-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go:58:	pendingStale int
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-59-	staleValue   string
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-60-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-61-	valueCalls   int
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-62-	replaceCalls int
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-86-			v := f.value
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-87-			if f.keyActionsUnreadable {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-88-				v = f.readable
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-89-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go:90:			if f.pendingStale > 0 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go:91:				f.pendingStale--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-92-				v = f.staleValue
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-93-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-94-			writeJSON(w, map[string]interface{}{"value": v})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-95-		case "GET /source":
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-171-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-172-			f.keysTyped = append(f.keysTyped, typed.String())
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-173-			if !f.keyActionsIgnored {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-174-				f.staleValue = f.value
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go:175:				f.pendingStale = f.staleReads
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-176-				if f.keyActionsReplace || f.showingHint {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-177-					f.value = typed.String()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-178-				} else {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-179-					f.value += typed.String()
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-299-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-300-	if f.value != "abcdef" {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-301-		t.Fatalf("field = %q, want %q", f.value, "abcdef")
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-302-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go:303:	// The fallback would be skipped anyway, so there is nothing to wait for.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-304-	if elapsed := time.Since(start); elapsed > keyEventsSettle/2 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-305-		t.Errorf("took %v; a non-editable view must not wait out the %v settle", elapsed, keyEventsSettle)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-306-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/input_append_test.go-307-}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-179-		// The warning field marks a warned command (status stays "passed").
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-180-		printPassedStep(indent, description, duration, isSlow, cmd.Warning)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-181-	case report.StatusSkipped, report.StatusPending:
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-182-		// Never ran (a step before it failed, or the run stopped): drawn as
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go:183:		// skipped, matching the "steps skipped" total and the Skip column.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go:184:		fmt.Printf("%s%s-%s %s %s(skipped)%s\n",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-185-			indent, color(colorCyan), color(colorReset),
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-186-			description, color(colorGray), color(colorReset))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-187-	default:
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-188-		fmt.Printf("%s%s✗%s %s (%s)\n",
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-216-	// Calculate totals
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-217-	totalSteps := 0
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-218-	passedSteps := 0
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-219-	failedSteps := 0
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go:220:	skippedSteps := 0
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-221-	for _, fr := range result.FlowResults {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-222-		totalSteps += fr.StepsTotal
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-223-		passedSteps += fr.StepsPassed
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-224-		failedSteps += fr.StepsFailed
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go:225:		skippedSteps += fr.StepsSkipped
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-226-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-227-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-228-	// Print step summary
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-229-	fmt.Println()
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-233-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-234-	if failedSteps > 0 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-235-		fmt.Printf("  %s%d steps failing%s\n", color(colorRed), failedSteps, color(colorReset))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-236-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go:237:	if skippedSteps > 0 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go:238:		fmt.Printf("  %s%d steps skipped%s\n", color(colorCyan), skippedSteps, color(colorReset))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-239-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-240-	fmt.Println()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-241-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-242-	// Print table header with Device column
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-301-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-302-	fmt.Printf("  %s%-30s%s %s%6s%s %7d %6d %6d %6d %10s\n",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-303-		color(colorBold), "TOTAL", color(colorReset),
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-304-		statusColor, statusStr, color(colorReset),
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go:305:		totalSteps, passedSteps, failedSteps, skippedSteps,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-306-		formatDuration(result.Duration))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-307-	fmt.Println(strings.Repeat("═", tableWidth))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-308-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-309-
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard_test.go-55-			input: `    mViewVisibility=0x0 mHaveFrame=true mObscured=false
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard_test.go-56-    touchable region=SkRegion((0,1428,1080,2340))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard_test.go-57-    mHasSurface=true isReadyForDisplay()=true mWindowRemovalAllowed=false
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard_test.go-58-    Frames: parent=[0,136][1080,2340] display=[0,136][1080,2340] frame=[0,136][1080,2340]
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard_test.go:59:    mForceSeamlesslyRotate=false seamlesslyRotate: pending=null    isOnScreen=true`,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard_test.go-60-			want: &core.Bounds{X: 0, Y: 1428, Width: 1080, Height: 912},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard_test.go-61-		},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard_test.go-62-		{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard_test.go-63-			name: "Android 13+ keyboard hidden (isOnScreen=false)",
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard_test.go-481-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard_test.go-482-// TestCheckKeyboardBlocking_RunsWhenKeyboardUpWithoutPriorInput is the #139
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard_test.go-483-// regression, mirrored from the devicelab driver so the two can't drift. The
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard_test.go-484-// keyboard can be up because a field auto-focused on screen entry, not because
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard_test.go:485:// the previous step typed. The old `if !wasInput { return }` gate skipped the
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard_test.go-486-// check entirely then, so the coordinate tap landed on the keyboard while the
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard_test.go-487-// step still reported success.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard_test.go-488-func TestCheckKeyboardBlocking_RunsWhenKeyboardUpWithoutPriorInput(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/keyboard_test.go-489-	shell := &MockShellExecutor{
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/devices_test.go-53-		t.Errorf("the hint should point at doctor:\n%s", androidOnly)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/devices_test.go-54-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/devices_test.go-55-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/devices_test.go-56-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/devices_test.go:57:func TestDescribeStateOmitsVersionWhenUnknown(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/devices_test.go-58-	if got := describeState(DeviceEntry{Platform: "android", State: "device"}); got != "device" {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/devices_test.go-59-		t.Errorf("got %q, want bare state when no OS version is known", got)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/devices_test.go-60-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/devices_test.go-61-	if got := describeState(DeviceEntry{Platform: "ios", State: "Booted", OSVersion: "18.2"}); got != "Booted (iOS 18.2)" {
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-448-	timeout := d.calculateTimeout(step.IsOptional(), step.TimeoutMs)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-449-	ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-450-	defer cancel()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-451-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go:452:	desc := step.Selector.Describe()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-453-	observed := -1
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-454-	var lastErr error
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-455-	crashed := d.newCrashCheck()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-456-	for {
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1222-	var container *core.Bounds
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1223-	if !step.From.IsEmpty() {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1224-		_, info, findErr := d.findElement(step.From, false, step.TimeoutMs)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1225-		if findErr != nil || info == nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go:1226:			return errorResult(findErr, fmt.Sprintf("Scroll container not found: %s", step.From.Describe()))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1227-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1228-		bounds := info.Bounds
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1229-		container = &bounds
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1230-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1231-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1232-	// Height of a flush candidate awaiting confirmation, or -1 for none.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go:1233:	pendingHeight := -1
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1234-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1235-	// Stop early when the surface stops moving — a target that is not in the
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1236-	// list should not cost every scroll the step allows.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1237-	var progress core.ScrollProgress
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1259-				// to the scroll container, where a sliver at the fold scores
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1260-				// 100% (#164). A rect flush with the container's leading edge
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1261-				// gets one confirming scroll: a sliver grows, an element
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1262-				// resting at the end of the list does not.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go:1263:				if pendingHeight >= 0 && info.Bounds.Height <= pendingHeight {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1264-					return successResult(fmt.Sprintf("Element found after %d scrolls", i), info)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1265-				}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1266-				if !d.atScrollContainerEdge(info.Bounds, direction) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1267-					return successResult(fmt.Sprintf("Element found after %d scrolls", i), info)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1268-				}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go:1269:				pendingHeight = info.Bounds.Height
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1270-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1271-		} else if err != nil && !isElementNotFoundError(err) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1272-			// Real infrastructure failure — bail rather than silently looping.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1273-			return errorResult(err, "Failed to find element")
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1519-		if info == nil || info.Bounds.Width <= 0 || info.Bounds.Height <= 0 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1520-			return errorResult(fmt.Errorf("element has no bounds"),
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1521-				fmt.Sprintf("Element not found for swipe: %s", selectorDesc(*step.Selector)))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1522-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go:1523:		screenW, screenH, _ := d.screenSize() // (0,0) when unknown → far-edge clamp skipped
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1524-		startX, startY, endX, endY, err := core.SwipeCoordsForElement(
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1525-			direction, info.Bounds, screenW, screenH, step.Distance, step.Selector.Point)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1526-		if err != nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-1527-			return errorResult(err, fmt.Sprintf("Invalid swipe direction: %s", step.Direction))
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-2978-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-2979-	// Clear the MediaStore index. The package name differs by Android version —
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-2980-	// try the modular provider first, then the legacy one. We swallow individual
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-2981-	// errors and only fail when both attempts fail, because devices have one or
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go:2982:	// the other depending on version.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-2983-	var lastErr error
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-2984-	cleared := false
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-2985-	for _, pkg := range []string{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-2986-		"com.google.android.providers.media.module",
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-3066-		select {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-3067-		case <-ctx.Done():
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-3068-			return errorResult(
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-3069-				context.DeadlineExceeded,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go:3070:				fmt.Sprintf("Element '%s' not visible within %v", step.Visible.Describe(), timeout),
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-3071-			)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-3072-		default:
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-3073-			if err := crashed(); err != nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands.go-3074-				return d.elementFailure("Element not visible", *step.Visible, err)
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-70-		})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-71-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-72-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-73-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:74:// K03: steps that never ran after a failure are drawn as skipped, never as
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-75-// failed with a 0ms duration; the failed step keeps ✗ and its error line.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-76-func TestPrintCommandDrawsSkippedAndPendingAsSkipped(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-77-	tests := []struct {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-78-		name       string
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-79-		status     report.Status
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-80-		wantPrefix string
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-81-		wantErr    bool
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-82-	}{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:83:		{name: "skipped", status: report.StatusSkipped, wantPrefix: "- assertVisible"},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:84:		{name: "pending", status: report.StatusPending, wantPrefix: "- assertVisible"},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-85-		{name: "failed", status: report.StatusFailed, wantPrefix: "✗ assertVisible", wantErr: true},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-86-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-87-	for _, colors := range []bool{false, true} {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-88-		for _, tc := range tests {
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-107-					}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-108-					return
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-109-				}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-110-				if strings.Contains(plain, "✗") || strings.Contains(plain, "0ms") {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:111:					t.Errorf("skipped command drawn as a failure: %q", line)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-112-				}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:113:				if !strings.HasSuffix(line, "(skipped)") {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:114:					t.Errorf("line = %q, want it to end in (skipped)", line)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-115-				}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-116-			})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-117-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-118-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-119-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-120-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:121:// K03: in a whole summary the skipped-marked lines match the skipped total.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-122-func TestSummaryBlockSkippedCountMatchesTotals(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-123-	failed := report.Command{Type: "tapOn", YAML: `tapOn: text="No Such Element"`, Status: report.StatusFailed, Duration: ms(13000),
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-124-		Error: &report.Error{Message: "Element not found"}}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-125-	cmds := []report.Command{
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-138-	})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-139-	if n := strings.Count(out, "✗"); n != 1 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-140-		t.Errorf("✗ lines = %d, want 1:\n%s", n, out)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-141-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:142:	if n := strings.Count(out, "(skipped)"); n != 2 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:143:		t.Errorf("skipped lines = %d, want 2 (the skipped total):\n%s", n, out)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-144-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-145-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-146-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-147-// K04: an Android emulator is an emulator; an iOS simulator stays a
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/doctor.go-82-	return nil
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/doctor.go-83-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/doctor.go-84-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/doctor.go-85-// RunDoctorChecks probes the host. teamID is optional; when empty the signing
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/doctor.go:86:// check is skipped rather than guessed at.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/doctor.go-87-func RunDoctorChecks(teamID string) []DoctorCheck {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/doctor.go-88-	var checks []DoctorCheck
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/doctor.go-89-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/doctor.go-90-	checks = append(checks, checkCommand("adb", "adb (Android SDK)", "Android runs need adb. Install Android platform-tools and put them on PATH."))
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/doctor.go-308-	return teams
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/doctor.go-309-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/doctor.go-310-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/doctor.go-311-// teamIDsFromPEM extracts the OU of every certificate in a PEM bundle. Expired
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/doctor.go:312:// certificates are skipped — they are exactly as useless to a build as an
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/doctor.go-313-// absent one, and listing them would send someone chasing a team they cannot
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/doctor.go-314-// sign with.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/doctor.go-315-func teamIDsFromPEM(pemData string) []string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/doctor.go-316-	var teams []string
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive_test.go-81-	if index.EndTime == nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive_test.go-82-		t.Error("report has no endTime at hold time")
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive_test.go-83-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive_test.go-84-	if index.Summary.Pending != 0 || index.Summary.Running != 0 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive_test.go:85:		t.Errorf("summary still has pending=%d running=%d at hold time",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive_test.go-86-			index.Summary.Pending, index.Summary.Running)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive_test.go-87-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive_test.go-88-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive_test.go-89-	// The run must not have finished on its own — that is the whole point.
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-6-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-7-	"gopkg.in/yaml.v3"
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-8-)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-9-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go:10:// TestDescribeRendersAllSetSelectors covers the reporting half of the
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-11-// visible-selector false green: the runner echoed
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-12-// `extendedWaitUntil: visible text="Advertising"` for a selector that ALSO set
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-13-// an id, so the log hid half the criteria being (mis)applied.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go:14:func TestDescribeRendersAllSetSelectors(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-15-	sel := &Selector{Text: "Advertising", ID: "totally.bogus.identifier"}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-16-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go:17:	quoted := sel.DescribeQuoted()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-18-	if !strings.Contains(quoted, `text="Advertising"`) || !strings.Contains(quoted, `id="totally.bogus.identifier"`) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go:19:		t.Errorf("DescribeQuoted() = %q, want both text and id rendered", quoted)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-20-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-21-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go:22:	desc := sel.Describe()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-23-	if !strings.Contains(desc, "Advertising") || !strings.Contains(desc, "totally.bogus.identifier") {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go:24:		t.Errorf("Describe() = %q, want both text and id rendered", desc)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-25-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-26-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-27-	step := &WaitUntilStep{Visible: sel}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go:28:	if !strings.Contains(step.Describe(), "totally.bogus.identifier") {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go:29:		t.Errorf("WaitUntilStep.Describe() = %q, want the id included", step.Describe())
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-30-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-31-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-32-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-33-// Single-field selectors must render exactly as before — this is what every
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-34-// existing flow's logs and failure messages look like.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go:35:func TestDescribeSingleFieldUnchanged(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go:36:	if got := (&Selector{Text: "Login"}).Describe(); got != "Login" {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go:37:		t.Errorf("Describe() = %q, want %q", got, "Login")
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-38-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go:39:	if got := (&Selector{ID: "loginBtn"}).Describe(); got != "#loginBtn" {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go:40:		t.Errorf("Describe() = %q, want %q", got, "#loginBtn")
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-41-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go:42:	if got := (&Selector{Text: "Login"}).DescribeQuoted(); got != `text="Login"` {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go:43:		t.Errorf("DescribeQuoted() = %q, want %q", got, `text="Login"`)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-44-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go:45:	if got := (&Selector{}).Describe(); got != "" {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go:46:		t.Errorf("Describe() = %q, want empty", got)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-47-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-48-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-49-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector_describe_test.go-50-func TestSelectorExactParses(t *testing.T) {
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive.go-138-	activeCleanup = nil
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive.go-139-	cleanupMu.Unlock()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive.go-140-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive.go-141-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive.go:142:// releaseKeepAlive releases a pending keep-alive hold. It reports whether a
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive.go-143-// hold was actually waiting — the signal handler uses that to decide between
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive.go-144-// "release the session" and "abort the run".
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive.go-145-func releaseKeepAlive() bool {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive.go-146-	keepAliveMu.Lock()
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go-357-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go-358-	return parts
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go-359-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go-360-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go:361:// Describe returns a human-readable description.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go-362-// With a single primary field set the rendering is unchanged; when several are
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go-363-// set they are all rendered so the description reflects the full criteria.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go:364:func (s *Selector) Describe() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go-365-	parts := s.describeParts(false)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go-366-	switch len(parts) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go-367-	case 0:
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go-368-		return ""
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go-372-		return strings.Join(s.describeParts(true), ", ")
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go-373-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go-374-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go-375-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go:376:// DescribeQuoted returns a quoted description like text="value" or id="value".
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go-377-// When several primary selectors are set, all of them are rendered.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go:378:func (s *Selector) DescribeQuoted() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go-379-	parts := s.describeParts(true)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go-380-	if len(parts) == 0 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go-381-		return ""
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/selector.go-382-	}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-7-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-8-// A step line must say what the step used: the index of a selector, the
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-9-// point of a point tap and the endpoints of a start/end swipe. Parsed from
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-10-// YAML so the fields land where real flows put them.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go:11:func TestDescribeNamesIndexPointAndSwipeEndpoints(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-12-	tests := []struct {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-13-		name string
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-14-		yaml string
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-15-		want string
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-88-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-89-			if len(f.Steps) != 1 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-90-				t.Fatalf("steps = %d, want 1", len(f.Steps))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-91-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go:92:			got := f.Steps[0].Describe()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-93-			if got != tc.want {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go:94:				t.Errorf("Describe() = %q, want %q", got, tc.want)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-95-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-96-			if strings.HasSuffix(got, ": ") || strings.HasSuffix(got, ":") {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go:97:				t.Errorf("Describe() = %q ends with an empty target", got)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-98-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-99-		})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-100-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-101-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-102-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-103-// A selector that only sets index still describes itself.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go:104:func TestSelectorWithOnlyIndexIsNotDescribedAsEmpty(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-105-	s := Selector{Index: "3"}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go:106:	if got := s.DescribeQuoted(); got != "index=3" {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go:107:		t.Errorf("DescribeQuoted() = %q, want %q", got, "index=3")
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-108-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go:109:	if got := s.Describe(); got != "index=3" {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go:110:		t.Errorf("Describe() = %q, want %q", got, "index=3")
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-111-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/describe_details_test.go-112-}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/deterministic_gestures_test.go-537-	if len(l.drags) == 0 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/deterministic_gestures_test.go-538-		t.Fatal("want held drags through the server")
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/deterministic_gestures_test.go-539-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/deterministic_gestures_test.go-540-	// No drag is longer than the list can show whole rows across, so no row
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/deterministic_gestures_test.go:541:	// is skipped between two looks.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/deterministic_gestures_test.go-542-	for _, dist := range l.drags {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/deterministic_gestures_test.go-543-		if dist <= 0 || dist > listBottom-listTop-rowPitch {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/deterministic_gestures_test.go-544-			t.Errorf("drag of %d px, want 1-%d px", dist, listBottom-listTop-rowPitch)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/deterministic_gestures_test.go-545-		}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-130-type Step interface {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-131-	Type() StepType
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-132-	IsOptional() bool
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-133-	Label() string
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:134:	Describe() string
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-135-	// PlatformGate returns the platform this step is restricted to
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-136-	// ("ios"/"android"/"web", lowercased) or "" to run on all platforms.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-137-	PlatformGate() string
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-138-}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-143-	Optional  bool     `yaml:"optional"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-144-	StepLabel string   `yaml:"label"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-145-	TimeoutMs int      `yaml:"timeout"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-146-	// Platform restricts this step to a single platform; when set and it
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:147:	// doesn't match the running driver, the step is skipped (Maestro #1353).
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-148-	Platform string `yaml:"platform"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-149-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-150-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-151-// PlatformGate returns the step's platform restriction, lowercased, or "".
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-159-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-160-// Label returns the step label.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-161-func (b *BaseStep) Label() string { return b.StepLabel }
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-162-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:163:// Describe returns a human-readable description.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:164:func (b *BaseStep) Describe() string { return string(b.StepType) }
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-165-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-166-// ============================================
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-167-// Navigation & Interaction Steps
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-168-// ============================================
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-233-	// the finger, so moving too fast skips drop zones; default one second.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-234-	Duration int `yaml:"duration"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-235-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-236-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:237:// Describe returns a human-readable description of the drag step.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:238:func (s *DragAndDropStep) Describe() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:239:	return "dragAndDrop: " + s.From.DescribeQuoted() + " → " + s.To.DescribeQuoted()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-240-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-241-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-242-type SwipeStep struct {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-243-	BaseStep              `yaml:",inline"`
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-364-	Text     string   `yaml:"text"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-365-	KeyPress bool     `yaml:"keyPress"` // If true, simulate real key presses (Android native only)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-366-	Selector Selector `yaml:",inline"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-367-	// RawText is `text:` exactly as written in the flow, before variable
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:368:	// expansion overwrites Text. Describe prints this form when it carried a
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-369-	// variable, so a password passed through `${PASSWORD}` reaches the report,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-370-	// the console and the log as `${PASSWORD}` and not as its value.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-371-	RawText string `yaml:"-"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-372-}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-702-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-703-// RunFlowStep runs another flow.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-704-//
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-705-// When `when:` evaluates false, execution falls through to the else branch
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:706:// (ElseFile / ElseSteps). If no else branch is set, the step is skipped.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-707-type RunFlowStep struct {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-708-	BaseStep  `yaml:",inline"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-709-	File      string            `yaml:"file"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-710-	Steps     []Step            `yaml:"-"` // Inline steps (commands)
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1029-	BaseStep   `yaml:",inline"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1030-	DurationMs int `yaml:"duration"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1031-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1032-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1033:// Describe returns a human-readable description of the wait step.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1034:func (s *WaitStep) Describe() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1035-	return fmt.Sprintf("wait: %dms", s.DurationMs)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1036-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1037-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1038-// DefineVariablesStep defines variables.
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1046-	BaseStep `yaml:",inline"`
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1047-	Reason   string
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1048-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1049-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1050:// Describe returns a description including the unsupported reason.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1051:func (s *UnsupportedStep) Describe() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1052-	return string(s.StepType) + " (unsupported: " + s.Reason + ")"
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1053-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1054-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1055-// ============================================
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1056:// Describe() implementations for detailed output
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1057-// ============================================
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1058-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1059:// describeTapTarget renders what a tap-family step aims at: its selector
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1060-// (index included) and, when set, the point it taps, either on the screen or
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1061-// inside the matched element.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1062:func describeTapTarget(sel *Selector, point string) string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1063-	if point == "" {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1064-		point = sel.Point
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1065-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1066-	parts := sel.describeParts(true)
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1069-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1070-	return strings.Join(parts, ", ")
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1071-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1072-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1073:// Describe returns a human-readable description of the tap step.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1074:func (s *TapOnStep) Describe() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1075:	return "tapOn: " + describeTapTarget(&s.Selector, s.Point)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1076-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1077-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1078:// Describe returns a human-readable description of the double tap step.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1079:func (s *DoubleTapOnStep) Describe() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1080:	return "doubleTapOn: " + describeTapTarget(&s.Selector, "")
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1081-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1082-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1083:// Describe returns a human-readable description of the long press step.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1084:func (s *LongPressOnStep) Describe() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1085:	return "longPressOn: " + describeTapTarget(&s.Selector, "")
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1086-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1087-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1088:// Describe returns a human-readable description of the assert visible step.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1089:func (s *AssertVisibleStep) Describe() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1090-	if s.Count != "" {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1091:		return "assertVisible: " + s.Selector.DescribeQuoted() + " (count: " + s.Count + ")"
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1092-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1093:	return "assertVisible: " + s.Selector.DescribeQuoted()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1094-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1095-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1096:// Describe returns a human-readable description of the assert not visible step.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1097:func (s *AssertNotVisibleStep) Describe() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1098:	return "assertNotVisible: " + s.Selector.DescribeQuoted()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1099-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1100-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1101:// Describe returns a human-readable description of the input text step.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1102:func (s *InputTextStep) Describe() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1103-	// A value that arrived through a variable is described by the variable.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1104-	// Expansion mutates Text in place, and a sub-flow's steps are described
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1105-	// after that, so without this the expanded secret is what the report and
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1106-	// console would show.
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1109-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1110-	return "inputText: \"" + s.Text + "\""
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1111-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1112-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1113:// Describe returns a human-readable description of the launch app step.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1114:func (s *LaunchAppStep) Describe() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1115-	if s.ClearState {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1116-		return "launchApp (clearState)"
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1117-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1118-	return "launchApp"
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1119-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1120-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1121:// Describe returns a human-readable description of the wait until step.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1122:func (s *WaitUntilStep) Describe() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1123-	if s.Visible != nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1124:		return "extendedWaitUntil: visible " + s.Visible.DescribeQuoted()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1125-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1126-	if s.NotVisible != nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1127:		return "extendedWaitUntil: notVisible " + s.NotVisible.DescribeQuoted()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1128-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1129-	return "extendedWaitUntil"
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1130-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1131-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1132:// Describe returns a human-readable description of the scroll until visible step.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1133:func (s *ScrollUntilVisibleStep) Describe() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1134:	return "scrollUntilVisible: " + s.Element.DescribeQuoted()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1135-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1136-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1137:// Describe returns a human-readable description of the copy text step.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1138:func (s *CopyTextFromStep) Describe() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1139:	return "copyTextFrom: " + s.Selector.DescribeQuoted()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1140-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1141-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1142:// Describe returns a human-readable description of the run flow step.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1143:func (s *RunFlowStep) Describe() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1144-	if s.File != "" {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1145-		return "runFlow: " + s.File
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1146-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1147-	return "runFlow"
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1148-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1149-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1150:// Describe returns a human-readable description of the press key step.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1151:func (s *PressKeyStep) Describe() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1152-	return "pressKey: " + s.Key
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1153-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1154-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1155:// Describe returns a human-readable description of the swipe step: its
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1156-// direction (and the element it starts from), or its start and end points.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1157:func (s *SwipeStep) Describe() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1158-	if s.Direction != "" {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1159-		desc := "swipe: " + s.Direction
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1160-		if s.Selector != nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1161:			if from := s.Selector.DescribeQuoted(); from != "" {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1162-				desc += " from " + from
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1163-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1164-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1165-		return desc
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1174-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1175-	return "swipe"
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1176-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1177-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1178:// Describe returns a human-readable description of the scroll step.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1179:func (s *ScrollStep) Describe() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1180-	if s.Direction != "" {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1181-		return "scroll: " + s.Direction
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1182-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1183-	return "scroll"
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1184-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1185-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1186:// Describe returns a human-readable description of the set permissions step.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go:1187:func (s *SetPermissionsStep) Describe() string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1188-	return "setPermissions"
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/step.go-1189-}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/pagesource_exacttext_test.go-45-		{ResourceID: "com.app:id/login_button"},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/pagesource_exacttext_test.go-46-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/pagesource_exacttext_test.go-47-	for _, sel := range []flow.Selector{{Text: "Open"}, {Text: "English"}, {ID: "login"}} {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/pagesource_exacttext_test.go-48-		if got := FilterBySelector(elements, sel); len(got) != 0 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/pagesource_exacttext_test.go:49:			t.Errorf("%s must not match part of a value, got %+v", sel.Describe(), *got[0])
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/pagesource_exacttext_test.go-50-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/pagesource_exacttext_test.go-51-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/pagesource_exacttext_test.go-52-	if got := FilterBySelector(elements, flow.Selector{Text: ".*Open.*"}); len(got) != 1 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/pagesource_exacttext_test.go-53-		t.Errorf(".*Open.* should match the row, got %d", len(got))
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/visibility_wait.go-48-		return errorResult(err, msg)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/visibility_wait.go-49-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/visibility_wait.go-50-	if sel.Text != "" {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/visibility_wait.go-51-		if closest := d.closestOnScreenTexts(sel.Text); len(closest) > 0 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/visibility_wait.go:52:			err = fmt.Errorf("%w; closest on-screen texts: %s", err, strings.Join(closest, ", "))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/visibility_wait.go-53-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/visibility_wait.go-54-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/visibility_wait.go-55-	return errorResult(err, msg)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/visibility_wait.go-56-}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-1761-	if err != nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-1762-		t.Fatalf("unexpected error: %v", err)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-1763-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-1764-	if len(flows) != 0 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go:1765:		t.Errorf("expected 0 flows (invalid skipped), got %d", len(flows))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-1766-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-1767-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-1768-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-1769-func TestParseDirectory_NonExistent(t *testing.T) {
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-2358-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-2359-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-2360-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-2361-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go:2362:func TestAssertVisibleStep_DescribeWithCount(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-2363-	s := &AssertVisibleStep{Selector: Selector{ID: "row"}, Count: "3"}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go:2364:	got := s.Describe()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-2365-	if !strings.Contains(got, "count: 3") {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go:2366:		t.Errorf("Describe() = %q, want it to mention the count", got)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-2367-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-2368-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-2369-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-2370-func TestParse_DragAndDrop(t *testing.T) {
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-2633-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-2634-		if w.DurationMs != 2000 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-2635-			t.Errorf("DurationMs = %d, want 2000", w.DurationMs)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-2636-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go:2637:		if got := w.Describe(); got != "wait: 2000ms" {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go:2638:			t.Errorf("Describe = %q, want %q", got, "wait: 2000ms")
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-2639-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-2640-	})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-2641-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/flow/parser_test.go-2642-	t.Run("mapping form with options", func(t *testing.T) {
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-614-	// Artifacts
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-615-	Artifacts executor.ArtifactMode // When to capture screenshots/hierarchy
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-616-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-617-	// FailFast stops the run after the first failing flow; the remaining flows
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:618:	// are recorded as skipped rather than executed.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-619-	FailFast bool
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-620-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-621-	// KeepAlive holds the driver/agent session open after every flow has
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-622-	// finished, until the process receives SIGINT or SIGTERM.
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1109-	if err != nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1110-		logger.Error("Flow execution failed: %v", err)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1111-		return err
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1112-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:1113:	logger.Info("Flow execution completed: %d passed, %d failed, %d skipped",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1114-		result.PassedFlows, result.FailedFlows, result.SkippedFlows)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1115-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1116-	// 6. Print unified output (works for both single and parallel)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1117-	if err := printUnifiedOutput(cfg.OutputDir, result); err != nil {
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1874-	// Calculate totals
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1875-	totalSteps := 0
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1876-	passedSteps := 0
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1877-	failedSteps := 0
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:1878:	skippedSteps := 0
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1879-	for _, fr := range result.FlowResults {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1880-		totalSteps += fr.StepsTotal
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1881-		passedSteps += fr.StepsPassed
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1882-		failedSteps += fr.StepsFailed
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:1883:		skippedSteps += fr.StepsSkipped
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1884-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1885-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1886-	// Print step summary
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1887-	fmt.Println()
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1890-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1891-	if failedSteps > 0 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1892-		fmt.Printf("  %s%d steps failing%s\n", color(colorRed), failedSteps, color(colorReset))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1893-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:1894:	if skippedSteps > 0 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:1895:		fmt.Printf("  %s%d steps skipped%s\n", color(colorCyan), skippedSteps, color(colorReset))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1896-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1897-	fmt.Println()
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1898-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1899-	// Print table
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1938-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1939-	fmt.Printf("  %s%-42s%s %s%6s%s %7d %6d %6d %6d %10s\n",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1940-		color(colorBold), "TOTAL", color(colorReset),
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1941-		statusColor, statusStr, color(colorReset),
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:1942:		totalSteps, passedSteps, failedSteps, skippedSteps,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1943-		formatDuration(result.Duration))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1944-	fmt.Println(strings.Repeat("═", tableWidth))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1945-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-1946-
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-39-	return r.Message + " (cause: " + r.Error.Error() + ")"
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-40-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-41-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-42-// K02: a failed assertVisible names the selector, carries the WebDriver text
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go:43:// at most once, and lists the closest on-screen texts.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-44-func TestAssertVisibleNotFoundNamesSelectorOnce(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-45-	d := New(timingOutLookup(), screen1080(), nil)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-46-	r := d.assertVisible(&flow.AssertVisibleStep{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-47-		Selector: flow.Selector{Text: "Golden Gate.*", Exact: true},
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-56-	line := renderedFailure(r)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-57-	if n := strings.Count(line, "could not be located"); n > 1 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-58-		t.Errorf("WebDriver text appears %d times: %s", n, line)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-59-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go:60:	if !strings.Contains(line, `closest on-screen texts: "Golden Gate Bridge"`) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go:61:		t.Errorf("want the closest on-screen texts in the cause, got: %s", line)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-62-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-63-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-64-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/not_found_message_test.go-65-// K02: tapOn on a missing element says Element not found and names it.
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/pagesource.go-271-// matches "7000.00" at all; this still puts an exact value ahead of one a
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/pagesource.go-272-// dotted or line-wrapped selector matches only as a regex.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/pagesource.go-273-//
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/pagesource.go-274-// Applied AFTER the full selector has been satisfied, never instead of it. An
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/pagesource.go:275:// exact text match that skipped the rest of the selector would return an
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/pagesource.go-276-// element with the right text and the wrong id — the OR behaviour removed in
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/pagesource.go-277-// #157/#158/#160. Reported by @nt-ben-leblond (#161).
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/pagesource.go-278-func preferExactText(matches []*ParsedElement, sel flow.Selector) []*ParsedElement {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/pagesource.go-279-	if sel.Text == "" || looksLikeRegex(sel.Text) || len(matches) < 2 {
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-2794-		t.Errorf("batched command reads the requested permissions %d times, want 1", n)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-2795-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-2796-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-2797-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go:2798:// L57: one grant of a batch fails as undeclared (skipped quietly for
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-2799-// `all`), another fails for real; the batch reports the real failure only.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-2800-func TestApplyPermissionsBatchReportsEachResult(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-2801-	resp := allReported(len(getAllPermissions()), map[int]bool{0: true})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-2802-	resp = strings.Replace(resp, "@@perm 3 255 has not requested permission p3",
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-3356-		Speed:  3600,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-3357-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-3358-	result := driver.travel(step)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-3359-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go:3360:	// Malformed points are silently skipped (continue), so success
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-3361-	if !result.Success {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go:3362:		t.Errorf("expected success (malformed points are skipped), got error: %v", result.Error)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-3363-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-3364-	// No shell commands should have been issued since no valid points
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-3365-	if len(shell.commands) != 0 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/driver/uiautomator2/commands_test.go-3366-		t.Errorf("expected 0 commands for malformed points, got %d", len(shell.commands))

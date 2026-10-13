@@ -1,0 +1,691 @@
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/EmulatorCommandTests.swift-86-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/EmulatorCommandTests.swift-87-    func testSessionsRenderOneLinePerEmulator() {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/EmulatorCommandTests.swift-88-        let record = EmulatorSessionRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: 42, startedAt: Date(), processAlive: true, adbState: "device")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/EmulatorCommandTests.swift-89-        XCTAssertEqual(EmulatorCommand.Sessions.render([record]), ["Grantiva-started emulators (1):", "  emulator-5554 (Pixel_8_API_35) — pid 42 running, adb: device"])
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/EmulatorCommandTests.swift:90:        XCTAssertEqual(EmulatorCommand.Sessions.render([]), ["No emulators started by Grantiva are running."])
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/EmulatorCommandTests.swift-91-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/EmulatorCommandTests.swift-92-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/EmulatorCommandTests.swift-93-    func testEmulatorIsARootSubcommand() {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/EmulatorCommandTests.swift-94-        XCTAssertTrue(GrantivaCommand.configuration.subcommands.contains { ObjectIdentifier($0) == ObjectIdentifier(EmulatorCommand.self) })
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/EmulatorCommandTests.swift-103-        do {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/EmulatorCommandTests.swift-104-            _ = try await EmulatorCommand.Teardown.teardown(manager, serial: "emulator-5598", force: false)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/EmulatorCommandTests.swift-105-            XCTFail("expected the not-started-by-Grantiva refusal")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/EmulatorCommandTests.swift-106-        } catch {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/EmulatorCommandTests.swift:107:            XCTAssertTrue(error.localizedDescription.contains("was not started by Grantiva"), "\(error)")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/EmulatorCommandTests.swift-108-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/EmulatorCommandTests.swift-109-        XCTAssertEqual(try ledger.createdAVDs(), ["Kept"])
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/EmulatorCommandTests.swift-110-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/EmulatorCommandTests.swift-111-
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-7-/// started. The full simulator path (grantiva-runner → WebDriverAgent's
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-8-/// xcodebuild → simctl diagnose) cannot run in a unit test, but the property
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-9-/// that makes reaping work — one process group per runner, signalled as a unit —
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-10-/// is exercised here with a stand-in process tree.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:11:final class ChildProcessTests: XCTestCase {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-12-    private var scratch: URL!
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-13-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-14-    override func setUpWithError() throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-15-        scratch = FileManager.default.temporaryDirectory
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-30-    func testChildIsLeaderOfItsOwnProcessGroup() throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-31-        let output = try devNullOutput()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-32-        defer { Darwin.close(output) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-33-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:34:        let child = try ChildProcess.spawn(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-35-            executable: "/bin/sh",
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-36-            arguments: ["-c", "sleep 30"],
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-37-            stdout: output,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-38-            stderr: output
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-52-        // Stands in for grantiva-runner starting WebDriverAgent's xcodebuild:
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-53-        // a grandchild that outlives the direct child unless the whole group is
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-54-        // signalled.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-55-        let pidFile = scratch.appendingPathComponent("grandchild.pid").path
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:56:        let child = try ChildProcess.spawn(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-57-            executable: "/bin/sh",
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-58-            arguments: ["-c", "sleep 60 & echo $! > \(pidFile); sleep 60"],
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-59-            stdout: output,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-60-            stderr: output
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-86-    func testExitStatusIsReported() throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-87-        let output = try devNullOutput()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-88-        defer { Darwin.close(output) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-89-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:90:        let child = try ChildProcess.spawn(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-91-            executable: "/bin/sh",
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-92-            arguments: ["-c", "exit 7"],
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-93-            stdout: output,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-94-            stderr: output
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-96-        XCTAssertEqual(child.wait(), 7)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-97-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-98-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-99-    func testTerminationStatusDecoding() {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:100:        XCTAssertEqual(ChildProcess.terminationStatus(raw: 7 << 8), 7) // exit(7)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:101:        XCTAssertEqual(ChildProcess.terminationStatus(raw: SIGTERM), SIGTERM) // killed
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-102-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-103-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-104-    func testWorkingDirectoryIsApplied() throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-105-        let outPath = scratch.appendingPathComponent("cwd.txt").path
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-106-        FileManager.default.createFile(atPath: outPath, contents: nil)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-107-        let outFD = Darwin.open(outPath, O_WRONLY)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-108-        defer { Darwin.close(outFD) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-109-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:110:        let child = try ChildProcess.spawn(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-111-            executable: "/bin/sh",
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-112-            arguments: ["-c", "pwd"],
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-113-            workingDirectory: "/tmp",
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-114-            stdout: outFD,
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-127-        sigemptyset(&blocked)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-128-        sigaddset(&blocked, SIGINT)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-129-        sigaddset(&blocked, SIGTERM)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-130-        pthread_sigmask(SIG_BLOCK, &blocked, &previous)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:131:        let child: ChildProcess
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-132-        do {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:133:            child = try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-134-        } catch {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-135-            pthread_sigmask(SIG_SETMASK, &previous, nil)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-136-            throw error
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-137-        }
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-148-    /// interrupts the runner's whole group.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-149-    func testTheWatchdogInterruptsTheGroupWhenItsParentGoesAway() throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-150-        let output = try devNullOutput()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-151-        defer { Darwin.close(output) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:152:        let child = try ChildProcess.spawn(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-153-            executable: "/bin/sh", arguments: ["-c", "sleep 30"], stdout: output, stderr: output
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-154-        )
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-155-        defer { child.terminateGroup(gracePeriod: 1) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-156-        let lifeline = try XCTUnwrap(child.bindLifetimeToParent())
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-168-        let output = try devNullOutput()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-169-        defer { Darwin.close(output) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-170-        let sessions = scratch.appendingPathComponent("sessions")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-171-        try FileManager.default.createDirectory(at: sessions, withIntermediateDirectories: true)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:172:        let child = try ChildProcess.spawn(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-173-            executable: "/bin/sh", arguments: ["-c", "sleep 30"], stdout: output, stderr: output
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-174-        )
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-175-        defer { child.terminateGroup(gracePeriod: 1) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-176-        let mine = ["\(child.pid)-1.grantiva", "\(child.pid).owner.json"]
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-197-        let output = try devNullOutput()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-198-        defer { Darwin.close(output) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-199-        let sessions = scratch.appendingPathComponent("sessions-kill")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-200-        try FileManager.default.createDirectory(at: sessions, withIntermediateDirectories: true)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:201:        let child = try ChildProcess.spawn(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-202-            executable: "/bin/sh", arguments: ["-c", "trap '' INT TERM; while :; do sleep 0.1; done"],
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-203-            stdout: output, stderr: output
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-204-        )
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-205-        defer { child.terminateGroup(gracePeriod: 1) }
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-217-    /// A hang-up while grantiva is alive ends the watchdog, not the runner.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-218-    func testAHangUpEndsTheWatchdogWithoutTouchingTheRunner() throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-219-        let output = try devNullOutput()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-220-        defer { Darwin.close(output) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:221:        let child = try ChildProcess.spawn(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-222-            executable: "/bin/sh", arguments: ["-c", "trap '' HUP; sleep 30"], stdout: output, stderr: output
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-223-        )
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-224-        defer { child.terminateGroup(gracePeriod: 1); child.wait() }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-225-        let lifeline = try XCTUnwrap(child.bindLifetimeToParent())
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-232-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-233-    func testTheWatchdogJoinsTheRunnersProcessGroup() throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-234-        let output = try devNullOutput()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-235-        defer { Darwin.close(output) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:236:        let child = try ChildProcess.spawn(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-237-            executable: "/bin/sh", arguments: ["-c", "sleep 30"], stdout: output, stderr: output
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-238-        )
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-239-        let lifeline = try XCTUnwrap(child.bindLifetimeToParent())
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-240-        defer { Darwin.close(lifeline) }
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-251-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-252-    func testTerminateGroupReportsWhenItHadToKill() throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-253-        let output = try devNullOutput()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-254-        defer { Darwin.close(output) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:255:        let child = try ChildProcess.spawn(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-256-            executable: "/bin/sh", arguments: ["-c", "trap '' INT TERM; while :; do sleep 0.1; done"],
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-257-            stdout: output, stderr: output
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-258-        )
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-259-        usleep(200_000)
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-261-        XCTAssertEqual(child.wait(), SIGKILL)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-262-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-263-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-264-    func testTerminateGroupOfAGoneGroupSaysSo() {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:265:        XCTAssertEqual(ChildProcess.terminateGroup(999_999, gracePeriod: 0.1), .alreadyGone)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-266-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-267-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-268-    // MARK: - K33: --verbose names every long-running subprocess
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-269-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-270-    func testSpawnAndWaitAreLoggedLikeShell() throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-271-        let output = try devNullOutput()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-272-        defer { Darwin.close(output) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-273-        let lines = try SubprocessLog.capturing {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:274:            let child = try ChildProcess.spawn(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-275-                executable: "/bin/sh", arguments: ["-c", "exit 3"], stdout: output, stderr: output
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-276-            )
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-277-            child.wait()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-278-        }
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-282-    func testASignalledChildIsLoggedAsStopped() throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-283-        let output = try devNullOutput()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-284-        defer { Darwin.close(output) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-285-        let lines = try SubprocessLog.capturing {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:286:            let child = try ChildProcess.spawn(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-287-                executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-288-            )
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-289-            child.signalGroup(SIGINT)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-290-            child.wait()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-291-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:292:        XCTAssertEqual(lines, ["$ /bin/sleep 30", "stopped by SIGINT: /bin/sleep 30"])
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-293-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-294-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-295-    // MARK: - L11: an ignored SIGHUP (nohup) is handed on to the runner
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-296-
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-308-    /// signal ignored at exec, and nothing for one at its default. (macOS
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-309-    /// `ps` has no ignored-signal column.)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-310-    private func hangUpDispositionInAChild() throws -> String {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-311-        let pipe = Pipe()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:312:        let child = try ChildProcess.spawn(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-313-            executable: "/usr/bin/perl", arguments: ["-e", "print $SIG{HUP} // 'DEFAULT'"],
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-314-            stdout: pipe.fileHandleForWriting.fileDescriptor, stderr: pipe.fileHandleForWriting.fileDescriptor
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-315-        )
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-316-        try pipe.fileHandleForWriting.close()
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-322-    func testAnIgnoredHangUpStaysIgnoredInTheChildAndItSurvivesSIGHUP() throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-323-        let output = try devNullOutput()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-324-        defer { Darwin.close(output) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-325-        let child = try withDisposition(SIGHUP, SIG_IGN) {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:326:            try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-327-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-328-        defer { child.terminateGroup(gracePeriod: 1); child.wait() }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-329-        XCTAssertEqual(try withDisposition(SIGHUP, SIG_IGN) { try hangUpDispositionInAChild() }, "IGNORE", "SIGHUP must stay ignored in the child")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-330-        usleep(200_000)
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-336-    func testADefaultHangUpStillEndsTheChild() throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-337-        let output = try devNullOutput()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-338-        defer { Darwin.close(output) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-339-        let child = try withDisposition(SIGHUP, SIG_DFL) {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:340:            try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-341-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-342-        defer { child.terminateGroup(gracePeriod: 1) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-343-        XCTAssertEqual(try withDisposition(SIGHUP, SIG_DFL) { try hangUpDispositionInAChild() }, "DEFAULT")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-344-        usleep(200_000)
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-350-        let output = try devNullOutput()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-351-        defer { Darwin.close(output) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-352-        for signalNumber in [SIGINT, SIGTERM] {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-353-            let child = try withDisposition(signalNumber, SIG_IGN) {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:354:                try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-355-            }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-356-            usleep(200_000)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-357-            kill(child.pid, signalNumber)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-358-            XCTAssertEqual(child.wait(), signalNumber, "signal \(signalNumber) must be at its default in the child")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-359-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-360-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-361-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-362-    func testOnlySignalsNotIgnoredHereAreReset() {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:363:        XCTAssertEqual(ChildProcess.signalsToReset(isIgnored: { _ in false }), [SIGINT, SIGTERM, SIGHUP, SIGQUIT, SIGPIPE])
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:364:        XCTAssertEqual(ChildProcess.signalsToReset(isIgnored: { _ in true }), [SIGINT, SIGTERM])
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:365:        XCTAssertEqual(ChildProcess.signalsToReset(isIgnored: { $0 == SIGHUP }), [SIGINT, SIGTERM, SIGQUIT, SIGPIPE])
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-366-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-367-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-368-    // MARK: - L48: a child that has exited is seen without blocking
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-369-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-370-    func testPollReportsAnExitWithoutBlockingAndWaitAgrees() throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-371-        let output = try devNullOutput()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-372-        defer { Darwin.close(output) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:373:        let child = try ChildProcess.spawn(executable: "/bin/sh", arguments: ["-c", "exit 4"], stdout: output, stderr: output)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-374-        let deadline = Date().addingTimeInterval(5)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-375-        var status: Int32?
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-376-        while status == nil, Date() < deadline {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-377-            status = child.poll()
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-381-        XCTAssertFalse(child.isRunning)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-382-        XCTAssertEqual(child.wait(), 4)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-383-        XCTAssertNil(child.terminatingSignal)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-384-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:385:        let sleeper = try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-386-        XCTAssertNil(sleeper.poll())
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-387-        kill(sleeper.pid, SIGHUP)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-388-        XCTAssertEqual(sleeper.wait(), SIGHUP)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-389-        XCTAssertEqual(sleeper.terminatingSignal, SIGHUP)
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-393-    /// reports a failure, never 0.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-394-    func testWaitAfterAnUnrecordedReapIsAFailureNotZero() throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-395-        let output = try devNullOutput()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-396-        defer { Darwin.close(output) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:397:        let child = try ChildProcess.spawn(executable: "/bin/sh", arguments: ["-c", "exit 0"], stdout: output, stderr: output)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-398-        var raw: Int32 = 0
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-399-        XCTAssertEqual(waitpid(child.pid, &raw, 0), child.pid)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:400:        XCTAssertEqual(child.wait(), ChildProcess.unknownExitStatus)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift:401:        XCTAssertNotEqual(ChildProcess.unknownExitStatus, 0)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-402-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ChildProcessTests.swift-403-}
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-1-import Foundation
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-2-import XCTest
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-3-@testable import GrantivaCore
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-4-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift:5:final class LogStreamerTests: XCTestCase {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-6-    func testDecoderEmitsWholeAndMultipleLines() {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-7-        let decoder = PrefixedLineDecoder()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-8-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-9-        XCTAssertEqual(strings(decoder.consume(Data("one\ntwo\n".utf8))), ["[log] one\n", "[log] two\n"])
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-51-        XCTAssertEqual(strings(stderr.consume(Data("or\n".utf8))), ["[log] error\n"])
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-52-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-53-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-54-    func testStartWithExplicitExecutableStreamsItsOutputWithThePrefix() throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift:55:        let streamer = LogStreamer()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-56-        try streamer.start(executable: "/bin/echo", arguments: ["hello from a fake log"])
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-57-        // Give the readability handler a moment, then stop; the assertion is
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-58-        // that start(executable:arguments:) exists and does not throw for a
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-59-        // real executable. Output goes to stderr and is not captured here.
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-63-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-64-    /// A07: on Ctrl-C the relay exits before RunCommand's `defer` can stop the
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-65-    /// stream, so the streamer must register its own termination cleanup.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-66-    func testTerminationCleanupsKillARunningLogStream() throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift:67:        let streamer = LogStreamer()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-68-        try streamer.start(executable: "/bin/sleep", arguments: ["30"])
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-69-        let pid = try XCTUnwrap(streamer.processIdentifier)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-70-        XCTAssertEqual(kill(pid, 0), 0, "the stand-in log process should be running")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-71-
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-75-        XCTAssertNil(streamer.processIdentifier)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-76-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-77-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-78-    func testARestartedStreamIsStillCoveredByTheTerminationCleanup() throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift:79:        let streamer = LogStreamer()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-80-        try streamer.start(executable: "/bin/sleep", arguments: ["30"])
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-81-        let first = try XCTUnwrap(streamer.processIdentifier)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-82-        streamer.stop()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-83-        XCTAssertTrue(waitForExit(first))
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-94-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-95-    /// K33: `adb logcat` and `simctl spawn … log stream` are named under
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-96-    /// --verbose when they start and when they stop.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-97-    func testStartAndStopAreLoggedWithTheCommandLine() throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift:98:        let streamer = LogStreamer()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-99-        let lines = try SubprocessLog.capturing {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-100-            try streamer.start(executable: "/bin/sleep", arguments: ["30"])
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-101-            streamer.stop()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-102-        }
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-141-        XCTAssertTrue(predicate.hasSuffix("OR process == \"My \\\"App\\\"\""), predicate)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-142-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-143-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-144-    func testSimctlBannerLinesAreDroppedFromTheStream() {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift:145:        let decoder = PrefixedLineDecoder(dropping: LogStreamer.isStreamBanner)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-146-        let lines = decoder.consume(Data("""
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-147-        getpwuid_r did not find a match for uid 501
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-148-        Filtering the log data using "process == \\"Landmarks\\""
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/LogStreamerTests.swift-149-        Timestamp               Ty Process[PID:TID]
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SubprocessLogTests.swift-27-            SubprocessLog.ended(executable: "/bin/x", arguments: ["a"], status: 1, signal: nil)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SubprocessLogTests.swift-28-            SubprocessLog.ended(executable: "/bin/x", arguments: ["a"], status: 0, signal: SIGINT)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SubprocessLogTests.swift-29-            SubprocessLog.ended(executable: "/bin/x", arguments: ["a"], status: 0, signal: SIGKILL)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SubprocessLogTests.swift-30-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SubprocessLogTests.swift:31:        XCTAssertEqual(lines, ["exit 0: /bin/x a", "exit 1: /bin/x a", "stopped by SIGINT: /bin/x a", "stopped by SIGKILL: /bin/x a"])
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SubprocessLogTests.swift-32-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SubprocessLogTests.swift-33-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SubprocessLogTests.swift-34-    /// The simctl recorder is a Foundation `Process`; its start and end go
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SubprocessLogTests.swift-35-    /// through the same helpers.
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-454-    func testWaitForBootFailsFastWhenASpawnedChildExitedUnreaped() async throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-455-        let devnull = open("/dev/null", O_RDWR)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-456-        XCTAssertGreaterThanOrEqual(devnull, 0)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-457-        defer { close(devnull) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift:458:        let child = try ChildProcess.spawn(executable: "/usr/bin/false", arguments: [], stdin: devnull, stdout: devnull, stderr: devnull)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-459-        // Block until it has exited, but leave it unreaped (WNOWAIT): a zombie.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-460-        var info = siginfo_t()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-461-        XCTAssertEqual(waitid(P_PID, id_t(child.pid), &info, WEXITED | WNOWAIT), 0)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-462-        XCTAssertEqual(kill(child.pid, 0), 0, "precondition: a zombie still answers kill(pid, 0)")
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-702-        do {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-703-            _ = try await manager(shell, portOwners: [49817]).teardown(serial: "emulator-5554", force: false)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-704-            XCTFail("expected an error")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-705-        } catch {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift:706:            XCTAssertTrue("\(error)".contains("was not started by Grantiva"), "\(error)")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-707-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-708-        XCTAssertEqual(try ledger.all(), [])
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-709-        XCTAssertFalse(shell.commands.contains { $0.hasSuffix("emu kill") })
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-710-
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-737-        do {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-738-            _ = try await manager(shell).teardown(serial: "emulator-5554", force: false)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-739-            XCTFail("expected an error")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-740-        } catch {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift:741:            XCTAssertTrue("\(error)".contains("was not started by Grantiva"), "\(error)")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-742-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-743-        XCTAssertFalse(shell.commands.contains { $0.hasSuffix("emu kill") })
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-744-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-745-
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-757-        do {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-758-            _ = try await manager(shell).teardown(serial: "emulator-5556", force: false)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-759-            XCTFail("expected an error")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-760-        } catch {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift:761:            XCTAssertTrue("\(error)".contains("was not started by Grantiva"), "\(error)")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-762-            XCTAssertTrue("\(error)".contains("--force"), "\(error)")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-763-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-764-        XCTAssertTrue(shell.commands.isEmpty)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-765-    }
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-829-        do {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-830-            _ = try await manager(shell).teardown(serial: "emulator-5554", force: false)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-831-            XCTFail("expected an error")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-832-        } catch {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift:833:            XCTAssertTrue("\(error)".contains("was not started by Grantiva"), "\(error)")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-834-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-835-        XCTAssertEqual(try ledger.all(), [], "the stale record is dropped")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-836-        XCTAssertFalse(shell.commands.contains { $0.hasSuffix("emu kill") })
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-837-        XCTAssertFalse(shell.commands.contains { $0.contains("force-stop") })
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-847-        do {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-848-            _ = try await manager(shell).teardown(serial: "emulator-5556", force: false)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-849-            XCTFail("expected an error")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-850-        } catch {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift:851:            XCTAssertTrue("\(error)".contains("was not started by Grantiva"), "\(error)")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-852-            XCTAssertTrue("\(error)".contains("--force"), "\(error)")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-853-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-854-        XCTAssertEqual(try ledger.all(), [])
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/EmulatorManagerTests.swift-855-        XCTAssertFalse(shell.commands.contains { $0.hasSuffix("emu kill") })
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-369-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-370-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-371-    /// The local end of the forward to the runner's UIAutomator2 session. The
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-372-    /// forward is left in place: it is the port the session records.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift:373:    private static func waitForUIAutomator2Port(_ launch: Launch, child: ChildProcess) async -> (port: UInt16?, exitStatus: Int32?) {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-374-        let device = launch.platformDevice
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-375-        let serial = launch.device.udid
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-376-        let wait = await Self.waitForUIAutomator2(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-377-            attach: { try await device.attachDriver(deviceID: serial, port: nil) },
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-503-        FileManager.default.createFile(atPath: logPath, contents: nil)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-504-        guard let log = FileHandle(forWritingAtPath: logPath) else {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-505-            throw GrantivaError.commandFailed("Could not open runner log: \(logPath)", 1)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-506-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift:507:        let child: ChildProcess
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-508-        do {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift:509:            child = try ChildProcess.spawn(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-510-                executable: "/usr/bin/nohup",
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-511-                arguments: [launch.runnerBin] + launch.runnerArgs,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-512-                workingDirectory: launch.runnerDir,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-513-                environment: launch.environment,
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-595-    /// exiting on its own. The runner's output streams to stderr meanwhile.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-596-    private func startForeground(_ launch: Launch, lease: SimulatorLease) async throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-597-        let stdoutPipe = Pipe()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-598-        let stderrPipe = Pipe()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift:599:        let child = try ChildProcess.spawn(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-600-            executable: launch.runnerBin,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-601-            arguments: launch.runnerArgs,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-602-            workingDirectory: launch.runnerDir,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-603-            environment: launch.environment,
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-869-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-870-    static func record(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-871-        session: RunnerSessionInfo,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-872-        write: (RunnerSessionInfo) throws -> Void = { try $0.write() },
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift:873:        terminate: (Int32) -> Void = { ChildProcess.terminateGroup($0, gracePeriod: 1) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-874-    ) throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-875-        do {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-876-            try write(session)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-877-        } catch {
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1143-struct RunnerStopDependencies: Sendable {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1144-    var loadSession: @Sendable () throws -> RunnerSessionInfo
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1145-    var isAlive: @Sendable (RunnerSessionInfo) -> Bool
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1146-    var processSnapshot: @Sendable () async throws -> String
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift:1147:    var terminateGroup: @Sendable (Int32) -> ChildProcess.GroupTermination
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1148-    var removeSession: @Sendable () -> Void
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1149-    var releaseLease: @Sendable (String) -> Void
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1150-    var cleanupOrphans: @Sendable (String) async -> Void
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1151-    /// `runner start` records a keep-alive owner sidecar for the runner pid
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1165-        loadSession: { try RunnerSessionInfo.load() },
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1166-        isAlive: { $0.isAlive },
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1167-        processSnapshot: { try await SimulatorReaper.processSnapshot() },
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1168-        // Five seconds to release WebDriverAgent before SIGTERM, as on Ctrl-C.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift:1169:        terminateGroup: { ChildProcess.terminateGroup($0, gracePeriod: 5) },
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1170-        removeSession: { RunnerSessionInfo.remove() },
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1171-        releaseLease: { SimulatorLease.forceRelease(udid: $0) },
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1172-        cleanupOrphans: { serial in
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1173-            guard let platform = try? AndroidPlatform.live() else { return }
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/EmulatorCommand.swift-89-        static let configuration = CommandConfiguration(abstract: "List the emulators Grantiva started.")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/EmulatorCommand.swift-90-        @OptionGroup var options: GlobalOptions
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/EmulatorCommand.swift-91-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/EmulatorCommand.swift-92-        static func render(_ sessions: [EmulatorSessionRecord]) -> [String] {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/EmulatorCommand.swift:93:            guard !sessions.isEmpty else { return ["No emulators started by Grantiva are running."] }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/EmulatorCommand.swift-94-            return ["Grantiva-started emulators (\(sessions.count)):"] + sessions.map {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/EmulatorCommand.swift-95-                "  \($0.serial) (\($0.avd)) — pid \($0.pid) \($0.processAlive ? "running" : "exited"), adb: \($0.adbState)"
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/EmulatorCommand.swift-96-            }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/EmulatorCommand.swift-97-        }
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/EmulatorCommand.swift-260-            )
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/EmulatorCommand.swift-261-            if options.json {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/EmulatorCommand.swift-262-                Output.line(try JSONOutput.string(outcomes))
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/EmulatorCommand.swift-263-            } else if outcomes.isEmpty {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/EmulatorCommand.swift:264:                Output.line("No emulators started by Grantiva are running.")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/EmulatorCommand.swift-265-            } else {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/EmulatorCommand.swift-266-                outcomes.flatMap { [Self.render($0)] + Self.cleanupLines($0) }.forEach(Output.line)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/EmulatorCommand.swift-267-            }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/EmulatorCommand.swift-268-        }
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift-428-        // the app's uid, and the iOS default predicate names the installed
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift-429-        // app's executable, both of which exist only once the app is
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift-430-        // installed. The app ID may also come from the build.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift-431-        let wantsLogs = logs || logsPredicate != nil || logsTag != nil
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift:432:        func startLogStream(appID: String) async -> LogStreamer? {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift-433-            // iOS names the predicate it streams with: the explicit one or the
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift-434-            // default derived from the app.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift:435:            let streamer = LogStreamer()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift-436-            do {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift-437-                let stream = try await device.logStream(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift-438-                    deviceID: booted.udid, appID: appID,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift-439-                    filter: logsPredicate ?? logsTag, level: logsLevel
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift-454-           await device.isInstalled(appID: appID, deviceID: booted.udid) == false {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift-455-            throw GrantivaError.unavailable(Self.notInstalledMessage(appID: appID, device: booted.name))
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift-456-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift-457-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift:458:        var logStreamer: LogStreamer?
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift-459-        defer { logStreamer?.stop() }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift-460-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift-461-        // Build / install / launch
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/RunCommand.swift-462-        var productPath: String?
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/LogStreamer.swift-79-/// them with a prefix, so you never see half a grantiva line mixed with half
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/LogStreamer.swift-80-/// a log line. Ordering across the two sources is best-effort — they're two
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/LogStreamer.swift-81-/// processes writing to two pipes, with no global clock — but within a given
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/LogStreamer.swift-82-/// stream, line order is preserved.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/LogStreamer.swift:83:public final class LogStreamer: @unchecked Sendable {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/LogStreamer.swift-84-    private var process: Process?
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/LogStreamer.swift-85-    private var stderrPipe: Pipe?
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/LogStreamer.swift-86-    private var stdoutPipe: Pipe?
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/LogStreamer.swift-87-    private var stderrDecoder: PrefixedLineDecoder?
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/LogStreamer.swift-229-        body()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/LogStreamer.swift-230-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/LogStreamer.swift-231-}
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/LogStreamer.swift-232-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/LogStreamer.swift:233:extension LogStreamer {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/LogStreamer.swift-234-    /// Lines `log stream` prints about itself rather than about the app: the
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/LogStreamer.swift-235-    /// simulator's `getpwuid_r` warning, the "Filtering the log data using …"
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/LogStreamer.swift-236-    /// echo of the predicate, and the compact style's column header. They are
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/LogStreamer.swift-237-    /// dropped instead of being forwarded as `[log]` lines.
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift-302-    ///
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift-303-    /// A session a grantiva process holds (`run --keep-alive`, foreground
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift-304-    /// `runner start`; owner `detached == false`) whose grantiva process is
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift-305-    /// gone is an orphan: its runner normally follows within seconds (see
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:306:    /// `ChildProcess.bindLifetimeToParent`), and until then it is excluded
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift-307-    /// unless `includingOrphans` (for `runner stop` and teardown, which clean
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift-308-    /// orphans up).
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift-309-    public func liveSessions(includingOrphans: Bool = false) -> [KeepAliveSession] {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift-310-        let fm = FileManager.default
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-59-    public var isRunnerProcess: @Sendable (Int32) async -> Bool
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-60-    /// True when `pid` is a grantiva process.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-61-    public var isGrantivaProcess: @Sendable (Int32) async -> Bool
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-62-    public var interrupt: @Sendable (Int32) -> Void
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:63:    public var terminateGroup: @Sendable (Int32) -> ChildProcess.GroupTermination
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-64-    public var removeSessionFiles: @Sendable (Int32) -> Void
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-65-    public var releaseLease: @Sendable (String) -> Void
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-66-    public var cleanupOrphans: @Sendable (String) async -> Void
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-67-    /// Ends the device helpers (`simctl diagnose`, …) a stopped runner left.
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-80-        parentPid: @escaping @Sendable (Int32) -> Int32?,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-81-        isRunnerProcess: @escaping @Sendable (Int32) async -> Bool,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-82-        isGrantivaProcess: @escaping @Sendable (Int32) async -> Bool,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-83-        interrupt: @escaping @Sendable (Int32) -> Void,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:84:        terminateGroup: @escaping @Sendable (Int32) -> ChildProcess.GroupTermination,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-85-        removeSessionFiles: @escaping @Sendable (Int32) -> Void,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-86-        releaseLease: @escaping @Sendable (String) -> Void,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-87-        cleanupOrphans: @escaping @Sendable (String) async -> Void,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-88-        helperReaper: RunnerHelperReaper = .inert,
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-113-            parentPid: { ProcessLookup.parentPid(of: $0) },
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-114-            isRunnerProcess: { ProcessLookup.name(of: $0)?.lowercased() == "grantiva-runner" },
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-115-            isGrantivaProcess: { ProcessLookup.name(of: $0)?.lowercased() == "grantiva" },
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-116-            interrupt: { _ = kill($0, SIGINT) },
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:117:            terminateGroup: { ChildProcess.terminateGroup($0, gracePeriod: 5) },
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-118-            removeSessionFiles: { store.removeSessionFiles(runnerPid: $0) },
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-119-            releaseLease: { SimulatorLease.forceRelease(udid: $0) },
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-120-            cleanupOrphans: { serial in
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift-121-                guard let platform = try? AndroidPlatform.live() else { return }
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SimulatorLease.swift-153-        udid: String, platform: Platform, directory: String, path: String
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SimulatorLease.swift-154-    ) throws -> SimulatorLease? {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SimulatorLease.swift-155-        // O_CLOEXEC so the descriptor can never reach a spawned child and keep
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SimulatorLease.swift-156-        // the lock alive past this process. Foundation's `Process` and
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SimulatorLease.swift:157:        // `ChildProcess` both spawn with POSIX_SPAWN_CLOEXEC_DEFAULT already,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SimulatorLease.swift-158-        // so this is defence in depth against a future spawn path that does not.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SimulatorLease.swift-159-        let descriptor = Darwin.open(path, O_CREAT | O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SimulatorLease.swift-160-        guard descriptor >= 0 else {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SimulatorLease.swift-161-            throw GrantivaError.commandFailed(
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift-68-    static func run(_ request: Request) async -> Outcome {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift-69-        let stdoutPipe = Pipe()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift-70-        let stderrPipe = Pipe()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift-71-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift:72:        let child: ChildProcess
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift-73-        do {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift:74:            child = try ChildProcess.spawn(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift-75-                executable: request.executable,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift-76-                arguments: request.arguments,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift-77-                workingDirectory: request.workingDirectory,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift-78-                environment: request.environment.isEmpty ? nil : request.environment,
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-18-///
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-19-/// 2. **Descendants outlive the signal.** Even when grantiva does die, nothing
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-20-///    reaps grantiva-runner, WebDriverAgent's `xcodebuild test-without-building`
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-21-///    or a 600-second `simctl diagnose`. The relay signals the runner's whole
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift:22:///    process group (see `ChildProcess`) so the tree goes down together.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-23-///
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-24-/// A `DispatchSourceSignal` observes the signal on a queue rather than in
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-25-/// signal context, so cleanups can do real work. Installation is idempotent and
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-26-/// happens only on paths that spawn a runner or a log stream, leaving every
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-206-    /// How a released runner is asked to end: SIGINT to its group, which the
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-207-    /// runner reads as "release the hold", escalating only if it does not
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-208-    /// exit in time. Off the signal queue, so a second signal is handled.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-209-    public static let releaseGroup: @Sendable (pid_t) -> Void = { pgid in
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift:210:        DispatchQueue.global(qos: .userInitiated).async { _ = ChildProcess.terminateGroup(pgid, gracePeriod: 15) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-211-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-212-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-213-    /// What a signal does: release an armed hold (returns false: the
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-214-    /// process goes on), or run the interrupt sequence (returns true: the
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-267-            FileHandle.standardError.write(Data(Self.announcement(signalName: signalName, deviceNoun: deviceNoun).utf8))
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-268-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-269-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-270-        for pgid in trackedGroups {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift:271:            ChildProcess.terminateGroup(pgid, gracePeriod: 5)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-272-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-273-        for cleanup in pendingCleanups { cleanup() }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-274-        return true
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-275-    }
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SubprocessLog.swift-3-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SubprocessLog.swift-4-/// The `--verbose` lines for subprocesses Grantiva keeps running: the runner,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SubprocessLog.swift-5-/// `adb logcat`, `simctl spawn … log stream`, `simctl io … recordVideo`. Same
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SubprocessLog.swift-6-/// shape as `shell`'s: `$ <command line>` when one starts, and
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SubprocessLog.swift:7:/// `exit N: <command line>` (or `stopped by SIGINT: <command line>`) when it
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SubprocessLog.swift-8-/// ends. Values that look like secrets are redacted.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SubprocessLog.swift-9-public enum SubprocessLog {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SubprocessLog.swift-10-    private static let lock = NSLock()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SubprocessLog.swift-11-    nonisolated(unsafe) private static var observers: [UUID: @Sendable (String) -> Void] = [:]
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-215-        environment[bootTimeoutVariable].flatMap(Double.init) ?? 180
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-216-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-217-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-218-    /// The emulator must outlive this process, so it is spawned into its own
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift:219:    /// process group (ChildProcess does that) and never tracked by SignalRelay.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-220-    /// Its output goes to a log file beside the provenance ledger.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-221-    public static let detachedSpawn: Spawn = { executable, arguments in
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-222-        let logDir = AndroidProvenance.live.directory
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-223-        try FileManager.default.createDirectory(atPath: logDir, withIntermediateDirectories: true)
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-228-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-229-        defer { Darwin.close(log) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-230-        let devnull = Darwin.open("/dev/null", O_RDONLY)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-231-        defer { if devnull >= 0 { Darwin.close(devnull) } }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift:232:        let child = try ChildProcess.spawn(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-233-            executable: executable, arguments: arguments,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-234-            stdin: devnull >= 0 ? devnull : nil, stdout: log, stderr: log
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-235-        )
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-236-        return child.pid
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-720-        guard proc_pidinfo(pid, PROC_PIDTBSDINFO, 0, &info, size) == size else { return nil }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-721-        return Int64(info.pbi_start_tvsec)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-722-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-723-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift:724:    static let notStartedByGrantiva = "was not started by Grantiva"
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-725-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-726-    public func teardownAll() async throws -> [EmulatorTeardownOutcome] {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-727-        var outcomes: [EmulatorTeardownOutcome] = []
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/EmulatorManager.swift-728-        for record in try provenance.all() {
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-9-/// `simctl diagnose`) as a unit. The runner spawns those itself and does not
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-10-/// always reap them, which is how a cancelled `--keep-alive` run strands
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-11-/// processes that keep owning the simulator.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-12-///
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift:13:/// `ChildProcess` spawns with `POSIX_SPAWN_SETPGROUP` so the child becomes the
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-14-/// leader of a fresh group. Every descendant inherits that group unless it
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-15-/// deliberately leaves, so `kill(-pgid, …)` reaps the whole tree in one call.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-16-///
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-17-/// `POSIX_SPAWN_CLOEXEC_DEFAULT` matches Foundation's own behaviour: only the
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-18-/// descriptors named in the file actions are handed to the child, so no lock or
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-19-/// lease descriptor can leak into it and outlive this process.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift:20:public final class ChildProcess: @unchecked Sendable {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-21-    public let pid: pid_t
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-22-    /// The child is spawned as its own process-group leader, so the group id
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-23-    /// equals the child's pid.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-24-    public var processGroup: pid_t { pid }
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-55-        stdout: Int32,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-56-        stderr: Int32,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-57-        processGroup: pid_t = 0,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-58-        logged: Bool = true
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift:59:    ) throws -> ChildProcess {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-60-        var attributes: posix_spawnattr_t?
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-61-        guard posix_spawnattr_init(&attributes) == 0 else {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-62-            throw GrantivaError.commandFailed("Could not initialize spawn attributes for \(executable)", 1)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-63-        }
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-140-                1
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-141-            )
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-142-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-143-        if logged { SubprocessLog.started(executable: executable, arguments: arguments) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift:144:        return ChildProcess(pid: pid, executable: executable, arguments: arguments, logged: logged)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-145-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-146-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-147-    /// The signals a spawned child gets at their default disposition:
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/ChildProcess.swift-148-    /// SIGINT and SIGTERM always (`runner stop`, Ctrl-C and the watchdog rely

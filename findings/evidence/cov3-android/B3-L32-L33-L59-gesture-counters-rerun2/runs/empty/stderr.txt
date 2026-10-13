@@ -1,0 +1,72 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov3-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/empty.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B3-L32-L33-L59-gesture-counters-rerun2/runs/empty/report
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] empty (empty.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (clearState) (1.4s)
+    ✓ tapOn: text="Deep Links" (818ms)
+    ✓ tapOn: text="Gesture Lab" (781ms)
+    ✗ doubleTapOn:  (42ms)
+      ╰─ Element not found: no selector or point specified (cause: no selector or point specified)
+✗ empty 3.7s
+
+  [1/1] empty (.maestro/empty.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (clearState) (1.4s)
+    ✓ tapOn: text="Deep Links" (818ms)
+    ✓ tapOn: text="Gesture Lab" (781ms)
+    ✗ doubleTapOn:  (42ms)
+      ╰─ Element not found: no selector or point specified (cause: no selector or point specified)
+✗ empty 3.7s
+
+  3 steps passing (3.7s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  empty                          ✗ FAIL       4      3      1      0       3.7s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       4      3      1      0       3.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B3-L32-L33-L59-gesture-counters-rerun2/runs/empty/report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B3-L32-L33-L59-gesture-counters-rerun2/runs/empty/report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B3-L32-L33-L59-gesture-counters-rerun2/runs/empty/report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B3-L32-L33-L59-gesture-counters-rerun2/runs/empty/report/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B3-L32-L33-L59-gesture-counters-rerun2/runs/empty/report/captures/failure-1791883171.png
+Error: Runner failed (exit 1): empty: doubleTapOn: : Element not found: no selector or point specified (cause: no selector or point specified)
+Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.

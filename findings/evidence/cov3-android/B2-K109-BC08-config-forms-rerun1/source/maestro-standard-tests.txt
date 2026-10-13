@@ -1,0 +1,101 @@
+        XCTAssertThrowsError(try MaestroFlowParser.parse("- swipe:\n    direction: SIDEWAYS", sourceName: "f.yaml")) {
+            XCTAssertEqual($0.localizedDescription, "Invalid argument: f.yaml:1: unsupported Maestro command 'swipe'")
+        }
+    }
+
+    /// K109: the wait keeps its `timeout`, and only a step without one is a
+    /// plain assertion.
+    func testExtendedWaitUntilKeepsItsTimeout() throws {
+        let steps = try steps("""
+        - extendedWaitUntil:
+            visible: "Featured"
+            timeout: 5000
+        - extendedWaitUntil:
+            visible:
+              id: "hero"
+        - extendedWaitUntil:
+            notVisible: "Spinner"
+        """)
+        XCTAssertEqual(steps.count, 3)
+        XCTAssertEqual(steps[0].assertVisible, "Featured")
+        XCTAssertFalse(steps[0].assertVisibleById)
+        XCTAssertEqual(steps[0].waitTimeout, 5000)
+        XCTAssertEqual(steps[1].assertVisible, "hero")
+        XCTAssertTrue(steps[1].assertVisibleById)
+        XCTAssertNil(steps[1].waitTimeout)
+        XCTAssertEqual(steps[2].assertNotVisible, "Spinner")
+        XCTAssertNil(steps[2].waitTimeout)
+    }
+
+    func testBareWaitForAnimationToEndIsASettleStep() throws {
+        let steps = try steps("""
+        - waitForAnimationToEnd
+        - takeScreenshot: "Settled"
+        """)
+        XCTAssertEqual(steps.count, 1)
+        XCTAssertEqual(steps[0].settle, MaestroFlowParser.defaultSettleSeconds)
+        XCTAssertNil(steps[0].wait)
+    }
+
+    func testWaitForAnimationToEndGeneratesASettleNotASleep() {
+        let yaml = FlowGenerator.generate(
+            screens: [.init(name: "S", path: .steps([.init(settle: 3)]))], bundleId: "com.example.app"
+        )
+        XCTAssertTrue(yaml.contains("- waitForAnimationToEnd:\n    timeout: 3000\n"), yaml)
+    }
+
+    func testUnsupportedCommandErrorNamesFileAndLine() {
+        let yaml = """
+        appId: com.example.app
+        ---
+        - launchApp
+        - tapOn: "Go"
+        - back
+        """
+        XCTAssertThrowsError(try GrantivaConfig.parse(yaml, platform: .ios, fileName: "grantiva.yml")) {
+            XCTAssertEqual($0.localizedDescription, "Invalid argument: grantiva.yml:5: unsupported Maestro command 'back'")
+        }
+    }
+
+    func testFlowRunSkipsUnrelatedMaestroDirectory() throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        let maestro = dir.appendingPathComponent(".maestro")
+        try FileManager.default.createDirectory(at: maestro, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        try "appId: a\n---\n- back\n".write(to: maestro.appendingPathComponent("bad.yaml"), atomically: true, encoding: .utf8)
+        try "appId: a\n---\n- launchApp\n".write(to: maestro.appendingPathComponent("good.yaml"), atomically: true, encoding: .utf8)
+
+        XCTAssertThrowsError(try GrantivaConfig.loadIfPresent(platform: .ios, from: dir))
+        XCTAssertNil(try GrantivaConfig.loadIfPresent(platform: .ios, from: dir, includeMaestroDirectory: false))
+    }
+
+    // MARK: C08
+
+    func testIdSelectorsAreCarriedForEveryCommand() throws {
+        let steps = try steps("""
+        - tapOn:
+            id: "clock"
+        - assertVisible:
+            id: "title"
+        - assertNotVisible:
+            id: "spinner"
+        - scrollUntilVisible:
+            element:
+              id: "row30"
+        - extendedWaitUntil:
+            visible:
+              id: "loaded"
+        """)
+        XCTAssertEqual(steps.map(\.tap), ["clock", nil, nil, nil, nil])
+        XCTAssertTrue(steps[0].tapById)
+        XCTAssertEqual(steps[1].assertVisible, "title")
+        XCTAssertTrue(steps[1].assertVisibleById)
+        XCTAssertEqual(steps[2].assertNotVisible, "spinner")
+        XCTAssertTrue(steps[2].assertNotVisibleById)
+        XCTAssertEqual(steps[3].assertVisible, "row30")
+        XCTAssertTrue(steps[3].assertVisibleById)
+        XCTAssertEqual(steps[4].assertVisible, "loaded")
+        XCTAssertTrue(steps[4].assertVisibleById)
+    }
+
+    func testFlowGeneratorEmitsIdSelectors() throws {

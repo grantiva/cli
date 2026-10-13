@@ -1,0 +1,47 @@
+03:51:38.383551 [INFO] === Test execution started ===
+03:51:38.383608 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B2-K105-nested-runflow-rerun1/report
+03:51:38.383613 [INFO] Platform: android
+03:51:38.383617 [INFO] Driver: uiautomator2
+03:51:38.383915 [INFO] Validated 1 flow(s)
+03:51:38.383934 [INFO] Single device execution mode
+03:51:38.383939 [INFO] Starting flow execution (parallel: false, devices: [])
+03:51:38.383945 [INFO] Creating driver for single device execution
+03:51:38.383951 [INFO] Connecting to Android device: emulator-5554
+03:51:38.459830 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+03:51:38.480513 [INFO] Starting UIAutomator2 server on device emulator-5554
+03:51:38.887906 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+03:51:38.905133 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+03:51:39.465719 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+03:51:39.472372 [INFO] Session created successfully: 72824f5f-6186-4dce-b4b7-4f88a0b16f4b
+03:51:39.521069 [INFO] Driver created: android on google sdk_gphone64_arm64
+03:51:39.523070 [INFO] === Starting flow: 14-runflow-nested ===
+03:51:39.523076 [INFO] Flow file: .maestro/coverage/14-runflow-nested.yaml
+03:51:39.523080 [INFO] Total steps: 2
+03:51:39.528571 [DEBUG] Executing step 0: launchApp (clearState)
+03:51:39.682276 [INFO] [uiautomator2] clearState com.kylebrowning.landmarks: cleared app data (pm clear, 0.1s)
+03:51:39.813044 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+03:51:39.813082 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 25ms
+03:51:41.066116 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.199s after launch, pids [27152], drawn=true crashed=false (read 34ms)
+03:51:41.066188 [DEBUG] Step 0 completed successfully (1537ms): launchApp (clearState)
+03:51:41.066578 [DEBUG] Executing step 1: repeat
+03:51:41.066880 [DEBUG] Flutter: parallel search (text="Favorites", id="")
+03:51:41.104957 [DEBUG] Flutter: com.kylebrowning.landmarks has no libflutter.so; not searching the Flutter VM
+03:51:41.105022 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+03:51:41.358305 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 39ms)
+03:51:41.358375 [DEBUG] crash check during a lookup in flight for 291ms: crashed=false (took 39ms)
+03:51:41.611055 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 44ms)
+03:51:41.611105 [DEBUG] crash check during a lookup in flight for 544ms: crashed=false (took 44ms)
+03:51:41.952512 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 33ms)
+03:51:42.252424 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 47ms)
+03:51:42.252476 [DEBUG] crash check during a lookup in flight for 300ms: crashed=false (took 48ms)
+03:51:42.512992 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 57ms)
+03:51:42.513041 [DEBUG] crash check during a lookup in flight for 560ms: crashed=false (took 57ms)
+03:51:42.536501 [DEBUG] Step 1 completed successfully (1469ms): repeat
+03:51:42.538169 [INFO] === Flow completed: 14-runflow-nested (status: passed, duration: 3013ms, passed: 3, failed: 0, skipped: 0) ===
+03:51:42.926371 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+03:51:42.941294 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+03:51:42.941327 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+03:51:42.941506 [INFO] Generating reports...
+03:51:42.942073 [INFO] Shutting down devices started by maestro-runner...
+03:51:42.942092 [INFO] Shutting down all tracked emulators
+03:51:42.942100 [INFO] Shutting down all tracked simulators

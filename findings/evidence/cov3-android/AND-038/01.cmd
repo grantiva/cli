@@ -1,0 +1,1 @@
+/Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/coverage/08-scroll.yaml --env LANDMARKS_SEED=many --env LANDMARKS_NOTE=x; echo exit=$?; adb -s emulator-5554 logcat -d -s Landmarks:I | grep 'launch action' | tail -1

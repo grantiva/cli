@@ -1,0 +1,72 @@
+{
+  "id": "flow-000",
+  "name": "intentional-stop",
+  "sourceFile": ".maestro/intentional-stop.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T02:22:02.410252-07:00",
+  "endTime": "2026-10-13T02:22:08.995504-07:00",
+  "duration": 6585,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp (clearState)",
+      "status": "passed",
+      "startTime": "2026-10-13T02:22:02.414769-07:00",
+      "endTime": "2026-10-13T02:22:03.783769-07:00",
+      "duration": 1369,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "stopApp",
+      "yaml": "stopApp",
+      "status": "passed",
+      "startTime": "2026-10-13T02:22:03.785001-07:00",
+      "endTime": "2026-10-13T02:22:03.815001-07:00",
+      "duration": 30,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertNotVisible",
+      "yaml": "assertNotVisible: text=\"Landmarks\"",
+      "status": "failed",
+      "startTime": "2026-10-13T02:22:03.815516-07:00",
+      "endTime": "2026-10-13T02:22:08.816516-07:00",
+      "duration": 5001,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "error": {
+        "type": "unknown",
+        "message": "Element still visible: text='Landmarks' after 5s (cause: element should not be visible; still matched \"Landmarks\" at (89,2253 167x42))"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-002-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-002-hierarchy.xml"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 2133,
+    "p50": 1369,
+    "p95": 5001,
+    "max": 5001,
+    "slowestType": "assertNotVisible"
+  },
+  "artifacts": {}
+}

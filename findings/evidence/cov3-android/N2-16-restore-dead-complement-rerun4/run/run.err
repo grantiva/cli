@@ -1,0 +1,78 @@
+Resolved: module=app variant=freeDebug device=emulator-5556 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov3-android-n216-r4 (emulator-5556)
+Using pre-built binary: app-free-debug.apk
+Installing com.kylebrowning.landmarks...
+Running 1 flow(s) in one UIAutomator2 session: .maestro/11-slow.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/N2-16-restore-dead-complement-rerun4/run/report
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5556...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Installing UIAutomator2 APKs...
+  ✓ UIAutomator2 installed
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5556.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 11-slow (11-slow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.7s)
+    ✗ tapOn: text="Deep Links" (45.9s)
+      ╰─ Element not found: text='Deep Links': UIAutomator2 server on emulator-5556 stopped responding (socket missing); retried 7 times over 9.2s
+✗ 11-slow 1m 6s
+
+  [1/1] 11-slow (.maestro/11-slow.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.7s)
+    ✗ tapOn: text="Deep Links" (45.9s)
+      ╰─ Element not found: text='Deep Links': UIAutomator2 server on emulator-5556 stopped responding (socket missing); retried 7 times over 9.2s
+    - tapOn: text="Slow Screen" (skipped)
+    - assertVisible: text="Loading…" (skipped)
+    - extendedWaitUntil: visible text="Loaded after delay" (skipped)
+    - takeScreenshot (skipped)
+✗ 11-slow 1m 6s
+
+  1 steps passing (1m 6s)
+  1 steps failing
+  4 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  11-slow                        ✗ FAIL       6      1      1      4      1m 6s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       6      1      1      4      1m 6s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/N2-16-restore-dead-complement-rerun4/run/report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/N2-16-restore-dead-complement-rerun4/run/report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/N2-16-restore-dead-complement-rerun4/run/report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/N2-16-restore-dead-complement-rerun4/run/report/allure-results
+
+  Built by Grantiva
+
+emulator-5556 left adb; waiting up to 5 s for it to come back before restoring settings
+Warning: could not restore Android settings on emulator-5556: the device left adb and did not come back within 5 s
+Failure screenshot: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/N2-16-restore-dead-complement-rerun4/run/report/captures/failure-1791893578.png
+Error: Runner failed (exit 1): 11-slow: tapOn: text="Deep Links": Element not found: text='Deep Links': UIAutomator2 server on emulator-5556 stopped responding (socket missing); retried 7 times over 9.2s
+Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.

@@ -1,0 +1,31 @@
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive_agent_test.go:22:		agent := keepAliveAgentName(&RunConfig{Platform: tc.platform, Driver: tc.driver}, tc.platform)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/appium_new_command_timeout_test.go:54:		t.Fatalf("createAppiumDriver: %v", err)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:265:func TestRunLogsResolvedDriverName(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:273:		{name: "ios default", platform: "ios", detected: "ios", want: "Driver: wda"},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:274:		{name: "android default", platform: "android", detected: "android", want: "Driver: uiautomator2"},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:275:		{name: "explicit driver lower-cased", platform: "android", driver: "UIAutomator2", detected: "android", want: "Driver: uiautomator2"},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:276:		{name: "ios detected", platform: "", detected: "ios", want: "Driver: wda"},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:277:		{name: "android detected", platform: "", detected: "android", want: "Driver: uiautomator2"},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:285:			cfg := &RunConfig{Platform: tc.platform, Driver: tc.driver, OutputDir: "/tmp/out"}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:295:				if i := strings.Index(l, "Driver: "); i >= 0 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/device.go:229:		Driver:             getString("driver"),
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go:798:		Driver:       "appium",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go:1133:// Tests for resolveDriverName
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go:1164:			cfg := &RunConfig{Driver: tt.driver}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go:1165:			result := resolveDriverName(cfg, tt.platform)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go:1167:				t.Errorf("resolveDriverName(driver=%q, platform=%q) = %q, want %q",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/cli_test.go:1627:		Driver:   "appium",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/keepalive.go:74:	driver := resolveDriverName(cfg, platform)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:295:// resolveDriverName returns the driver name for reports based on config and platform.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:296:func resolveDriverName(cfg *RunConfig, platform string) string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:809:		Driver:             getString("driver"),
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:907:	logger.Info("Driver: %s", logDriverName(cfg))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:919:		return resolveDriverName(cfg, cfg.Platform)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:930:	logger.Info("Driver: %s", resolveDriverName(cfg, detectedPlatform))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:1023:		warnUnsupportedSelectors(flows, cfg.Platform, resolveDriverName(cfg, cfg.Platform))
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:1588:	driverName := resolveDriverName(cfg, cfg.Platform)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:1644:	driverName := resolveDriverName(cfg, cfg.Platform)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:2753:			Driver:   driver,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:2792:			Driver:   driver,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:2922:			Driver:      driver,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:2945:	driverName := resolveDriverName(cfg, platform)

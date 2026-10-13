@@ -1,0 +1,101 @@
+{
+  "id": "flow-000",
+  "name": "13-android-arguments-merge",
+  "sourceFile": ".maestro/coverage/13-android-arguments-merge.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T02:46:11.428226-07:00",
+  "endTime": "2026-10-12T02:47:24.302881-07:00",
+  "duration": 72874,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T02:46:11.451223-07:00",
+      "endTime": "2026-10-12T02:46:21.355223-07:00",
+      "duration": 9904,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"No landmarks yet\"",
+      "status": "passed",
+      "startTime": "2026-10-12T02:46:21.356914-07:00",
+      "endTime": "2026-10-12T02:46:22.394914-07:00",
+      "duration": 1038,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "No landmarks yet"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0117-0000-003700000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "failed",
+      "startTime": "2026-10-12T02:46:22.39583-07:00",
+      "endTime": "2026-10-12T02:46:36.28883-07:00",
+      "duration": 13893,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "error": {
+        "type": "unknown",
+        "message": "Failed to tap at coordinates: UIAutomator2 server on emulator-5554 did not answer POST /appium/gestures/click within 10s"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-002-after.png"
+      }
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"merged\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "merged"
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 8278,
+    "p50": 9904,
+    "p95": 13893,
+    "max": 13893,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}

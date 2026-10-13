@@ -1,0 +1,62 @@
+02:18:49.565663 [INFO] === Test execution started ===
+02:18:49.565729 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B3-L32-L33-L59-gesture-counters-rerun2/runs/relative-2/report
+02:18:49.565735 [INFO] Platform: android
+02:18:49.565740 [INFO] Driver: uiautomator2
+02:18:49.566023 [INFO] Validated 1 flow(s)
+02:18:49.566040 [INFO] Single device execution mode
+02:18:49.566045 [INFO] Starting flow execution (parallel: false, devices: [])
+02:18:49.566049 [INFO] Creating driver for single device execution
+02:18:49.566052 [INFO] Connecting to Android device: emulator-5554
+02:18:49.645650 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+02:18:49.667809 [INFO] Starting UIAutomator2 server on device emulator-5554
+02:18:50.069742 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+02:18:50.082265 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+02:18:50.640602 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+02:18:50.647986 [INFO] Session created successfully: 72dc3fbf-4d08-4fe2-9ab7-38e399847e1b
+02:18:50.696309 [INFO] Driver created: android on google sdk_gphone64_arm64
+02:18:50.698324 [INFO] === Starting flow: relative ===
+02:18:50.698330 [INFO] Flow file: .maestro/relative.yaml
+02:18:50.698333 [INFO] Total steps: 6
+02:18:50.703618 [DEBUG] Executing step 0: launchApp (clearState)
+02:18:50.801837 [INFO] [uiautomator2] clearState com.kylebrowning.landmarks: cleared app data (pm clear, 0.0s)
+02:18:50.898471 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+02:18:50.898515 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 22ms
+02:18:52.113980 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.143s after launch, pids [10456], drawn=true crashed=false (read 54ms)
+02:18:52.114052 [DEBUG] Step 0 completed successfully (1410ms): launchApp (clearState)
+02:18:52.114485 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+02:18:52.114745 [DEBUG] Flutter: parallel search (text="Deep Links", id="")
+02:18:52.146386 [DEBUG] Flutter: com.kylebrowning.landmarks has no libflutter.so; not searching the Flutter VM
+02:18:52.146432 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+02:18:52.394056 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 27ms)
+02:18:52.394115 [DEBUG] crash check during a lookup in flight for 279ms: crashed=false (took 27ms)
+02:18:52.641372 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+02:18:52.641428 [DEBUG] crash check during a lookup in flight for 527ms: crashed=false (took 25ms)
+02:18:52.909906 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 42ms)
+02:18:52.909954 [DEBUG] crash check during a lookup in flight for 795ms: crashed=false (took 42ms)
+02:18:53.062424 [DEBUG] Step 1 completed successfully (947ms): tapOn: text="Deep Links"
+02:18:53.062907 [DEBUG] Executing step 2: tapOn: text="Gesture Lab"
+02:18:53.344943 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 30ms)
+02:18:53.345013 [DEBUG] crash check during a lookup in flight for 282ms: crashed=false (took 30ms)
+02:18:53.606533 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 41ms)
+02:18:53.606598 [DEBUG] crash check during a lookup in flight for 543ms: crashed=false (took 41ms)
+02:18:53.808960 [DEBUG] Step 2 completed successfully (746ms): tapOn: text="Gesture Lab"
+02:18:53.809382 [DEBUG] Executing step 3: doubleTapOn: id="gesture-pad", point="50%,50%"
+02:18:54.086849 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+02:18:54.086878 [DEBUG] crash check during a lookup in flight for 277ms: crashed=false (took 25ms)
+02:18:54.342525 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 33ms)
+02:18:54.342565 [DEBUG] crash check during a lookup in flight for 533ms: crashed=false (took 33ms)
+02:18:54.595074 [INFO] doubleTap: (540, 1353) on the device (cmd input motionevent), gap 80 ms planned, took 121ms
+02:18:54.595149 [DEBUG] Step 3 completed successfully (785ms): doubleTapOn: id="gesture-pad", point="50%,50%"
+02:18:54.595621 [DEBUG] Executing step 4: assertVisible: text="Double taps: 1"
+02:18:54.624518 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 29ms)
+02:18:54.653629 [DEBUG] Step 4 completed successfully (57ms): assertVisible: text="Double taps: 1"
+02:18:54.654083 [DEBUG] Executing step 5: assertVisible: text="Taps: 0"
+02:18:54.677762 [DEBUG] Step 5 completed successfully (23ms): assertVisible: text="Taps: 0"
+02:18:54.678977 [INFO] === Flow completed: relative (status: passed, duration: 3979ms, passed: 6, failed: 0, skipped: 0) ===
+02:18:55.055901 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+02:18:55.069032 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+02:18:55.069066 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+02:18:55.069270 [INFO] Generating reports...
+02:18:55.070421 [INFO] Shutting down devices started by maestro-runner...
+02:18:55.070433 [INFO] Shutting down all tracked emulators
+02:18:55.070438 [INFO] Shutting down all tracked simulators

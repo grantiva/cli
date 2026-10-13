@@ -1,0 +1,78 @@
+00:23:58.411263 [INFO] === Test execution started ===
+00:23:58.411337 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/flow-wait-selector-contracts-rerun1/K08-wait-10/report
+00:23:58.411342 [INFO] Platform: android
+00:23:58.411346 [INFO] Driver: uiautomator2
+00:23:58.411649 [INFO] Validated 1 flow(s)
+00:23:58.411666 [INFO] Single device execution mode
+00:23:58.411671 [INFO] Starting flow execution (parallel: false, devices: [])
+00:23:58.411675 [INFO] Creating driver for single device execution
+00:23:58.411680 [INFO] Connecting to Android device: emulator-5554
+00:23:58.490606 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+00:23:58.512402 [INFO] Starting UIAutomator2 server on device emulator-5554
+00:23:58.920139 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+00:23:58.935382 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+00:23:59.496348 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+00:23:59.504217 [INFO] Session created successfully: 612112bd-2dde-4d65-a24e-b99bd12b480e
+00:23:59.555576 [INFO] Driver created: android on google sdk_gphone64_arm64
+00:23:59.557032 [INFO] === Starting flow: 09-waits ===
+00:23:59.557036 [INFO] Flow file: .maestro/coverage/09-waits.yaml
+00:23:59.557041 [INFO] Total steps: 8
+00:23:59.562464 [DEBUG] Executing step 0: launchApp
+00:23:59.857121 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+00:23:59.857164 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 28ms
+00:24:01.109918 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.174s after launch, pids [22451], drawn=true crashed=false (read 57ms)
+00:24:01.110004 [DEBUG] Step 0 completed successfully (1547ms): launchApp
+00:24:01.244376 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+00:24:01.372596 [DEBUG] Flutter: parallel search (text="Deep Links", id="")
+00:24:01.398311 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 26ms)
+00:24:01.404021 [DEBUG] Flutter: com.kylebrowning.landmarks has no libflutter.so; not searching the Flutter VM
+00:24:01.404065 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+00:24:01.688056 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 38ms)
+00:24:01.688121 [DEBUG] crash check during a lookup in flight for 290ms: crashed=false (took 38ms)
+00:24:01.942856 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 42ms)
+00:24:01.942916 [DEBUG] crash check during a lookup in flight for 545ms: crashed=false (took 42ms)
+00:24:02.226936 [DEBUG] Step 1 completed successfully (982ms): tapOn: text="Deep Links"
+00:24:02.387408 [DEBUG] Executing step 2: tapOn: text="Slow Screen"
+00:24:02.545073 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+00:24:02.835729 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 38ms)
+00:24:02.835791 [DEBUG] crash check during a lookup in flight for 290ms: crashed=false (took 38ms)
+00:24:02.976124 [DEBUG] Step 2 completed successfully (588ms): tapOn: text="Slow Screen"
+00:24:03.152537 [DEBUG] Executing step 3: assertVisible: text="Loading…"
+00:24:03.300482 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+00:24:03.590816 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 40ms)
+00:24:03.590841 [DEBUG] crash check during a lookup in flight for 290ms: crashed=false (took 40ms)
+00:24:03.613057 [DEBUG] Step 3 completed successfully (460ms): assertVisible: text="Loading…"
+00:24:03.737553 [DEBUG] Executing step 4: extendedWaitUntil: notVisible text="Loading…"
+00:24:03.881662 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 22ms)
+00:24:04.186768 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 36ms)
+00:24:04.213434 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 27ms)
+00:24:04.509902 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 40ms)
+00:24:04.537486 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 28ms)
+00:24:04.832657 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 43ms)
+00:24:04.861165 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 28ms)
+00:24:04.883976 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+00:24:05.163664 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 28ms)
+00:24:05.192001 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 28ms)
+00:24:05.485770 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 42ms)
+00:24:05.512686 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 27ms)
+00:24:05.799162 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 35ms)
+00:24:05.828476 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 29ms)
+00:24:06.104140 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+00:24:06.128735 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+00:24:06.155657 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 27ms)
+00:24:06.205098 [DEBUG] Step 4 completed successfully (2467ms): extendedWaitUntil: notVisible text="Loading…"
+00:24:06.331282 [DEBUG] Executing step 5: assertVisible: text="Loaded after delay"
+00:24:06.477432 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+00:24:06.502028 [DEBUG] Step 5 completed successfully (170ms): assertVisible: text="Loaded after delay"
+00:24:06.627814 [DEBUG] Executing step 6: waitForAnimationToEnd
+00:24:07.099362 [DEBUG] Step 6 completed successfully (471ms): waitForAnimationToEnd
+00:24:07.225535 [DEBUG] Executing step 7: waitForAnimationToEnd
+00:24:07.681149 [DEBUG] Step 7 completed successfully (455ms): waitForAnimationToEnd
+00:24:07.810943 [INFO] === Flow completed: 09-waits (status: passed, duration: 8251ms, passed: 8, failed: 0, skipped: 0) ===
+00:24:08.210568 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+00:24:08.223695 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+00:24:08.223729 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+00:24:08.223941 [INFO] Generating reports...
+00:24:08.226753 [INFO] Shutting down devices started by maestro-runner...
+00:24:08.226762 [INFO] Shutting down all tracked emulators
+00:24:08.226767 [INFO] Shutting down all tracked simulators

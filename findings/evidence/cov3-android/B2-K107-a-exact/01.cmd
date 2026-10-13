@@ -1,0 +1,1 @@
+echo runner-home=/Users/kyle/.grantiva-qa/runner; find /Users/kyle/.grantiva-qa/runner/locks -maxdepth 1 -type f -print -exec stat -f 'inode=%i bytes=%z mtime=%Sm' {} \; 2>&1; test ! -e /Users/kyle/.grantiva-qa/runner/locks/emulator-5554.lock; echo owned-device-lock-absent-exit=$?

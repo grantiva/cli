@@ -1,0 +1,40 @@
+01:37:54.174738 [INFO] === Test execution started ===
+01:37:54.174803 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B-D01.1-hierarchy-json-alias-rerun1/report
+01:37:54.174808 [INFO] Platform: android
+01:37:54.174812 [INFO] Driver: uiautomator2
+01:37:54.175031 [INFO] Validated 1 flow(s)
+01:37:54.175047 [INFO] Single device execution mode
+01:37:54.175051 [INFO] Starting flow execution (parallel: false, devices: [])
+01:37:54.175055 [INFO] Creating driver for single device execution
+01:37:54.175059 [INFO] Connecting to Android device: emulator-5554
+01:37:54.252308 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+01:37:54.272611 [INFO] Starting UIAutomator2 server on device emulator-5554
+01:37:54.671943 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+01:37:54.683678 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+01:37:55.242445 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+01:37:55.249632 [INFO] Session created successfully: b9fec496-5fc8-4377-aaf8-4541f04cfb27
+01:37:55.298104 [INFO] Driver created: android on google sdk_gphone64_arm64
+01:37:55.300203 [INFO] === Starting flow: park ===
+01:37:55.300210 [INFO] Flow file: .maestro/park.yaml
+01:37:55.300213 [INFO] Total steps: 2
+01:37:55.305947 [DEBUG] Executing step 0: launchApp
+01:37:55.468110 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+01:37:55.468148 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 26ms
+01:37:56.690404 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.169s after launch, pids [18577], drawn=true crashed=false (read 36ms)
+01:37:56.690466 [DEBUG] Step 0 completed successfully (1384ms): launchApp
+01:37:56.690807 [DEBUG] Executing step 1: assertVisible: text="Golden Gate Bridge"
+01:37:56.691006 [DEBUG] Flutter: parallel search (text="Golden Gate Bridge", id="")
+01:37:56.720261 [DEBUG] Flutter: com.kylebrowning.landmarks has no libflutter.so; not searching the Flutter VM
+01:37:56.720318 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+01:37:56.821556 [DEBUG] Step 1 completed successfully (130ms): assertVisible: text="Golden Gate Bridge"
+01:37:56.822749 [INFO] === Flow completed: park (status: passed, duration: 1521ms, passed: 2, failed: 0, skipped: 0) ===
+01:37:56.823829 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+01:37:56.823902 [INFO] Generating reports...
+01:37:56.824430 [INFO] keep-alive: holding session 26520-1791880676824342000 (port 0)
+01:37:58.555055 [INFO] Received signal interrupt, releasing keep-alive session...
+01:37:58.555108 [INFO] keep-alive: released session 26520-1791880676824342000
+01:37:58.939432 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+01:37:58.951167 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+01:37:58.951195 [INFO] Shutting down devices started by maestro-runner...
+01:37:58.951199 [INFO] Shutting down all tracked emulators
+01:37:58.951204 [INFO] Shutting down all tracked simulators

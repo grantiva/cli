@@ -1,0 +1,12 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-android/android load=5.57 5.59 5.05
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --platform android --no-build --device emulator-9999 --flow .maestro/01-browse.yaml; echo missing-exit=$?
+rc=0 elapsed=0.0s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-android/android load=5.57 5.59 5.05
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --no-build --device emulator-5554 --flow .maestro/01-browse.yaml; echo serial-exit=$?
+rc=0 elapsed=5.7s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-android/android load=5.87 5.65 5.08
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --no-build --emulator cov3-android --flow .maestro/01-browse.yaml; echo avd-exit=$?
+rc=0 elapsed=5.9s  (stdout 03.out, stderr 03.err)
+

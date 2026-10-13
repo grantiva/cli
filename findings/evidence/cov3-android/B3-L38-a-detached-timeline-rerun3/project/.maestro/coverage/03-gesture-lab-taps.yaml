@@ -1,0 +1,17 @@
+appId: com.kylebrowning.landmarks
+---
+- launchApp
+- tapOn: "Deep Links"
+- tapOn: "Gesture Lab"
+- assertVisible: "Taps: 0"
+- tapOn:
+    id: "gesture-pad"
+- assertVisible: "Taps: 1"
+- doubleTapOn:
+    id: "gesture-pad"
+- assertVisible: "Double taps: 1"
+- assertVisible: "Taps: 1"
+- longPressOn:
+    id: "gesture-pad"
+- assertVisible: "Long presses: 1"
+- takeScreenshot: "Gesture Taps"

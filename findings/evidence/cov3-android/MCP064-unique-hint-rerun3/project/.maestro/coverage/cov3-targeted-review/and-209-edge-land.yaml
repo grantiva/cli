@@ -1,0 +1,12 @@
+appId: com.kylebrowning.landmarks
+---
+- launchApp: {clearState: true}
+- tapOn: "Profile"
+- tapOn: "Gesture Lab"
+- tapOn: "Gesture Taps"
+- tapOn: {point: "100%,100%"}
+- assertVisible: "Gesture Taps"
+- takeScreenshot: "edge-100"
+- tapOn: {point: "0%,0%"}
+- assertVisible: "Gesture Taps"
+- takeScreenshot: "edge-0"

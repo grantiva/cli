@@ -1,0 +1,1 @@
+/Users/kyle/.grantiva-qa/bin/grantiva diff approve --screen Home --json; echo approve-home-exit=$?; /Users/kyle/.grantiva-qa/bin/grantiva diff compare; echo mixed-text-exit=$?; /Users/kyle/.grantiva-qa/bin/grantiva diff compare --json; echo mixed-json-exit=$?

@@ -1,0 +1,11 @@
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/README.md-528-`run --json` has the same shape whether the run passed or failed. `screens`
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/README.md-529-holds one entry per configured screen (`"kind": "screen"`) and one per flow
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/README.md-530-(`"kind": "flow"`); each entry has `name`, `kind`, `passed`, `steps` (the
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/README.md:531:runner's commands with `action`, `status`, `duration` in seconds — `null`
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/README.md-532-when the runner measured none — and, on failure, `message`) and `screenshots`
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/README.md-533-(`name` and `path` of each `takeScreenshot` capture; the path is relative to
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/README.md-534-the working directory when the file is under it, absolute otherwise). The
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/README.md:535:same `duration` rule holds for `diff capture --json` steps. `reportDir` is present whenever `--report-dir` was
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/README.md-536-given and the directory exists; `error` appears only on failure:
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/README.md-537-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/README.md-538-```json

@@ -1,0 +1,31 @@
+appId: com.kylebrowning.landmarks
+---
+- launchApp
+- tapOn: "Deep Links"
+- tapOn: "Gesture Lab"
+- swipe:
+    direction: LEFT
+- assertVisible: "Last swipe: left"
+- swipe:
+    direction: RIGHT
+- assertVisible: "Last swipe: right"
+- swipe:
+    direction: UP
+- assertVisible: "Last swipe: up"
+- swipe:
+    direction: DOWN
+- assertVisible: "Last swipe: down"
+- swipe:
+    start: "80%, 50%"
+    end: "20%, 50%"
+- assertVisible: "Last swipe: left"
+- swipe:
+    direction: RIGHT
+    duration: 1500
+- assertVisible: "Last swipe: right"
+- swipe:
+    direction: UP
+    from:
+      id: "gesture-pad"
+- assertVisible: "Last swipe: up"
+- takeScreenshot: "Swipes"

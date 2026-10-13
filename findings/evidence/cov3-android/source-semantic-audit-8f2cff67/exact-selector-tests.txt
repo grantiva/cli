@@ -1,0 +1,26 @@
+
+    func testEveryScreenshotIsPrecededByOneSettle() {
+        let screens = [
+            GrantivaConfig.Screen(name: "Home", path: .launch),
+            GrantivaConfig.Screen(name: "Fav", path: .steps([.init(tap: "Favorites")])),
+        ]
+        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+
+        XCTAssertTrue(yaml.contains("- launchApp\n\(settle)\n- takeScreenshot: \"Home\""), yaml)
+        XCTAssertEqual(yaml.components(separatedBy: "waitForAnimationToEnd").count - 1, 2, yaml)
+    }
+
+    // A13: the mapping form emits a selector with `exact: true`.
+    func testExactLabelsEmitExactSelectors() throws {
+        let screens = [GrantivaConfig.Screen(name: "Tab", path: .steps([
+            .init(tap: "Landmarks", assertVisible: "Lakes", assertNotVisible: "Back", tapExact: true,
+                  assertVisibleExact: true, assertNotVisibleExact: true),
+            .init(tap: "Lakes"),
+        ]))]
+        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+
+        XCTAssertTrue(yaml.contains("- tapOn:\n    text: \"Landmarks\"\n    exact: true\n"), yaml)
+        XCTAssertTrue(yaml.contains("- assertVisible:\n    text: \"Lakes\"\n    exact: true\n"), yaml)
+        XCTAssertTrue(yaml.contains("- assertNotVisible:\n    text: \"Back\"\n    exact: true\n"), yaml)
+        XCTAssertTrue(yaml.contains("- tapOn: \"Lakes\"\n"), yaml)
+        XCTAssertEqual(try Array(Yams.compose_all(yaml: yaml)).count, 2)

@@ -1,0 +1,1 @@
+rm -rf .grantiva/recordings; /Users/kyle/.grantiva-qa/bin/grantiva record --device emulator-5554 --duration 2 --frames-at 1000 --json; echo exit=$?; ls .grantiva/recordings; ffprobe -v error -show_entries format=duration:stream=nb_frames,duration -of compact .grantiva/recordings/recording.mp4

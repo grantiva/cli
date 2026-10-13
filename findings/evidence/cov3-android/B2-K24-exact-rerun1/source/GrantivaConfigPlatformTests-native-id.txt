@@ -1,0 +1,31 @@
+        XCTAssertEqual(try GrantivaConfig.loadIfPresent(platform: .ios, from: dir)?.bundleId, "com.example.ios")
+    }
+
+    // MARK: - L42-a: native steps select by id
+
+    func testNativeStepsAcceptAnIdSelector() throws {
+        try write("grantiva-android.yml", """
+            application_id: com.kylebrowning.landmarks
+            screens:
+              - name: Clock
+                path:
+                  - tap: {id: "clock"}
+                  - assert_visible: {id: "clock"}
+                  - assert_not_visible: {id: "spinner"}
+            """)
+        let config = try GrantivaConfig.load(platform: .android, from: dir)
+        XCTAssertTrue(config.warnings.isEmpty, "\(config.warnings)")
+        guard case .steps(let steps) = config.screens.first?.path else { return XCTFail("expected steps") }
+        XCTAssertEqual(steps[0].tap, "clock"); XCTAssertTrue(steps[0].tapById)
+        XCTAssertEqual(steps[1].assertVisible, "clock"); XCTAssertTrue(steps[1].assertVisibleById)
+        XCTAssertEqual(steps[2].assertNotVisible, "spinner"); XCTAssertTrue(steps[2].assertNotVisibleById)
+
+        let encoded = try YAMLEncoder().encode(steps)
+        let decoded = try YAMLDecoder().decode([GrantivaConfig.Screen.Step].self, from: encoded)
+        XCTAssertEqual(decoded.map(\.tapById), [true, false, false], encoded)
+        XCTAssertEqual(decoded.map(\.assertVisibleById), [false, true, false], encoded)
+        XCTAssertEqual(decoded.map(\.assertNotVisibleById), [false, false, true], encoded)
+        XCTAssertEqual(decoded[0].tap, "clock")
+    }
+
+    func testAnIdAndATextTogetherAreAConfigErrorNamingTheStep() throws {

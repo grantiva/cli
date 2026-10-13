@@ -1,0 +1,280 @@
+import XCTest
+@testable import GrantivaCLI
+import GrantivaCore
+
+private actor BaselineSaveRecorder {
+    private var saves: [(String, Data)] = []
+
+    func save(_ screenName: String, _ data: Data) -> String {
+        saves.append((screenName, data))
+        return "/baselines/\(ScreenArtifact.fileName(for: screenName))"
+    }
+
+    func recordedNames() -> [String] { saves.map(\.0) }
+    func recordedData() -> [Data] { saves.map(\.1) }
+}
+
+private final class ComparedNames: @unchecked Sendable {
+    private let lock = NSLock()
+    private var value = 0
+    func add() { lock.lock(); value += 1; lock.unlock() }
+    var count: Int { lock.lock(); defer { lock.unlock() }; return value }
+}
+
+final class DiffCommandTests: XCTestCase {
+    func testCaptureArtifactsReturnsCanonicalArtifactsInDeterministicOrder() throws {
+        let artifacts = try DiffCommand.captureArtifacts(from: [
+            "Settings%2FGeneral.png",
+            "Home.png",
+        ])
+
+        XCTAssertEqual(artifacts, [
+            .init(fileName: "Home.png", screenName: "Home"),
+            .init(fileName: "Settings%2FGeneral.png", screenName: "Settings/General"),
+        ])
+    }
+
+    // Captures left by a version that percent-encoded spaces still compare;
+    // when a fresh plain-named capture sits beside one, the fresh one wins.
+    func testCaptureArtifactsAcceptLegacyNamesAndPreferTheCurrentForm() throws {
+        XCTAssertEqual(try DiffCommand.captureArtifacts(from: ["Deep%20Links.png"]), [
+            .init(fileName: "Deep%20Links.png", screenName: "Deep Links"),
+        ])
+        XCTAssertEqual(try DiffCommand.captureArtifacts(from: ["Deep%20Links.png", "Deep Links.png"]), [
+            .init(fileName: "Deep Links.png", screenName: "Deep Links"),
+        ])
+    }
+
+    func testCaptureArtifactsRejectsUndecodableScreenName() {
+        XCTAssertThrowsError(try DiffCommand.captureArtifacts(from: ["%FF.png"])) { error in
+            XCTAssertTrue(error.localizedDescription.contains("Invalid capture filename \"%FF.png\""))
+        }
+    }
+
+    func testCaptureArtifactsRejectsNonCanonicalAlias() {
+        XCTAssertThrowsError(try DiffCommand.captureArtifacts(from: ["%48ome.png"])) { error in
+            XCTAssertTrue(error.localizedDescription.contains("Invalid capture filename \"%48ome.png\""))
+        }
+    }
+
+    func testCaptureInvocationIgnoresStaleSameNameAndRemovedScreenFiles() throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-diff-invocation-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+
+        let current = directory.appendingPathComponent("Current.png")
+        let staleSameName = directory.appendingPathComponent("Failed.png")
+        let removedScreen = directory.appendingPathComponent("Removed.png")
+        try Data("current".utf8).write(to: current)
+        try Data("stale".utf8).write(to: staleSameName)
+        try Data("removed".utf8).write(to: removedScreen)
+
+        let artifacts = try DiffCommand.currentInvocationArtifacts(from: [
+            ScreenCapture(screenName: "Current", path: current.path, sizeBytes: 7),
+            ScreenCapture(screenName: "Failed", path: "", sizeBytes: 0),
+        ], outputDir: directory.path)
+
+        XCTAssertEqual(artifacts.map(\.screenName), ["Current"])
+        XCTAssertEqual(try artifacts.map { try String(contentsOfFile: $0.path!, encoding: .utf8) }, ["current"])
+    }
+
+    func testCompareCoversPassedFailedNewAndErrorScreens() async throws {
+        let root = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-diff-pipeline-\(UUID().uuidString)")
+        let captureDirectory = root.appendingPathComponent("captures")
+        let diffDirectory = captureDirectory.appendingPathComponent("diffs")
+        defer { try? FileManager.default.removeItem(at: root) }
+        try FileManager.default.createDirectory(at: diffDirectory, withIntermediateDirectories: true)
+
+        let screens = ["Pass", "Settings/Failure", "New", "Error"]
+        let artifacts = try screens.map { screenName in
+            let fileName = ScreenArtifact.fileName(for: screenName)
+            try Data(screenName.utf8).write(to: captureDirectory.appendingPathComponent(fileName))
+            return DiffCommand.CaptureArtifact(fileName: fileName, screenName: screenName)
+        }
+        let baselineNames: Set<String> = ["Pass", "Settings/Failure", "Error"]
+        let store = BaselineStore(
+            save: { _, _ in "" },
+            load: { screenName in baselineNames.contains(screenName) ? Data("baseline".utf8) : nil },
+            list: { [] },
+            delete: { _ in },
+            baselineDirectory: { "/baselines" }
+        )
+        let differ = ImageDiffer { _, current in
+            let value = String(decoding: current, as: UTF8.self)
+            if value == "Error" { throw GrantivaError.invalidImage }
+            if value == "Pass" {
+                return DiffOutput(pixelDiffPercent: 0.01, perceptualDistance: 1, diffImageData: Data())
+            }
+            return DiffOutput(pixelDiffPercent: 0.5, perceptualDistance: 20, diffImageData: Data("diff".utf8))
+        }
+
+        let outcome = try await DiffCommand.compare(
+            artifacts,
+            captureDirectory: captureDirectory.path,
+            diffDirectory: diffDirectory.path,
+            config: .init(threshold: 0.02, perceptualThreshold: 5),
+            store: store,
+            differ: differ
+        )
+
+        XCTAssertFalse(outcome.passed)
+        XCTAssertEqual(outcome.screens.map(\.status), [.passed, .failed, .newScreen, .error])
+        XCTAssertEqual(outcome.screens[1].diffImagePath, diffDirectory.appendingPathComponent("Settings%2FFailure_diff.png").path)
+        XCTAssertEqual(try String(contentsOf: diffDirectory.appendingPathComponent("Settings%2FFailure_diff.png"), encoding: .utf8), "diff")
+        XCTAssertNil(outcome.screens[0].diffImagePath)
+        XCTAssertTrue(outcome.screens[2].message.contains("diff approve"))
+        XCTAssertTrue(outcome.screens[3].message.hasPrefix("Error: "))
+    }
+
+    func testApprovePromotesAllCanonicalCaptures() async throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-diff-approve-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let artifacts = try ["Home", "Settings/General"].map { screenName in
+            let fileName = ScreenArtifact.fileName(for: screenName)
+            try Data(screenName.utf8).write(to: directory.appendingPathComponent(fileName))
+            return DiffCommand.CaptureArtifact(fileName: fileName, screenName: screenName)
+        }
+        let recorder = BaselineSaveRecorder()
+        let store = BaselineStore(
+            save: { name, data in await recorder.save(name, data) },
+            load: { _ in nil }, list: { [] }, delete: { _ in }, baselineDirectory: { "/baselines" }
+        )
+
+        let approved = try await DiffCommand.approve(
+            [], availableArtifacts: artifacts, captureDirectory: directory.path, store: store
+        )
+
+        let recordedNames = await recorder.recordedNames()
+        let recordedData = await recorder.recordedData()
+        XCTAssertEqual(approved, ["Home", "Settings/General"])
+        XCTAssertEqual(recordedNames, approved)
+        XCTAssertEqual(recordedData, [Data("Home".utf8), Data("Settings/General".utf8)])
+    }
+
+    func testApproveRejectsRequestedScreenWithoutCapture() async throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-diff-approve-missing-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+
+        do {
+            _ = try await DiffCommand.approve(
+                ["Missing"], availableArtifacts: [], captureDirectory: directory.path, store: .failing
+            )
+            XCTFail("Expected a missing-capture error")
+        } catch {
+            // K49: one sentence naming the screen and the directory, not
+            // the directory message wrapped around it.
+            XCTAssertEqual(
+                error.localizedDescription,
+                "No capture found for \"Missing\" in \(directory.path). Run: grantiva diff capture"
+            )
+            XCTAssertFalse(error.localizedDescription.contains("No captures found in"))
+        }
+    }
+
+    /// L16: several missing screens are all named in one error.
+    func testApproveNamesEveryMissingScreen() async throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-diff-approve-missing3-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+
+        do {
+            _ = try await DiffCommand.approve(
+                ["A", "B", "C"], availableArtifacts: [], captureDirectory: directory.path, store: .failing
+            )
+            XCTFail("Expected a missing-capture error")
+        } catch {
+            XCTAssertEqual(
+                error.localizedDescription,
+                "No captures found for \"A\", \"B\", \"C\" in \(directory.path). Run: grantiva diff capture"
+            )
+        }
+    }
+
+    /// L16: an approve that fails saves nothing, even for the screens that
+    /// were captured.
+    func testApproveWithAMissingScreenSavesNothing() async throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-diff-approve-partial-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        try Data("Home".utf8).write(to: directory.appendingPathComponent("Home.png"))
+        let recorder = BaselineSaveRecorder()
+        let store = BaselineStore(
+            save: { name, data in await recorder.save(name, data) },
+            load: { _ in nil }, list: { [] }, delete: { _ in }, baselineDirectory: { "/baselines" }
+        )
+
+        do {
+            _ = try await DiffCommand.approve(
+                ["Home", "Missing"], availableArtifacts: [], captureDirectory: directory.path, store: store
+            )
+            XCTFail("Expected a missing-capture error")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("\"Missing\""), error.localizedDescription)
+        }
+        let saved = await recorder.recordedNames()
+        XCTAssertEqual(saved, [])
+    }
+
+    // MARK: - K108: the failure line names the threshold that was exceeded
+
+    func testFailureMessageNamesTheExceededThreshold() async throws {
+        let cases: [(pixel: Double, perceptual: Double, message: String)] = [
+            (0.0003, 63.6, "Failed: perceptual=63.6 exceeds perceptual_threshold 5.0 (pixel=0.03%, threshold 2.00%)"),
+            (0.0797, 1.2, "Failed: pixel=7.97% exceeds threshold 2.00% (perceptual=1.2, perceptual_threshold 5.0)"),
+            (0.0797, 6.4, "Failed: pixel=7.97% exceeds threshold 2.00% and perceptual=6.4 exceeds perceptual_threshold 5.0"),
+        ]
+        for testCase in cases {
+            let outcome = try await compareOneScreen(
+                baseline: true,
+                differ: ImageDiffer { _, _ in
+                    DiffOutput(pixelDiffPercent: testCase.pixel, perceptualDistance: testCase.perceptual, diffImageData: Data())
+                }
+            )
+            XCTAssertEqual(outcome.screens.map(\.status), [.failed])
+            XCTAssertEqual(outcome.screens.first?.message, testCase.message)
+        }
+    }
+
+    // MARK: - K89: a comparison with no baselines is not a pass
+
+    func testCompareWithoutBaselinesDoesNotPass() async throws {
+        let outcome = try await compareOneScreen(baseline: false, differ: .failing)
+        XCTAssertFalse(outcome.passed)
+        XCTAssertEqual(outcome.screens.map(\.status), [.newScreen])
+    }
+
+    func testCompareWithMatchingBaselinesPasses() async throws {
+        let outcome = try await compareOneScreen(
+            baseline: true,
+            differ: ImageDiffer { _, _ in DiffOutput(pixelDiffPercent: 0, perceptualDistance: 0, diffImageData: Data()) }
+        )
+        XCTAssertTrue(outcome.passed)
+    }
+
+    /// One capture named Home, optionally with a baseline, through `compare`.
+    private func compareOneScreen(baseline: Bool, differ: ImageDiffer) async throws -> DiffCommand.ComparisonOutcome {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-diff-one-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let diffs = root.appendingPathComponent("diffs")
+        try FileManager.default.createDirectory(at: diffs, withIntermediateDirectories: true)
+        try Data("Home".utf8).write(to: root.appendingPathComponent("Home.png"))
+        let store = BaselineStore(
+            save: { _, _ in "" }, load: { _ in baseline ? Data("baseline".utf8) : nil }, list: { [] }, delete: { _ in },
+            baselineDirectory: { "/baselines" }
+        )
+        return try await DiffCommand.compare(
+            [.init(fileName: "Home.png", screenName: "Home")],
+            captureDirectory: root.path, diffDirectory: diffs.path,
+            config: .init(threshold: 0.02, perceptualThreshold: 5), store: store, differ: differ
+        )
+    }
+
+    // MARK: - K51: a compare with nothing to compare creates nothing

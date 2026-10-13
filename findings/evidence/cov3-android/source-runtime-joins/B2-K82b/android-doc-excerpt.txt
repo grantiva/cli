@@ -1,0 +1,13 @@
+baselines refuse Android with "Android baselines are local only until the Grantiva backend
+supports platforms; use local baselines". `diff capture`, `diff compare`, and
+`diff approve` work locally. On Android, `diff capture` prints `Emulator: <AVD> (<serial>)`,
+and its `--json` document adds an `emulator` object (name, udid, dimensions, scale) next
+to `simulator`, which carries the same values and is kept for compatibility. The MCP
+`grantiva_vrt_capture` tool returns the same document through a live runner session.
+`grantiva run` keeps its own screenshots in `.grantiva/run-captures/android/`, apart from the
+visual-diff captures.
+
+Before each capture Grantiva enables System UI demo mode (clock 09:41, full battery,
+no notifications), sets the three animation scales to 0, and pins portrait. The previous
+values are saved to `.grantiva/android-settings-<serial>.json` and restored afterwards. If
+a run is interrupted, the next run restores them first. A freshly booted emulator can drop

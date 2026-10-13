@@ -1,0 +1,1 @@
+adb -s emulator-5554 shell pm clear com.kylebrowning.landmarks; adb -s emulator-5554 shell monkey -p com.kylebrowning.landmarks 1; sleep 2; /Users/kyle/.grantiva-qa/bin/grantiva runner start --detach --device emulator-5554; echo start-exit=$?; cat .grantiva/session.json

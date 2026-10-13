@@ -1,0 +1,36 @@
+                  - swipe: Up
+                  - swipe: DOWN
+            """)
+        let config = try GrantivaConfig.load(platform: .ios, from: dir)
+        guard case .steps(let steps) = config.screens[0].path else { return XCTFail("expected steps") }
+        XCTAssertEqual(steps.map(\.swipe), ["Up", "DOWN"])
+    }
+
+    // A13: `tap`, `assert_visible` and `assert_not_visible` take `{text:, exact:}`.
+    func testLabelMappingFormDecodes() throws {
+        try write("grantiva.yml", """
+            bundle_id: com.example
+            screens:
+              - name: Tab
+                path:
+                  - tap: {text: "Landmarks", exact: true}
+                  - assert_visible: {text: "Lakes", exact: true}
+                  - assert_not_visible: {text: "Back"}
+                  - tap: "Lakes"
+            """)
+        let config = try GrantivaConfig.load(platform: .ios, from: dir)
+        guard case .steps(let steps) = config.screens[0].path else { return XCTFail("expected steps") }
+        XCTAssertEqual(steps[0].tap, "Landmarks")
+        XCTAssertTrue(steps[0].tapExact)
+        XCTAssertEqual(steps[1].assertVisible, "Lakes")
+        XCTAssertTrue(steps[1].assertVisibleExact)
+        XCTAssertEqual(steps[2].assertNotVisible, "Back")
+        XCTAssertFalse(steps[2].assertNotVisibleExact)
+        XCTAssertEqual(steps[3].tap, "Lakes")
+        XCTAssertFalse(steps[3].tapExact)
+    }
+
+    /// K58: `--platform ios` in an Android-only directory never turns the
+    /// Android flows in `.maestro/` into an iOS config.
+    func testIOSSkipsTheMaestroFallbackInAnAndroidOnlyDirectory() throws {
+        try FileManager.default.createDirectory(at: dir.appendingPathComponent(".maestro"), withIntermediateDirectories: true)

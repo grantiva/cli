@@ -1,0 +1,5 @@
+The harness's intermediate PNG-count assertion mistakenly used `-maxdepth 1`,
+while `record` correctly writes frames under `example-frames/`. Because the shell
+was not `set -e`, the final nonempty-video assertion determined wrapper exit 0.
+This does not affect the verdict: a recursive inventory shows exactly three PNGs
+named 000000ms, 001000ms, and 003000ms plus the nonempty MP4 and JSON report.

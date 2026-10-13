@@ -1,0 +1,15 @@
+    build_args: ["-PsomeFlag=1"]
+    screens: [...]                   # same shape as iOS
+    flows: [...]
+    diff: {...}
+
+`grantiva-android.yml` may instead be written in Maestro format, as `grantiva.yml` can on iOS
+(see the README's Maestro Compatibility section): the `appId:` header is the application ID,
+the Gradle side takes its defaults (module `app`, variant `debug`), and each `takeScreenshot`
+is a screen. Selectors take `{id: ...}` there (`tapOn: {id: clock}`), which UIAutomator2
+matches against the resource ID or test tag.
+
+A `run --flow` with no config and no `--application-id` launches the app the flow's literal
+`appId:` header names.
+
+A `variant` or `module` Gradle does not know fails the build with Gradle's reason and a line

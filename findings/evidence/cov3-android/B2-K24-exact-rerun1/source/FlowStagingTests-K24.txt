@@ -1,0 +1,48 @@
+    // MARK: - K24: Maestro-format grantiva-android.yml
+
+    static let androidMaestroConfig = """
+    appId: com.kylebrowning.landmarks
+    ---
+    - launchApp
+    - swipe:
+        direction: UP
+    - waitForAnimationToEnd
+    - takeScreenshot: "Home Swiped"
+    - tapOn: "Deep Links"
+    - tapOn: "Caching Demo"
+    - extendedWaitUntil:
+        visible: "Cache Policy"
+        timeout: 5000
+    - tapOn:
+        id: "clock"
+    - assertVisible:
+        id: "clock"
+    - takeScreenshot: "Caching Maestro"
+    """
+
+    func testAMaestroFormatAndroidConfigLoadsWithAndroidDefaults() throws {
+        try Self.androidMaestroConfig.write(to: scratch.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        let config = try XCTUnwrap(GrantivaConfig.loadIfPresent(platform: .android, from: scratch))
+        XCTAssertEqual(config.platform, .android)
+        XCTAssertEqual(config.android?.applicationId, "com.kylebrowning.landmarks")
+        XCTAssertEqual(config.android?.module, "app")
+        XCTAssertEqual(config.android?.variant, "debug")
+        XCTAssertEqual(config.screens.map(\.name), ["Home Swiped", "Caching Maestro"])
+        guard case .steps(let steps) = config.screens[1].path else { return XCTFail("steps") }
+        XCTAssertTrue(steps.contains { $0.tap == "clock" && $0.tapById })
+        XCTAssertTrue(steps.contains { $0.assertVisible == "clock" && $0.assertVisibleById })
+
+        let yaml = FlowGenerator.generate(screens: config.screens, bundleId: "com.kylebrowning.landmarks", platform: .android)
+        XCTAssertTrue(yaml.contains("- tapOn:\n    id: \"clock\""), yaml)
+        XCTAssertTrue(yaml.contains("- assertVisible:\n    id: \"clock\""), yaml)
+    }
+
+    func testAnAndroidFlagStillWinsOverTheMaestroAppId() throws {
+        try Self.androidMaestroConfig.write(to: scratch.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        let config = try XCTUnwrap(GrantivaConfig.loadIfPresent(platform: .android, from: scratch))
+        XCTAssertEqual(
+            AndroidProject.applicationID(override: "com.flag", binary: nil, configured: config.android?.applicationId).id,
+            "com.flag"
+        )
+    }
+}

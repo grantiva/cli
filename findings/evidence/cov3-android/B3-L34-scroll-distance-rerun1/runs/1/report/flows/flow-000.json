@@ -1,0 +1,192 @@
+{
+  "id": "flow-000",
+  "name": "08-scroll",
+  "sourceFile": ".maestro/08-scroll.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T02:51:29.909072-07:00",
+  "endTime": "2026-10-13T02:52:20.050417-07:00",
+  "duration": 50143,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T02:51:29.914056-07:00",
+      "endTime": "2026-10-13T02:51:31.287056-07:00",
+      "duration": 1373,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "scroll",
+      "yaml": "scroll: DOWN",
+      "status": "passed",
+      "startTime": "2026-10-13T02:51:31.287726-07:00",
+      "endTime": "2026-10-13T02:51:32.878726-07:00",
+      "duration": 1591,
+      "params": {
+        "direction": "DOWN"
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "scrollUntilVisible",
+      "yaml": "scrollUntilVisible: text=\"Landmark 70\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:51:32.87954-07:00",
+      "endTime": "2026-10-13T02:51:56.37154-07:00",
+      "duration": 23492,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmark 70"
+        },
+        "direction": "DOWN",
+        "timeout": 60000
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0b5e-0000-02e700000004",
+        "text": "Landmark 70",
+        "bounds": {
+          "x": 42,
+          "y": 1912,
+          "width": 261,
+          "height": 63
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmark 70\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:51:56.370386-07:00",
+      "endTime": "2026-10-13T02:51:56.402386-07:00",
+      "duration": 32,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmark 70"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0b5e-0000-02e700000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "scrollUntilVisible",
+      "yaml": "scrollUntilVisible: text=\"Golden Gate Bridge\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:51:56.403747-07:00",
+      "endTime": "2026-10-13T02:52:19.914747-07:00",
+      "duration": 23511,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate Bridge"
+        },
+        "direction": "UP",
+        "timeout": 60000
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0b5e-0000-050c00000004",
+        "text": "Golden Gate Bridge",
+        "bounds": {
+          "x": 42,
+          "y": 462,
+          "width": 384,
+          "height": 63
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Golden Gate Bridge\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:52:19.9154-07:00",
+      "endTime": "2026-10-13T02:52:19.9364-07:00",
+      "duration": 21,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate Bridge"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0b5e-0000-050c00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-006",
+      "index": 6,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:52:19.937254-07:00",
+      "endTime": "2026-10-13T02:52:20.049254-07:00",
+      "duration": 112,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Deep Links",
+        "bounds": {
+          "x": 734,
+          "y": 2127,
+          "width": 346,
+          "height": 210
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 7,
+    "mean": 7161,
+    "p50": 1373,
+    "p95": 23511,
+    "max": 23511,
+    "slowestType": "scrollUntilVisible"
+  },
+  "artifacts": {}
+}

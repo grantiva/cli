@@ -1,0 +1,401 @@
+{
+  "id": "flow-000",
+  "name": "screens",
+  "sourceFile": "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-B73532C0-A69B-4DC6-A026-25E1FA8754A2/grantiva-android.yml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T00:27:51.885209-07:00",
+  "endTime": "2026-10-13T00:27:57.61092-07:00",
+  "duration": 5725,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:51.892563-07:00",
+      "endTime": "2026-10-13T00:27:53.275563-07:00",
+      "duration": 1383,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "extendedWaitUntil",
+      "label": "Wait for the app to draw",
+      "yaml": "extendedWaitUntil: visible text=\".+\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:53.276156-07:00",
+      "endTime": "2026-10-13T00:27:53.423156-07:00",
+      "duration": 147,
+      "element": {
+        "found": true,
+        "text": "Golden Gate Bridge",
+        "bounds": {
+          "x": 0,
+          "y": 541,
+          "width": 1080,
+          "height": 189
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "swipe",
+      "yaml": "swipe: UP",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:53.423811-07:00",
+      "endTime": "2026-10-13T00:27:53.776811-07:00",
+      "duration": 353,
+      "params": {
+        "direction": "UP"
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:53.777485-07:00",
+      "endTime": "2026-10-13T00:27:54.549485-07:00",
+      "duration": 772,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:54.550621-07:00",
+      "endTime": "2026-10-13T00:27:54.744621-07:00",
+      "duration": 194,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Deep Links",
+        "bounds": {
+          "x": 734,
+          "y": 2127,
+          "width": 346,
+          "height": 210
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:54.745024-07:00",
+      "endTime": "2026-10-13T00:27:55.441024-07:00",
+      "duration": 696,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-006",
+      "index": 6,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Caching Demo\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:55.442088-07:00",
+      "endTime": "2026-10-13T00:27:55.629088-07:00",
+      "duration": 187,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Caching Demo"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Caching Demo",
+        "bounds": {
+          "x": 42,
+          "y": 622,
+          "width": 996,
+          "height": 126
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-007",
+      "index": 7,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:55.630114-07:00",
+      "endTime": "2026-10-13T00:27:56.287114-07:00",
+      "duration": 657,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-008",
+      "index": 8,
+      "type": "extendedWaitUntil",
+      "yaml": "extendedWaitUntil: visible text=\"Cache Policy\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:56.288312-07:00",
+      "endTime": "2026-10-13T00:27:56.353312-07:00",
+      "duration": 65,
+      "element": {
+        "found": true,
+        "id": "00000000-0000-04d5-0000-011500000004",
+        "text": "Cache Policy",
+        "bounds": {
+          "x": 84,
+          "y": 474,
+          "width": 192,
+          "height": 42
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-009",
+      "index": 9,
+      "type": "extendedWaitUntil",
+      "yaml": "extendedWaitUntil: notVisible id=\"definitely-missing-id\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:56.354517-07:00",
+      "endTime": "2026-10-13T00:27:56.422517-07:00",
+      "duration": 68,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-010",
+      "index": 10,
+      "type": "extendedWaitUntil",
+      "yaml": "extendedWaitUntil: visible text=\"Cache Policy\", exact=true",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:56.423717-07:00",
+      "endTime": "2026-10-13T00:27:56.458717-07:00",
+      "duration": 35,
+      "element": {
+        "found": true,
+        "id": "00000000-0000-04d5-0000-011500000004",
+        "text": "Cache Policy",
+        "bounds": {
+          "x": 84,
+          "y": 474,
+          "width": 192,
+          "height": 42
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-011",
+      "index": 11,
+      "type": "extendedWaitUntil",
+      "yaml": "extendedWaitUntil: visible id=\"clock\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:56.459207-07:00",
+      "endTime": "2026-10-13T00:27:56.495207-07:00",
+      "duration": 36,
+      "element": {
+        "found": true,
+        "id": "00000000-0000-04d5-0000-011d00000004",
+        "text": "00:27:55",
+        "bounds": {
+          "x": 42,
+          "y": 1075,
+          "width": 364,
+          "height": 116
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-012",
+      "index": 12,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Cache Policy\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:56.496078-07:00",
+      "endTime": "2026-10-13T00:27:56.521078-07:00",
+      "duration": 25,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Cache Policy"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-04d5-0000-011500000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-013",
+      "index": 13,
+      "type": "tapOn",
+      "yaml": "tapOn: id=\"clock\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:56.522999-07:00",
+      "endTime": "2026-10-13T00:27:56.610999-07:00",
+      "duration": 88,
+      "params": {
+        "selector": {
+          "type": "id",
+          "value": "clock"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-04d5-0000-011d00000004",
+        "text": "00:27:55",
+        "bounds": {
+          "x": 42,
+          "y": 1075,
+          "width": 364,
+          "height": 116
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-014",
+      "index": 14,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:56.611742-07:00",
+      "endTime": "2026-10-13T00:27:56.970742-07:00",
+      "duration": 359,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-015",
+      "index": 15,
+      "type": "assertVisible",
+      "yaml": "assertVisible: id=\"clock\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:56.97159-07:00",
+      "endTime": "2026-10-13T00:27:57.02959-07:00",
+      "duration": 58,
+      "params": {
+        "selector": {
+          "type": "id",
+          "value": "clock"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-04d5-0000-011d00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-016",
+      "index": 16,
+      "type": "assertNotVisible",
+      "yaml": "assertNotVisible: id=\"definitely-missing-id\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:57.030751-07:00",
+      "endTime": "2026-10-13T00:27:57.079751-07:00",
+      "duration": 49,
+      "params": {
+        "selector": {
+          "type": "id",
+          "value": "definitely-missing-id"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-017",
+      "index": 17,
+      "type": "scrollUntilVisible",
+      "yaml": "scrollUntilVisible: id=\"clock\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:57.08021-07:00",
+      "endTime": "2026-10-13T00:27:57.14421-07:00",
+      "duration": 64,
+      "params": {
+        "selector": {
+          "type": "id",
+          "value": "clock"
+        },
+        "direction": "DOWN",
+        "timeout": 5000
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-04d5-0000-011d00000004",
+        "text": "00:27:56",
+        "bounds": {
+          "x": 42,
+          "y": 1075,
+          "width": 364,
+          "height": 116
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-018",
+      "index": 18,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:57.145063-07:00",
+      "endTime": "2026-10-13T00:27:57.486063-07:00",
+      "duration": 341,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-019",
+      "index": 19,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-13T00:27:57.48673-07:00",
+      "endTime": "2026-10-13T00:27:57.60973-07:00",
+      "duration": 123,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-019-K109 Forms.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 20,
+    "mean": 285,
+    "p50": 123,
+    "p95": 772,
+    "max": 1383,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

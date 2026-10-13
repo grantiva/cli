@@ -1,0 +1,102 @@
+{
+  "id": "flow-000",
+  "name": "11-slow",
+  "sourceFile": ".maestro/11-slow.yaml",
+  "device": {
+    "id": "emulator-5556",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T05:13:18.890855-07:00",
+  "endTime": "2026-10-13T05:14:25.467686-07:00",
+  "duration": 66576,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T05:13:18.899326-07:00",
+      "endTime": "2026-10-13T05:13:20.472326-07:00",
+      "duration": 1573,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "failed",
+      "startTime": "2026-10-13T05:13:20.473017-07:00",
+      "endTime": "2026-10-13T05:14:06.846017-07:00",
+      "duration": 46373,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "error": {
+        "type": "element_not_found",
+        "message": "Element not found: text='Deep Links': UIAutomator2 server on emulator-5556 stopped responding (socket missing); retried 7 times over 9.2s"
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Slow Screen\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Slow Screen"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Loading…\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Loading…"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "extendedWaitUntil",
+      "yaml": "extendedWaitUntil: visible text=\"Loaded after delay\"",
+      "status": "skipped",
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "skipped",
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 23973,
+    "p50": 1573,
+    "p95": 46373,
+    "max": 46373,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}
