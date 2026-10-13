@@ -1,0 +1,47 @@
+{
+  "configuration": {
+    "controller_root": "/ABSOLUTE/PATH/TO/MERGED/CLI",
+    "candidate_manifest": "/ABSOLUTE/PATH/TO/frozen-candidate.json",
+    "ownership_manifest": "/ABSOLUTE/PATH/TO/ownership.json",
+    "candidate_binary": "/ABSOLUTE/PATH/TO/ONE/RELEASE/grantiva",
+    "candidate_bundle": "/ABSOLUTE/PATH/TO/ONE/RELEASE/grantiva_GrantivaCore.bundle",
+    "runner_home": "/ABSOLUTE/PATH/TO/FRESH/APFS/runner-home",
+    "evidence_root": "/ABSOLUTE/PATH/TO/findings/evidence/round4-smoke",
+    "session_id": "fix4-8",
+    "ios_udid": "NEW_SMOKE4_IOS_UDID",
+    "android_serial": "NEW_SMOKE4_ANDROID_SERIAL",
+    "android_avd": "smoke4-android",
+    "android_apk": "/ABSOLUTE/PATH/TO/landmarks-demo-1552ae98-debug.apk",
+    "runner_binary": "/ABSOLUTE/PATH/TO/FRESH/APFS/runner-home/grantiva-runner",
+    "adb": "/ABSOLUTE/PATH/TO/Android/sdk/platform-tools/adb",
+    "uia2_sampler": "/ABSOLUTE/PATH/TO/regression/findings/evidence/fix4-2/uia2-source-snapshot-v2.py",
+    "movement_analyzer": "/ABSOLUTE/PATH/TO/regression/findings/evidence/fix4-2/analyze-l51-movement.py",
+    "runner_inputs": "/ABSOLUTE/PATH/TO/regression/findings/evidence/fix4-2/inputs",
+    "optional_inputs": "/ABSOLUTE/PATH/TO/regression/findings/evidence/fix4-3/inputs",
+    "healthy_flow": "/ABSOLUTE/PATH/TO/healthy.yaml",
+    "crash_flow": "/ABSOLUTE/PATH/TO/99-crash.yaml",
+    "cycle_project": "/ABSOLUTE/PATH/TO/cycle-project",
+    "cycle_flow": "subdirectory/a.yaml",
+    "ios_project": "/ABSOLUTE/PATH/TO/IOS/PROJECT/WITH/ACTIVE/SESSION",
+    "android_project": "/ABSOLUTE/PATH/TO/ANDROID/PROJECT/WITH/ACTIVE/SESSION",
+    "android_smoke_project": "/ABSOLUTE/PATH/TO/TASK-OWNED/ANDROID/SMOKE/PROJECT",
+    "lifecycle_project": "/ABSOLUTE/PATH/TO/TASK-OWNED/LIFECYCLE/PROJECT",
+    "ios_app": "/ABSOLUTE/PATH/TO/CLEAN/BUILT/Landmarks.app",
+    "ios_no_session_project": "/ABSOLUTE/PATH/TO/EMPTY/IOS/PROJECT",
+    "android_no_session_project": "/ABSOLUTE/PATH/TO/EMPTY/ANDROID/PROJECT"
+    ,"ios_large_seed": "/ABSOLUTE/PATH/TO/ios-large-hierarchy-seed.json",
+    "android_large_seed": "/ABSOLUTE/PATH/TO/android-large-hierarchy-seed.json",
+    "xcrun": "/usr/bin/xcrun",
+    "ios_app_id": "com.kylebrowning.Landmarks"
+  },
+  "phases": [
+    {"id":"01-candidate-upgrade","criteria":["release candidate manifest","fresh APFS clone upgrade","iOS 26.0/26.2/26.4/27.0 caches"],"commands":[{"id":"candidate-upgrade","argv":["/PATH/TO/PARAMETERIZED/candidate_upgrade.py","--candidate-manifest","${candidate_manifest}","--ownership-manifest","${ownership_manifest}","--binary","${candidate_binary}","--bundle","${candidate_bundle}","--runner","${runner_binary}","--runner-home","${runner_home}"],"assertions":[{"type":"exists","path":"candidate-manifest.json"}],"raw_reports":["${runner_home}"]}]},
+    {"id":"02-runner-android","criteria":["healthy stock","crash5","L51 direction/element/coordinates/engine-adb","favorite5","L77 literal clearState/bare stop/not visible","optional and required misses","subdirectory cycle"],"commands":[{"id":"runner-android","argv":["${controller_root}/.superpowers/sdd/2026-10-13-round4-fix-wave/task-8-harness/android_runner_smoke.py","--candidate-manifest","${candidate_manifest}","--ownership-manifest","${ownership_manifest}","--binary","${candidate_binary}","--bundle","${candidate_bundle}","--runner","${runner_binary}","--runner-home","${runner_home}","--source-root","${controller_root}","--project","${android_smoke_project}","--serial","${android_serial}","--avd","${android_avd}","--apk","${android_apk}","--adb","${adb}","--uia2-sampler","${uia2_sampler}","--movement-analyzer","${movement_analyzer}","--runner-inputs","${runner_inputs}","--optional-inputs","${optional_inputs}","--healthy-flow","${healthy_flow}","--crash-flow","${crash_flow}","--cycle-project","${cycle_project}","--cycle-flow","${cycle_flow}","--evidence","${evidence_root}/02-runner-android/helper"],"assertions":[{"type":"json_equals","path":"${evidence_root}/02-runner-android/helper/acceptance.json","pointer":"/passed","value":true}]}]},
+    {"id":"03-lifecycle","criteria":["plain startup and ready interruption on both platforms","detach immediate readiness","canonical absent install","success/failure/interruption log cleanup","cycle controls"],"commands":[{"id":"lifecycle","argv":["${controller_root}/.superpowers/sdd/2026-10-13-round4-fix-wave/task-8-harness/lifecycle_smoke.py","--binary","${candidate_binary}","--source","${controller_root}","--bundle","${candidate_bundle}","--runner","${runner_binary}","--candidate-manifest","${candidate_manifest}","--ownership-manifest","${ownership_manifest}","--project","${lifecycle_project}","--runner-home","${runner_home}","--session-id","fix4-8","--ios-udid","${ios_udid}","--ios-app","${ios_app}","--android-serial","${android_serial}","--android-avd","${android_avd}","--adb","${adb}","--phase","startup-interrupt","--phase","detach-ready","--phase","absent-app","--phase","log-cleanup","--phase","cycle-controls","--output","${evidence_root}/03-lifecycle/helper"],"assertions":[{"type":"json_equals","path":"${evidence_root}/03-lifecycle/helper/acceptance.json","pointer":"/status","value":"passed"}]}]},
+    {"id":"04-mcp-ios","criteria":["L65 exact and precedence iOS","full L66 selector family","10 large mixed pairs","small responses","notifications"],"commands":[{"id":"mcp-ios","argv":["${controller_root}/.superpowers/sdd/2026-10-13-round4-fix-wave/task-8-harness/mcp_smoke.py","--candidate-manifest","${candidate_manifest}","--ownership-manifest","${ownership_manifest}","--source-root","${controller_root}","--binary","${candidate_binary}","--bundle","${candidate_bundle}","--runner","${runner_binary}","--runner-home","${runner_home}","--platform","ios","--device","${ios_udid}","--project","${ios_project}","--no-session-project","${ios_no_session_project}","--large-seed","${ios_large_seed}","--ios-simctl","${xcrun}","--ios-app-id","${ios_app_id}","--evidence","${evidence_root}/04-mcp-ios/helper","--pairs","10"],"assertions":[{"type":"json_equals","path":"${evidence_root}/04-mcp-ios/helper/acceptance.json","pointer":"/passed","value":true}]}]},
+    {"id":"05-mcp-android","criteria":["L65 exact and precedence Android","10 large mixed pairs","small responses","notifications"],"commands":[{"id":"mcp-android","argv":["${controller_root}/.superpowers/sdd/2026-10-13-round4-fix-wave/task-8-harness/mcp_smoke.py","--candidate-manifest","${candidate_manifest}","--ownership-manifest","${ownership_manifest}","--source-root","${controller_root}","--binary","${candidate_binary}","--bundle","${candidate_bundle}","--runner","${runner_binary}","--runner-home","${runner_home}","--platform","android","--device","${android_serial}","--android-avd","${android_avd}","--project","${android_project}","--no-session-project","${android_no_session_project}","--large-seed","${android_large_seed}","--evidence","${evidence_root}/05-mcp-android/helper","--pairs","10"],"assertions":[{"type":"json_equals","path":"${evidence_root}/05-mcp-android/helper/acceptance.json","pointer":"/passed","value":true}]}]},
+    {"id":"06-docs-output","criteria":["ambiguous doctor text and JSON","migration notes","all help pages regenerated from candidate","corpus tests"],"commands":[{"id":"docs-output","argv":["/PATH/TO/PARAMETERIZED/docs_smoke.py","--binary","${candidate_binary}","--source","${controller_root}"],"assertions":[{"type":"exists","path":"acceptance.json"}]}]},
+    {"id":"07-final-force-teardown","criteria":["both owned targets live for constructor validation","live owned iOS force teardown JSON","runner and session cleanup","recreate-required marker","owned iOS removal"],"commands":[{"id":"force-teardown","argv":["${controller_root}/.superpowers/sdd/2026-10-13-round4-fix-wave/task-8-harness/lifecycle_smoke.py","--binary","${candidate_binary}","--source","${controller_root}","--bundle","${candidate_bundle}","--runner","${runner_binary}","--candidate-manifest","${candidate_manifest}","--ownership-manifest","${ownership_manifest}","--project","${lifecycle_project}","--runner-home","${runner_home}","--session-id","fix4-8","--ios-udid","${ios_udid}","--ios-app","${ios_app}","--android-serial","${android_serial}","--android-avd","${android_avd}","--adb","${adb}","--phase","force-teardown","--allow-destroy-owned-ios","--output","${evidence_root}/07-final-force-teardown/helper"],"assertions":[{"type":"json_equals","path":"${evidence_root}/07-final-force-teardown/helper/acceptance.json","pointer":"/status","value":"passed"},{"type":"exists","path":"${evidence_root}/07-final-force-teardown/helper/IOS-DEVICE-RECREATE-REQUIRED.json"}]}]},
+    {"id":"08-final-cleanup","criteria":["owned iOS absence after force teardown","manifest-owned Android/sessions/locks/forwards/PIDs absent","protected inventories unchanged"],"commands":[{"id":"owned-cleanup","argv":["/PATH/TO/PARAMETERIZED/cleanup_smoke.py","--manifest","${ownership_manifest}","--expect-ios-absent","${ios_udid}","--android","${android_serial}","--avd","${android_avd}"],"assertions":[{"type":"exists","path":"cleanup.json"}]}]}
+  ]
+}
