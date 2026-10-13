@@ -89,3 +89,7 @@ Current QA CLI decodes command artifacts as string values and cannot decode the 
 Self-review complete; no remaining implementation findings. Commit: `cc0c15a629071c0356b9a6fb66d70af8c4ff9579` (`Fix Android crash decisions and cancel failure captures`), containing source, tests and CHANGELOG. Worktree is clean. Parent/base remains `fd9d8e8d1cb109eda6116f4221da10257b9838e3`. No remotes were used, no push, PR, or merge performed.
 
 Controller independently reviews and owns PR/CI/merge gate. **Pending device criteria: none for this task.** The campaign still must validate all CLI report/trace surfaces after Task 7's decoder compatibility change and repack.
+
+## Controller file-inventory reconciliation
+
+The initial plan listed wait_crash.go, launch_timing_test.go, and runner_test.go as possible modification sites. The implementation reuses sourceCtx unchanged in wait_crash.go and puts the actual semantic regressions in launch_crash_after_draw_test.go, wait_crash_test.go, and duration_consistency_test.go. Independent review found all required behavior covered; no cosmetic source edits are warranted. This resolves the review’s minor checklist discrepancy.

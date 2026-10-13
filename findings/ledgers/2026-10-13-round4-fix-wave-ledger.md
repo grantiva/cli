@@ -126,3 +126,7 @@ Task5 final Android mixed-large-response acceptance worker reports pass:10pairs 
 
 Runner draft PR24: https://github.com/grantiva/runner/pull/24 at cc0c15a6, independent review/CI in progress.
 Task4 scoped fix1 re-review approved all findings, no new blocking issue; resumed original implementer for full live acceptance. Android slot now fix4-4-android (verify serial5580 free); iOS waits Task5 cleanup, then fix4-4-ios-26 plus only-needed owned control simulator. Both runner-home env names use fresh scoped APFS clone; API key unset. Final-head CI and all live criteria still pending.
+
+Task1 independent source/spec/acceptance review APPROVED. Minor file-list reconciliation resolved in report: sourceCtx reused unchanged, regression files chosen by existing ownership, no omitted behavior or cosmetic source edits. CI/merge and Task7 compatibility remain gates.
+Task4 live Android: fix4-4-android / emulator5580 / PID18081; scoped home /private/tmp/grantiva-fix4-4.b2UyuL/runner-home; source9c774852 debug SHAaeaa9587eae499b0a3709189c7a2b2120ce90ebf6ae90357fbd2b0783122d06e. iOS still queued.
+Task5 final CLI suite1970pass and final L80 both platforms pass; demo literal-heart durability recheck after restart failed, so draft demo PR4 stays unapproved. Investigating actual foreground/visibility state; preserve initial pass plus later failure without regrading.
