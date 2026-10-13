@@ -1,0 +1,82 @@
+{
+  "schema": "grantiva.task9.reservation.v1",
+  "candidateManifestSHA256": "d833797d30a794d8cfe9d2dc4646329d4f791667eb8dfa5d17cf417d827f744e",
+  "sourceWindowCloseout": {
+    "path": "findings/evidence/round4-coverage/source-window/closeout.json",
+    "sha256": "ccc9aef180b8e45d44ad7f75e8dddcf09567559aa0aa19e85d14a43453fb31f0"
+  },
+  "sourceWindowReview": {
+    "path": "findings/reviews/fix4-task9-source-window-closeout-review.md",
+    "sha256": "93da47591c2c64b7de452695137a9c144f938771819f8217dbdf711fee85518c"
+  },
+  "standingDelegations": {
+    "path": "findings/preparation/round4-coverage/task9-standing-delegations.md",
+    "sha256": "f53ff2459cd36dd0e1215ddf4bf419114ce98873e783ccafc565285d40beb254"
+  },
+  "applicationBuildRouting": {
+    "path": "findings/preparation/round4-coverage/task9-application-build-routing.md",
+    "sha256": "eae4bf6bad460db1e8cf31b12e36f8197ee8b02997d8886c66a5707559838dc5"
+  },
+  "applicationBuildAddendum": {
+    "path": "findings/preparation/round4-coverage/task9-application-build-routing-addendum.md",
+    "sha256": "3eda10b3783137c16c674f12e6ce4bc15a394f34260b8eefa5fc63c809aa2018"
+  },
+  "preflight": {
+    "path": "findings/evidence/round4-coverage/activation-preflight/proof.json",
+    "sha256": "8005dd1c2b2a3a32e9aee557cca4c85b1a8dd1a531d4cf2fccf09f34db22d8fe"
+  },
+  "activatedEpoch": 1791930568.13857,
+  "returned": false,
+  "firstSwiftFullFailurePreserved": true,
+  "userApprovalRequired": false,
+  "reservationId": "cov4-ios-initial-001-009",
+  "actor": "cov4-ios",
+  "sessionId": "cov4-ios",
+  "worktree": "/Users/kyle/Developer/grantiva-cli/.worktrees/cov4-ios",
+  "keys": [
+    "IOS-001",
+    "IOS-002",
+    "IOS-003",
+    "IOS-004",
+    "IOS-005",
+    "IOS-006",
+    "IOS-007",
+    "IOS-008",
+    "IOS-009"
+  ],
+  "devices": [
+    {
+      "name": "cov4-ios-26",
+      "id": "3B3BBFDB-D435-454F-9DDC-E0CC5EE99E42",
+      "runtime": "iOS26.0",
+      "permission": "IOS006 existing-device reuse only; no delete"
+    },
+    {
+      "name": "cov4-ios-3 iPhone 17",
+      "id": null,
+      "runtime": "iOS26.0",
+      "permission": "literal ensure/create/reuse/boot/no-boot/concurrency per assigned row; capture newUUID before furtheruse"
+    },
+    {
+      "name": "cov4-ios-3",
+      "id": null,
+      "runtime": "iOS26.0",
+      "permission": "only explicit-device-type row variant; same name-slot rules"
+    },
+    {
+      "name": "cov4-ios-4 Pin",
+      "id": null,
+      "runtime": "literal row latest resolves installed27.0 or row-specific negative runtime",
+      "permission": "IOS003 pinnedtype/runtime control, retain forIOS019later"
+    }
+  ],
+  "negativeOnlyNames": [
+    "cov-thing",
+    "cov4-ios-4"
+  ],
+  "allowed": "Every literal transition/repetition within listed rows and reviewed standing table; record actual argv, name/type/runtime/absence/newUUID/ownership in row journal before operation; at most two extra iOS devices coexist",
+  "signals": "Only authenticated row-started waiter/process if literal row requires it",
+  "excluded": "No appbuild, primarydelete, protected/defaultdeviceoperation or arbitrarynewname; no later lifecycle rows until nextwindow",
+  "return": "Report current literal names/UUIDs/states/session ownership and cleanup; preserve dependent reused devices for next reservation",
+  "coordination": "Initial device lifecycle window; Android actor not yet dispatched. Before any later boot/build/WDA operation request root scheduling when Android quiet window active."
+}

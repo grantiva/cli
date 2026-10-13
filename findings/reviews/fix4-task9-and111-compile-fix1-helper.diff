@@ -1,0 +1,158 @@
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_and111_compile.reviewed.py b/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_and111_compile.py
+index 976c36d3..97420f5e 100644
+--- a/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_and111_compile.reviewed.py
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_and111_compile.py
+@@ -1,6 +1,6 @@
+ #!/usr/bin/env python3
+ """Execute the single reviewed AND-111 compile-only command and retain evidence."""
+-import argparse, hashlib, json, os, signal, subprocess, time
++import argparse, hashlib, json, os, signal, stat, subprocess, time
+ from pathlib import Path
+ 
+ ROOT = Path("/Users/kyle/Developer/grantiva-cli/.worktrees/regression")
+@@ -43,7 +43,20 @@ def tree_hash(root):
+     for item in listing: digest.update(item["path"].encode()+b"\0"+item["sha256"].encode()+b"\0")
+     return {"path":str(root.resolve()),"fileCount":len(listing),"treeSHA256":digest.hexdigest()}
+ 
+-def run(out,label,argv,cwd,env,timeout=120,expected=(0,)):
++def nonfollowing_tree(root):
++    root=Path(root); require(root.is_dir() and not root.is_symlink(),f"real directory required: {root}")
++    entries=[]
++    for path in sorted(root.rglob("*")):
++        info=path.lstat(); item={"path":str(path.relative_to(root)),"mode":stat.S_IMODE(info.st_mode)}
++        if path.is_symlink(): item.update(kind="symlink",target=os.readlink(path))
++        elif path.is_file(): item.update(kind="file",sha256=sha(path),bytes=info.st_size)
++        elif path.is_dir(): item.update(kind="directory")
++        else: item.update(kind="other")
++        entries.append(item)
++    encoded=json.dumps(entries,sort_keys=True,separators=(",",":")).encode()
++    return {"path":str(root.resolve()),"entries":entries,"treeSHA256":hashlib.sha256(encoded).hexdigest()}
++
++def run(out,label,argv,cwd,env,timeout=120,expected=(0,),check=True):
+     destination=out/label; destination.mkdir(parents=True,exist_ok=False); started=time.time()
+     proc=subprocess.Popen(list(map(str,argv)),cwd=cwd,env=env,stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
+     timed_out=False
+@@ -55,7 +68,7 @@ def run(out,label,argv,cwd,env,timeout=120,expected=(0,)):
+           "timeoutSeconds":timeout,"timedOut":timed_out,"exit":None if timed_out else proc.returncode,
+           "expectedExits":list(expected),"stdoutSHA256":sha(destination/"stdout.bin"),"stderrSHA256":sha(destination/"stderr.bin")}
+     save_new(destination/"result.json",meta)
+-    require(not timed_out and proc.returncode in expected,f"{label} failed")
++    if check: require(not timed_out and proc.returncode in expected,f"{label} failed")
+     return stdout,meta
+ 
+ def git_proof(out,label,repo,expected,env):
+@@ -79,12 +92,22 @@ def scratch_state(inputs):
+     for rel,want in expected.items():
+         path=SCRATCH/rel; require(path.is_file() and not path.is_symlink() and sha(path)==want,f"scratch input changed: {rel}")
+         actual[rel]=want
+-    generated=[]
++    generated=[]; unexpected_links=[]; unexpected_entries=[]
+     for path in sorted(SCRATCH.rglob("*")):
+-        if not path.is_file() or path.is_symlink(): continue
+         rel=str(path.relative_to(SCRATCH))
++        if path.is_symlink():
++            unexpected_links.append({"path":rel,"target":os.readlink(path),"mode":stat.S_IMODE(path.lstat().st_mode)}); continue
++        if not path.is_file():
++            if not path.is_dir(): unexpected_entries.append({"path":rel,"mode":stat.S_IMODE(path.lstat().st_mode)})
++            continue
+         if rel not in expected: generated.append({"path":rel,"sha256":sha(path),"bytes":path.stat().st_size})
+-    return {"trackedCount":len(actual),"tracked":actual,"generated":generated}
++    return {"trackedCount":len(actual),"tracked":actual,"generated":generated,
++            "unexpectedLinks":unexpected_links,"unexpectedEntries":unexpected_entries}
++
++def installed_runner_state(candidate):
++    installed=candidate["runner"]["installed"]
++    require(sha(installed["path"])==installed["sha256"],"installed runner hash changed")
++    return {"path":str(Path(installed["path"]).resolve()),"sha256":installed["sha256"]}
+ 
+ def frozen_state(candidate):
+     require(sha(CLI)==candidate["cli"]["binary"]["sha256"],"frozen CLI changed")
+@@ -94,7 +117,8 @@ def frozen_state(candidate):
+     require(RUNNER_HOME.resolve()==Path(candidate["runner"]["runnerHome"]).resolve(),"runner home binding changed")
+     return {"cliSHA256":sha(CLI),"bundle":tree_hash(Path(candidate["cli"]["bundle"]["path"])),
+             "apkSHA256":sha(candidate["demo"]["androidAPK"]["path"]),
+-            "iosApp":tree_hash(Path(candidate["demo"]["iosApp"]["path"])),"runnerHome":tree_hash(RUNNER_HOME)}
++            "iosApp":tree_hash(Path(candidate["demo"]["iosApp"]["path"])),
++            "runnerHome":nonfollowing_tree(RUNNER_HOME),"installedRunner":installed_runner_state(candidate)}
+ 
+ def snapshot(out,label,env,candidate,inputs):
+     adb=SDK/"platform-tools/adb"; emulator=SDK/"emulator/emulator"
+@@ -119,17 +143,55 @@ def validate_transition(before,after):
+         require(before[key]==after[key],f"post-compile state changed: {key}")
+     require(before["scratch"]["tracked"]==after["scratch"]["tracked"],"tracked scratch input changed")
+     require(before["scratch"]["generated"]==[],"scratch had output before compile")
+-    require(all(item["path"].startswith(("app/build/","build/")) for item in after["scratch"]["generated"]),"unexpected scratch output")
++    require(not after["scratch"]["unexpectedLinks"] and not after["scratch"]["unexpectedEntries"],"unexpected scratch entry")
++    require(all(item["path"].startswith(("app/build/","build/",".gradle/")) for item in after["scratch"]["generated"]),"unexpected scratch output")
+     apks=[item for item in after["scratch"]["generated"] if item["path"].endswith(".apk")]
+     require(apks,"compile produced no APK")
+     return apks
+ 
++def validate_preflight(before):
++    scratch=before["scratch"]
++    require(scratch["generated"]==[],"scratch had output before compile")
++    require(not scratch["unexpectedLinks"] and not scratch["unexpectedEntries"],"scratch had unexpected links/entries")
++
++def validate_output_path(output,candidate):
++    protected=[SCRATCH,RUNNER_HOME,Path(candidate["cli"]["repoPath"]),Path(candidate["demo"]["repoPath"]),Path(candidate["runner"]["repoPath"]),
++               CLI,Path(candidate["cli"]["bundle"]["path"]),Path(candidate["demo"]["androidAPK"]["path"]),
++               Path(candidate["demo"]["iosApp"]["path"]),Path(candidate["runner"]["packaged"]["path"]),Path(candidate["runner"]["installed"]["path"])]
++    resolved=Path(output).resolve()
++    require(not resolved.exists(),"output must be absent")
++    require(all(not resolved.is_relative_to(path.resolve()) for path in protected),"output descends from protected path")
++
++def post_compile(output,compile_meta,before,before_source,env,candidate,inputs,demo,cli_repo):
++    failures=[]
++    if compile_meta["timedOut"]: failures.append({"stage":"compile","reason":"timeout"})
++    elif compile_meta["exit"] not in compile_meta["expectedExits"]: failures.append({"stage":"compile","reason":f"exit {compile_meta['exit']}"})
++    after=after_source=None; apks=[]
++    try: after=snapshot(output,"after",env,candidate,inputs)
++    except Exception as exc: failures.append({"stage":"after-snapshot","reason":str(exc)})
++    try:
++        after_source={"demo":git_proof(output,"after-demo-source",demo,candidate["demo"]["sourceSHA"],env),
++                      "cli":git_proof(output,"after-cli-source",cli_repo,candidate["cli"]["mergedSHA"],env)}
++    except Exception as exc: failures.append({"stage":"after-source","reason":str(exc)})
++    if after is not None:
++        try: apks=validate_transition(before,after)
++        except Exception as exc: failures.append({"stage":"transition","reason":str(exc)})
++    if after_source is not None and before_source!=after_source: failures.append({"stage":"source-comparison","reason":"frozen source drift"})
++    if failures:
++        save_new(output/"terminal-nonpass.json",{"schema":"grantiva.task9.and111.v1","passed":False,
++            "candidateManifestSHA256":EXPECTED["candidate"],"shutdownTransitionSHA256":EXPECTED["shutdown"],
++            "primaryProvisionSHA256":EXPECTED["provision"],"inputsSHA256":EXPECTED["inputs"],
++            "compileResult":compile_meta,"firstFailure":failures[0],"failures":failures})
++        return None
++    return apks
++
+ def main():
+     ap=argparse.ArgumentParser(); ap.add_argument("--output",required=True,type=Path); ap.add_argument("--timeout",type=float,default=1800); a=ap.parse_args()
+     output=a.output.resolve(); require(not output.exists(),"output must be absent")
+     for name,path in (("candidate",CANDIDATE),("provision",PROVISION),("shutdown",SHUTDOWN),("inputs",INPUTS)):
+         require(sha(path)==EXPECTED[name],f"{name} hash mismatch")
+     candidate,provision,shutdown,inputs=map(load,(CANDIDATE,PROVISION,SHUTDOWN,INPUTS))
++    validate_output_path(output,candidate)
+     require(sha(INPUT_REVIEW)=="31205f9a4eefc21a076673e77ff42d59b8d64b007e672272c702d9562072a296", "input review hash mismatch")
+     require(provision["passed"] is True and shutdown["passed"] is True and shutdown["state"]=="created-shutdown","gates not passing")
+     require(shutdown["candidateManifestSHA256"]==EXPECTED["candidate"] and shutdown["allocation"]=={"avd":AVD,"serial":SERIAL,"pid":PID},"shutdown binding mismatch")
+@@ -142,17 +204,15 @@ def main():
+     before_source={"demo":git_proof(output,"before-demo-source",demo,candidate["demo"]["sourceSHA"],env),
+                    "cli":git_proof(output,"before-cli-source",cli_repo,candidate["cli"]["mergedSHA"],env)}
+     before=snapshot(output,"before",env,candidate,inputs)
++    validate_preflight(before)
+     require(before["protectedPixelSHA256"]==shutdown["protectedPixelConfigSHA256"] and
+             before["covRegistrationSHA256"]==shutdown["registrationSHA256"],"shutdown protected/registration binding changed")
+     save_new(output/"command-start.json",{"argv":[str(CLI),"build","build"],"cwd":str(SCRATCH),"apiKey":"unset",
+         "environment":{k:env[k] for k in ("GRANTIVA_RUNNER_HOME","MAESTRO_RUNNER_HOME","JAVA_HOME","ANDROID_HOME","ANDROID_SDK_ROOT","GRADLE_USER_HOME")},
+         "candidateManifestSHA256":EXPECTED["candidate"],"provisionSHA256":EXPECTED["provision"],"shutdownTransitionSHA256":EXPECTED["shutdown"],"inputsSHA256":EXPECTED["inputs"]})
+-    run(output,"compile",[CLI,"build","build"],SCRATCH,env,a.timeout)
+-    after=snapshot(output,"after",env,candidate,inputs)
+-    after_source={"demo":git_proof(output,"after-demo-source",demo,candidate["demo"]["sourceSHA"],env),
+-                  "cli":git_proof(output,"after-cli-source",cli_repo,candidate["cli"]["mergedSHA"],env)}
+-    require(before_source==after_source,"frozen demo source drift")
+-    apks=validate_transition(before,after)
++    _,compile_meta=run(output,"compile",[CLI,"build","build"],SCRATCH,env,a.timeout,check=False)
++    apks=post_compile(output,compile_meta,before,before_source,env,candidate,inputs,demo,cli_repo)
++    if apks is None: return
+     save_new(output/"generated-apks.json",apks)
+     result={"schema":"grantiva.task9.and111.v1","passed":True,"candidateManifestSHA256":EXPECTED["candidate"],
+             "shutdownTransitionSHA256":EXPECTED["shutdown"],"primaryProvisionSHA256":EXPECTED["provision"],
