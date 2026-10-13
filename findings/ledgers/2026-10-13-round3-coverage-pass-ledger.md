@@ -105,3 +105,33 @@ CLI reviewed evidence checkpoint: `6ad5a85b` on cov3/cli. Latest effective total
 - Android checkpointd162 independentreview accepted env/hierarchy/type/K89, foundoneimportant unsupported B2K24 pass: AND128 Maestro commandmetadata was overwritten/unrelated and explicitplatformlegmissing. Workeraskedpreserveprovenance/removeunsupportedpass andfreshprecisererun. Scopefixround1, no reviewgatewaived.
 
 Review correction: controller inspected frozen controller-targeted-review-gaps.sh56–62, which copies the Maestro fixture to grantiva-android.yml before the recorded diffcapture command. That is valid input provenance; the reviewer's claim that rawcommandmetadata was overwritten is unsupported and must be withdrawn. K24 still lacks its explicitplatform secondleg and remaining defaults/override/native/source clauses. Preserve valid AND128capture; review narrowed to those real gaps.
+
+### Interim reviews and current queued device work
+
+- CLI reviewed iOS attempts10–16c: seven composite passes removedpendingmissingclauses, not converted to false environment blocks. Current169/478base158pass/5fail/5blocked,309unrecorded; priorraw remains validpartial. CLI reviewer preparing exactsourceclause package; iOS worker owns runtime gaps and capacity snapshots.
+- MCP078 independentcrossplatformtriage supports expectationcorrection (R05 errortransport guarantee, device screenshot exception docs61–63), not provenproductbug. Retainliteral matrixfailsuntilTask6. Reviewdocs committed8123026e; source map1458adc8.
+- Android K24 exactfresh default+explicitplatform reruns pass; visible PNGscopiedoutofignored.grantiva. Scopedrereview acceptedthoselegs, leftB-C08.2nativeidselectorbranchsource/tests evidence missing. Worker fixround2 limitedthatclause.
+- Livecontroller groups: iOS17 broad screens/failure/timeout group; AndroidAND043stockindividual12flows. Stockscript initialself-copyfailed duecd+relative$0; parentcopiedexactunchangedscriptimmediately toinput/controller-script.sh, no producteffect. UseabsolutescriptinvocationsforlaterAndroidgroups. iOS18 preparedandinspectedbutmustwait17completion.
+
+### Completed batches and scoped review closure
+
+- Android stock01–12 allpassedindividually (controller58127completed0); evidence AND043-exact-rerun1. iOS17screensbatch completed0 wrapper: actual01/02/03success,04/05/06expectedfail,07timeoutfail,08unlimitedslowpass. iOS18focusedscript/standalonetypepass, liveVRT runFlowrefusal isError; workeradjudicationpending.
+- K24 scopedreviewround2 APPROVED after nativeB-C08.2 source/test/CI/docs clausefilled; reportcov3-cli/findings/cov3-android-b2-k24-rereview.md. No unsupportedoverwritefinding remains.
+- iOScompositesourcepackage preparedbyCLIreviewer (findings/ios-composite-source-evidence.md); sourceproofdoesnotreplace runtime clauses. iOSworker addingmissingruntime/leaseevidence, then scopedrereviewneeded.
+
+Ruling: required unit/runner-test source clauses follow authoritative plan Task1step2: verify the exact semantic assertions in candidate source, without new slice builds/tests. Do not impose a new executed-CI requirement where the row merely requires a test; existing exact-head CI may corroborate. Explicit runtime/execution criteria still need their own evidence. This avoids reviewer-invented gates; cost ifwrong: separately verify any row whose wording actually demands execution.
+
+Checkpoint updates: iOScompletedthrough18committeddefa7ebe (live19excluded); Androidcompletedthroughcontinue/timeoutcommittedab7c62b2. CurrentAndroid150/467 (141pass/3fail/4blocked/2n-a), iOS183/478 (172pass/5fail/5blocked), beforependingnewgroups. CLIreview/sourceheadf6cb7a1a. iOS19threshold/stalecapturegroup running, AndroidrunnerJSONgroup next.
+
+Count correction: exactexpected-ID auditshowsiOS182/478base=172pass+5fail+5blocked,296missing; sixCLIhandoffs (CLI048/049/061/064/066 plusN3-11),39runtime repeats. Earlier183base/5handoff claims wronglyincludedN3-11asbase. Workerfixedfooter/report; no gradechanged. Audithelper nowreportsrecorded_base_ids,extra_base_ids,base_platform_verdicts toprevent recurrence.
+
+Latestgroups: iOS19complete expectedthresholddefault1/pixelonly1/bothraised0; staleinitialcapture0/failedcapture1/compare1. Androidrecorddoc5s/3frames validraw despiteintermediateflatPNG-count harnesserror maskedbyfinalvideoassertion; workerpreservedrecursiveinventory.
+
+iOS20controllerfixedprelaunchharnesslocal-variableexpansion andglobal-sessiondirectory, thenran: start0/launch0/capture1(startingWDA)/stop0. ActualU1leaseclaimduringstart namesPID44188handedOfftrue andproject, afterstopabsent; capturesuccessnotprovedandneedsboundedreadinessretry. AndroidAND127confirmed-app rerun stillreturnsSystemUIafterdetachedstart evenafterpriorbrowseflow; allcommands0butwrapper1dueLandmarkstreeassertion. No falsepass; workerinvestigatingappforegroundsetupagainstexactcriterion.
+
+
+### Further verification and independent review
+
+- L68 records Android detached start returning ready before its generated launch flow makes the app available. Isolated reproduction proves this occurrence without concurrent starts; shared temporary flow remains an unproven separate risk. Independent iOS review approved after wording explicitly attributed the stronger promise to matrix AND-127 rather than driver-up help.
+- Completed Android evidence checkpoint f64a5e8c and iOS through22 checkpoint27cb86da. Independent CLI review `findings/ios20-22-android-new-batch-review.md` supports IOS084/087, N2-11, MCP065/070/073 and AND103/105/124/125/126; AND127 remains fail. Minor Android124 duplicate/count and127 evidence-link corrections assigned to worker.
+- Attempt20 original stale manifest preserved unchanged; disclosure plus supplemental final manifest verifies retained bytes. iOS23 snapshot/crash batch completed;24 MCP argument/platform batch running. Android118 no-explicit-device run completed0 against sole connected owned emulator; adjudication pending. Tasks3–5 remain active; no complete full-pass claim.
