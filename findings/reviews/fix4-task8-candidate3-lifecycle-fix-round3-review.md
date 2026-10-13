@@ -1,0 +1,25 @@
+# Task 8 candidate 3 lifecycle fix round 3 review
+
+**Specification verdict: CHANGES REQUIRED.** The startup-only exception correctly classifies the first live failure and is appropriately narrow, but the default required policy still makes ready-state interruption depend on a post-cleanup source directory that production legitimately removes. The same policy also does not itself prove that the retained report was complete and passed before cleanup.
+
+**Quality verdict: CHANGES REQUIRED.** The authentication, joined-thread error propagation, explicit terminal metadata, and stable-file error behavior remain sound. One P1 integration defect remains in the required-report lifecycle and the report overstates the completed-report checks applied to ready interruption and force teardown.
+
+## First live invocation classification
+
+The first candidate-3 lifecycle invocation is correctly classified as a **harness false failure after the iOS startup-interrupt assertions passed**, rather than a product failure. The immutable evidence records genuine `starting`, runner PID `66518`, exit `130`, the exact iOS SIGINT notice, runner/session absence, and an empty bounded cleanup action list. It also retains the authenticated generated flow and a pre-cleanup report snapshot containing `maestro-runner.log`. The later `FileNotFoundError` names the temporary report directory that product interruption cleanup had already removed.
+
+Startup interruption has no completed-report acceptance requirement. Passing `report_required=False` only at the `startup_interrupt` call sites is therefore spec-correct. It preserves exact PID/device authentication, ownership recording, generated-flow retention, thread join, and propagation of real copy/authentication errors while allowing truthful terminal source absence. The original attempt remains incomplete as a full phase and cannot be reused as the rerun result.
+
+## Finding
+
+1. **P1 — Ready-interrupt still deterministically reproduces the same post-cleanup false failure, and required mode does not establish the actual pre-cleanup report contract.** In [lifecycle_smoke.py](/Users/kyle/Developer/grantiva-cli/.worktrees/regression/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/lifecycle_smoke.py:582), each ready-interrupt snapshot uses the default required policy. The caller waits for `ready`, authenticates the report path, and obtains a hierarchy, but it neither stops the snapshot worker nor validates a complete passed retained `report.json` before sending SIGINT at line 591. Product cleanup then removes the temporary session/report directory before `stop_report_snapshot` runs at line 604. Lines 424–439 require that source directory to exist at this later terminal point and raise `FileNotFoundError` even when the worker already retained a complete report. This is the original race under another required caller.
+
+   The policy conflates two different obligations: retain and validate a complete passed report before cleanup, and recopy the live source after cleanup. Only the first is required. `reportSnapshotCaptured` means merely that some directory copy occurred; it does not establish a `report.json`, terminal completeness, or passed status. Detached readiness separately parses its retained report at lines 560–566, but ready interruption has no equivalent check. Force teardown stops its worker before destructive cleanup at lines 750–756, so it is not exposed to the same post-cleanup removal ordering, but it likewise never parses the retained report before force teardown. This contradicts the round-3 report's statement that ready interruption and force teardown retain completed-report checks.
+
+   Fix required mode around a **pre-cleanup retained proof**, not terminal source existence. For ready interruption, stop/join the capture worker after `ready` and the authenticated hierarchy but before SIGINT, then require and parse the retained `report.json` as complete/passed for that authenticated PID. For force teardown, perform the same complete/passed retained-report validation after its existing pre-teardown join and before `simulator teardown --force`. Once that proof is recorded, later source-directory absence must not fail the phase. Missing or incomplete retained reports and stable-file copy failures must still raise. Add focused fixtures for: required complete/passed snapshot followed by source removal succeeds; required missing/incomplete/failed report raises; and the startup optional case remains accepted only under its explicit policy.
+
+## Scoped assessment
+
+No new issue was found in the startup exception itself, the exact live PID/device authentication handshake, generated-flow retention, non-daemon join, or exception channel. The SHA-256 of the reviewed round-3 diff is the requested `151d187d19d792277b0671cec0031fd66ba30062e05b67db60d33646608be60b`.
+
+This was a static review only. I did not run the helper, fixtures, tests, builds, CLI, runner, simulator, emulator, or device commands.

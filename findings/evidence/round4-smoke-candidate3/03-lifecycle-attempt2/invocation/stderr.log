@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/lifecycle_smoke.py", line 877, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/lifecycle_smoke.py", line 859, in main
+    getattr(smoke, phase.replace("-", "_"))()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/lifecycle_smoke.py", line 563, in detach_ready
+    self.stop_report_snapshot(snapshot)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/lifecycle_smoke.py", line 482, in stop_report_snapshot
+    raise error
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/lifecycle_smoke.py", line 441, in preserve_runner_report
+    raise FileNotFoundError(f"required terminal runner report disappeared: {report}")
+FileNotFoundError: required terminal runner report disappeared: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-85FC0F56-7659-4C29-8B67-667342FBD55F/report

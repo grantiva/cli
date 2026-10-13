@@ -390,51 +390,63 @@ class Smoke:
                     doc = json.loads(session_text)
                     pid = int(doc["pid"])
                     argv = self.bound_argv_if_running(pid, device)
-                    if argv is not None:
-                        platform = "ios" if device == self.ns.ios_udid else "android"
-                        self.active_runners[pid] = (platform, device)
-                        self.owned_pids[pid] = {"kind": "grantiva-runner", "argv": argv, "device": device, "platform": platform, "phase": phase}
-                        if "--output" in argv:
-                            report = Path(argv[argv.index("--output") + 1])
-                            flow = Path(argv[-1])
-                            state["report"] = report
-                            state["flow"] = flow
-                            if report.exists():
-                                copy_report_snapshot(report, target)
-                            if flow.exists():
-                                shutil.copy2(flow, self.output / phase / f"{label}-generated-flow.yaml")
-                                state["flowWasPresent"] = True
-                        self.record_ownership()
-                        if isinstance(state.get("report"), Path) and isinstance(state.get("flow"), Path):
-                            state["authenticatedPID"] = pid
-                            authenticated = state["authenticated"]
-                            assert isinstance(authenticated, threading.Event)
-                            authenticated.set()
                 except (ProcessLookupError, json.JSONDecodeError, KeyError):
-                    pass
+                    stop.wait(0.01)
+                    continue
+                if argv is not None:
+                    platform = "ios" if device == self.ns.ios_udid else "android"
+                    self.active_runners[pid] = (platform, device)
+                    self.owned_pids[pid] = {"kind": "grantiva-runner", "argv": argv, "device": device, "platform": platform, "phase": phase}
+                    if "--output" in argv:
+                        report = Path(argv[argv.index("--output") + 1])
+                        flow = Path(argv[-1])
+                        state["report"] = report
+                        state["flow"] = flow
+                        if report.exists():
+                            copy_report_snapshot(report, target)
+                            state["reportWasPresent"] = True
+                            state["reportSnapshotCaptured"] = True
+                        if flow.exists():
+                            shutil.copy2(flow, self.output / phase / f"{label}-generated-flow.yaml")
+                            state["flowWasPresent"] = True
+                    self.record_ownership()
+                    if isinstance(state.get("report"), Path) and isinstance(state.get("flow"), Path):
+                        state["authenticatedPID"] = pid
+                        authenticated = state["authenticated"]
+                        assert isinstance(authenticated, threading.Event)
+                        authenticated.set()
                 stop.wait(0.01)
 
             # Use the last paths authenticated from the live runner. Session
             # teardown or process exit cannot suppress this terminal capture.
+            # Required callers join here before triggering destructive cleanup.
             report = state.get("report")
             if not isinstance(report, Path):
                 raise AssertionError("snapshot worker never authenticated a runner report path")
-            copy_report_snapshot(report, target)
-            state["terminalReportCopied"] = True
+            if report.exists():
+                copy_report_snapshot(report, target)
+                state["terminalReportCopied"] = True
+                state["reportSnapshotCaptured"] = True
+            else:
+                state["terminalReportAbsent"] = True
             flow = state.get("flow")
             if isinstance(flow, Path) and flow.exists():
                 shutil.copy2(flow, self.output / phase / f"{label}-generated-flow.yaml")
                 state["terminalFlowCopied"] = True
             if state.get("flowWasPresent") and not (self.output / phase / f"{label}-generated-flow.yaml").is_file():
                 raise AssertionError("authenticated generated flow was not retained")
+            terminal = {"reportPath": str(report), "reportRequired": state["reportRequired"], "reportWasPresent": state["reportWasPresent"], "snapshotCaptured": state["reportSnapshotCaptured"], "terminalReportCopied": state["terminalReportCopied"], "terminalReportAbsent": state["terminalReportAbsent"], "generatedFlowRetained": bool(state.get("flowWasPresent"))}
+            write_json(self.output / phase / f"{label}-snapshot-terminal.json", terminal)
+            if state["reportRequired"] and not state["terminalReportCopied"]:
+                raise FileNotFoundError(f"required terminal runner report disappeared: {report}")
         except BaseException as exc:
             state["error"] = exc
             authenticated = state.get("authenticated")
             if isinstance(authenticated, threading.Event):
                 authenticated.set()
 
-    def start_report_snapshot(self, phase: str, label: str, proc: subprocess.Popen[bytes], device: str) -> tuple[dict[str, object], threading.Thread]:
-        state: dict[str, object] = {"stop": threading.Event(), "authenticated": threading.Event(), "authenticatedPID": None, "report": None, "flow": None, "flowWasPresent": False, "error": None, "terminalReportCopied": False, "terminalFlowCopied": False}
+    def start_report_snapshot(self, phase: str, label: str, proc: subprocess.Popen[bytes], device: str, *, report_required: bool = True) -> tuple[dict[str, object], threading.Thread]:
+        state: dict[str, object] = {"stop": threading.Event(), "authenticated": threading.Event(), "authenticatedPID": None, "report": None, "flow": None, "flowWasPresent": False, "reportRequired": report_required, "retainedReport": self.output / phase / f"{label}-runner-report" / "report.json", "reportWasPresent": False, "reportSnapshotCaptured": False, "terminalReportCopied": False, "terminalReportAbsent": False, "error": None, "terminalFlowCopied": False}
         thread = threading.Thread(target=self.preserve_runner_report, args=(phase, label, proc, device, state), daemon=False)
         thread.start()
         return state, thread
@@ -468,8 +480,17 @@ class Smoke:
         error = state.get("error")
         if isinstance(error, BaseException):
             raise error
-        if not state.get("terminalReportCopied"):
+        if not state.get("terminalReportCopied") and not (state.get("terminalReportAbsent") and not state.get("reportRequired")):
             raise AssertionError("runner report terminal snapshot was not captured")
+        if state.get("reportRequired"):
+            # Validate only retained bytes after the worker has joined. Repeated
+            # stops must not re-read the live source after legitimate cleanup.
+            report = json.loads(state["retainedReport"].read_text())
+            flows = report.get("flows", [])
+            if (report.get("status") != "passed" or not report.get("endTime")
+                    or not flows or any(flow.get("status") != "passed" or not flow.get("endTime") for flow in flows)):
+                raise AssertionError({"snapshotAuthenticatedPID": state["authenticatedPID"], "incompleteOrFailedReport": report})
+            state["retainedReportValidated"] = True
 
     def stop_stale(self, platform: str) -> None:
         if self.session.exists():
@@ -493,7 +514,7 @@ class Smoke:
             self.stop_stale(platform)
             label = platform
             proc = self.spawn(phase, label, self.start_args(platform))
-            snapshot = self.start_report_snapshot(phase, label, proc, device)
+            snapshot = self.start_report_snapshot(phase, label, proc, device, report_required=False)
             try:
                 doc = self.wait_state(proc, "starting")
                 runner_pid = int(doc["pid"])
@@ -578,6 +599,7 @@ class Smoke:
                 hierarchy = self.command(phase, f"{label}-hierarchy", [str(self.binary), "runner", "dump-hierarchy", "--udid", device, "--format", "tree"])
                 if "Landmarks" not in hierarchy.stdout.decode(errors="replace"):
                     raise AssertionError(f"{platform} ready-state hierarchy lacks Landmarks")
+                self.stop_report_snapshot(snapshot)
                 os.kill(proc.pid, signal.SIGINT)
                 code = self.finish(phase, label, proc, 45)
                 err = (self.output / phase / f"{label}.stderr").read_text()

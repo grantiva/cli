@@ -16,7 +16,7 @@ Candidate manifest: `findings/evidence/round4-smoke-candidate3/candidate.json`, 
 | Owned provisioning | PASS | Independent APPROVED |
 | iOS MCP selectors and transport | PASS | Independent APPROVED |
 | Android runner | PASS | Independent APPROVED |
-| Lifecycle | Initial helper failure; correction pending | Pending |
+| Lifecycle | Two helper failures preserved; round-5 correction in progress | Pending |
 | Joint forwarding ownership | PASS | Independent APPROVED |
 | Android MCP | PASS | Independent APPROVED |
 | Final force teardown | Not run | Pending |
@@ -25,3 +25,5 @@ Candidate manifest: `findings/evidence/round4-smoke-candidate3/candidate.json`, 
 No prior candidate grade populates this table. Candidate1 and candidate2 remain failed. L85 source-live first iOS26 Cancel hierarchy timeout remains unreproduced and recorded in `findings/evidence/fix4-85`; full iOS26 source retry and iOS27 passed, but candidate3 must complete the whole frozen smoke sequence. Any recurrence is triaged rather than retried until green.
 
 Provisioning ownership records bind `smoke4-c3-ios` UUID33BCE8AB-B7F2-4D47-B0B8-2CB1D8A1971E and `smoke4-c3-android` emulator5580 PID61153. Physical cleanup remains mandatory.
+
+Lifecycle attempt2 used independently approved helper `38a48f3765fd4615f483f066ed6519da0f9fa31746f52aa3dd66dc37ed21e0d9`. Both startup-interrupt cases passed (iOS PID69300, Android PID69312, exit130). Detached iOS retained a complete passed launch report, but the helper required its temporary source to still exist at terminal capture and failed. Original raw remains under `03-lifecycle-attempt2`; no full lifecycle pass. Failure cleanup stopped exact PID69412 with exit0, and controller ps confirmed all three PIDs absent. Round-5 author correction and independent review are required before a fresh retry.
