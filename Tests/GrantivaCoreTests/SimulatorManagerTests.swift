@@ -212,7 +212,8 @@ final class SimulatorManagerTests: XCTestCase {
         _ = try await manager.boot(nameOrUDID: "MANUAL-1")
 
         let devices = try await manager.listDevices()
-        XCTAssertEqual(try capacity.sessions(devices: devices), [])
+        let snapshot = try await capacity.snapshot(devices: { devices })
+        XCTAssertEqual(try capacity.sessions(snapshot: snapshot), [])
         let byUDID = try await manager.teardown(udid: "MANUAL-1")
         let bySession = try await manager.teardown(sessionId: "simulator:MANUAL-1")
         XCTAssertEqual(byUDID, [])
@@ -230,7 +231,8 @@ final class SimulatorManagerTests: XCTestCase {
 
         _ = try await manager.boot(nameOrUDID: "MINE-1")
         let devices = try await manager.listDevices()
-        XCTAssertEqual(try capacity.sessions(devices: devices).map(\.udid), ["MINE-1"])
+        let snapshot = try await capacity.snapshot(devices: { devices })
+        XCTAssertEqual(try capacity.sessions(snapshot: snapshot).map(\.udid), ["MINE-1"])
 
         let outcomes = try await manager.teardown(udid: "MINE-1")
         XCTAssertEqual(outcomes.map(\.udid), ["MINE-1"])
@@ -263,7 +265,8 @@ final class SimulatorManagerTests: XCTestCase {
         XCTAssertFalse(simctl.commands.contains { $0.contains("simctl shutdown") || $0.contains("simctl delete") }, "\(simctl.commands)")
         XCTAssertEqual(simctl.device("LEGACY-1")?.state, "Booted")
         let devices = try await manager.listDevices()
-        XCTAssertEqual(try capacity.sessions(devices: devices), [])
+        let snapshot = try await capacity.snapshot(devices: { devices })
+        XCTAssertEqual(try capacity.sessions(snapshot: snapshot), [])
     }
 
     func testEnsureTakesADurableSlotAndARunTakesAnEphemeralOne() async throws {
@@ -474,7 +477,16 @@ extension SimulatorManagerTests {
         let directory = tempRoot()
         let capacity = SimulatorCapacity(directory: directory, maximum: 4, waitTimeout: 10, pollInterval: 0.02)
         let manager = SimulatorManager(
-            execute: simctl.execute, capacity: capacity, provenance: SimulatorProvenance(directory: directory),
+            execute: { command in
+                let result = try await simctl.execute(command)
+                if command == "xcrun simctl list devices --json",
+                   simctl.commands.filter({ $0 == command }).count == 2 {
+                    // Capture Shutdown, then activate the twin before returning that snapshot.
+                    _ = try await simctl.execute("xcrun simctl boot RACE-1")
+                    try capacity.activate(udid: "RACE-1", bootedByGrantiva: true)
+                }
+                return result
+            }, capacity: capacity, provenance: SimulatorProvenance(directory: directory),
             runnerHome: "\(directory)/runner"
         )
         // The twin (another live Grantiva process: pid 1 always exists)
@@ -486,14 +498,9 @@ extension SimulatorManagerTests {
         try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
         try JSONEncoder().encode([twin]).write(to: URL(fileURLWithPath: "\(directory)/sessions.json"))
 
-        let finisher = Task {
-            try await Task.sleep(for: .milliseconds(200))
-            _ = try await simctl.execute("xcrun simctl boot RACE-1")
-            try capacity.activate(udid: "RACE-1", bootedByGrantiva: true)
-        }
-
+        let provenance = SimulatorProvenance(directory: directory)
+        try provenance.register(udid: "RACE-1", name: "Race")
         let device = try await manager.boot(nameOrUDID: "RACE-1")
-        try await finisher.value
 
         XCTAssertEqual(device.state, "Booted")
         let boots = simctl.commands.filter { $0.hasPrefix("xcrun simctl boot ") }
@@ -501,6 +508,12 @@ extension SimulatorManagerTests {
         let record = try XCTUnwrap(try capacity.records(udid: "RACE-1").first)
         XCTAssertEqual(record.state, .active)
         XCTAssertEqual(record.bootedByGrantiva, true)
+        XCTAssertEqual(record.ownerPID, twin.ownerPID)
+        XCTAssertEqual(record.acquiredAt, twin.acquiredAt)
+        let outcomes = try await manager.teardown(udid: "RACE-1")
+        XCTAssertEqual(outcomes.first?.deleted, true)
+        XCTAssertNil(simctl.device("RACE-1"))
+        XCTAssertTrue(simctl.commands.contains { $0.hasPrefix("xcrun simctl shutdown ") })
     }
 
     func testATwinWaitIsNotReportedAsACapacityWait() {

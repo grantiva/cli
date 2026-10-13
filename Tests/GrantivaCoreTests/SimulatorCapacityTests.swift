@@ -14,6 +14,50 @@ final class SimulatorCapacityTests: XCTestCase {
         if let directory { try? FileManager.default.removeItem(atPath: directory) }
     }
 
+    func testStaleSnapshotPreservesTwinActivation() async throws {
+        let capacity = SimulatorCapacity(directory: directory, waitTimeout: 0)
+        let shutdown = device(1, state: "Shutdown")
+        _ = try await capacity.reserve(device: shutdown, devices: { [shutdown] })
+        let original = try XCTUnwrap(capacity.records(udid: shutdown.udid).first)
+        let acquired = try await capacity.reserve(device: shutdown, devices: {
+            let snapshot = [shutdown]
+            try capacity.activate(udid: shutdown.udid, bootedByGrantiva: true)
+            return snapshot
+        })
+        XCTAssertEqual(acquired.bootedByGrantiva, true)
+        XCTAssertEqual(acquired.acquiredAt, original.acquiredAt)
+        XCTAssertEqual(acquired.state, .active)
+    }
+
+    func testSessionListingPreservesActivationAfterShutdownOrMissingSnapshot() async throws {
+        for missing in [false, true] {
+            let capacity = SimulatorCapacity(directory: directory, waitTimeout: 0)
+            let shutdown = device(1, state: "Shutdown")
+            _ = try await capacity.reserve(device: shutdown, devices: { [shutdown] })
+            let snapshot = try await capacity.snapshot(devices: {
+                let captured = missing ? [] : [shutdown]
+                try capacity.activate(udid: shutdown.udid, bootedByGrantiva: true)
+                return captured
+            })
+            let records = try capacity.sessions(snapshot: snapshot)
+            XCTAssertEqual(records.first?.bootedByGrantiva, true)
+            XCTAssertEqual(records.first?.state, .active)
+            // A fresh observation must still prune genuinely stale records.
+            let fresh = try await capacity.snapshot(devices: { missing ? [] : [shutdown] })
+            XCTAssertEqual(try capacity.sessions(snapshot: fresh), [])
+        }
+    }
+
+    func testSessionListingPreservesReservationAddedDuringEnumeration() async throws {
+        let capacity = SimulatorCapacity(directory: directory, waitTimeout: 0)
+        let shutdown = device(1, state: "Shutdown")
+        let snapshot = try await capacity.snapshot(devices: {
+            _ = try await capacity.reserve(device: shutdown, devices: { [shutdown] })
+            return []
+        })
+        XCTAssertEqual(try capacity.sessions(snapshot: snapshot).map(\.udid), [shutdown.udid])
+    }
+
     func testFifthManagedSimulatorIsRejectedAtCapacity() async throws {
         let capacity = SimulatorCapacity(directory: directory, maximum: 4, waitTimeout: 0, pollInterval: 0.01)
         let devices = (1...5).map { device($0, state: "Booted") }
@@ -44,7 +88,8 @@ final class SimulatorCapacityTests: XCTestCase {
 
         _ = try await capacity.reserve(device: second, devices: { releasedDevices })
         try capacity.activate(udid: second.udid)
-        XCTAssertEqual(try capacity.sessions(devices: releasedDevices).map(\.udid), [second.udid])
+        let snapshot = try await capacity.snapshot(devices: { releasedDevices })
+        XCTAssertEqual(try capacity.sessions(snapshot: snapshot).map(\.udid), [second.udid])
     }
 
     func testShutdownManagedSimulatorIsPruned() async throws {
@@ -54,7 +99,8 @@ final class SimulatorCapacityTests: XCTestCase {
         try capacity.activate(udid: booted.udid)
 
         let shutdown = device(1, state: "Shutdown")
-        XCTAssertEqual(try capacity.sessions(devices: [shutdown]), [])
+        let snapshot = try await capacity.snapshot(devices: { [shutdown] })
+        XCTAssertEqual(try capacity.sessions(snapshot: snapshot), [])
     }
 
     func testBootedPendingReservationWithDeadOwnerIsPruned() {
@@ -141,7 +187,8 @@ final class SimulatorCapacityTests: XCTestCase {
         let second = try await capacity.reserve(device: simulator, devices: { [simulator] })
 
         XCTAssertEqual(first.udid, second.udid)
-        XCTAssertEqual(try capacity.sessions(devices: [simulator]).count, 1)
+        let snapshot = try await capacity.snapshot(devices: { [simulator] })
+        XCTAssertEqual(try capacity.sessions(snapshot: snapshot).count, 1)
     }
 
     func testWaiterAcquiresSlotAfterRelease() async throws {

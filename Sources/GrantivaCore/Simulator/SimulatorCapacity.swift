@@ -133,9 +133,9 @@ public struct SimulatorCapacity: Sendable {
         let start = Date()
 
         while true {
-            let currentDevices = try await devices()
+            let snapshot = try await snapshot(devices: devices)
             let outcome = try withRegistryLock { records in
-                Self.prune(&records, devices: currentDevices)
+                Self.prune(&records, snapshot: snapshot, directory: directory)
 
                 if let index = records.firstIndex(where: { $0.udid == device.udid }) {
                     // A durable holder (`ensure`) reusing a run's record keeps it.
@@ -250,7 +250,7 @@ public struct SimulatorCapacity: Sendable {
     }
 
     /// Removes every record for `udid`, returning how many were dropped. Unlike
-    /// `sessions(devices:)` this never prunes other records, so it is safe to
+    /// `sessions(snapshot:)` this never prunes other records, so it is safe to
     /// call when the device list is unavailable.
     @discardableResult
     public func remove(udid: String) throws -> Int {
@@ -300,17 +300,41 @@ public struct SimulatorCapacity: Sendable {
         return "session \(record.sessionId) owns this simulator until `grantiva simulator teardown --session-id \(record.sessionId)`"
     }
 
-    public func sessions(devices: [SimulatorDevice]) throws -> [ManagedSimulatorSession] {
-        // A registry never written holds nothing; reading it creates nothing.
+    /// A device list paired with the registry as it stood before enumeration.
+    /// Keep this pair together: a bare list may predate a twin's activation.
+    public struct Snapshot: Sendable {
+        public let devices: [SimulatorDevice]
+        fileprivate let records: [ManagedSimulatorSession]
+        fileprivate let directory: String
+    }
+
+    public func snapshot(
+        devices: @Sendable () async throws -> [SimulatorDevice]
+    ) async throws -> Snapshot {
+        // Reading an absent registry must not create a runner home.
+        let records = FileManager.default.fileExists(atPath: registryPath)
+            ? try withRegistryLock { $0 } : []
+        return Snapshot(devices: try await devices(), records: records, directory: directory)
+    }
+
+    public func sessions(snapshot: Snapshot) throws -> [ManagedSimulatorSession] {
         guard FileManager.default.fileExists(atPath: registryPath) else { return [] }
         return try withRegistryLock { records in
-            Self.prune(&records, devices: devices)
+            Self.prune(&records, snapshot: snapshot, directory: directory)
             return records.sorted { $0.acquiredAt < $1.acquiredAt }
         }
     }
 
-    public func sessions(sessionId: String, devices: [SimulatorDevice]) throws -> [ManagedSimulatorSession] {
-        try sessions(devices: devices).filter { $0.sessionId == sessionId }
+    private static func prune(
+        _ records: inout [ManagedSimulatorSession], snapshot: Snapshot, directory: String
+    ) {
+        // A changed/new record cannot be invalidated by this earlier device
+        // observation. A subsequent observation can prune it if truly stale.
+        // An observation from another registry cannot establish staleness.
+        guard directory == snapshot.directory else { return }
+        var stale = snapshot.records
+        prune(&stale, devices: snapshot.devices)
+        records.removeAll { snapshot.records.contains($0) && !stale.contains($0) }
     }
 
     private enum ReservationOutcome {
