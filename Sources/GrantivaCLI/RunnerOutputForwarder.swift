@@ -29,6 +29,71 @@ final class Once: @unchecked Sendable {
     }
 }
 
+/// Owns the driver attachment discovered during foreground startup until the
+/// foreground session ends. SignalRelay cleanups are synchronous, so release
+/// waits briefly for the attachment's asynchronous platform cleanup.
+final class ForegroundDriverAttachment: @unchecked Sendable {
+    private let condition = NSCondition()
+    private var attachment: DriverAttachment?
+    private var acquiring = true
+    private var releaseRequested = false
+
+    /// Completes startup's ownership handoff. If cleanup already started,
+    /// reject and release the late attachment before waking that cleanup.
+    func retain(_ attachment: DriverAttachment, timeout: TimeInterval = 15) -> Bool {
+        condition.lock()
+        if !releaseRequested {
+            self.attachment = attachment
+            acquiring = false
+            condition.broadcast()
+            condition.unlock()
+            return true
+        }
+        condition.unlock()
+
+        detach(attachment, timeout: timeout)
+        condition.lock()
+        acquiring = false
+        condition.broadcast()
+        condition.unlock()
+        return false
+    }
+
+    /// Completes startup when no attachment was acquired, so an interrupt
+    /// waiting at the ownership boundary can finish.
+    func finishAcquiring() {
+        condition.lock()
+        acquiring = false
+        condition.broadcast()
+        condition.unlock()
+    }
+
+    func release(timeout: TimeInterval = 15, onRequested: @Sendable () -> Void = {}) {
+        let deadline = Date().addingTimeInterval(timeout)
+        condition.lock()
+        releaseRequested = true
+        condition.unlock()
+        onRequested()
+        condition.lock()
+        while acquiring, condition.wait(until: deadline) {}
+        let owned = attachment
+        attachment = nil
+        condition.unlock()
+        if let owned {
+            detach(owned, timeout: max(0, deadline.timeIntervalSinceNow))
+        }
+    }
+
+    private func detach(_ owned: DriverAttachment, timeout: TimeInterval) {
+        let done = DispatchSemaphore(value: 0)
+        Task.detached {
+            await owned.detach()
+            done.signal()
+        }
+        _ = done.wait(timeout: .now() + timeout)
+    }
+}
+
 /// The foreground runner's output. Both streams go to the terminal through
 /// `RunnerSession.narrate` (so `--json` and `--quiet` silence them), whole
 /// lines at a time; stdout is also fed to the startup parser until

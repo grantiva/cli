@@ -64,6 +64,7 @@ public struct RunnerSessionStopper: Sendable {
     public var removeSessionFiles: @Sendable (Int32) -> Void
     public var releaseLease: @Sendable (String) -> Void
     public var cleanupOrphans: @Sendable (String) async -> Void
+    public var cleanupOwnedForward: @Sendable (String, Int) async -> Void
     /// Ends the device helpers (`simctl diagnose`, …) a stopped runner left.
     public var helperReaper: RunnerHelperReaper
     /// How long a grantiva process gets to exit after SIGINT. Its own
@@ -85,6 +86,7 @@ public struct RunnerSessionStopper: Sendable {
         removeSessionFiles: @escaping @Sendable (Int32) -> Void,
         releaseLease: @escaping @Sendable (String) -> Void,
         cleanupOrphans: @escaping @Sendable (String) async -> Void,
+        cleanupOwnedForward: @escaping @Sendable (String, Int) async -> Void = { _, _ in },
         helperReaper: RunnerHelperReaper = .inert,
         waitTimeout: TimeInterval = 30,
         pollInterval: Duration = .milliseconds(100),
@@ -100,6 +102,7 @@ public struct RunnerSessionStopper: Sendable {
         self.removeSessionFiles = removeSessionFiles
         self.releaseLease = releaseLease
         self.cleanupOrphans = cleanupOrphans
+        self.cleanupOwnedForward = cleanupOwnedForward
         self.helperReaper = helperReaper
         self.waitTimeout = waitTimeout
         self.pollInterval = pollInterval
@@ -120,6 +123,10 @@ public struct RunnerSessionStopper: Sendable {
             cleanupOrphans: { serial in
                 guard let platform = try? AndroidPlatform.live() else { return }
                 await platform.cleanupOrphans(deviceID: serial)
+            },
+            cleanupOwnedForward: { serial, localPort in
+                guard let platform = try? AndroidPlatform.live() else { return }
+                await platform.removeOwnedForward(deviceID: serial, localPort: localPort)
             },
             helperReaper: .live()
         )
@@ -179,7 +186,10 @@ public struct RunnerSessionStopper: Sendable {
             if !isProcessAlive(session.pid) { removeSessionFiles(session.pid) }
             return .released(grantivaPid: owner, runnerPid: session.pid, udid: udid, reaped: reaped)
         }
-        return await terminate(runnerPid: session.pid, udid: udid, recordedStartTime: session.runnerStartTime, deadline: deadline)
+        return await terminate(
+            runnerPid: session.pid, udid: udid, recordedStartTime: session.runnerStartTime,
+            ownedForwardPort: session.port > 0 ? session.port : nil, deadline: deadline
+        )
     }
 
     /// `timeout`, or what is left before `deadline` when that is sooner.
@@ -192,7 +202,10 @@ public struct RunnerSessionStopper: Sendable {
     /// is no longer a grantiva-runner, or whose start time is not the one the
     /// owner file recorded (the pid was reused), is never signalled; its
     /// files are still removed.
-    func terminate(runnerPid: Int32, udid: String, recordedStartTime: Int64? = nil, deadline: Date? = nil) async -> Outcome {
+    func terminate(
+        runnerPid: Int32, udid: String, recordedStartTime: Int64? = nil,
+        ownedForwardPort: Int? = nil, deadline: Date? = nil
+    ) async -> Outcome {
         var helperReaper = helperReaper
         if let deadline {
             // A teardown (L63): its deadline, and the run's xcodebuild takes
@@ -214,7 +227,12 @@ public struct RunnerSessionStopper: Sendable {
             reaped = await helperReaper.sweep(exitedRunnerPid: runnerPid, udid: udid)
         }
         removeSessionFiles(runnerPid)
-        if DeviceID.isAndroidSerial(udid) { await cleanupOrphans(udid) }
+        if DeviceID.isAndroidSerial(udid) {
+            await cleanupOrphans(udid)
+            if let ownedForwardPort, ownedForwardPort > 0 {
+                await cleanupOwnedForward(udid, ownedForwardPort)
+            }
+        }
         if !udid.isEmpty { releaseLease(udid) }
         return .terminated(runnerPid: runnerPid, udid: udid, killed: killed, reaped: reaped)
     }
@@ -240,7 +258,10 @@ public struct RunnerSessionStopper: Sendable {
            !sessions.contains(where: { $0.pid == file.pid }), isProcessAlive(file.pid) {
             // session.json records no start time to check; the runner is
             // matched by process name only.
-            outcomes.append(await terminate(runnerPid: file.pid, udid: udid, deadline: deadline))
+            outcomes.append(await terminate(
+                runnerPid: file.pid, udid: udid,
+                ownedForwardPort: file.isReady ? Int(file.wdaPort) : nil, deadline: deadline
+            ))
         }
         return outcomes
     }

@@ -185,16 +185,22 @@ final class AndroidPlatformTests: XCTestCase {
         }
     }
 
-    func testCleanupOrphansForceStopsUIA2AndRemovesOnlyThisSerialsForwards() async {
+    func testRoutineOrphanCleanupPreservesUnownedSameDeviceForwards() async {
         let shell = ScriptedShell([
             .success(""), .success(""),
-            .success("emulator-5554 tcp:61211 tcp:6790\nemulator-5556 tcp:61212 tcp:6790"),
+            .success("emulator-5554 tcp:61211 tcp:16791\nemulator-5556 tcp:61212 tcp:6790"),
         ])
         await platform(shell).cleanupOrphans(deviceID: "emulator-5554")
         XCTAssertEqual(shell.commands, [
             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'io.appium.uiautomator2.server'",
             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'io.appium.uiautomator2.server.test'",
-            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --list",
+        ])
+    }
+
+    func testOrphanCleanupRemovesOnlyTheRecordedOwnedForward() async {
+        let shell = ScriptedShell([.success("")])
+        await platform(shell).removeOwnedForward(deviceID: "emulator-5554", localPort: 61211)
+        XCTAssertEqual(shell.commands, [
             "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove tcp:61211",
         ])
     }

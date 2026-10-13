@@ -418,7 +418,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
     /// The local end of the forward to the runner's UIAutomator2 session. The
     /// forward is left in place: it is the port the session records.
-    private static func waitForUIAutomator2Port(_ launch: Launch, child: ChildProcess) async -> (port: UInt16?, exitStatus: Int32?, launchFailed: Bool) {
+    private static func waitForUIAutomator2Port(_ launch: Launch, child: ChildProcess) async -> (attachment: DriverAttachment?, exitStatus: Int32?, launchFailed: Bool) {
         let device = launch.platformDevice
         let serial = launch.device.udid
         let wait = await Self.waitForUIAutomator2(
@@ -428,7 +428,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
             launchStatus: { completedLaunchStatus(reportDir: launch.reportDir) },
             runnerExit: { child.poll() }
         )
-        return (wait.attachment.map { UInt16(clamping: $0.port) }, wait.exitStatus, wait.launchFailed)
+        return (wait.attachment, wait.exitStatus, wait.launchFailed)
     }
 
     /// The UIAutomator2 session already on the device before the runner is
@@ -439,6 +439,14 @@ struct RunnerStartCommand: AsyncParsableCommand {
               let attachment = try? await platform.attachDriver(deviceID: deviceID, port: nil) else { return nil }
         await attachment.detach()
         return attachment.sessionID
+    }
+
+    /// Transfers a successful Android readiness attachment to the foreground
+    /// session owner instead of reducing it to an unowned port.
+    static func retainForegroundAttachment(
+        _ attachment: DriverAttachment, in owner: ForegroundDriverAttachment
+    ) -> UInt16? {
+        owner.retain(attachment) ? UInt16(clamping: attachment.port) : nil
     }
 
     /// Hands the runner's group to the interrupt relay, naming the device
@@ -594,11 +602,11 @@ struct RunnerStartCommand: AsyncParsableCommand {
                     lastError: Self.lastErrorLine(in: text), logPath: logPath
                 )
             }
-            guard let found = wait.port else {
+            guard let attachment = wait.attachment else {
                 abandon()
                 throw GrantivaError.commandFailed("Timed out waiting for the UIAutomator2 session to start. Log: \(logPath)", 1)
             }
-            port = found
+            port = UInt16(clamping: attachment.port)
         } else {
             // Poll the log file for WDA's port or a failed build.
             let startup = try await waitForWDAPort(logFile: logPath, timeout: 60)
@@ -676,7 +684,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
         @Sendable func requestedStop() -> StopRequest? {
             Self.liveStopRequest(runnerPid: runnerPid, runnerStartTime: runnerStartTime)
         }
+        let foregroundAttachment = ForegroundDriverAttachment()
         let cleanup = Once {
+            foregroundAttachment.release()
             Self.removeSessionFile(of: runnerPid)
             KeepAliveSessionStore().removeSessionFiles(runnerPid: runnerPid)
             RunnerStopMarker().remove(runnerPid: runnerPid)
@@ -699,14 +709,20 @@ struct RunnerStartCommand: AsyncParsableCommand {
         do {
             try Self.recordStarting(launch, runnerPid: runnerPid)
         } catch {
+            foregroundAttachment.finishAcquiring()
             cleanup.run()
             throw error
         }
+        if launch.platform != .android { foregroundAttachment.finishAcquiring() }
         let port: UInt16
         if launch.platform == .android {
             // The port comes from the forward, not the output.
             output.endStartup()
             let wait = await Self.waitForUIAutomator2Port(launch, child: child)
+            let found = wait.attachment.flatMap {
+                Self.retainForegroundAttachment($0, in: foregroundAttachment)
+            }
+            if wait.attachment == nil { foregroundAttachment.finishAcquiring() }
             if SignalRelay.shared.isTerminating || wait.launchFailed {
                 child.terminateGroup(gracePeriod: 1)
                 cleanup.run()
@@ -728,7 +744,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
                     lastError: Self.lastErrorLine(in: output.recentText), logPath: nil
                 )
             }
-            guard let found = wait.port else {
+            guard let found else {
                 child.terminateGroup(gracePeriod: 1)
                 cleanup.run()
                 throw GrantivaError.commandFailed("Timed out waiting for the UIAutomator2 session to start", 1)
@@ -1144,7 +1160,9 @@ struct RunnerStopCommand: AsyncParsableCommand {
         // The runner's own teardown clears its forwards and the UIA2 server
         // when it exits cleanly; after a kill they may still be there.
         if DeviceID.isAndroidSerial(session.udid) {
-            await dependencies.cleanupOrphans(session.udid)
+            await dependencies.cleanupOrphans(
+                session.udid, session.isReady ? Int(session.wdaPort) : nil
+            )
         }
 
         if !sessionRemoved { dependencies.removeSession() }
@@ -1232,7 +1250,7 @@ struct RunnerStopDependencies: Sendable {
     var terminateGroup: @Sendable (Int32) -> ChildProcess.GroupTermination
     var removeSession: @Sendable () -> Void
     var releaseLease: @Sendable (String) -> Void
-    var cleanupOrphans: @Sendable (String) async -> Void
+    var cleanupOrphans: @Sendable (String, Int?) async -> Void
     /// `runner start` records a keep-alive owner sidecar for the runner pid
     /// on both platforms; stop removes it with the session.
     var removeKeepAliveOwner: @Sendable (Int32) -> Void
@@ -1254,9 +1272,12 @@ struct RunnerStopDependencies: Sendable {
         terminateGroup: { ChildProcess.terminateGroup($0, gracePeriod: 5) },
         removeSession: { RunnerSessionInfo.remove() },
         releaseLease: { SimulatorLease.forceRelease(udid: $0) },
-        cleanupOrphans: { serial in
+        cleanupOrphans: { serial, ownedForwardPort in
             guard let platform = try? AndroidPlatform.live() else { return }
             await platform.cleanupOrphans(deviceID: serial)
+            if let ownedForwardPort {
+                await platform.removeOwnedForward(deviceID: serial, localPort: ownedForwardPort)
+            }
         },
         removeKeepAliveOwner: { KeepAliveSessionStore().removeOwner(runnerPid: $0) },
         removeRunnerSessionFiles: { KeepAliveSessionStore().removeSessionFiles(runnerPid: $0) },

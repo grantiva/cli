@@ -340,7 +340,36 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         let session = makeSession(udid: "emulator-5554")
         let dependencies = dependencies(session: session, events: events, snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device emulator-5554")
         _ = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
-        XCTAssertEqual(events.value, ["snapshot", "remove", "terminate", "files 1234", "orphans", "owner", "release"])
+        XCTAssertEqual(events.value, ["snapshot", "remove", "terminate", "files 1234", "orphans 8430", "owner", "release"])
+    }
+
+    func testStopOnAStartingAndroidSessionHasNoOwnedForwardToRemove() async throws {
+        let events = LockedValue<[String]>([])
+        let session = RunnerSessionInfo.starting(
+            pid: 1234, bundleId: "com.example", udid: "emulator-5554",
+            startedAt: Date(), platform: .android
+        )
+        let dependencies = dependencies(
+            session: session, events: events,
+            snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device emulator-5554"
+        )
+
+        _ = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+
+        XCTAssertEqual(events.value, ["snapshot", "remove", "terminate", "files 1234", "orphans -", "owner", "release"])
+    }
+
+    func testStopOnIOSNeverRequestsAndroidOrphanCleanup() async throws {
+        let events = LockedValue<[String]>([])
+        let session = makeSession()
+        let dependencies = dependencies(
+            session: session, events: events,
+            snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device \(session.udid)"
+        )
+
+        _ = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+
+        XCTAssertFalse(events.value.contains(where: { $0.hasPrefix("orphans") }), "\(events.value)")
     }
 
     func testRunnerArgumentsHoldTheSessionWithKeepAliveOnBothPlatforms() {
@@ -690,6 +719,107 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         XCTAssertEqual(removed.value, [7])
     }
 
+    func testForegroundHoldRetainsAndReleasesItsDriverAttachmentExactlyOnce() async throws {
+        for interrupted in [false, true] {
+            let releases = LockedValue(0)
+            let unrelatedReleases = LockedValue(0)
+            let attachment = DriverAttachment(
+                client: .failing, port: 61211, sessionID: "owned",
+                detach: { releases.set(releases.value + 1) }
+            )
+            _ = DriverAttachment(
+                client: .failing, port: 61212, sessionID: "unrelated",
+                detach: { unrelatedReleases.set(unrelatedReleases.value + 1) }
+            )
+            let owned = ForegroundDriverAttachment()
+            XCTAssertEqual(RunnerStartCommand.retainForegroundAttachment(attachment, in: owned), 61211)
+
+            let (exits, exit) = AsyncStream<Int32>.makeStream()
+            let handler = LockedValue<(@Sendable () -> Void)?>(nil)
+            let held = Task {
+                await RunnerStartCommand.holdForeground(
+                    waitForExit: { for await status in exits { return status }; return 0 },
+                    onInterrupt: { body in handler.set(body); return 7 },
+                    removeInterruptHandler: { _ in },
+                    cleanup: { owned.release() }
+                )
+            }
+
+            while handler.value == nil { await Task.yield() }
+            XCTAssertEqual(releases.value, 0, "the live session must retain its forward")
+            if interrupted { handler.value?() }
+            exit.yield(interrupted ? Int32(SIGINT) : 0)
+            _ = await held.value
+            XCTAssertEqual(releases.value, 1)
+            owned.release()
+            XCTAssertEqual(releases.value, 1, "foreground cleanup must release the attachment exactly once")
+            XCTAssertEqual(unrelatedReleases.value, 0, "foreground cleanup must not release an attachment it does not own")
+        }
+    }
+
+    func testForegroundCleanupBeforeTransferRejectsAndFinishesLateAttachmentBeforeReturning() throws {
+        let owner = ForegroundDriverAttachment()
+        let releaseRequested = DispatchSemaphore(value: 0)
+        let detachStarted = DispatchSemaphore(value: 0)
+        let (detachGate, allowDetach) = AsyncStream<Void>.makeStream()
+        let retainReturned = DispatchSemaphore(value: 0)
+        let releaseReturned = DispatchSemaphore(value: 0)
+        let accepted = LockedValue<Bool?>(nil)
+        let attachment = DriverAttachment(
+            client: .failing, port: 61211, sessionID: "late",
+            detach: {
+                detachStarted.signal()
+                for await _ in detachGate { break }
+            }
+        )
+
+        DispatchQueue.global().async {
+            owner.release(timeout: 2, onRequested: { releaseRequested.signal() })
+            releaseReturned.signal()
+        }
+        XCTAssertEqual(releaseRequested.wait(timeout: .now() + 1), .success)
+        DispatchQueue.global().async {
+            accepted.set(owner.retain(attachment, timeout: 2))
+            retainReturned.signal()
+        }
+        XCTAssertEqual(detachStarted.wait(timeout: .now() + 1), .success)
+        XCTAssertEqual(retainReturned.wait(timeout: .now() + 0.05), .timedOut)
+        XCTAssertEqual(releaseReturned.wait(timeout: .now() + 0.05), .timedOut,
+                       "the signal cleanup must wait for the rejected attachment's detach")
+
+        allowDetach.yield(())
+        allowDetach.finish()
+        XCTAssertEqual(retainReturned.wait(timeout: .now() + 1), .success)
+        XCTAssertEqual(releaseReturned.wait(timeout: .now() + 1), .success)
+        XCTAssertEqual(accepted.value, false)
+    }
+
+    func testForegroundCleanupWaitsForOwnedAttachmentDetach() throws {
+        let owner = ForegroundDriverAttachment()
+        let detachStarted = DispatchSemaphore(value: 0)
+        let (detachGate, allowDetach) = AsyncStream<Void>.makeStream()
+        let releaseReturned = DispatchSemaphore(value: 0)
+        let attachment = DriverAttachment(
+            client: .failing, port: 61211, sessionID: "owned",
+            detach: {
+                detachStarted.signal()
+                for await _ in detachGate { break }
+            }
+        )
+        XCTAssertTrue(owner.retain(attachment))
+
+        DispatchQueue.global().async {
+            owner.release(timeout: 2)
+            releaseReturned.signal()
+        }
+        XCTAssertEqual(detachStarted.wait(timeout: .now() + 1), .success)
+        XCTAssertEqual(releaseReturned.wait(timeout: .now() + 0.05), .timedOut,
+                       "the signal cleanup must not return while owned detach is running")
+        allowDetach.yield(())
+        allowDetach.finish()
+        XCTAssertEqual(releaseReturned.wait(timeout: .now() + 1), .success)
+    }
+
     func testForegroundStartHelpSaysItStaysAttached() {
         let help = RunnerStartCommand.helpMessage(columns: 1000)
         XCTAssertTrue(help.contains("Ctrl-C"), help)
@@ -1030,7 +1160,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
             terminateGroup: { _ in events.append("terminate"); return .interrupted },
             removeSession: { events.append("remove") },
             releaseLease: { _ in events.append("release") },
-            cleanupOrphans: { _ in events.append("orphans") },
+            cleanupOrphans: { _, port in events.append("orphans \(port.map(String.init) ?? "-")") },
             removeKeepAliveOwner: { _ in events.append("owner") },
             removeRunnerSessionFiles: { events.append("files \($0)") },
             keepAliveSessions: { [] },
