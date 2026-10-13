@@ -418,7 +418,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
     /// The local end of the forward to the runner's UIAutomator2 session. The
     /// forward is left in place: it is the port the session records.
-    private static func waitForUIAutomator2Port(_ launch: Launch, child: ChildProcess) async -> (port: UInt16?, exitStatus: Int32?, launchFailed: Bool) {
+    private static func waitForUIAutomator2Port(_ launch: Launch, child: ChildProcess) async -> (attachment: DriverAttachment?, exitStatus: Int32?, launchFailed: Bool) {
         let device = launch.platformDevice
         let serial = launch.device.udid
         let wait = await Self.waitForUIAutomator2(
@@ -428,7 +428,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
             launchStatus: { completedLaunchStatus(reportDir: launch.reportDir) },
             runnerExit: { child.poll() }
         )
-        return (wait.attachment.map { UInt16(clamping: $0.port) }, wait.exitStatus, wait.launchFailed)
+        return (wait.attachment, wait.exitStatus, wait.launchFailed)
     }
 
     /// The UIAutomator2 session already on the device before the runner is
@@ -439,6 +439,15 @@ struct RunnerStartCommand: AsyncParsableCommand {
               let attachment = try? await platform.attachDriver(deviceID: deviceID, port: nil) else { return nil }
         await attachment.detach()
         return attachment.sessionID
+    }
+
+    /// Transfers a successful Android readiness attachment to the foreground
+    /// session owner instead of reducing it to an unowned port.
+    static func retainForegroundAttachment(
+        _ attachment: DriverAttachment, in owner: ForegroundDriverAttachment
+    ) -> UInt16 {
+        owner.retain(attachment)
+        return UInt16(clamping: attachment.port)
     }
 
     /// Hands the runner's group to the interrupt relay, naming the device
@@ -594,11 +603,11 @@ struct RunnerStartCommand: AsyncParsableCommand {
                     lastError: Self.lastErrorLine(in: text), logPath: logPath
                 )
             }
-            guard let found = wait.port else {
+            guard let attachment = wait.attachment else {
                 abandon()
                 throw GrantivaError.commandFailed("Timed out waiting for the UIAutomator2 session to start. Log: \(logPath)", 1)
             }
-            port = found
+            port = UInt16(clamping: attachment.port)
         } else {
             // Poll the log file for WDA's port or a failed build.
             let startup = try await waitForWDAPort(logFile: logPath, timeout: 60)
@@ -676,7 +685,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
         @Sendable func requestedStop() -> StopRequest? {
             Self.liveStopRequest(runnerPid: runnerPid, runnerStartTime: runnerStartTime)
         }
+        let foregroundAttachment = ForegroundDriverAttachment()
         let cleanup = Once {
+            foregroundAttachment.release()
             Self.removeSessionFile(of: runnerPid)
             KeepAliveSessionStore().removeSessionFiles(runnerPid: runnerPid)
             RunnerStopMarker().remove(runnerPid: runnerPid)
@@ -728,12 +739,12 @@ struct RunnerStartCommand: AsyncParsableCommand {
                     lastError: Self.lastErrorLine(in: output.recentText), logPath: nil
                 )
             }
-            guard let found = wait.port else {
+            guard let attachment = wait.attachment else {
                 child.terminateGroup(gracePeriod: 1)
                 cleanup.run()
                 throw GrantivaError.commandFailed("Timed out waiting for the UIAutomator2 session to start", 1)
             }
-            port = found
+            port = Self.retainForegroundAttachment(attachment, in: foregroundAttachment)
         } else {
             let startup = await Self.waitForForegroundWDAPort(
                 chunks: output.chunks,

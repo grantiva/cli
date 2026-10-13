@@ -29,6 +29,33 @@ final class Once: @unchecked Sendable {
     }
 }
 
+/// Owns the driver attachment discovered during foreground startup until the
+/// foreground session ends. SignalRelay cleanups are synchronous, so release
+/// waits briefly for the attachment's asynchronous platform cleanup.
+final class ForegroundDriverAttachment: @unchecked Sendable {
+    private let lock = NSLock()
+    private var attachment: DriverAttachment?
+
+    func retain(_ attachment: DriverAttachment) {
+        lock.withLock { self.attachment = attachment }
+    }
+
+    func release(timeout: TimeInterval = 15) {
+        let owned = lock.withLock {
+            let owned = attachment
+            attachment = nil
+            return owned
+        }
+        guard let owned else { return }
+        let done = DispatchSemaphore(value: 0)
+        Task.detached {
+            await owned.detach()
+            done.signal()
+        }
+        _ = done.wait(timeout: .now() + timeout)
+    }
+}
+
 /// The foreground runner's output. Both streams go to the terminal through
 /// `RunnerSession.narrate` (so `--json` and `--quiet` silence them), whole
 /// lines at a time; stdout is also fed to the startup parser until

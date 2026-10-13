@@ -690,6 +690,44 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         XCTAssertEqual(removed.value, [7])
     }
 
+    func testForegroundHoldRetainsAndReleasesItsDriverAttachmentExactlyOnce() async throws {
+        for interrupted in [false, true] {
+            let releases = LockedValue(0)
+            let unrelatedReleases = LockedValue(0)
+            let attachment = DriverAttachment(
+                client: .failing, port: 61211, sessionID: "owned",
+                detach: { releases.set(releases.value + 1) }
+            )
+            _ = DriverAttachment(
+                client: .failing, port: 61212, sessionID: "unrelated",
+                detach: { unrelatedReleases.set(unrelatedReleases.value + 1) }
+            )
+            let owned = ForegroundDriverAttachment()
+            XCTAssertEqual(RunnerStartCommand.retainForegroundAttachment(attachment, in: owned), 61211)
+
+            let (exits, exit) = AsyncStream<Int32>.makeStream()
+            let handler = LockedValue<(@Sendable () -> Void)?>(nil)
+            let held = Task {
+                await RunnerStartCommand.holdForeground(
+                    waitForExit: { for await status in exits { return status }; return 0 },
+                    onInterrupt: { body in handler.set(body); return 7 },
+                    removeInterruptHandler: { _ in },
+                    cleanup: { owned.release() }
+                )
+            }
+
+            while handler.value == nil { await Task.yield() }
+            XCTAssertEqual(releases.value, 0, "the live session must retain its forward")
+            if interrupted { handler.value?() }
+            exit.yield(interrupted ? Int32(SIGINT) : 0)
+            _ = await held.value
+            XCTAssertEqual(releases.value, 1)
+            owned.release()
+            XCTAssertEqual(releases.value, 1, "foreground cleanup must release the attachment exactly once")
+            XCTAssertEqual(unrelatedReleases.value, 0, "foreground cleanup must not release an attachment it does not own")
+        }
+    }
+
     func testForegroundStartHelpSaysItStaysAttached() {
         let help = RunnerStartCommand.helpMessage(columns: 1000)
         XCTAssertTrue(help.contains("Ctrl-C"), help)
