@@ -488,6 +488,18 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | X-007 | pass | findings/evidence/cov3-android/flow-contracts-bulk-exact-rerun3/K17-capture-json/, findings/evidence/cov3-android/AND-027-065diff-exact-rerun1/AND-065-diff/, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt92/ | Matching current five-screen text and JSON captures on both platforms share the same decoded keys and screen-item shapes. Android adds the documented emulator object alongside simulator, and text substitutes Emulator for Simulator; the five ordered screens otherwise agree. |
 
+| B2-K10 [android] | pass | findings/evidence/cov3-android/B2-K10-K80-screens-timeout-interrupt-rerun1/, findings/evidence/cov3-android/AND-046-049-exact-rerun1/timeout/, findings/evidence/cov3-android/AND-060/ | Screens and flow timeout outputs end with Grantiva's timeout sentence and no trailing runner interrupt acknowledgement; a genuine Ctrl-C still exits 130 and narrates interruption. The timeout and interrupt reports retain meaningful errors while exact candidate tests pin signal-acknowledgement filtering. |
+
+| B2-K80 [android] | pass | findings/evidence/cov3-android/B2-K10-K80-screens-timeout-interrupt-rerun1/, findings/evidence/cov3-android/AND-046-049-exact-rerun1/timeout/, findings/evidence/cov3-android/AND-060/ | Screens timeout finalizes report/flow/ready as failed with `summary.running: 0`, the exact timeout error, and a JUnit failure. Genuine active-screens SIGINT finalizes report/flow/ready as interrupted with running zero, a JUnit failure, and exit 130; prior flow evidence supplies the matching flow path. |
+
+| B3-L18 [android] | pass | findings/evidence/cov3-android/B3-L18-run-wait15-complement-rerun1/, findings/evidence/cov3-android/wait-screens-complement-rerun2/ | Exact `run --no-build` screens mode exits 0 and prints `Wait 3s`, `Wait 1.5s`, and exact-selector markers without `evalScript`. Joined plain/JSON diff captures preserve the same labels and screen-step shapes. |
+
+| B2-K94 [android] | pass | findings/evidence/cov3-android/D2-38-N3-04-mcp-build-run-rerun2/ | Configured MCP build and run name the identical APK product path. Run also reports successful build and launch, module `app`, variant `freeDebug`, application ID, and `cov3-android (emulator-5554)`. |
+
+| B3-L43 [android] | pass | findings/evidence/cov3-android/X013-X015-X017-android-rerun1/json/ | Start and session documents agree on application ID, device, and port. Session JSON carries applicationId, serial, deprecated UDID, port, platform, startedAt, and state plus documented compatibility aliases; exact candidate semantic tests pin the Android fields. |
+
+| D2-12 [android] | pass | findings/evidence/cov3-android/D2-12/ | A past-duration `--frames-at 5000` request exits 64 before recording. Relative and absolute output variants preserve correspondingly relative or absolute video, report, and frame paths in both text and JSON. |
+
 ## Counts
 
-353 of 467 slice rows recorded: 331 pass, 16 fail, 4 blocked, 2 n/a.
+359 of 467 slice rows recorded: 337 pass, 16 fail, 4 blocked, 2 n/a.

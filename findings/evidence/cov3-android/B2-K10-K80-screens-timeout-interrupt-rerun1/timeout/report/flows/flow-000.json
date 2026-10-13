@@ -1,0 +1,137 @@
+{
+  "artifacts" : {
+
+  },
+  "commands" : [
+    {
+      "artifacts" : {
+
+      },
+      "duration" : 1377,
+      "endTime" : "2026-10-13T02:08:27.5667-07:00",
+      "id" : "cmd-000",
+      "index" : 0,
+      "startTime" : "2026-10-13T02:08:26.1897-07:00",
+      "status" : "passed",
+      "type" : "launchApp",
+      "yaml" : "launchApp"
+    },
+    {
+      "artifacts" : {
+
+      },
+      "duration" : 98,
+      "element" : {
+        "bounds" : {
+          "height" : 189,
+          "width" : 1080,
+          "x" : 0,
+          "y" : 541
+        },
+        "found" : true,
+        "text" : "Golden Gate Bridge"
+      },
+      "endTime" : "2026-10-13T02:08:27.665894-07:00",
+      "id" : "cmd-001",
+      "index" : 1,
+      "label" : "Wait for the app to draw",
+      "startTime" : "2026-10-13T02:08:27.567894-07:00",
+      "status" : "passed",
+      "type" : "extendedWaitUntil",
+      "yaml" : "extendedWaitUntil: visible text=\".+\""
+    },
+    {
+      "artifacts" : {
+
+      },
+      "duration" : 689,
+      "element" : {
+        "bounds" : {
+          "height" : 210,
+          "width" : 346,
+          "x" : 734,
+          "y" : 2127
+        },
+        "found" : true,
+        "text" : "Deep Links"
+      },
+      "endTime" : "2026-10-13T02:08:28.356295-07:00",
+      "id" : "cmd-002",
+      "index" : 2,
+      "params" : {
+        "selector" : {
+          "type" : "text",
+          "value" : "Deep Links"
+        }
+      },
+      "startTime" : "2026-10-13T02:08:27.667295-07:00",
+      "status" : "passed",
+      "type" : "tapOn",
+      "yaml" : "tapOn: text=\"Deep Links\""
+    },
+    {
+      "artifacts" : {
+
+      },
+      "duration" : 682,
+      "endTime" : "2026-10-13T02:08:29.039304-07:00",
+      "id" : "cmd-003",
+      "index" : 3,
+      "startTime" : "2026-10-13T02:08:28.357304-07:00",
+      "status" : "passed",
+      "type" : "waitForAnimationToEnd",
+      "yaml" : "waitForAnimationToEnd"
+    },
+    {
+      "artifacts" : {
+
+      },
+      "endTime" : "2026-10-13T09:08:55Z",
+      "error" : {
+        "message" : "grantiva killed the screens session after 30s (--timeout <seconds> to raise the cap). It was at screen \"Slow\".",
+        "type" : "timeout"
+      },
+      "id" : "cmd-004",
+      "index" : 4,
+      "label" : "Wait 45s",
+      "startTime" : "2026-10-13T02:08:29.040037-07:00",
+      "status" : "failed",
+      "type" : "evalScript",
+      "yaml" : "evalScript"
+    },
+    {
+      "artifacts" : {
+
+      },
+      "id" : "cmd-005",
+      "index" : 5,
+      "status" : "skipped",
+      "type" : "waitForAnimationToEnd",
+      "yaml" : "waitForAnimationToEnd"
+    },
+    {
+      "artifacts" : {
+
+      },
+      "id" : "cmd-006",
+      "index" : 6,
+      "status" : "skipped",
+      "type" : "takeScreenshot",
+      "yaml" : "takeScreenshot"
+    }
+  ],
+  "device" : {
+    "id" : "emulator-5554",
+    "isSimulator" : true,
+    "name" : "google sdk_gphone64_arm64",
+    "osVersion" : "35",
+    "platform" : "android"
+  },
+  "endTime" : "2026-10-13T09:08:55Z",
+  "error" : "grantiva killed the screens session after 30s (--timeout <seconds> to raise the cap). It was at screen \"Slow\".",
+  "id" : "flow-000",
+  "name" : "screens",
+  "sourceFile" : "screens",
+  "startTime" : "2026-10-13T02:08:26.184738-07:00",
+  "status" : "failed"
+}
