@@ -47,7 +47,7 @@ final class ScriptToolsTests: XCTestCase {
         let recorder = WDARecorder()
         let result = try await ScriptTools.script(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: [:])
         XCTAssertEqual(result.isError, true)
-        XCTAssertTrue(try textContent(of: result).contains("'steps' array is required"))
+        XCTAssertEqual(try textContent(of: result), "Error: Invalid argument: 'steps' is required.")
         XCTAssertTrue(recorder.calls.isEmpty)
     }
 
@@ -58,6 +58,7 @@ final class ScriptToolsTests: XCTestCase {
             arguments: ["steps": .string("tap Login")]
         )
         XCTAssertEqual(result.isError, true)
+        XCTAssertEqual(try textContent(of: result), "Error: Invalid argument: 'steps' array is required.")
         XCTAssertTrue(recorder.calls.isEmpty)
     }
 

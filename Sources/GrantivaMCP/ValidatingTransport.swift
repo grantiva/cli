@@ -112,6 +112,8 @@ actor ValidatingTransport: Transport {
     nonisolated let logger: Logger
     private let inner: any Transport
     private var cancellations = CancellationTracker()
+    private var sending = false
+    private var sendWaiters: [CheckedContinuation<Void, Never>] = []
     /// When a cancel is handed to the SDK again, after the request's task has
     /// had time to register (milliseconds after the first delivery).
     private let cancelRetries: [UInt64]
@@ -128,7 +130,28 @@ actor ValidatingTransport: Transport {
 
     func send(_ data: Data) async throws {
         guard let kept = cancellations.outgoing(data) else { return }
-        try await inner.send(JSONRPCScreen.outgoing(kept))
+        try await sendWholeMessage(JSONRPCScreen.outgoing(kept))
+    }
+
+    /// Actor isolation alone does not serialize an async send: StdioTransport
+    /// yields when a partial write fills stdout. Keep ownership until the
+    /// entire encoded message (including its newline) has been written.
+    /// Validation replies use this same gate as SDK responses/notifications.
+    private func sendWholeMessage(_ data: Data) async throws {
+        if sending {
+            await withCheckedContinuation { sendWaiters.append($0) }
+        } else {
+            sending = true
+        }
+        defer {
+            if sendWaiters.isEmpty {
+                sending = false
+            } else {
+                sendWaiters.removeFirst().resume()
+            }
+        }
+        try Task.checkCancellation()
+        try await inner.send(data)
     }
 
     /// Notes `data`, then forwards it; a cancel for an unanswered request is
@@ -165,10 +188,10 @@ actor ValidatingTransport: Transport {
                         switch JSONRPCScreen.screen(data) {
                         case .forward: self.forward(data, to: continuation)
                         case .drop: continue
-                        case .reply(let reply): try? await inner.send(reply)
+                        case .reply(let reply): try? await self.sendWholeMessage(reply)
                         case .split(let valid, let reply):
                             self.forward(valid, to: continuation)
-                            if let reply { try? await inner.send(reply) }
+                            if let reply { try? await self.sendWholeMessage(reply) }
                         }
                     }
                     continuation.finish()

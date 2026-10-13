@@ -1,6 +1,7 @@
 import Foundation
 import GrantivaCore
 import MCP
+import Logging
 import XCTest
 
 @testable import GrantivaMCP
@@ -80,6 +81,100 @@ final class MCPTransportTests: XCTestCase {
         XCTAssertEqual((byID["7"]?["error"] as? [String: Any])?["code"] as? Int, -32600)
         XCTAssertNotNil(byID["2"]?["result"])
         XCTAssertNotNil(byID["3"]?["result"], "valid traffic still works after malformed lines")
+    }
+
+    /// Exercise the same validation boundary used by the stdio server with
+    /// a byte sink that yields between writes, as a full OS pipe does.
+    func testConcurrentLargeResourceAndToolResponsesAreWholeLines() async throws {
+        try await exerciseChunkedResponses(includeSmallMessages: false)
+    }
+
+    func testConcurrentSmallResponsesNotificationsAndValidationErrorsAreWholeLines() async throws {
+        try await exerciseChunkedResponses(includeSmallMessages: true)
+    }
+
+    private func exerciseChunkedResponses(includeSmallMessages: Bool) async throws {
+        let (clientSide, serverSide) = await InMemoryTransport.createConnectedPair()
+        let sink = PartialWriteTransport(wrapping: serverSide)
+        let server = Server(name: "chunk-test", version: "1", capabilities: .init(
+            resources: .init(listChanged: true), tools: .init(listChanged: false)
+        ))
+        let x = String(repeating: "x", count: 70_000)
+        let y = String(repeating: "y", count: 70_000)
+        await server.withMethodHandler(ReadResource.self) { params in
+            ReadResource.Result(contents: [.text(x, uri: params.uri)])
+        }
+        await server.withMethodHandler(CallTool.self) { _ in
+            CallTool.Result(content: [.text(text: y, annotations: nil, _meta: nil)])
+        }
+        await server.withMethodHandler(ListTools.self) { _ in ListTools.Result(tools: []) }
+        try await server.start(transport: ValidatingTransport(wrapping: sink))
+        try await clientSide.connect()
+        let replies = Replies()
+        let stream = await clientSide.receive()
+        let reader = Task {
+            var pending = Data()
+            for try await chunk in stream {
+                pending.append(chunk)
+                while let newline = pending.firstIndex(of: 10) {
+                    replies.append(Data(pending[..<newline]))
+                    pending.removeSubrange(...newline)
+                }
+            }
+            XCTAssertTrue(pending.isEmpty, "trailing bytes without a newline")
+        }
+        defer { reader.cancel() }
+        try await clientSide.send(Data(#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"qa","version":"1"}}}"#.utf8))
+        let initializedDeadline = Date().addingTimeInterval(5)
+        while replies.all.isEmpty, Date() < initializedDeadline { try await Task.sleep(for: .milliseconds(10)) }
+        XCTAssertEqual(replies.all.count, 1)
+        try await clientSide.send(Data(#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#.utf8))
+
+        for pair in 0..<10 {
+            let id = 10 + pair * 2
+            try await withThrowingTaskGroup(of: Void.self) { group in
+                group.addTask {
+                    try await clientSide.send(Data("{\"jsonrpc\":\"2.0\",\"id\":\(id),\"method\":\"resources/read\",\"params\":{\"uri\":\"grantiva://hierarchy\"}}".utf8))
+                }
+                group.addTask {
+                    try await clientSide.send(Data("{\"jsonrpc\":\"2.0\",\"id\":\(id + 1),\"method\":\"tools/call\",\"params\":{\"name\":\"large\",\"arguments\":{}}}".utf8))
+                }
+                if includeSmallMessages {
+                    group.addTask {
+                        try await clientSide.send(Data("{\"jsonrpc\":\"2.0\",\"id\":\(100 + pair),\"method\":\"tools/list\"}".utf8))
+                    }
+                    group.addTask {
+                        try await clientSide.send(Data("{\"id\":\(200 + pair),\"method\":\"tools/list\"}".utf8))
+                    }
+                    group.addTask { try await server.notify(ResourceListChangedNotification.message()) }
+                }
+                try await group.waitForAll()
+            }
+        }
+        let expectedCount = includeSmallMessages ? 50 : 20
+        let deadline = Date().addingTimeInterval(10)
+        while replies.all.count < expectedCount + 1, Date() < deadline { try await Task.sleep(for: .milliseconds(10)) }
+        await server.stop()
+        let lines = Array(replies.all.dropFirst())
+        let objects = try lines.map { try XCTUnwrap(JSONSerialization.jsonObject(with: $0) as? [String: Any]) }
+        XCTAssertEqual(objects.count, expectedCount)
+        XCTAssertTrue(objects.allSatisfy { $0["jsonrpc"] as? String == "2.0" })
+        let ids = objects.compactMap { $0["id"] as? Int }
+        let expectedIDs = Set(10..<30).union(includeSmallMessages ? Set(100..<110).union(200..<210) : [])
+        XCTAssertEqual(Set(ids), expectedIDs)
+        XCTAssertEqual(ids.count, expectedIDs.count, "each ID must arrive exactly once; order is unconstrained")
+        for object in objects {
+            guard let id = object["id"] as? Int, (10..<30).contains(id) else { continue }
+            let result = try XCTUnwrap(object["result"] as? [String: Any])
+            let contents = try XCTUnwrap(result[id.isMultiple(of: 2) ? "contents" : "content"] as? [[String: Any]])
+            XCTAssertEqual(contents.first?["text"] as? String, id.isMultiple(of: 2) ? x : y)
+        }
+        if includeSmallMessages {
+            XCTAssertEqual(objects.filter { $0["method"] as? String == ResourceListChangedNotification.name }.count, 10)
+            XCTAssertEqual(objects.filter { ($0["error"] as? [String: Any])?["code"] as? Int == -32600 }.count, 10)
+        }
+        let largestWrite = await sink.largestWrite
+        XCTAssertEqual(largestWrite, 4096)
     }
 
     func testBatchMembersAreScreenedOneByOne() throws {
@@ -245,4 +340,37 @@ private final class Replies: @unchecked Sendable {
     private var items: [Data] = []
     func append(_ data: Data) { lock.withLock { items.append(data) } }
     var all: [Data] { lock.withLock { items } }
+}
+
+/// Model StdioTransport's partial writes and suspension on a full pipe.
+/// There is intentionally no whole-message lock in this underlying sink.
+private actor PartialWriteTransport: Transport {
+    nonisolated let logger = Logger(label: "test.partial-writes")
+    private let inner: any Transport
+    private(set) var largestWrite = 0
+
+    init(wrapping inner: any Transport) { self.inner = inner }
+    func connect() async throws { try await inner.connect() }
+    func disconnect() async { await inner.disconnect() }
+    func receive() -> AsyncThrowingStream<Data, Swift.Error> {
+        AsyncThrowingStream { continuation in
+            let task = Task {
+                do {
+                    for try await data in await inner.receive() { continuation.yield(data) }
+                    continuation.finish()
+                } catch { continuation.finish(throwing: error) }
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
+    }
+    func send(_ data: Data) async throws {
+        var remaining = data + Data([10])
+        while !remaining.isEmpty {
+            let chunk = Data(remaining.prefix(4096))
+            largestWrite = max(largestWrite, chunk.count)
+            try await inner.send(chunk)
+            remaining.removeFirst(chunk.count)
+            try await Task.sleep(for: .milliseconds(1))
+        }
+    }
 }
