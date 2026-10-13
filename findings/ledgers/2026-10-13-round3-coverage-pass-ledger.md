@@ -197,3 +197,10 @@ Review gaps: B-I02.2 lacks conflicting flag/config and sole-booted fallback; IOS
 - Android dual-device runtime completed both flows successfully, checked newest/default and explicit-device hierarchy, preserved another owned device's orphan forward across primary cleanup, and deleted its temporary secondary. Exact browse settings re-run closes AND067/145; raw checkpoint8e5c8c27. AND057 remains incomplete because unchanged persistent session forwarding proves reuse/no leak, not creation/removal of a command-scoped forward.
 - Independent cross review supports X006/008/009/012/016/023. X011 needs the specified Landmarks-list state rather than detail; X014 needs a new booted Android serial case rather than only no-boot name. Initial optimistic comparison map corrected, checkpoint7aaed348. X005 lacks current iOS build-build JSON.
 - iOS evidence/grades through35/36 checkpointc0a4ab84. iOS37/38 completed awaiting grading; Android K44 preflight completed and broader flow/report batch running. Remaining rows still substantial; no overall pass claimed.
+
+
+### Harness integrity and exact preflight setup
+
+- Android flow-contracts-bulk attempt1 was interrupted with shell exit2 after the worker edited an announced-ready script around launch. Frozen old script and controller completion output retained; no row grades from that interrupted batch. Ready-script paths are now immutable from announcement, with any change requiring a fresh version. v2 was inspected but not run because config-free K22 commands omitted explicit Android platform. Fresh v3 fixes that and completes all10 command outcomes as expected.
+- iOS39 five-screen app-file workflow completes capture0, no-baseline compare1, approve0 and comparison0. iOS40 and AndroidK44 preflight cases reject immediately, but used already-booted devices while the matrix requires shut-down input; retained as partial, provisional grades withheld pending an owned-device lifecycle batch.
+- iOS37/38 raw checkpoint1b0c924d; AndroidK44 raw40ee72ff. iOS41 output-mode/report batch runs next. No L69 product brief from the recent batches.
