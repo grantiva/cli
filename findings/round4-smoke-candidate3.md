@@ -1,6 +1,6 @@
 # Round 4 smoke — candidate 3
 
-Status: **IN PROGRESS**. Task 8 has no zero gate; Task 9 has not executed.
+Status: **PASS — Task8 zero gate independently APPROVED**. All required candidate3 smoke phases and physical cleanup passed. Task9 is authorized on the hash-bound frozen execution candidate; full campaign completion remains pending.
 
 Candidate manifest: `findings/evidence/round4-smoke-candidate3/candidate.json`, SHA-256 `e9cfc7dce72ba8125b7c55df8d3dec355925003de24a4131c6510b9e67c51ebf`.
 
@@ -20,7 +20,7 @@ Candidate manifest: `findings/evidence/round4-smoke-candidate3/candidate.json`, 
 | Joint forwarding ownership | PASS | Independent APPROVED |
 | Android MCP | PASS | Independent APPROVED |
 | Final force teardown | PASS, foreground attempt2; original helper failure preserved | Independent APPROVED |
-| Physical cleanup/protected inventory | PASS, both owned devices physically deleted | Aggregate review pending |
+| Physical cleanup/protected inventory | PASS, both owned devices physically deleted | Independent APPROVED |
 
 No prior candidate grade populates this table. Candidate1 and candidate2 remain failed. L85 source-live first iOS26 Cancel hierarchy timeout remains unreproduced and recorded in `findings/evidence/fix4-85`; full iOS26 source retry and iOS27 passed, but candidate3 must complete the whole frozen smoke sequence. Any recurrence is triaged rather than retried until green.
 
@@ -30,4 +30,4 @@ Lifecycle attempt2 used independently approved helper `38a48f3765fd4615f483f066e
 
 Fresh foreground force evidence includes a holder-deadline warning for CLI PID79528. The force command still returned0 with required JSON, foreground CLI returned0 with exact teardown notice, and both CLI79528 and runner79556 were absent without extra signals. Delayed Popen.wait is consistent with an unreaped exited child, but no contemporaneous zombie-state sample was captured; that explanation remains an inference. Independent force review approves the explicit criteria and preserves this diagnostic.
 
-Physical cleanup passed: owned iOS33BCE8AB-B7F2-4D47-B0B8-2CB1D8A1971E and AVDsmoke4-c3-android deleted, emulator5580/PID61153 absent, no owned process/session/lease/forward remains. Protected simulator records and Pixel_8_API_35 config hash unchanged. Aggregate review is pending. Joint-forward acceptance has a stale candidate2 scope label; its fresh invocation, identity proof, devices and manifest bind candidate3. Raw bytes are preserved.
+Physical cleanup passed: owned iOS33BCE8AB-B7F2-4D47-B0B8-2CB1D8A1971E and AVDsmoke4-c3-android deleted, emulator5580/PID61153 absent, no owned process/session/lease/forward remains. Protected simulator records and Pixel_8_API_35 config hash unchanged. Aggregate specification/evidence-quality review approved the zero gate. Joint-forward acceptance has a stale candidate2 scope label; its fresh invocation, identity proof, devices and manifest bind candidate3. Raw bytes are preserved.

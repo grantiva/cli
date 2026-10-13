@@ -1,0 +1,2615 @@
+{
+  "schemaVersion": 1,
+  "status": "FROZEN_FOR_EXECUTION",
+  "task": "Round 4 Task 9 Step 1",
+  "executionGate": "Task 8 smoke must be green before any coverage execution",
+  "candidate": {
+    "cliVersion": "2.1.0",
+    "cliSourceSHA": "6ba12ed37658228a3ce87cb64e1f5d88dda38e07",
+    "cliExecutableSHA256": "1b6a973b63a750691bcb76a710a97f346d331fe44ef60f6c50bef0f6d35e4731",
+    "runnerVersion": "1.1.28-grantiva.15",
+    "runnerSourceSHA": "ba9008f4b2cd2c7320a9c46e04faed612b0958a2",
+    "runnerBundleHashes": [
+      {
+        "path": "Contents/Info.plist",
+        "sha256": "d8f587bd826c2cb4176ae92c35db0e65574e9cc0da1bd959348dd436e8c4d68b"
+      },
+      {
+        "path": "Contents/Resources/android-drivers.tar.gz",
+        "sha256": "59cbbf5725cfe682e857b8e1e3ec1a063a265c537aeee1fb57c5d4b8a5c1fb2c"
+      },
+      {
+        "path": "Contents/Resources/grantiva-runner-amd64.tar.gz",
+        "sha256": "c7bdb3703f23cadf464844cb77a250acc2a926b226d93728b29b1322eb15e132"
+      },
+      {
+        "path": "Contents/Resources/grantiva-runner-arm64.tar.gz",
+        "sha256": "12aae9dc17c9ce5942bcd5becd56d6a810932476633f6c5e1c3167e602c54761"
+      }
+    ],
+    "demoSHA": "84af7581b75134b0e417b254e4317d565f7b73c6",
+    "wdaCacheManifest": {
+      "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-coverage/wda-cache-manifest.json",
+      "sha256": "54036e1dff45ccfaca217ec5afa1432817b10668193a0ab3c510d40be76fa98b"
+    },
+    "releaseRunnerHomeManifest": {
+      "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-coverage/runner-home-manifest.json",
+      "sha256": "2a691106d319486df47f12ea975c230595b748271dcc09a35ba417a0d9f467b2"
+    }
+  },
+  "descriptiveRuntimeMap": {
+    "cov4-ios-26": "iOS 26.0",
+    "cov4-ios-27": "iOS 27.0",
+    "cov4-android": "Android API 35",
+    "note": "Descriptive only; no Task 9 device exists until coverage execution is authorized after green Task 8 smoke. iOS 26.2 and 26.4 are separate packaging/cache requirements."
+  },
+  "inheritedExecutionInterpretation": {
+    "runnerLiterals": "Historical .11/.13 runner literals and the .13+android-drivers-2 stamp resolve to the exact bundled runner version/stamp in the final Task 8 manifest wherever an inherited row says the literal follows the bundle; candidate values remain UNKNOWN until then.",
+    "appAndFlows": "Demo SHA remains UNKNOWN until the final Task 8 manifest. Preserve the Remove from favorites label used by .maestro/02-favorite.yaml, stock .maestro/01-12 and 99-crash, NEW:/NEW:cfg mappings under .maestro/coverage, cfg/relaunch.yaml, and the Android Landmark 28 assertion; rewrite historical config device names to the cov4-* descriptive mapping before execution."
+  },
+  "protectedDevices": [
+    {
+      "platform": "ios",
+      "name": "iPhone 17 Pro",
+      "id": "B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C"
+    },
+    {
+      "platform": "ios",
+      "name": "iPhone 18 Pro",
+      "id": "FE441EE5-BBFC-4981-B68A-59C0DBCE26D6"
+    },
+    {
+      "platform": "android",
+      "name": "Pixel_8_API_35"
+    }
+  ],
+  "counts": {
+    "logical": {
+      "base": 1170,
+      "delta": 144,
+      "total": 1314
+    },
+    "byPlatform": {
+      "base": {
+        "cli": 384,
+        "ios": 319,
+        "android": 308,
+        "shared": 159
+      },
+      "delta": {
+        "cli": 47,
+        "ios": 42,
+        "android": 39,
+        "shared": 16
+      },
+      "total": {
+        "cli": 431,
+        "ios": 361,
+        "android": 347,
+        "shared": 175
+      }
+    },
+    "expanded": {
+      "base": {
+        "cli": 384,
+        "ios": 478,
+        "android": 467,
+        "total": 1329
+      },
+      "delta": {
+        "cli": 47,
+        "ios": 58,
+        "android": 55,
+        "total": 160
+      },
+      "total": {
+        "cli": 431,
+        "ios": 536,
+        "android": 522,
+        "total": 1489
+      }
+    }
+  },
+  "sourceCriterionCoverage": {
+    "expected": 125,
+    "indexed": 125,
+    "omitted": 0
+  },
+  "b4RowCoverage": {
+    "briefCriteria": 125,
+    "publicContractControls": 19,
+    "total": 144,
+    "duplicateIds": 0
+  },
+  "approvedExpectationCorrections": {
+    "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/00-expectation-corrections-round3.md",
+    "inheritedLogicalRowIds": [
+      "CLI-003",
+      "CLI-045",
+      "CLI-145",
+      "IOS-016",
+      "IOS-058",
+      "IOS-153",
+      "AND-022",
+      "AND-137",
+      "AND-138",
+      "MCP-078",
+      "X-013",
+      "B2-K19",
+      "B2-K25",
+      "B2-K103",
+      "B2-L03",
+      "D2-27",
+      "D2-47",
+      "B3-L51",
+      "B3-L55.1",
+      "B3-L55.2",
+      "N3-06",
+      "N3-16"
+    ],
+    "note": "These are approved round-3 expectation corrections from the cited round-3 record, carried forward into round 4. The draft preserves them verbatim with empty results and introduces no new correction or relaxation."
+  },
+  "sourceCriteria": [
+    {
+      "criterionId": "L51.expected",
+      "brief": "L51",
+      "section": "Expected",
+      "ordinal": 1,
+      "exactText": "Every swipe the runner performs on Android uses one gesture engine with the same timing model, so a flow author gets the same travel, the same fling behaviour and the same `distance:`/`duration:` semantics whether the swipe targets an element, a screen direction, or explicit `start:`/`end:` points. `engine: adb` stays as the explicit opt-in to `input swipe`.",
+      "source": "docs/superpowers/plans/2026-10-12-coverage-issues-round2/L51-screen-and-start-end-swipes-still-input-swipe.md",
+      "rowIds": [
+        "B4-L51.E"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L51.fix-direction",
+      "brief": "L51",
+      "section": "Fix direction",
+      "ordinal": 2,
+      "exactText": "Route direction and point swipes through the same held-drag path as element swipes (start point = screen point or `start:`), keep `engine: adb` as the escape hatch, and extend the L07 tests to the three forms. Schedule: round 4 unless the round-3 coverage pass turns a `B3-L` row red on it.",
+      "source": "docs/superpowers/plans/2026-10-12-coverage-issues-round2/L51-screen-and-start-end-swipes-still-input-swipe.md",
+      "rowIds": [
+        "B4-L51.F"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L51.task2-step1",
+      "brief": "L51",
+      "section": "Task 2 Step 1",
+      "ordinal": 3,
+      "exactText": "**Step 1: Write failing L51 tests.** Table-test direction, explicit start/end, element and `engine: adb` forms. The first three must emit W3C held pointer actions with requested duration; only the last may invoke `adb shell input swipe`.",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md",
+      "rowIds": [
+        "B4-L51.P1"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L51.task2-step7",
+      "brief": "L51",
+      "section": "Task 2 Step 7",
+      "ordinal": 4,
+      "exactText": "**Step 7: Device acceptance.** On owned software and GPU AVDs, run the four L51 forms and retain before/after app-only hierarchy frames; run favorite removal 5/5 on each; run bare stopApp 3/3 plus an intentionally ineffective fake-shell unit case. Generate load only with recorded owned PIDs and remove it afterward.",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md",
+      "rowIds": [
+        "B4-L51.P2"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L53.expected",
+      "brief": "L53",
+      "section": "Expected",
+      "ordinal": 1,
+      "exactText": "An empty `--device` value is an argument failure: `Error: Invalid argument: '--device' must not be empty.` (or the runner's equivalent one-line usage error), exit 64, before any device lookup or signing check runs.",
+      "source": "docs/superpowers/plans/2026-10-12-coverage-issues-round2/L53-runner-empty-device-value-accepted.md",
+      "rowIds": [
+        "B4-L53.E"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L53.fix-direction",
+      "brief": "L53",
+      "section": "Fix direction",
+      "ordinal": 2,
+      "exactText": "Validate `--device`, `--udid` and `--serial` values as non-empty (and, for simulators, UDID-shaped) at flag parsing; one test per flag. Also check the CLI never forwards an empty device value (CLI side: refuse with the Invalid argument line). Schedule: round 4 unless a `B3-L`/`N3` row fails on it.",
+      "source": "docs/superpowers/plans/2026-10-12-coverage-issues-round2/L53-runner-empty-device-value-accepted.md",
+      "rowIds": [
+        "B4-L53.F"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L53.reviewed-ruling",
+      "brief": "L53",
+      "section": "Reviewed-plan ruling",
+      "ordinal": 3,
+      "exactText": "**Reviewed-plan ruling:** The retained brief predates the supported flag inventory. Validate the runner\u2019s existing `--device` and its existing `--udid` alias, and CLI\u2019s existing target flags; preserve existing aliases and do not add unsupported `--serial`. Keep malformed simulator-UDID and unknown-flag controls. Tasks 3 and 4 contain the executable contract.",
+      "source": "findings/round4-binding-acceptance-inventory.md",
+      "rowIds": [
+        "B4-L53.P1"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L53.task3-step2",
+      "brief": "L53",
+      "section": "Task 3 Step 2",
+      "ordinal": 4,
+      "exactText": "**Step 2: Write failing L53 runner tests.** Add table cases to `pkg/cli/cli_test.go` that call the real app with `[]string{\"grantiva-runner\", \"--platform\", \"ios\", \"--device\", value, \"test\", \"flow.yaml\"}` for `value == \"\"` and `\"   \"`. Assert the usage error occurs before device discovery. Keep `[]string{\"grantiva-runner\", \"--serial\", \"x\", \"test\", \"flow.yaml\"}` as an unknown-flag control. Preserve the existing `--udid` alias and cover its empty/whitespace values through the same canonical device validation; do not add `--serial`.",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md",
+      "rowIds": [
+        "B4-L53.P2"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L53.task3-step6",
+      "brief": "L53",
+      "section": "Task 3 Step 6",
+      "ordinal": 5,
+      "exactText": "**Step 6: Scoped CLI integration check.** Build the task runner and install it only in the task-scoped cloned home used by the current merged CLI; final bundled-candidate repetition remains mandatory in Task 8. `grantiva-runner --platform ios --device \"\" test findings/fixtures/optional-miss.yaml` exits 64 before signing.",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md",
+      "rowIds": [
+        "B4-L53.P3"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L53.task4-step3",
+      "brief": "L53",
+      "section": "Task 4 Step 3",
+      "ordinal": 6,
+      "exactText": "**Step 3: Write failing L53/L75 tests.** In `TargetOptionsTests`, parse the real `TargetFlags` with explicit empty `--device`, `--simulator`, and `--emulator` values and assert `validate()` rejects them before `RunnerInvocation` is built; retain ordinary simulator names as valid. In `SimulatorCommandTests`, feed a UDID-shaped but malformed value to the existing `SimulatorUDID.validate` path and require its current usage error. Do not add `--serial` and keep an unknown-flag parsing control. In `RunnerSessionOutputTests`, create real files `flows/a.yaml` and `shared/b.yaml`, stage `flows/a.yaml \u2192 ../shared/b.yaml \u2192 ../flows/a.yaml`, then assert the emitted cycle is exactly `flows/a.yaml \u2192 shared/b.yaml \u2192 flows/a.yaml \u2192 shared/b.yaml`. Fix `RunnerSession.swift:423-469` so `FlowReferenceResolver`'s project-root-relative reachable map wins when merging `subFlowPathMap`; preserve as-written operands only where no canonical mapping exists. Run the same assertion from `/tmp` and its `/private/tmp` spelling.",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md",
+      "rowIds": [
+        "B4-L53.P4"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L53.task4-step9-controls",
+      "brief": "L53",
+      "section": "Task 4 Step 9 controls",
+      "ordinal": 7,
+      "exactText": "**L71:** run absent, installed-skipped and D2-08 `--app-file` install/no-launch controls. Also verify harmless lookalike survival, empty target rejection before forwarding, and the exact canonical subdirectory cycle.",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md",
+      "rowIds": [
+        "B4-L53.P5"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L61.expected",
+      "brief": "L61",
+      "section": "Expected",
+      "ordinal": 1,
+      "exactText": "Once a step fails, the failure artefacts (screenshot, hierarchy, logcat tail) are captured within ~2 s on the default software-rendered AVD at host load below 15, so a crash flow's wall time is the app's cold start plus a few seconds.",
+      "source": "docs/superpowers/plans/2026-10-12-coverage-issues-round2/L61-android-failure-capture-takes-5-10s.md",
+      "rowIds": [
+        "B4-L61.E"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L61.fix-direction",
+      "brief": "L61",
+      "section": "Fix direction",
+      "ordinal": 2,
+      "exactText": "Capture screenshot, hierarchy and logcat concurrently; take the screenshot through the UIAutomator2 server (`GET /screenshot`, PNG over the existing socket) instead of `adb screencap` + pull when the server is alive; bound each capture by a short deadline and record a note instead of blocking the report. Schedule: round 4 unless a `B3`/`N3` row fails on it.",
+      "source": "docs/superpowers/plans/2026-10-12-coverage-issues-round2/L61-android-failure-capture-takes-5-10s.md",
+      "rowIds": [
+        "B4-L61.F"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L61.task1-step2",
+      "brief": "L61",
+      "section": "Task 1 Step 2",
+      "ordinal": 3,
+      "exactText": "**Step 2: Write failing L61 tests.** Extend `pkg/executor/duration_consistency_test.go` around `FlowRunner.captureArtifacts`: use package-private context-aware screenshot, hierarchy and log-tail fakes where one waits on `ctx.Done()`. Assert all three collectors start concurrently, successful bytes survive, every blocked fake observes cancellation and exits, and the whole call returns in at most 2 seconds plus a 250 ms scheduling allowance. Repeat 25 failed captures and assert goroutine/resource counts return to the test's bounded baseline. Add reciprocal blocked-hierarchy and blocked-log-tail cases and the artifact paths/timeout-note JSON round-trip beside `pkg/report/flow.go`.",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md",
+      "rowIds": [
+        "B4-L61.P1"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L61.task1-step7",
+      "brief": "L61",
+      "section": "Task 1 Step 7",
+      "ordinal": 4,
+      "exactText": "**Step 7: Device acceptance.** On owned `fix4-1-android` below host load 15, run the exact crash flow five times. No launch succeeds after a prior matching fatal; fatal-to-failure remains within the L64 two-second bound. Record artifact start/end timestamps and prove failure capture completes within the L61 bound with no collector child left afterward. Run the healthy launch control and a post-return-crash control separately; the latter must not retroactively fail a launch that already returned.",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md",
+      "rowIds": [
+        "B4-L61.P2"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L62.expected",
+      "brief": "L62",
+      "section": "Expected",
+      "ordinal": 1,
+      "exactText": "`swipe: {direction: LEFT, from: \"Lake Tahoe\"}` reveals the row's swipe action; `tapOn: \"Remove from favorites\"` removes the favourite; `assertNotVisible: \"Lake Tahoe\"` passes, 5 of 5, on slow and fast AVDs alike.",
+      "source": "docs/superpowers/plans/2026-10-12-coverage-issues-round2/L62-android-02-favorite-remove-leaves-row-intermittently.md",
+      "rowIds": [
+        "B4-L62.E"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L62.fix-direction",
+      "brief": "L62",
+      "section": "Fix direction",
+      "ordinal": 2,
+      "exactText": "Isolate first: (a) does the tap land on the label while the row is still animating open (Compose `SwipeToDismissBox` anchors not settled \u2192 the click is consumed by the drag), in which case the runner should wait for the revealed action to be stable (two identical bounds reads) before tapping, as the K97 settle rule does for screenshots; (b) or does the demo's `onRemove` fire and the list not recompose (demo bug) \u2014 then a landmarks-demo PR. Schedule: round 4 unless a `B3`/`N3` row fails on it.",
+      "source": "docs/superpowers/plans/2026-10-12-coverage-issues-round2/L62-android-02-favorite-remove-leaves-row-intermittently.md",
+      "rowIds": [
+        "B4-L62.F"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L62.task2-step3",
+      "brief": "L62",
+      "section": "Task 2 Step 3",
+      "ordinal": 3,
+      "exactText": "**Step 3: Write the L62 isolation test.** Replay reveal \u2192 stable-bounds reads \u2192 tap against a fake hierarchy whose action moves during animation. Assert the runner waits for two identical app-node bounds before tapping. Add a fixture where the app callback fires but state does not change; that result identifies demo ownership without weakening runner assertions.",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md",
+      "rowIds": [
+        "B4-L62.P1"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L62.task2-step7",
+      "brief": "L62",
+      "section": "Task 2 Step 7",
+      "ordinal": 4,
+      "exactText": "**Step 7: Device acceptance.** On owned software and GPU AVDs, run the four L51 forms and retain before/after app-only hierarchy frames; run favorite removal 5/5 on each; run bare stopApp 3/3 plus an intentionally ineffective fake-shell unit case. Generate load only with recorded owned PIDs and remove it afterward.",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md",
+      "rowIds": [
+        "B4-L62.P2"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L62.task2-step8",
+      "brief": "L62",
+      "section": "Task 2 Step 8",
+      "ordinal": 5,
+      "exactText": "**Step 8: Demo decision.** If the callback/state fixture proves demo ownership, open and merge a separate minimal landmarks-demo PR before the runner PR; otherwise record that no demo edit was required.",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md",
+      "rowIds": [
+        "B4-L62.P3"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L64.acceptance.1",
+      "brief": "L64",
+      "section": "Acceptance criteria",
+      "ordinal": 1,
+      "exactText": "A deterministic regression reproduces a matching fatal event between launch status reads and the success decision; launchApp returns app_crash.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L64-android-launch-passes-after-fatal.md",
+      "rowIds": [
+        "B4-L64.1"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L64.acceptance.2",
+      "brief": "L64",
+      "section": "Acceptance criteria",
+      "ordinal": 2,
+      "exactText": "A displayed frame cannot mask a matching fatal event already observed before return.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L64-android-launch-passes-after-fatal.md",
+      "rowIds": [
+        "B4-L64.2"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L64.acceptance.3",
+      "brief": "L64",
+      "section": "Acceptance criteria",
+      "ordinal": 3,
+      "exactText": "Healthy launch remains successful; crashes after successful return are caught by the following step.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L64-android-launch-passes-after-fatal.md",
+      "rowIds": [
+        "B4-L64.3"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L64.acceptance.4",
+      "brief": "L64",
+      "section": "Acceptance criteria",
+      "ordinal": 4,
+      "exactText": "Five real demo crash runs preserve raw timing evidence and show no launchApp success after a matching fatal event. Failure remains within the accepted 2-second FATAL-to-failure bound.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L64-android-launch-passes-after-fatal.md",
+      "rowIds": [
+        "B4-L64.4"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L64.acceptance.5",
+      "brief": "L64",
+      "section": "Acceptance criteria",
+      "ordinal": 5,
+      "exactText": "Preserve the existing permission batching and native-app Flutter-probe behavior; do not reintroduce the withdrawn total wall-time target.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L64-android-launch-passes-after-fatal.md",
+      "rowIds": [
+        "B4-L64.5"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L65.acceptance.1",
+      "brief": "L65",
+      "section": "Acceptance criteria",
+      "ordinal": 1,
+      "exactText": "Missing steps returns the agreed exact full text through ToolRegistry with a live session on both platforms.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L65-script-missing-steps-error-contract.md",
+      "rowIds": [
+        "B4-L65.1"
+      ],
+      "platform": "both"
+    },
+    {
+      "criterionId": "L65.acceptance.2",
+      "brief": "L65",
+      "section": "Acceptance criteria",
+      "ordinal": 2,
+      "exactText": "Tests pin the complete text and isError envelope, including the no-session precedence behavior.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L65-script-missing-steps-error-contract.md",
+      "rowIds": [
+        "B4-L65.2"
+      ],
+      "platform": "both"
+    },
+    {
+      "criterionId": "L65.acceptance.3",
+      "brief": "L65",
+      "section": "Acceptance criteria",
+      "ordinal": 3,
+      "exactText": "Wrong-type and empty-array handling retain their separately documented semantics.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L65-script-missing-steps-error-contract.md",
+      "rowIds": [
+        "B4-L65.3"
+      ],
+      "platform": "both"
+    },
+    {
+      "criterionId": "L66.acceptance.1",
+      "brief": "L66",
+      "section": "Acceptance criteria",
+      "ordinal": 1,
+      "exactText": "Reproduce the agreed label \u2192 identifier \u2192 placeholder order with the real demo on the campaign-owned iOS simulator, including the `heart` identifier and `Name` placeholder.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L66-ios-identifier-tap-fallback.md",
+      "rowIds": [
+        "B4-L66.1"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L66.acceptance.2",
+      "brief": "L66",
+      "section": "Acceptance criteria",
+      "ordinal": 2,
+      "exactText": "Preserve the match annotation, exclusion of application elements, literal escaping, and existing error/retry behavior.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L66-ios-identifier-tap-fallback.md",
+      "rowIds": [
+        "B4-L66.2"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L66.acceptance.3",
+      "brief": "L66",
+      "section": "Acceptance criteria",
+      "ordinal": 3,
+      "exactText": "Tests verify the actual selected WDA attributes and priority rather than merely returning a stub element on the second request.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L66-ios-identifier-tap-fallback.md",
+      "rowIds": [
+        "B4-L66.3"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L66.acceptance.4",
+      "brief": "L66",
+      "section": "Acceptance criteria",
+      "ordinal": 4,
+      "exactText": "Update the misleading WDA `name` equivalence in source comments and `docs/mcp.md`. Query the true identifier for the identifier leg; any separately retained `name` fallback must have explicit, tested semantics and priority consistent with the binding contract.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L66-ios-identifier-tap-fallback.md",
+      "rowIds": [
+        "B4-L66.4"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L66.acceptance.5",
+      "brief": "L66",
+      "section": "Acceptance criteria",
+      "ordinal": 5,
+      "exactText": "Re-run the full binding criteria for IOS-102, B2-K78, and iOS D2-36 on the fixed candidate; this brief does not relax them.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L66-ios-identifier-tap-fallback.md",
+      "rowIds": [
+        "B4-L66.5"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L67.acceptance.1",
+      "brief": "L67",
+      "section": "Acceptance criteria",
+      "ordinal": 1,
+      "exactText": "Put the ambiguous Platform warning under Advisory in both text and JSON.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L67-doctor-ambiguous-platform-section.md",
+      "rowIds": [
+        "B4-L67.1"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L67.acceptance.2",
+      "brief": "L67",
+      "section": "Acceptance criteria",
+      "ordinal": 2,
+      "exactText": "Preserve the useful selection guidance, advisory toolchain treatment, and doctor exit 0 even when the inspected toolchains are unavailable.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L67-doctor-ambiguous-platform-section.md",
+      "rowIds": [
+        "B4-L67.2"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L67.acceptance.3",
+      "brief": "L67",
+      "section": "Acceptance criteria",
+      "ordinal": 3,
+      "exactText": "Keep `run`'s ambiguity rejection unchanged.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L67-doctor-ambiguous-platform-section.md",
+      "rowIds": [
+        "B4-L67.3"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L67.acceptance.4",
+      "brief": "L67",
+      "section": "Acceptance criteria",
+      "ordinal": 4,
+      "exactText": "Add or adjust meaningful doctor tests for the text/JSON section and exit behavior, then re-run CLI-025 on the fixed candidate.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L67-doctor-ambiguous-platform-section.md",
+      "rowIds": [
+        "B4-L67.4"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L68.acceptance.1",
+      "brief": "L68",
+      "section": "Acceptance criteria",
+      "ordinal": 1,
+      "exactText": "Keep startup in its starting state until the generated app-launch flow reaches the readiness required by the documented immediate hierarchy operation.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L68-android-detached-start-ready-before-app.md",
+      "rowIds": [
+        "B4-L68.1"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L68.acceptance.2",
+      "brief": "L68",
+      "section": "Acceptance criteria",
+      "ordinal": 2,
+      "exactText": "Verify the immediate hierarchy after detached start contains the expected app on the owned Android emulator, without a caller-added sleep. Use bounded polling only for diagnosis.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L68-android-detached-start-ready-before-app.md",
+      "rowIds": [
+        "B4-L68.2"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L68.acceptance.3",
+      "brief": "L68",
+      "section": "Acceptance criteria",
+      "ordinal": 3,
+      "exactText": "Preserve prompt failure when launch fails, bounded startup timeout, rejection of stale UIAutomator2 sessions, and existing cancellation behavior.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L68-android-detached-start-ready-before-app.md",
+      "rowIds": [
+        "B4-L68.3"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L68.acceptance.4",
+      "brief": "L68",
+      "section": "Acceptance criteria",
+      "ordinal": 4,
+      "exactText": "Add meaningful coverage of driver-attached/app-not-yet-ready ordering, then re-run every AND-127 clause, including metadata, tool listing, stop, and forward cleanup.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L68-android-detached-start-ready-before-app.md",
+      "rowIds": [
+        "B4-L68.4"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L69.acceptance.1",
+      "brief": "L69",
+      "section": "Acceptance criteria",
+      "ordinal": 1,
+      "exactText": "Emit an explicit JSON null port for an already-running session that is still starting on either platform.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L69-starting-runner-json-omits-null-port.md",
+      "rowIds": [
+        "B4-L69.1"
+      ],
+      "platform": "both"
+    },
+    {
+      "criterionId": "L69.acceptance.2",
+      "brief": "L69",
+      "section": "Acceptance criteria",
+      "ordinal": 2,
+      "exactText": "Preserve numeric port for ready sessions, existing PID/device/app metadata, correct text wording, and reuse without spawning another runner.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L69-starting-runner-json-omits-null-port.md",
+      "rowIds": [
+        "B4-L69.2"
+      ],
+      "platform": "both"
+    },
+    {
+      "criterionId": "L69.acceptance.3",
+      "brief": "L69",
+      "section": "Acceptance criteria",
+      "ordinal": 3,
+      "exactText": "Add a focused lifecycle serialization test that distinguishes a missing key from a present null value; inspect both platform forms and preserve stopped-document behavior.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L69-starting-runner-json-omits-null-port.md",
+      "rowIds": [
+        "B4-L69.3"
+      ],
+      "platform": "both"
+    },
+    {
+      "criterionId": "L69.acceptance.4",
+      "brief": "L69",
+      "section": "Acceptance criteria",
+      "ordinal": 4,
+      "exactText": "Re-run N3-03 with an observed starting state and the matrix's detached first-start form on each platform.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L69-starting-runner-json-omits-null-port.md",
+      "rowIds": [
+        "B4-L69.4"
+      ],
+      "platform": "both"
+    },
+    {
+      "criterionId": "L70.acceptance.1",
+      "brief": "L70",
+      "section": "Acceptance criteria",
+      "ordinal": 1,
+      "exactText": "Add a concise public baseline/capture note describing literal filenames, legacy percent-encoded baseline compatibility, and migration on approval.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L70-baseline-filename-migration-documentation.md",
+      "rowIds": [
+        "B4-L70.1"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L70.acceptance.2",
+      "brief": "L70",
+      "section": "Acceptance criteria",
+      "ordinal": 2,
+      "exactText": "State the actual implementation behavior without implying users must rename working legacy baselines manually.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L70-baseline-filename-migration-documentation.md",
+      "rowIds": [
+        "B4-L70.2"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L70.acceptance.3",
+      "brief": "L70",
+      "section": "Acceptance criteria",
+      "ordinal": 3,
+      "exactText": "Recheck the note against the retained migration evidence and exact implementation. No runtime change is requested.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L70-baseline-filename-migration-documentation.md",
+      "rowIds": [
+        "B4-L70.3"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L71.acceptance.1",
+      "brief": "L71",
+      "section": "Acceptance criteria",
+      "ordinal": 1,
+      "exactText": "`build install --no-build --no-launch` exits 0 for a valid target when the configured app is absent, performs no install or launch, and prints `Done ... (install skipped, not launched)` in text mode.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L71-no-build-no-launch-queries-absent-ios-container.md",
+      "rowIds": [
+        "B4-L71.1"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L71.acceptance.2",
+      "brief": "L71",
+      "section": "Acceptance criteria",
+      "ordinal": 2,
+      "exactText": "Its JSON form reports `status: skipped` and does not fail while obtaining optional container metadata; document the absent value consistently with the existing iOS result shape.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L71-no-build-no-launch-queries-absent-ios-container.md",
+      "rowIds": [
+        "B4-L71.2"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L71.acceptance.3",
+      "brief": "L71",
+      "section": "Acceptance criteria",
+      "ordinal": 3,
+      "exactText": "Preserve the current installed-app behavior, app-file installation behavior, and ordinary no-build-with-launch not-installed refusal.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L71-no-build-no-launch-queries-absent-ios-container.md",
+      "rowIds": [
+        "B4-L71.3"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L71.acceptance.4",
+      "brief": "L71",
+      "section": "Acceptance criteria",
+      "ordinal": 4,
+      "exactText": "Add a focused `InstallCommand` test whose injected iOS device reports the app absent and whose data-container lookup would fail if called; assert the skipped command never requires that lookup. Retain the existing status/message and JSON key tests.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L71-no-build-no-launch-queries-absent-ios-container.md",
+      "rowIds": [
+        "B4-L71.4"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L71.acceptance.5",
+      "brief": "L71",
+      "section": "Acceptance criteria",
+      "ordinal": 5,
+      "exactText": "Re-run the absent and installed controls and the D2-08 app-file build-install leg on an owned simulator.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L71-no-build-no-launch-queries-absent-ios-container.md",
+      "rowIds": [
+        "B4-L71.5"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L72.acceptance.1",
+      "brief": "L72",
+      "section": "Acceptance criteria",
+      "ordinal": 1,
+      "exactText": "Interrupt a foreground `runner start` while its published session is still `starting`: plain, `--quiet`, and `--json` terminate with the documented interrupt status (exit 130 unless the public contract deliberately chooses and documents another interrupt code).",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L72-foreground-start-sigint-during-startup-reports-wda-timeout.md",
+      "rowIds": [
+        "B4-L72.1"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L72.acceptance.2",
+      "brief": "L72",
+      "section": "Acceptance criteria",
+      "ordinal": 2,
+      "exactText": "None of the three modes prints `Timed out waiting for WDA to start` when SIGINT caused the startup wait to end. Plain mode may relay the runner's interrupt acknowledgement; quiet/JSON keep suppressing runner narration.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L72-foreground-start-sigint-during-startup-reports-wda-timeout.md",
+      "rowIds": [
+        "B4-L72.2"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L72.acceptance.3",
+      "brief": "L72",
+      "section": "Acceptance criteria",
+      "ordinal": 3,
+      "exactText": "Preserve the correct B3-L37 platform notice, project/global session cleanup, lease release, runner/process-group cleanup, and no forced-kill escalation for an orderly SIGINT.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L72-foreground-start-sigint-during-startup-reports-wda-timeout.md",
+      "rowIds": [
+        "B4-L72.3"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L72.acceptance.4",
+      "brief": "L72",
+      "section": "Acceptance criteria",
+      "ordinal": 4,
+      "exactText": "Preserve genuine WDA startup timeout and unprompted runner-death errors; do not convert those to successful or interrupted outcomes.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L72-foreground-start-sigint-during-startup-reports-wda-timeout.md",
+      "rowIds": [
+        "B4-L72.4"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L72.acceptance.5",
+      "brief": "L72",
+      "section": "Acceptance criteria",
+      "ordinal": 5,
+      "exactText": "Add focused `RunnerLifecycleCommandTests` for an interrupt delivered during `waitForForegroundWDAPort`, distinct from existing steady foreground-hold tests and stop-marker tests. Assert exit/error normalization and cleanup in plain/quiet/JSON output modes.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L72-foreground-start-sigint-during-startup-reports-wda-timeout.md",
+      "rowIds": [
+        "B4-L72.5"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L72.acceptance.6",
+      "brief": "L72",
+      "section": "Acceptance criteria",
+      "ordinal": 6,
+      "exactText": "Re-run the three starting-state variants on an owned simulator, plus one steady-ready foreground control, and retain exit codes, output streams, process/session cleanup, and signal timing.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L72-foreground-start-sigint-during-startup-reports-wda-timeout.md",
+      "rowIds": [
+        "B4-L72.6"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L73.acceptance.1",
+      "brief": "L73",
+      "section": "Acceptance criteria",
+      "ordinal": 1,
+      "exactText": "A targeted `simulator teardown --udid <UDID> --force --json` that stops a live `runner start` reports `runnerSessionStopped:true`.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L73-force-simulator-teardown-omits-stopped-runner-result.md",
+      "rowIds": [
+        "B4-L73.1"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L73.acceptance.2",
+      "brief": "L73",
+      "section": "Acceptance criteria",
+      "ordinal": 2,
+      "exactText": "Its JSON truthfully reports that teardown reclaimed/stopped the runner; it must not return `reclaimed:false` merely because the preliminary orderly stop finished before live-process inspection.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L73-force-simulator-teardown-omits-stopped-runner-result.md",
+      "rowIds": [
+        "B4-L73.2"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L73.acceptance.3",
+      "brief": "L73",
+      "section": "Acceptance criteria",
+      "ordinal": 3,
+      "exactText": "The project and shared session files are removed, and the retained filesystem checks prove that no stale session remains. Do not require `sessionFilesRemoved` to list an orderly live-session removal if that field remains scoped to stale files.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L73-force-simulator-teardown-omits-stopped-runner-result.md",
+      "rowIds": [
+        "B4-L73.3"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L73.acceptance.4",
+      "brief": "L73",
+      "section": "Acceptance criteria",
+      "ordinal": 4,
+      "exactText": "Preserve the existing no-op force case: a genuinely free simulator reports `reclaimed:false` and does not claim a stopped runner.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L73-force-simulator-teardown-omits-stopped-runner-result.md",
+      "rowIds": [
+        "B4-L73.4"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L73.acceptance.5",
+      "brief": "L73",
+      "section": "Acceptance criteria",
+      "ordinal": 5,
+      "exactText": "Preserve non-force teardown behavior and helper/process arrays.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L73-force-simulator-teardown-omits-stopped-runner-result.md",
+      "rowIds": [
+        "B4-L73.5"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L73.acceptance.6",
+      "brief": "L73",
+      "section": "Acceptance criteria",
+      "ordinal": 6,
+      "exactText": "Add a focused command test for the force path with a live runner session, distinct from the existing non-force `SimulatorTeardownOutcome` marking test.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L73-force-simulator-teardown-omits-stopped-runner-result.md",
+      "rowIds": [
+        "B4-L73.6"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L73.acceptance.7",
+      "brief": "L73",
+      "section": "Acceptance criteria",
+      "ordinal": 7,
+      "exactText": "Re-run the ready detached-session case and retain start JSON, successful hierarchy, force-teardown JSON, process/session cleanup, and a free-simulator control.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L73-force-simulator-teardown-omits-stopped-runner-result.md",
+      "rowIds": [
+        "B4-L73.7"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L74.acceptance.1",
+      "brief": "L74",
+      "section": "Acceptance criteria",
+      "ordinal": 1,
+      "exactText": "Add a concise public README, docs, or release-note statement that date-valued JSON fields use ISO-8601 UTC strings, with an example such as `1970-01-01T00:00:00Z` or an `acquiredAt` value.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L74-iso8601-json-date-change-lacks-public-note.md",
+      "rowIds": [
+        "B4-L74.1"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L74.acceptance.2",
+      "brief": "L74",
+      "section": "Acceptance criteria",
+      "ordinal": 2,
+      "exactText": "Identify the behavior as the JSON date representation scripts should consume; do not imply that Unix or Apple-reference numeric timestamps remain a supported output alternative.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L74-iso8601-json-date-change-lacks-public-note.md",
+      "rowIds": [
+        "B4-L74.2"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L74.acceptance.3",
+      "brief": "L74",
+      "section": "Acceptance criteria",
+      "ordinal": 3,
+      "exactText": "Preserve the existing `.iso8601` encoder behavior and semantic test.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L74-iso8601-json-date-change-lacks-public-note.md",
+      "rowIds": [
+        "B4-L74.3"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L74.acceptance.4",
+      "brief": "L74",
+      "section": "Acceptance criteria",
+      "ordinal": 4,
+      "exactText": "Recheck the note against current iOS and Android session JSON. No device or runtime change is requested.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L74-iso8601-json-date-change-lacks-public-note.md",
+      "rowIds": [
+        "B4-L74.4"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L75.acceptance.1",
+      "brief": "L75",
+      "section": "Acceptance criteria",
+      "ordinal": 1,
+      "exactText": "The exact subdirectory fixture prints `flows/a.yaml -> shared/b.yaml -> flows/a.yaml -> shared/b.yaml`, exits 1, and completes within five seconds.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L75-subdirectory-cycle-hops-use-containing-file-relative-operands.md",
+      "rowIds": [
+        "B4-L75.1"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L75.acceptance.2",
+      "brief": "L75",
+      "section": "Acceptance criteria",
+      "ordinal": 2,
+      "exactText": "Preserve root-flow `a.yaml -> b.yaml -> a.yaml -> b.yaml` and screens `grantiva.yml -> a.yaml -> b.yaml -> a.yaml` output.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L75-subdirectory-cycle-hops-use-containing-file-relative-operands.md",
+      "rowIds": [
+        "B4-L75.2"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L75.acceptance.3",
+      "brief": "L75",
+      "section": "Acceptance criteria",
+      "ordinal": 3,
+      "exactText": "Preserve user-supplied absolute paths as absolute where the contract requires them.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L75-subdirectory-cycle-hops-use-containing-file-relative-operands.md",
+      "rowIds": [
+        "B4-L75.3"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L75.acceptance.4",
+      "brief": "L75",
+      "section": "Acceptance criteria",
+      "ordinal": 4,
+      "exactText": "Add a focused `RunnerSessionOutputTests` assertion that exercises the final merged output map for nested `../` operands, rather than testing `reachableFlowDisplayMap` alone.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L75-subdirectory-cycle-hops-use-containing-file-relative-operands.md",
+      "rowIds": [
+        "B4-L75.4"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L75.acceptance.5",
+      "brief": "L75",
+      "section": "Acceptance criteria",
+      "ordinal": 5,
+      "exactText": "Verify both `/tmp` and `/private/tmp` source spellings still rewrite correctly.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L75-subdirectory-cycle-hops-use-containing-file-relative-operands.md",
+      "rowIds": [
+        "B4-L75.5"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L76.acceptance.1",
+      "brief": "L76",
+      "section": "Acceptance criteria",
+      "ordinal": 1,
+      "exactText": "Process classification requires the actual executable to be Grantiva for `.grantiva`; a command such as `python3 helper.py /path/to/grantiva <UDID>` is excluded.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L76-force-teardown-matches-unrelated-process-arguments.md",
+      "rowIds": [
+        "B4-L76.1"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L76.acceptance.2",
+      "brief": "L76",
+      "section": "Acceptance criteria",
+      "ordinal": 2,
+      "exactText": "Preserve matching of an actual `grantiva run ... --simulator <UDID> --keep-alive` process.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L76-force-teardown-matches-unrelated-process-arguments.md",
+      "rowIds": [
+        "B4-L76.2"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L76.acceptance.3",
+      "brief": "L76",
+      "section": "Acceptance criteria",
+      "ordinal": 3,
+      "exactText": "Preserve the existing runner, WebDriverAgent, and `simctl diagnose` classifications and their device-specific guards.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L76-force-teardown-matches-unrelated-process-arguments.md",
+      "rowIds": [
+        "B4-L76.3"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L76.acceptance.4",
+      "brief": "L76",
+      "section": "Acceptance criteria",
+      "ordinal": 4,
+      "exactText": "Add a focused `SimulatorReaperTests` semantic assertion using a synthetic process snapshot with an unrelated executable and Grantiva/UDID positional arguments; assert force teardown does not report, signal, or mark reclaimed from that process alone.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L76-force-teardown-matches-unrelated-process-arguments.md",
+      "rowIds": [
+        "B4-L76.4"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L76.acceptance.5",
+      "brief": "L76",
+      "section": "Acceptance criteria",
+      "ordinal": 5,
+      "exactText": "Add a positive sibling assertion for an actual Grantiva executable so argument filtering cannot disable intended recovery.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L76-force-teardown-matches-unrelated-process-arguments.md",
+      "rowIds": [
+        "B4-L76.5"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L77.acceptance.1",
+      "brief": "L77",
+      "section": "Acceptance criteria",
+      "ordinal": 1,
+      "exactText": "On Android, the header-appId flow `launchApp: {clearState: true}` \u2192 bare `stopApp` leaves the application stopped and a following `assertNotVisible: \"Landmarks\"` passes.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L77-android-stop-app-reports-success-with-app-still-running.md",
+      "rowIds": [
+        "B4-L77.1"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L77.acceptance.2",
+      "brief": "L77",
+      "section": "Acceptance criteria",
+      "ordinal": 2,
+      "exactText": "`stopApp` must not report success while the target package remains running or foreground. If termination does not take effect, return a clear lifecycle error naming the application ID.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L77-android-stop-app-reports-success-with-app-still-running.md",
+      "rowIds": [
+        "B4-L77.2"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L77.acceptance.3",
+      "brief": "L77",
+      "section": "Acceptance criteria",
+      "ordinal": 3,
+      "exactText": "Preserve explicit `stopApp: <appId>` and mapping-form behavior as well as bare-form inheritance from the flow header.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L77-android-stop-app-reports-success-with-app-still-running.md",
+      "rowIds": [
+        "B4-L77.3"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L77.acceptance.4",
+      "brief": "L77",
+      "section": "Acceptance criteria",
+      "ordinal": 4,
+      "exactText": "Add focused runner semantic assertions for the inherited-ID path and for an ineffective/failed force-stop, including the observable postcondition rather than only a zero shell exit.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L77-android-stop-app-reports-success-with-app-still-running.md",
+      "rowIds": [
+        "B4-L77.4"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L77.acceptance.5",
+      "brief": "L77",
+      "section": "Acceptance criteria",
+      "ordinal": 5,
+      "exactText": "Preserve intentional-stop crash-watch semantics: a successful stop followed by a not-visible wait is absence, not `app_crash`.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L77-android-stop-app-reports-success-with-app-still-running.md",
+      "rowIds": [
+        "B4-L77.5"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L78.acceptance.1",
+      "brief": "L78",
+      "section": "Acceptance criteria",
+      "ordinal": 1,
+      "exactText": "Successful, failed and interrupted runs return only after their own simulator logging child has stopped; capture immediate post-exit inventories in repeated SIGINT controls.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L78-interrupted-run-returns-before-log-stream-exits.md",
+      "rowIds": [
+        "B4-L78.1"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L78.acceptance.2",
+      "brief": "L78",
+      "section": "Acceptance criteria",
+      "ordinal": 2,
+      "exactText": "Cleanup remains bounded, scoped to the exact run and device, and does not stop another live run's logging process.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L78-interrupted-run-returns-before-log-stream-exits.md",
+      "rowIds": [
+        "B4-L78.2"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L78.acceptance.3",
+      "brief": "L78",
+      "section": "Acceptance criteria",
+      "ordinal": 3,
+      "exactText": "A regression test models a wrapper exiting before its spawned logging child and proves cleanup waits for or safely terminates that child.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L78-interrupted-run-returns-before-log-stream-exits.md",
+      "rowIds": [
+        "B4-L78.3"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L78.acceptance.4",
+      "brief": "L78",
+      "section": "Acceptance criteria",
+      "ordinal": 4,
+      "exactText": "Preserve exit130 and the single truthful verbose terminal diagnostic; plain mode remains free of debug subprocess lines.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L78-interrupted-run-returns-before-log-stream-exits.md",
+      "rowIds": [
+        "B4-L78.4"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L79.acceptance.1",
+      "brief": "L79",
+      "section": "Acceptance criteria",
+      "ordinal": 1,
+      "exactText": "Run the preserved missing-selector flow at least three times. The optional tap may consume its documented optional-find budget, but each run exits 0, the flow is counted as passed, and no command/report surface calls it a required failure.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L79-optional-tap-failure-exits-nonzero.md",
+      "rowIds": [
+        "B4-L79.1"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L79.acceptance.2",
+      "brief": "L79",
+      "section": "Acceptance criteria",
+      "ordinal": 2,
+      "exactText": "Text, JSON, JUnit, and ready/report summaries agree on the successful overall outcome. They may expose the optional miss as a warning with its useful `element_not_found` detail.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L79-optional-tap-failure-exits-nonzero.md",
+      "rowIds": [
+        "B4-L79.2"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L79.acceptance.3",
+      "brief": "L79",
+      "section": "Acceptance criteria",
+      "ordinal": 3,
+      "exactText": "Add a following required step and prove it executes after the optional miss.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L79-optional-tap-failure-exits-nonzero.md",
+      "rowIds": [
+        "B4-L79.3"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L79.acceptance.4",
+      "brief": "L79",
+      "section": "Acceptance criteria",
+      "ordinal": 4,
+      "exactText": "Run the same missing tap without `optional: true`; it remains `element_not_found`, fails the flow, skips later required steps as appropriate, and exits nonzero.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L79-optional-tap-failure-exits-nonzero.md",
+      "rowIds": [
+        "B4-L79.4"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L79.acceptance.5",
+      "brief": "L79",
+      "section": "Acceptance criteria",
+      "ordinal": 5,
+      "exactText": "Add or strengthen exact runner tests that exercise the production report writer and process-exit aggregation, rather than only the in-memory runner result.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L79-optional-tap-failure-exits-nonzero.md",
+      "rowIds": [
+        "B4-L79.5"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L79.acceptance.6",
+      "brief": "L79",
+      "section": "Acceptance criteria",
+      "ordinal": 6,
+      "exactText": "Preserve the fast first-request behavior and the documented optional polling budget; do not \u201cfix\u201d the status defect by shortening or bypassing selector fallback.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L79-optional-tap-failure-exits-nonzero.md",
+      "rowIds": [
+        "B4-L79.6"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L80.acceptance.1",
+      "brief": "L80",
+      "section": "Acceptance criteria",
+      "ordinal": 1,
+      "exactText": "Send at least two concurrent MCP requests whose individual responses exceed 65,536 bytes. Every stdout line is independently valid JSON and contains exactly one JSON-RPC response.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L80-mcp-concurrent-large-responses-interleave-on-stdout.md",
+      "rowIds": [
+        "B4-L80.1"
+      ],
+      "platform": "both"
+    },
+    {
+      "criterionId": "L80.acceptance.2",
+      "brief": "L80",
+      "section": "Acceptance criteria",
+      "ordinal": 2,
+      "exactText": "Both response IDs arrive exactly once, regardless of completion order; neither response is truncated, split across lines, or contains bytes from the other.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L80-mcp-concurrent-large-responses-interleave-on-stdout.md",
+      "rowIds": [
+        "B4-L80.2"
+      ],
+      "platform": "both"
+    },
+    {
+      "criterionId": "L80.acceptance.3",
+      "brief": "L80",
+      "section": "Acceptance criteria",
+      "ordinal": 3,
+      "exactText": "Repeat the concurrent pair at least ten times and include mixed resource/tool requests.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L80-mcp-concurrent-large-responses-interleave-on-stdout.md",
+      "rowIds": [
+        "B4-L80.3"
+      ],
+      "platform": "both"
+    },
+    {
+      "criterionId": "L80.acceptance.4",
+      "brief": "L80",
+      "section": "Acceptance criteria",
+      "ordinal": 4,
+      "exactText": "Preserve concurrent small-response behavior and notification delivery.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L80-mcp-concurrent-large-responses-interleave-on-stdout.md",
+      "rowIds": [
+        "B4-L80.4"
+      ],
+      "platform": "both"
+    },
+    {
+      "criterionId": "L80.acceptance.5",
+      "brief": "L80",
+      "section": "Acceptance criteria",
+      "ordinal": 5,
+      "exactText": "Add a transport-level test using partial/chunked underlying writes so correctness does not depend on payload size or an operating-system pipe's atomic-write limit.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L80-mcp-concurrent-large-responses-interleave-on-stdout.md",
+      "rowIds": [
+        "B4-L80.5"
+      ],
+      "platform": "both"
+    },
+    {
+      "criterionId": "L81.acceptance.1",
+      "brief": "L81",
+      "section": "Acceptance criteria",
+      "ordinal": 1,
+      "exactText": "Call the full `DoctorRunner.checkBootedSimulator` production entry with a booted non-default iPhone 17 Pro and an unowned default-named iPhone 18 Pro. The returned check names the booted simulator and also contains `\"iPhone 18 Pro\" (USER-DEFAULT) was not created by Grantiva, so it is not used as the default`.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L81-doctor-default-ownership-note-hidden-by-booted-simulator.md",
+      "rowIds": [
+        "B4-L81.1"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L81.acceptance.2",
+      "brief": "L81",
+      "section": "Acceptance criteria",
+      "ordinal": 2,
+      "exactText": "Repeat with the two devices in the opposite list order. The ownership note is present in both orders; simulator-list ordering cannot hide it.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L81-doctor-default-ownership-note-hidden-by-booted-simulator.md",
+      "rowIds": [
+        "B4-L81.2"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L81.acceptance.3",
+      "brief": "L81",
+      "section": "Acceptance criteria",
+      "ordinal": 3,
+      "exactText": "Doctor text and `--json` expose the same note. The check remains in `Advisory`, its status remains `ok` when a simulator is booted, and the note does not change either command's exit code.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L81-doctor-default-ownership-note-hidden-by-booted-simulator.md",
+      "rowIds": [
+        "B4-L81.3"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L81.acceptance.4",
+      "brief": "L81",
+      "section": "Acceptance criteria",
+      "ordinal": 4,
+      "exactText": "When no simulator with the default name exists, a booted non-default simulator remains the ordinary concise success with no ownership note.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L81-doctor-default-ownership-note-hidden-by-booted-simulator.md",
+      "rowIds": [
+        "B4-L81.4"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L81.acceptance.5",
+      "brief": "L81",
+      "section": "Acceptance criteria",
+      "ordinal": 5,
+      "exactText": "When the default-named simulator's UDID is in the active runner home's created ledger, no `was not created by Grantiva` note is emitted.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L81-doctor-default-ownership-note-hidden-by-booted-simulator.md",
+      "rowIds": [
+        "B4-L81.5"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L81.acceptance.6",
+      "brief": "L81",
+      "section": "Acceptance criteria",
+      "ordinal": 6,
+      "exactText": "Preserve the existing no-booted behavior, including its ownership-aware ensure fix, and preserve the `Could not list simulators` failure branch.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L81-doctor-default-ownership-note-hidden-by-booted-simulator.md",
+      "rowIds": [
+        "B4-L81.6"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L81.acceptance.7",
+      "brief": "L81",
+      "section": "Acceptance criteria",
+      "ordinal": 7,
+      "exactText": "Add focused `GrantivaCoreTests/DoctorTests` coverage through `checkBootedSimulator`, not only direct tests of `noBootedSimulatorCheck`.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L81-doctor-default-ownership-note-hidden-by-booted-simulator.md",
+      "rowIds": [
+        "B4-L81.7"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L82.acceptance.1",
+      "brief": "L82",
+      "section": "Acceptance",
+      "ordinal": 1,
+      "exactText": "A production-path semantic regression fails at the candidate before the fix and proves attachment detach occurs exactly once for foreground interruption and normal exit.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L82-foreground-android-ready-exit-leaks-cli-forward.md",
+      "rowIds": [
+        "B4-L82.1"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L82.acceptance.2",
+      "brief": "L82",
+      "section": "Acceptance",
+      "ordinal": 2,
+      "exactText": "Preserve startup failure/cancellation cleanup, iOS behavior, existing flags/JSON, exit130 and the exact platform SIGINT notice.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L82-foreground-android-ready-exit-leaks-cli-forward.md",
+      "rowIds": [
+        "B4-L82.2"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L82.acceptance.3",
+      "brief": "L82",
+      "section": "Acceptance",
+      "ordinal": 3,
+      "exactText": "On an owned Android AVD, capture empty baseline, ready attachment identity/port, SIGINT exit130, immediate and delayed absence of that exact forward, absent project/global session and runner PID.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L82-foreground-android-ready-exit-leaks-cli-forward.md",
+      "rowIds": [
+        "B4-L82.3"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L82.acceptance.4",
+      "brief": "L82",
+      "section": "Acceptance",
+      "ordinal": 4,
+      "exactText": "Exercise normal foreground stop and an absent-app control; neither leaves its owned attachment. An unrelated forward remains untouched by exact attachment cleanup.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L82-foreground-android-ready-exit-leaks-cli-forward.md",
+      "rowIds": [
+        "B4-L82.4"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L82.acceptance.5",
+      "brief": "L82",
+      "section": "Acceptance",
+      "ordinal": 5,
+      "exactText": "Focused/full fresh-home tests, independent review, CI, merge and rebuilt candidate must pass. Task8 and Task9 cannot be declared clean on the leaking candidate.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L82-foreground-android-ready-exit-leaks-cli-forward.md",
+      "rowIds": [
+        "B4-L82.5"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L83.acceptance.1",
+      "brief": "L83",
+      "section": "Acceptance",
+      "ordinal": 1,
+      "exactText": "Production unit regression reproduces unconditional removal of an unowned local port matching remote driver port, then passes for both UIAutomator2 and analogous DeviceLab cleanup.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L83-runner-cleanup-removes-unowned-device-numbered-local-forward.md",
+      "rowIds": [
+        "B4-L83.1"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L83.acceptance.2",
+      "brief": "L83",
+      "section": "Acceptance",
+      "ordinal": 2,
+      "exactText": "Cleanup removes only its tracked owned socket/allocated local port; remove unconditional remote-number local-port deletion. Preserve required owned transport cleanup and platform support; no remove-all fallback.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L83-runner-cleanup-removes-unowned-device-numbered-local-forward.md",
+      "rowIds": [
+        "B4-L83.2"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L83.acceptance.3",
+      "brief": "L83",
+      "section": "Acceptance",
+      "ordinal": 3,
+      "exactText": "Live owned Android control tcp6790\u2192tcp16790 survives healthy stock, foreground ready SIGINT, and normal foreground stop; owned runner/CLI forwards and sessions disappear after each. Preserve all original lifecycle/crash/gesture/optional acceptance.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L83-runner-cleanup-removes-unowned-device-numbered-local-forward.md",
+      "rowIds": [
+        "B4-L83.3"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L83.acceptance.4",
+      "brief": "L83",
+      "section": "Acceptance",
+      "ordinal": 4,
+      "exactText": "Focused uncached Go tests/vet, independent review, CI, merged runner, fresh correctly versioned both-architecture CLI repack, full CLI tests/CI and exact final candidate smoke pass. No tag/release.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L83-runner-cleanup-removes-unowned-device-numbered-local-forward.md",
+      "rowIds": [
+        "B4-L83.4"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L84.acceptance.1",
+      "brief": "L84",
+      "section": "Acceptance",
+      "ordinal": 1,
+      "exactText": "Source-compatible production regression demonstrates unrelated same-device forward removal and passes after scoped ownership-safe cleanup. Cover startup and runner stop/orphan paths, preserve other-device forwards and exact owned driver cleanup.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L84-cli-orphan-cleanup-removes-unrelated-device-forwards.md",
+      "rowIds": [
+        "B4-L84.1"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L84.acceptance.2",
+      "brief": "L84",
+      "section": "Acceptance",
+      "ordinal": 2,
+      "exactText": "Do not use remove-all or delete arbitrary same-device TCPforwards. Cleanup must have driver ownership evidence; explicit full emulator teardown may retain its existing device-removal contract. Preserve public flags/JSON/exits, app readiness, startup interruption, and L82 attachment completion.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L84-cli-orphan-cleanup-removes-unrelated-device-forwards.md",
+      "rowIds": [
+        "B4-L84.2"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L84.acceptance.3",
+      "brief": "L84",
+      "section": "Acceptance",
+      "ordinal": 3,
+      "exactText": "On owned Android, an unrelated allocated TCPforward to tcp16791 survives ready startup, SIGINT, normal foregroundstop, absent-app failure and healthy stock. Exact owned CLI/runnerforwards and sessions/PIDs disappear after each ending; retain immediate/delayed inventories and baseline/control creation.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L84-cli-orphan-cleanup-removes-unrelated-device-forwards.md",
+      "rowIds": [
+        "B4-L84.3"
+      ],
+      "platform": "android"
+    },
+    {
+      "criterionId": "L84.acceptance.4",
+      "brief": "L84",
+      "section": "Acceptance",
+      "ordinal": 4,
+      "exactText": "Focused/full freshhome Swift tests, independent source/live review, CI, merged/rebuiltcandidate and completeTask8smoke are mandatory. Original failedcontrol remains immutable; Task9 stays gated.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L84-cli-orphan-cleanup-removes-unrelated-device-forwards.md",
+      "rowIds": [
+        "B4-L84.4"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L85.acceptance.1",
+      "brief": "L85",
+      "section": "Acceptance",
+      "ordinal": 1,
+      "exactText": "In the exact real collision above, semantic label Landmarks selects the navigation BackButton and reaches the root list containing Golden Gate Bridge. Capture the collision hierarchy before the tap, successful reply and resulting hierarchy, plus an independent screenshot/hierarchy afterward.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md",
+      "rowIds": [
+        "B4-L85.1"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L85.acceptance.2",
+      "brief": "L85",
+      "section": "Acceptance",
+      "ordinal": 2,
+      "exactText": "Preserve label \u2192 identifier \u2192 placeholder priority, label match annotation for a preferred back button, application-root exclusion, quoted-label escaping, unknown-selector errors, one-retry launch behavior, and coordinate taps. An exact matching navigation back button wins within the label stage; ordinary labels keep existing behavior when no such back button exists.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md",
+      "rowIds": [
+        "B4-L85.2"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L85.acceptance.3",
+      "brief": "L85",
+      "section": "Acceptance",
+      "ordinal": 3,
+      "exactText": "Transport tests must distinguish competing element IDs, including a broad-label fixture with the tab first, and prove the back ID is clicked. Cover no-back fallback, true identifier and placeholder fallbacks, quoted labels, application exclusion, and existing error/retry behavior.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md",
+      "rowIds": [
+        "B4-L85.3"
+      ],
+      "platform": "cli"
+    },
+    {
+      "criterionId": "L85.acceptance.4",
+      "brief": "L85",
+      "section": "Acceptance",
+      "ordinal": 4,
+      "exactText": "Preserve the accepted demo: public UIKit tabs, literal heart identifier in selected/unselected states, label/order/symbol/geometry, separate persistent navigation stacks, and switch-away/switch-back retention. Do not rename demo labels, add selector aliases, rewrite hierarchy, use private APIs, or substitute coordinate taps for the semantic back acceptance.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md",
+      "rowIds": [
+        "B4-L85.4"
+      ],
+      "platform": "ios"
+    },
+    {
+      "criterionId": "L85.acceptance.5",
+      "brief": "L85",
+      "section": "Acceptance",
+      "ordinal": 5,
+      "exactText": "Run focused and full Swift suites in separate fresh empty runner homes with GRANTIVA_API_KEY unset; independently review source and live proof, pass required CI, merge the reviewed CLI change, and build/freeze a replacement candidate. Runner/demo/archive sources remain unchanged unless new evidence requires changes. Repeat the complete Task 8 smoke and full campaign gate; do not regrade candidate 2.",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md",
+      "rowIds": [
+        "B4-L85.5"
+      ],
+      "platform": "cli"
+    }
+  ],
+  "publicContractControls": [
+    {
+      "controlId": "public-contract.PC.1",
+      "rowIds": [
+        "B4-PC.1"
+      ],
+      "behavior": "public contract: serialized MCP transport",
+      "exactCriterion": "For mixed resource/tool responses larger than 65,536 bytes, complete encoded JSON-RPC messages are serialized as one valid newline-delimited JSON object per response; each request ID arrives exactly once in unconstrained completion order, and small responses plus notifications remain intact.",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md \u00a7Task 5 Step 7 and \u00a7Task 9 Step 1",
+      "platform": "both"
+    },
+    {
+      "controlId": "public-contract.PC.2",
+      "rowIds": [
+        "B4-PC.2"
+      ],
+      "behavior": "public contract: warned optional status",
+      "exactCriterion": "The exact optional missing-tap flow exits 0 and every text, JSON, JUnit, `report.json`, flow-detail, and ready-file surface reports a passed flow with one warned optional command and useful `element_not_found` detail; the next required step executes, while the otherwise-identical required control fails and skips later work.",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md \u00a7Task 3 Step 7 and \u00a7Task 9 Step 1",
+      "platform": "android"
+    },
+    {
+      "controlId": "public-contract.PC.3",
+      "rowIds": [
+        "B4-PC.3"
+      ],
+      "behavior": "public contract: app-ready Android detach",
+      "exactCriterion": "After detached Android start returns, an immediate hierarchy contains the app without a caller-added sleep; metadata and required tool listings name the same PID/device, stop succeeds, and session files plus owned forwards are removed.",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md \u00a7Task 4 Step 9 and \u00a7Task 9 Step 1",
+      "platform": "android"
+    },
+    {
+      "controlId": "public-contract.PC.4",
+      "rowIds": [
+        "B4-PC.4"
+      ],
+      "behavior": "iOS actual WDA death while starting",
+      "exactCriterion": "Exact owned WDA death during genuine startup, including after-port timing, yields truthful failure without ready publication and cleans exact children/session/lease/shared files; original failed attempt is provenance only.",
+      "source": "Task 4 Step 9; task-4-fix56-review.md; task-4-fix6-report.md",
+      "platform": "ios"
+    },
+    {
+      "controlId": "public-contract.PC.5",
+      "rowIds": [
+        "B4-PC.5"
+      ],
+      "behavior": "iOS completed-launch-report readiness gate",
+      "exactCriterion": "Only a complete passed launch report for the same PID permits ready; failed/incomplete/missing reports fail truthfully within the existing bound.",
+      "source": "Task 4 Step 9; task-4-fix56-review.md; task-4-fix6-report.md",
+      "platform": "ios"
+    },
+    {
+      "controlId": "public-contract.PC.6",
+      "rowIds": [
+        "B4-PC.6"
+      ],
+      "behavior": "iOS foreground failed-launch cleanup",
+      "exactCriterion": "A real failed foreground launch never publishes ready and reaps its exact child plus session/lease/shared-file ownership.",
+      "source": "Task 4 Step 9; task-4-fix56-review.md; task-4-fix6-report.md",
+      "platform": "ios"
+    },
+    {
+      "controlId": "public-contract.PC.7",
+      "rowIds": [
+        "B4-PC.7"
+      ],
+      "behavior": "iOS detached failed-launch cleanup",
+      "exactCriterion": "A real failed detached launch never publishes ready and reaps its exact child plus session/lease/shared-file ownership.",
+      "source": "Task 4 Step 9; task-4-fix56-review.md; task-4-fix6-report.md",
+      "platform": "ios"
+    },
+    {
+      "controlId": "public-contract.PC.8",
+      "rowIds": [
+        "B4-PC.8"
+      ],
+      "behavior": "iOS healthy readiness/lifecycle siblings",
+      "exactCriterion": "Healthy completed report transitions the same PID to ready; immediate hierarchy, interruption 130 and explicit stop retain exact cleanup.",
+      "source": "Task 4 Step 9; task-4-fix56-review.md; task-4-fix6-report.md",
+      "platform": "ios"
+    },
+    {
+      "controlId": "public-contract.PC.9",
+      "rowIds": [
+        "B4-PC.9"
+      ],
+      "behavior": "Android stop transport deadline/cancellation",
+      "exactCriterion": "Blocked force-stop/process/foreground shell operations are bounded, cancel and reap the owned shell child, and fail truthfully; source approved at 59184b954eded5f09125afebf08b98e18fa313df and merged as 64dd5188b0ba981bd71c0ec9ad3e104def2db5d6; Task 9 candidate result remains empty",
+      "source": "task-2-fix2-review.md (approved 59184b954eded5f09125afebf08b98e18fa313df); task-2-live-review.md; merged 64dd5188b0ba981bd71c0ec9ad3e104def2db5d6",
+      "platform": "cli"
+    },
+    {
+      "controlId": "public-contract.PC.10",
+      "rowIds": [
+        "B4-PC.10"
+      ],
+      "behavior": "Android delayed second Rect cancellation",
+      "exactCriterion": "Delayed second Rect cancels at hard stabilization/parent deadline and sends no tap; success sibling remains; source approved at 59184b954eded5f09125afebf08b98e18fa313df and merged as 64dd5188b0ba981bd71c0ec9ad3e104def2db5d6; Task 9 candidate result remains empty",
+      "source": "task-2-fix2-review.md (approved 59184b954eded5f09125afebf08b98e18fa313df); task-2-live-review.md; merged 64dd5188b0ba981bd71c0ec9ad3e104def2db5d6",
+      "platform": "cli"
+    },
+    {
+      "controlId": "public-contract.PC.11",
+      "rowIds": [
+        "B4-PC.11"
+      ],
+      "behavior": "Android ordinary soft deadline sibling",
+      "exactCriterion": "Ordinary Text/Attribute/Rect preserve the default request floor after a soft step deadline; hard/cancel siblings remain bounded; source approved at 59184b954eded5f09125afebf08b98e18fa313df and merged as 64dd5188b0ba981bd71c0ec9ad3e104def2db5d6; Task 9 candidate result remains empty",
+      "source": "task-2-fix2-review.md (approved 59184b954eded5f09125afebf08b98e18fa313df); task-2-live-review.md; merged 64dd5188b0ba981bd71c0ec9ad3e104def2db5d6",
+      "platform": "cli"
+    },
+    {
+      "controlId": "public-contract.PC.12",
+      "rowIds": [
+        "B4-PC.12"
+      ],
+      "behavior": "Android keyboard step-context cancellation",
+      "exactCriterion": "Keyboard-settle detail requests inherit active step cancellation while retaining extended ordinary request budget; source approved at 59184b954eded5f09125afebf08b98e18fa313df and merged as 64dd5188b0ba981bd71c0ec9ad3e104def2db5d6; Task 9 candidate result remains empty",
+      "source": "task-2-fix2-review.md (approved 59184b954eded5f09125afebf08b98e18fa313df); task-2-live-review.md; merged 64dd5188b0ba981bd71c0ec9ad3e104def2db5d6",
+      "platform": "cli"
+    },
+    {
+      "controlId": "public-contract.PC.13",
+      "rowIds": [
+        "B4-PC.13"
+      ],
+      "behavior": "Android long-press action-budget sibling",
+      "exactCriterion": "Successful stable reads and valid long press prove stabilization and action budgets remain separate; source approved at 59184b954eded5f09125afebf08b98e18fa313df and merged as 64dd5188b0ba981bd71c0ec9ad3e104def2db5d6; Task 9 candidate result remains empty",
+      "source": "task-2-fix2-review.md (approved 59184b954eded5f09125afebf08b98e18fa313df); task-2-live-review.md; merged 64dd5188b0ba981bd71c0ec9ad3e104def2db5d6",
+      "platform": "cli"
+    },
+    {
+      "controlId": "public-contract.PC.14",
+      "rowIds": [
+        "B4-PC.14"
+      ],
+      "behavior": "reopened L66 cold-launch unselected real-button identity",
+      "exactCriterion": "From a cold launch with Landmarks selected, the persistent Favorites XCUIElementTypeButton itself has identifier heart, label Favorites and no selected value; literal heart matches by identifier and navigates to Favorites; offscreen/content Other identity is rejected.",
+      "source": "task8-heart-unselected-diagnosis.md Proof required 2",
+      "platform": "ios"
+    },
+    {
+      "controlId": "public-contract.PC.15",
+      "rowIds": [
+        "B4-PC.15"
+      ],
+      "behavior": "reopened L66 selected/unselected real-button identity cycle",
+      "exactCriterion": "The same Favorites XCUIElementTypeButton keeps exact heart identity and Favorites label while selected and unselected; selected value tracks state and literal heart succeeds by identifier in both states without alias, symbol-prefix or label fallback.",
+      "source": "task8-heart-unselected-diagnosis.md Proof required 3-4",
+      "platform": "ios"
+    },
+    {
+      "controlId": "public-contract.PC.16",
+      "rowIds": [
+        "B4-PC.16"
+      ],
+      "behavior": "reopened L66 relaunch identity durability",
+      "exactCriterion": "After exact-app terminate/relaunch and runner/MCP restart, repeat selected/unselected real-button identity cycles across both persisted initial selections with exact install identity, stock-flow siblings and negative exact-selector controls retained.",
+      "source": "task8-heart-unselected-diagnosis.md Proof required 1, 5-7",
+      "platform": "ios"
+    },
+    {
+      "controlId": "evidence-join.EJ.1",
+      "rowIds": [
+        "B4-EJ.1"
+      ],
+      "behavior": "L53.P5 compound evidence ownership",
+      "exactCriterion": "CLI validation joins indexed iOS L71 and both B3-L20 platform halves without device work in CLI.",
+      "source": "task-9-matrix-review.md finding 3",
+      "platform": "both"
+    },
+    {
+      "controlId": "evidence-join.EJ.2",
+      "rowIds": [
+        "B4-EJ.2"
+      ],
+      "behavior": "L74.4 per-platform session JSON",
+      "exactCriterion": "Separate current iOS and Android session JSON citations are required.",
+      "source": "task-9-matrix-review.md finding 3",
+      "platform": "both"
+    },
+    {
+      "controlId": "evidence-join.EJ.3",
+      "rowIds": [
+        "B4-EJ.3"
+      ],
+      "behavior": "L75 exact alias, stream and device join",
+      "exactCriterion": "Exact absolute alias and non-cascading streaming controls join both B3-L20 platform halves.",
+      "source": "task-9-matrix-review.md findings 3-4",
+      "platform": "both"
+    }
+  ],
+  "rowIndex": {
+    "B4-L51.E": {
+      "brief": "L51",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-12-coverage-issues-round2/L51-screen-and-start-end-swipes-still-input-swipe.md"
+    },
+    "B4-L51.F": {
+      "brief": "L51",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-12-coverage-issues-round2/L51-screen-and-start-end-swipes-still-input-swipe.md"
+    },
+    "B4-L51.P1": {
+      "brief": "L51",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md"
+    },
+    "B4-L51.P2": {
+      "brief": "L51",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md"
+    },
+    "B4-L53.E": {
+      "brief": "L53",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-12-coverage-issues-round2/L53-runner-empty-device-value-accepted.md"
+    },
+    "B4-L53.F": {
+      "brief": "L53",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-12-coverage-issues-round2/L53-runner-empty-device-value-accepted.md"
+    },
+    "B4-L53.P1": {
+      "brief": "L53",
+      "platform": "cli",
+      "source": "findings/round4-binding-acceptance-inventory.md"
+    },
+    "B4-L53.P2": {
+      "brief": "L53",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md"
+    },
+    "B4-L53.P3": {
+      "brief": "L53",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md"
+    },
+    "B4-L53.P4": {
+      "brief": "L53",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md"
+    },
+    "B4-L53.P5": {
+      "brief": "L53",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md"
+    },
+    "B4-L61.E": {
+      "brief": "L61",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-12-coverage-issues-round2/L61-android-failure-capture-takes-5-10s.md"
+    },
+    "B4-L61.F": {
+      "brief": "L61",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-12-coverage-issues-round2/L61-android-failure-capture-takes-5-10s.md"
+    },
+    "B4-L61.P1": {
+      "brief": "L61",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md"
+    },
+    "B4-L61.P2": {
+      "brief": "L61",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md"
+    },
+    "B4-L62.E": {
+      "brief": "L62",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-12-coverage-issues-round2/L62-android-02-favorite-remove-leaves-row-intermittently.md"
+    },
+    "B4-L62.F": {
+      "brief": "L62",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-12-coverage-issues-round2/L62-android-02-favorite-remove-leaves-row-intermittently.md"
+    },
+    "B4-L62.P1": {
+      "brief": "L62",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md"
+    },
+    "B4-L62.P2": {
+      "brief": "L62",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md"
+    },
+    "B4-L62.P3": {
+      "brief": "L62",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md"
+    },
+    "B4-L64.1": {
+      "brief": "L64",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L64-android-launch-passes-after-fatal.md"
+    },
+    "B4-L64.2": {
+      "brief": "L64",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L64-android-launch-passes-after-fatal.md"
+    },
+    "B4-L64.3": {
+      "brief": "L64",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L64-android-launch-passes-after-fatal.md"
+    },
+    "B4-L64.4": {
+      "brief": "L64",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L64-android-launch-passes-after-fatal.md"
+    },
+    "B4-L64.5": {
+      "brief": "L64",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L64-android-launch-passes-after-fatal.md"
+    },
+    "B4-L65.1": {
+      "brief": "L65",
+      "platform": "both",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L65-script-missing-steps-error-contract.md"
+    },
+    "B4-L65.2": {
+      "brief": "L65",
+      "platform": "both",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L65-script-missing-steps-error-contract.md"
+    },
+    "B4-L65.3": {
+      "brief": "L65",
+      "platform": "both",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L65-script-missing-steps-error-contract.md"
+    },
+    "B4-L66.1": {
+      "brief": "L66",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L66-ios-identifier-tap-fallback.md"
+    },
+    "B4-L66.2": {
+      "brief": "L66",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L66-ios-identifier-tap-fallback.md"
+    },
+    "B4-L66.3": {
+      "brief": "L66",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L66-ios-identifier-tap-fallback.md"
+    },
+    "B4-L66.4": {
+      "brief": "L66",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L66-ios-identifier-tap-fallback.md"
+    },
+    "B4-L66.5": {
+      "brief": "L66",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L66-ios-identifier-tap-fallback.md"
+    },
+    "B4-L67.1": {
+      "brief": "L67",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L67-doctor-ambiguous-platform-section.md"
+    },
+    "B4-L67.2": {
+      "brief": "L67",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L67-doctor-ambiguous-platform-section.md"
+    },
+    "B4-L67.3": {
+      "brief": "L67",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L67-doctor-ambiguous-platform-section.md"
+    },
+    "B4-L67.4": {
+      "brief": "L67",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L67-doctor-ambiguous-platform-section.md"
+    },
+    "B4-L68.1": {
+      "brief": "L68",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L68-android-detached-start-ready-before-app.md"
+    },
+    "B4-L68.2": {
+      "brief": "L68",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L68-android-detached-start-ready-before-app.md"
+    },
+    "B4-L68.3": {
+      "brief": "L68",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L68-android-detached-start-ready-before-app.md"
+    },
+    "B4-L68.4": {
+      "brief": "L68",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L68-android-detached-start-ready-before-app.md"
+    },
+    "B4-L69.1": {
+      "brief": "L69",
+      "platform": "both",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L69-starting-runner-json-omits-null-port.md"
+    },
+    "B4-L69.2": {
+      "brief": "L69",
+      "platform": "both",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L69-starting-runner-json-omits-null-port.md"
+    },
+    "B4-L69.3": {
+      "brief": "L69",
+      "platform": "both",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L69-starting-runner-json-omits-null-port.md"
+    },
+    "B4-L69.4": {
+      "brief": "L69",
+      "platform": "both",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L69-starting-runner-json-omits-null-port.md"
+    },
+    "B4-L70.1": {
+      "brief": "L70",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L70-baseline-filename-migration-documentation.md"
+    },
+    "B4-L70.2": {
+      "brief": "L70",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L70-baseline-filename-migration-documentation.md"
+    },
+    "B4-L70.3": {
+      "brief": "L70",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L70-baseline-filename-migration-documentation.md"
+    },
+    "B4-L71.1": {
+      "brief": "L71",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L71-no-build-no-launch-queries-absent-ios-container.md"
+    },
+    "B4-L71.2": {
+      "brief": "L71",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L71-no-build-no-launch-queries-absent-ios-container.md"
+    },
+    "B4-L71.3": {
+      "brief": "L71",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L71-no-build-no-launch-queries-absent-ios-container.md"
+    },
+    "B4-L71.4": {
+      "brief": "L71",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L71-no-build-no-launch-queries-absent-ios-container.md"
+    },
+    "B4-L71.5": {
+      "brief": "L71",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L71-no-build-no-launch-queries-absent-ios-container.md"
+    },
+    "B4-L72.1": {
+      "brief": "L72",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L72-foreground-start-sigint-during-startup-reports-wda-timeout.md"
+    },
+    "B4-L72.2": {
+      "brief": "L72",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L72-foreground-start-sigint-during-startup-reports-wda-timeout.md"
+    },
+    "B4-L72.3": {
+      "brief": "L72",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L72-foreground-start-sigint-during-startup-reports-wda-timeout.md"
+    },
+    "B4-L72.4": {
+      "brief": "L72",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L72-foreground-start-sigint-during-startup-reports-wda-timeout.md"
+    },
+    "B4-L72.5": {
+      "brief": "L72",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L72-foreground-start-sigint-during-startup-reports-wda-timeout.md"
+    },
+    "B4-L72.6": {
+      "brief": "L72",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L72-foreground-start-sigint-during-startup-reports-wda-timeout.md"
+    },
+    "B4-L73.1": {
+      "brief": "L73",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L73-force-simulator-teardown-omits-stopped-runner-result.md"
+    },
+    "B4-L73.2": {
+      "brief": "L73",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L73-force-simulator-teardown-omits-stopped-runner-result.md"
+    },
+    "B4-L73.3": {
+      "brief": "L73",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L73-force-simulator-teardown-omits-stopped-runner-result.md"
+    },
+    "B4-L73.4": {
+      "brief": "L73",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L73-force-simulator-teardown-omits-stopped-runner-result.md"
+    },
+    "B4-L73.5": {
+      "brief": "L73",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L73-force-simulator-teardown-omits-stopped-runner-result.md"
+    },
+    "B4-L73.6": {
+      "brief": "L73",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L73-force-simulator-teardown-omits-stopped-runner-result.md"
+    },
+    "B4-L73.7": {
+      "brief": "L73",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L73-force-simulator-teardown-omits-stopped-runner-result.md"
+    },
+    "B4-L74.1": {
+      "brief": "L74",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L74-iso8601-json-date-change-lacks-public-note.md"
+    },
+    "B4-L74.2": {
+      "brief": "L74",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L74-iso8601-json-date-change-lacks-public-note.md"
+    },
+    "B4-L74.3": {
+      "brief": "L74",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L74-iso8601-json-date-change-lacks-public-note.md"
+    },
+    "B4-L74.4": {
+      "brief": "L74",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L74-iso8601-json-date-change-lacks-public-note.md"
+    },
+    "B4-L75.1": {
+      "brief": "L75",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L75-subdirectory-cycle-hops-use-containing-file-relative-operands.md"
+    },
+    "B4-L75.2": {
+      "brief": "L75",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L75-subdirectory-cycle-hops-use-containing-file-relative-operands.md"
+    },
+    "B4-L75.3": {
+      "brief": "L75",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L75-subdirectory-cycle-hops-use-containing-file-relative-operands.md"
+    },
+    "B4-L75.4": {
+      "brief": "L75",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L75-subdirectory-cycle-hops-use-containing-file-relative-operands.md"
+    },
+    "B4-L75.5": {
+      "brief": "L75",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L75-subdirectory-cycle-hops-use-containing-file-relative-operands.md"
+    },
+    "B4-L76.1": {
+      "brief": "L76",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L76-force-teardown-matches-unrelated-process-arguments.md"
+    },
+    "B4-L76.2": {
+      "brief": "L76",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L76-force-teardown-matches-unrelated-process-arguments.md"
+    },
+    "B4-L76.3": {
+      "brief": "L76",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L76-force-teardown-matches-unrelated-process-arguments.md"
+    },
+    "B4-L76.4": {
+      "brief": "L76",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L76-force-teardown-matches-unrelated-process-arguments.md"
+    },
+    "B4-L76.5": {
+      "brief": "L76",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L76-force-teardown-matches-unrelated-process-arguments.md"
+    },
+    "B4-L77.1": {
+      "brief": "L77",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L77-android-stop-app-reports-success-with-app-still-running.md"
+    },
+    "B4-L77.2": {
+      "brief": "L77",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L77-android-stop-app-reports-success-with-app-still-running.md"
+    },
+    "B4-L77.3": {
+      "brief": "L77",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L77-android-stop-app-reports-success-with-app-still-running.md"
+    },
+    "B4-L77.4": {
+      "brief": "L77",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L77-android-stop-app-reports-success-with-app-still-running.md"
+    },
+    "B4-L77.5": {
+      "brief": "L77",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L77-android-stop-app-reports-success-with-app-still-running.md"
+    },
+    "B4-L78.1": {
+      "brief": "L78",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L78-interrupted-run-returns-before-log-stream-exits.md"
+    },
+    "B4-L78.2": {
+      "brief": "L78",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L78-interrupted-run-returns-before-log-stream-exits.md"
+    },
+    "B4-L78.3": {
+      "brief": "L78",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L78-interrupted-run-returns-before-log-stream-exits.md"
+    },
+    "B4-L78.4": {
+      "brief": "L78",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L78-interrupted-run-returns-before-log-stream-exits.md"
+    },
+    "B4-L79.1": {
+      "brief": "L79",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L79-optional-tap-failure-exits-nonzero.md"
+    },
+    "B4-L79.2": {
+      "brief": "L79",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L79-optional-tap-failure-exits-nonzero.md"
+    },
+    "B4-L79.3": {
+      "brief": "L79",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L79-optional-tap-failure-exits-nonzero.md"
+    },
+    "B4-L79.4": {
+      "brief": "L79",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L79-optional-tap-failure-exits-nonzero.md"
+    },
+    "B4-L79.5": {
+      "brief": "L79",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L79-optional-tap-failure-exits-nonzero.md"
+    },
+    "B4-L79.6": {
+      "brief": "L79",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L79-optional-tap-failure-exits-nonzero.md"
+    },
+    "B4-L80.1": {
+      "brief": "L80",
+      "platform": "both",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L80-mcp-concurrent-large-responses-interleave-on-stdout.md"
+    },
+    "B4-L80.2": {
+      "brief": "L80",
+      "platform": "both",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L80-mcp-concurrent-large-responses-interleave-on-stdout.md"
+    },
+    "B4-L80.3": {
+      "brief": "L80",
+      "platform": "both",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L80-mcp-concurrent-large-responses-interleave-on-stdout.md"
+    },
+    "B4-L80.4": {
+      "brief": "L80",
+      "platform": "both",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L80-mcp-concurrent-large-responses-interleave-on-stdout.md"
+    },
+    "B4-L80.5": {
+      "brief": "L80",
+      "platform": "both",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L80-mcp-concurrent-large-responses-interleave-on-stdout.md"
+    },
+    "B4-L81.1": {
+      "brief": "L81",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L81-doctor-default-ownership-note-hidden-by-booted-simulator.md"
+    },
+    "B4-L81.2": {
+      "brief": "L81",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L81-doctor-default-ownership-note-hidden-by-booted-simulator.md"
+    },
+    "B4-L81.3": {
+      "brief": "L81",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L81-doctor-default-ownership-note-hidden-by-booted-simulator.md"
+    },
+    "B4-L81.4": {
+      "brief": "L81",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L81-doctor-default-ownership-note-hidden-by-booted-simulator.md"
+    },
+    "B4-L81.5": {
+      "brief": "L81",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L81-doctor-default-ownership-note-hidden-by-booted-simulator.md"
+    },
+    "B4-L81.6": {
+      "brief": "L81",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L81-doctor-default-ownership-note-hidden-by-booted-simulator.md"
+    },
+    "B4-L81.7": {
+      "brief": "L81",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round3/L81-doctor-default-ownership-note-hidden-by-booted-simulator.md"
+    },
+    "B4-L82.1": {
+      "brief": "L82",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L82-foreground-android-ready-exit-leaks-cli-forward.md"
+    },
+    "B4-L82.2": {
+      "brief": "L82",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L82-foreground-android-ready-exit-leaks-cli-forward.md"
+    },
+    "B4-L82.3": {
+      "brief": "L82",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L82-foreground-android-ready-exit-leaks-cli-forward.md"
+    },
+    "B4-L82.4": {
+      "brief": "L82",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L82-foreground-android-ready-exit-leaks-cli-forward.md"
+    },
+    "B4-L82.5": {
+      "brief": "L82",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L82-foreground-android-ready-exit-leaks-cli-forward.md"
+    },
+    "B4-L83.1": {
+      "brief": "L83",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L83-runner-cleanup-removes-unowned-device-numbered-local-forward.md"
+    },
+    "B4-L83.2": {
+      "brief": "L83",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L83-runner-cleanup-removes-unowned-device-numbered-local-forward.md"
+    },
+    "B4-L83.3": {
+      "brief": "L83",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L83-runner-cleanup-removes-unowned-device-numbered-local-forward.md"
+    },
+    "B4-L83.4": {
+      "brief": "L83",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L83-runner-cleanup-removes-unowned-device-numbered-local-forward.md"
+    },
+    "B4-L84.1": {
+      "brief": "L84",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L84-cli-orphan-cleanup-removes-unrelated-device-forwards.md"
+    },
+    "B4-L84.2": {
+      "brief": "L84",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L84-cli-orphan-cleanup-removes-unrelated-device-forwards.md"
+    },
+    "B4-L84.3": {
+      "brief": "L84",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L84-cli-orphan-cleanup-removes-unrelated-device-forwards.md"
+    },
+    "B4-L84.4": {
+      "brief": "L84",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L84-cli-orphan-cleanup-removes-unrelated-device-forwards.md"
+    },
+    "B4-L85.1": {
+      "brief": "L85",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md"
+    },
+    "B4-L85.2": {
+      "brief": "L85",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md"
+    },
+    "B4-L85.3": {
+      "brief": "L85",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md"
+    },
+    "B4-L85.4": {
+      "brief": "L85",
+      "platform": "ios",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md"
+    },
+    "B4-L85.5": {
+      "brief": "L85",
+      "platform": "cli",
+      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md"
+    },
+    "B4-PC.1": {
+      "brief": "L80",
+      "platform": "both",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md \u00a7Task 5 Step 7 and \u00a7Task 9 Step 1"
+    },
+    "B4-PC.2": {
+      "brief": "L79",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md \u00a7Task 3 Step 7 and \u00a7Task 9 Step 1"
+    },
+    "B4-PC.3": {
+      "brief": "L68",
+      "platform": "android",
+      "source": "docs/superpowers/plans/2026-10-13-round4-fix-wave.md \u00a7Task 4 Step 9 and \u00a7Task 9 Step 1"
+    },
+    "B4-PC.4": {
+      "brief": "L72",
+      "platform": "ios",
+      "source": "Task 4 Step 9; task-4-fix56-review.md; task-4-fix6-report.md"
+    },
+    "B4-PC.5": {
+      "brief": "L72",
+      "platform": "ios",
+      "source": "Task 4 Step 9; task-4-fix56-review.md; task-4-fix6-report.md"
+    },
+    "B4-PC.6": {
+      "brief": "L72",
+      "platform": "ios",
+      "source": "Task 4 Step 9; task-4-fix56-review.md; task-4-fix6-report.md"
+    },
+    "B4-PC.7": {
+      "brief": "L72",
+      "platform": "ios",
+      "source": "Task 4 Step 9; task-4-fix56-review.md; task-4-fix6-report.md"
+    },
+    "B4-PC.8": {
+      "brief": "L72",
+      "platform": "ios",
+      "source": "Task 4 Step 9; task-4-fix56-review.md; task-4-fix6-report.md"
+    },
+    "B4-PC.9": {
+      "brief": "L77",
+      "platform": "cli",
+      "source": "task-2-fix2-review.md (approved 59184b954eded5f09125afebf08b98e18fa313df); task-2-live-review.md; merged 64dd5188b0ba981bd71c0ec9ad3e104def2db5d6"
+    },
+    "B4-PC.10": {
+      "brief": "L62",
+      "platform": "cli",
+      "source": "task-2-fix2-review.md (approved 59184b954eded5f09125afebf08b98e18fa313df); task-2-live-review.md; merged 64dd5188b0ba981bd71c0ec9ad3e104def2db5d6"
+    },
+    "B4-PC.11": {
+      "brief": "L62",
+      "platform": "cli",
+      "source": "task-2-fix2-review.md (approved 59184b954eded5f09125afebf08b98e18fa313df); task-2-live-review.md; merged 64dd5188b0ba981bd71c0ec9ad3e104def2db5d6"
+    },
+    "B4-PC.12": {
+      "brief": "L62",
+      "platform": "cli",
+      "source": "task-2-fix2-review.md (approved 59184b954eded5f09125afebf08b98e18fa313df); task-2-live-review.md; merged 64dd5188b0ba981bd71c0ec9ad3e104def2db5d6"
+    },
+    "B4-PC.13": {
+      "brief": "L62",
+      "platform": "cli",
+      "source": "task-2-fix2-review.md (approved 59184b954eded5f09125afebf08b98e18fa313df); task-2-live-review.md; merged 64dd5188b0ba981bd71c0ec9ad3e104def2db5d6"
+    },
+    "B4-PC.14": {
+      "brief": "L66",
+      "platform": "ios",
+      "source": "task8-heart-unselected-diagnosis.md Proof required 2"
+    },
+    "B4-PC.15": {
+      "brief": "L66",
+      "platform": "ios",
+      "source": "task8-heart-unselected-diagnosis.md Proof required 3-4"
+    },
+    "B4-PC.16": {
+      "brief": "L66",
+      "platform": "ios",
+      "source": "task8-heart-unselected-diagnosis.md Proof required 1, 5-7"
+    },
+    "B4-EJ.1": {
+      "brief": "L53",
+      "platform": "both",
+      "source": "task-9-matrix-review.md finding 3"
+    },
+    "B4-EJ.2": {
+      "brief": "L74",
+      "platform": "both",
+      "source": "task-9-matrix-review.md finding 3"
+    },
+    "B4-EJ.3": {
+      "brief": "L75",
+      "platform": "both",
+      "source": "task-9-matrix-review.md findings 3-4"
+    }
+  },
+  "implementationProvenance": {
+    "task2": {
+      "sourceHead": "59184b954eded5f09125afebf08b98e18fa313df",
+      "sourceReview": "APPROVED (task-2-fix2-review.md)",
+      "liveReview": "APPROVED (task-2-live-review.md)",
+      "mergedCommit": "64dd5188b0ba981bd71c0ec9ad3e104def2db5d6",
+      "candidateResultRule": "Implementation provenance only; all Task 9 results remain empty and candidate identity remains UNKNOWN."
+    }
+  },
+  "executionNotes": {
+    "androidL77B3L49": {
+      "appliesTo": [
+        "B4-L77.1",
+        "B4-L77.2",
+        "B4-L77.5",
+        "B3-L49"
+      ],
+      "setup": "Foreground neutral Settings on the row-owned AVD before the unchanged literal launchApp clearState -> bare stopApp -> assertNotVisible Landmarks flow.",
+      "requiredEvidence": "Exact target-package pidof/process absence and returned Settings-focused hierarchy after stop.",
+      "qualification": "Isolates the independently proven NexusLauncher predicted-app label collision without altering the quoted flow, assertion, inherited row, or verdict rules.",
+      "source": [
+        "progress.md controller Ruling",
+        "task-2-live-review.md Neutral-Settings environment qualification",
+        "task-2-live-review.md Preserved failures and qualifications"
+      ]
+    }
+  },
+  "governingRulings": {
+    "l53AliasCompatibility": {
+      "evidence": "pkg/cli/cli.go runnerGlobalFlags device Aliases:[udid] at frozen fd9d8e8 and merged 64dd5188b0ba981bd71c0ec9ad3e104def2db5d6",
+      "rule": "Preserve existing --udid and validate empty/whitespace via canonical --device parsing; --serial remains unknown; no alias is added.",
+      "sources": [
+        "progress.md latest L53 alias ruling",
+        "findings/round4-binding-acceptance-inventory.md corrected Reviewed-plan ruling",
+        "docs/superpowers/plans/2026-10-13-round4-fix-wave.md Task 3 Steps 2 and 6"
+      ],
+      "pending": "Future final Task 3 source proof and mandatory Task 8 repacked-candidate repetition; Task 9 result remains empty."
+    }
+  },
+  "candidateManifest": {
+    "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-coverage/candidate.json",
+    "sha256": "d833797d30a794d8cfe9d2dc4646329d4f791667eb8dfa5d17cf417d827f744e"
+  },
+  "approvedDraft": {
+    "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/preparation/round4-coverage/task-9-criteria-index.json",
+    "sha256": "b4d867952264b0f53c2ab9f8e724edc7918b297b642aec2fdadecbc566519d44"
+  }
+}

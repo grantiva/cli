@@ -1,0 +1,760 @@
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_source_window.py b/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_source_window.py
+new file mode 100755
+index 00000000..dd927aad
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_source_window.py
+@@ -0,0 +1,459 @@
++#!/usr/bin/env python3
++"""Gated Task 9 source-window evidence collector (preparation artifact).
++
++This file is intentionally inert unless invoked with complete, hash-bound gate
++records.  It never operates devices and treats AND-111 as an external join.
++"""
++from __future__ import annotations
++
++import argparse
++import hashlib
++import json
++import os
++import signal
++import subprocess
++import time
++from pathlib import Path
++
++CLI_SHA = "6ba12ed37658228a3ce87cb64e1f5d88dda38e07"
++RUNNER_SHA = "ba9008f4b2cd2c7320a9c46e04faed612b0958a2"
++DEMO_SHA = "84af7581b75134b0e417b254e4317d565f7b73c6"
++BOUND_TASK8_CANDIDATE_SHA = "e9cfc7dce72ba8125b7c55df8d3dec355925003de24a4131c6510b9e67c51ebf"
++INVENTORY_SHA = "15437fda241ded594234cb4c59c0378eb50a595222945a6bc13d8d006894fc5b"
++PACKAGE_MARKER = "<literal packages frozen from go-inventory, one argv each>"
++
++
++def require(value: object, message: str) -> None:
++    if not value:
++        raise RuntimeError(message)
++
++
++def sha256(path: Path) -> str:
++    return hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++def load(path: Path) -> dict:
++    require(path.is_file(), f"missing JSON: {path}")
++    value = json.loads(path.read_text())
++    require(isinstance(value, dict), f"JSON object required: {path}")
++    return value
++
++
++def write_new(path: Path, data: bytes) -> None:
++    path.parent.mkdir(parents=True, exist_ok=True)
++    with path.open("xb") as stream:
++        stream.write(data)
++
++
++def save_new(path: Path, value: object) -> None:
++    write_new(path, (json.dumps(value, indent=2, sort_keys=True) + "\n").encode())
++
++
++def hashed_ref(record: dict, key: str) -> Path:
++    ref = record.get(key, {})
++    path = Path(ref.get("path", "")).resolve()
++    require(path.is_file() and ref.get("sha256") == sha256(path), f"{key} hash mismatch")
++    return path
++
++
++def checked_ref(record: dict, key: str, schema: str | None = None) -> tuple[Path, dict]:
++    path = hashed_ref(record, key)
++    doc = load(path)
++    if schema:
++        require(doc.get("schema") == schema, f"{key} schema mismatch")
++    return path, doc
++
++
++def git(repo: Path, *args: str) -> bytes:
++    return subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True).stdout
++
++
++def observe_repo(repo: Path) -> dict:
++    real = repo.resolve(strict=True)
++    head = git(real, "rev-parse", "HEAD").decode().strip()
++    status = git(real, "status", "--porcelain=v1", "--untracked-files=all")
++    names = git(real, "ls-files", "-z").split(b"\0")
++    digest = hashlib.sha256()
++    count = 0
++    for raw in names:
++        if not raw:
++            continue
++        rel = os.fsdecode(raw)
++        path = real / rel
++        require(path.is_file() and path.resolve().is_relative_to(real), f"invalid tracked file: {rel}")
++        digest.update(raw + b"\0" + hashlib.sha256(path.read_bytes()).digest())
++        count += 1
++    return {"realpath": str(real), "head": head, "status": status.decode(errors="replace"), "trackedFileCount": count,
++            "trackedTreeSHA256": digest.hexdigest()}
++
++
++def proof_failures(observed: dict, expected_head: str, baseline: dict | None = None) -> list[str]:
++    failures = []
++    if observed["head"] != expected_head:
++        failures.append("head-mismatch")
++    if observed["status"] != "":
++        failures.append("dirty-status")
++    if baseline is not None and observed != baseline:
++        failures.append("source-proof-drift")
++    return failures
++
++
++def repo_proof(repo: Path, expected_head: str) -> dict:
++    observed = observe_repo(repo)
++    failures = proof_failures(observed, expected_head)
++    require(not failures, f"source proof rejected for {observed['realpath']}: {','.join(failures)}")
++    return observed
++
++
++def candidate_sources(candidate: dict) -> dict[str, tuple[Path, str]]:
++    require(candidate.get("schema") == "grantiva.task9.candidate.v1", "Task 9 candidate schema mismatch")
++    require(candidate.get("task8CandidateManifestSHA256") == BOUND_TASK8_CANDIDATE_SHA,
++            "candidate is not bound to the reviewed Task 8 candidate")
++    cli, runner, demo = candidate.get("cli", {}), candidate.get("runner", {}), candidate.get("demo", {})
++    cli_head = cli.get("sourceSHA", cli.get("mergedSHA"))
++    require(cli_head == CLI_SHA and runner.get("sourceSHA") == RUNNER_SHA and demo.get("sourceSHA") == DEMO_SHA,
++            "frozen source identity mismatch")
++    return {"cliRepo": (Path(cli["repoPath"]), CLI_SHA), "runnerRepo": (Path(runner["repoPath"]), RUNNER_SHA),
++            "demoRepo": (Path(demo["repoPath"]), DEMO_SHA)}
++
++
++def validate_gate(candidate_path: Path, candidate: dict, gate_path: Path, provision_path: Path,
++                  shutdown_path: Path) -> dict:
++    candidate_path, gate_path = candidate_path.resolve(), gate_path.resolve()
++    provision_path, shutdown_path = provision_path.resolve(), shutdown_path.resolve()
++    candidate_hash = sha256(candidate_path)
++    gate = load(gate_path)
++    require(gate.get("schema") == "grantiva.task8.zero-gate.v1" and gate.get("passed") is True,
++            "Task 8 zero gate is not passing")
++    require(gate.get("candidateManifestSHA256") == candidate_hash, "zero gate candidate mismatch")
++    hashed_ref(gate, "review")
++    _, cleanup = checked_ref(gate, "cleanup")
++    require(cleanup.get("passed") is True, "zero-gate cleanup is not passing")
++    provision = load(provision_path)
++    require(provision.get("schema") == "grantiva.task9.primary-provision.v1" and provision.get("passed") is True,
++            "primary provision is not accepted")
++    require(provision.get("candidateManifestSHA256") == candidate_hash, "provision candidate mismatch")
++    require(provision.get("gateEvidenceSHA256") == sha256(gate_path), "provision gate mismatch")
++    shutdown = load(shutdown_path)
++    require(shutdown.get("schema") == "grantiva.task9.android-shutdown-transition.v1" and shutdown.get("passed") is True,
++            "Android shutdown transition is not accepted")
++    require(shutdown.get("candidateManifestSHA256") == candidate_hash and shutdown.get("state") == "created-shutdown",
++            "shutdown transition binding/state mismatch")
++    require(shutdown.get("primaryProvisionSHA256") == sha256(provision_path),
++            "shutdown transition provision mismatch")
++    ownership_path, ownership = checked_ref(shutdown, "ownership", "grantiva.task9.primary-ownership.v1")
++    require(ownership == provision.get("ownership"), "shutdown ownership differs from approved provision")
++    require(ownership.get("candidateManifestSHA256") == candidate_hash, "ownership candidate mismatch")
++    ownership_gate = Path(ownership.get("gateEvidence", "")).resolve()
++    require(ownership_gate == gate_path and sha256(ownership_gate) == sha256(gate_path), "ownership gate mismatch")
++    android = ownership.get("devices", {}).get("android", {})
++    require(android.get("owned") is True and android.get("name") == "cov4-android" and
++            android.get("avd") == "cov4-android" and android.get("id") == "emulator-5584",
++            "ownership Android allocation mismatch")
++    pids = android.get("ownedPIDs", [])
++    launch = android.get("launch", {})
++    require(len(pids) == 1 and launch.get("pid") == pids[0], "ownership Android PID mismatch")
++    launch_argv = launch.get("argv", [])
++    require("-avd" in launch_argv and launch_argv[launch_argv.index("-avd") + 1] == "cov4-android" and
++            "-port" in launch_argv and launch_argv[launch_argv.index("-port") + 1] == "5584",
++            "ownership Android launch identity mismatch")
++    require(shutdown.get("gateEvidenceSHA256") == sha256(gate_path) and
++            shutdown.get("allocation", {}) == {"avd": "cov4-android", "serial": "emulator-5584", "pid": pids[0]},
++            "shutdown allocation/gate binding mismatch")
++    return {"candidateManifestSHA256": candidate_hash, "gateSHA256": sha256(gate_path),
++            "provisionSHA256": sha256(provision_path), "shutdownSHA256": sha256(shutdown_path),
++            "ownershipSHA256": sha256(ownership_path)}
++
++
++def run_bounded(argv: list[str], cwd: Path, env: dict[str, str], timeout: float, destination: Path) -> dict:
++    require(timeout > 0, "positive command timeout required")
++    for name in ("stdout.bin", "stderr.bin", "result.json"):
++        require(not (destination / name).exists(), f"command evidence already exists: {destination / name}")
++    started = time.time()
++    proc = subprocess.Popen(argv, cwd=cwd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
++                            start_new_session=True)
++    timed_out = False
++    try:
++        stdout, stderr = proc.communicate(timeout=timeout)
++    except subprocess.TimeoutExpired:
++        timed_out = True
++        os.killpg(proc.pid, signal.SIGKILL)
++        stdout, stderr = proc.communicate()
++    ended = time.time()
++    write_new(destination / "stdout.bin", stdout)
++    write_new(destination / "stderr.bin", stderr)
++    result = {"startedEpoch": started, "endedEpoch": ended, "timeoutSeconds": timeout,
++              "timedOut": timed_out, "exit": None if timed_out else proc.returncode,
++              "stdout": {"path": "stdout.bin", "sha256": sha256(destination / "stdout.bin"), "bytes": len(stdout)},
++              "stderr": {"path": "stderr.bin", "sha256": sha256(destination / "stderr.bin"), "bytes": len(stderr)}}
++    save_new(destination / "result.json", result)
++    return result
++
++
++def package_artifact(path: Path, inventory_result: Path, runner_repo: Path, candidate_hash: str,
++                     runner_proof: dict) -> tuple[list[str], dict]:
++    doc = load(path)
++    require(doc.get("schema") == "grantiva.task9.go-packages.v1" and doc.get("approved") is True,
++            "reviewed Go package artifact required")
++    require(doc.get("inventoryResultSHA256") == sha256(inventory_result), "Go inventory result binding mismatch")
++    _, review = checked_ref(doc, "review")
++    require(review.get("approved") is True, "Go package review is not approved")
++    proposal_path, proposal = checked_ref(doc, "inventoryProposal", "grantiva.task9.go-packages.proposal.v1")
++    require(proposal.get("approved") is False, "inventory proposal must remain unapproved source evidence")
++    start_path, start = checked_ref(doc, "inventoryStart")
++    stdout_path = hashed_ref(doc, "inventoryStdout")
++    result = load(inventory_result)
++    require(result.get("timedOut") is False and result.get("exit") == 0, "Go inventory did not pass")
++    require(result.get("stdout", {}).get("sha256") == sha256(stdout_path), "Go inventory stdout/result mismatch")
++    require(start.get("commandId") == "go-inventory" and start.get("argv") == [["go", "list", "./..."]],
++            "Go inventory start command mismatch")
++    require(start.get("candidateManifestSHA256") == candidate_hash, "Go inventory candidate mismatch")
++    require(start.get("source") == runner_proof, "Go inventory frozen runner proof mismatch")
++    require(proposal.get("inventoryStdoutSHA256") == sha256(stdout_path), "proposal/raw inventory mismatch")
++    require(proposal.get("candidateManifestSHA256") == candidate_hash and proposal.get("source") == runner_proof,
++            "proposal candidate/source mismatch")
++    reparsed = parse_inventory(stdout_path, runner_repo)
++    module_line = (runner_repo / "go.mod").read_text().splitlines()[0].split()
++    require(len(module_line) == 2 and module_line[0] == "module", "go.mod module line missing")
++    module = module_line[1]
++    packages = doc.get("packages")
++    require(isinstance(packages, list) and packages and all(isinstance(p, str) and p for p in packages),
++            "nonempty literal Go package list required")
++    require(len(packages) == len(set(packages)), "duplicate Go package")
++    require(all(p == module or p.startswith(module + "/") for p in packages), "package outside frozen module")
++    require(all("..." not in p and p != PACKAGE_MARKER for p in packages), "recursive/placeholder package prohibited")
++    require(packages == proposal.get("packages") == reparsed,
++            "approved packages differ from parsed inventory proposal")
++    chain = {"packageArtifact": {"path": str(path), "sha256": sha256(path)},
++             "inventoryResult": {"path": str(inventory_result), "sha256": sha256(inventory_result)},
++             "inventoryStart": {"path": str(start_path), "sha256": sha256(start_path)},
++             "inventoryStdout": {"path": str(stdout_path), "sha256": sha256(stdout_path)},
++             "inventoryProposal": {"path": str(proposal_path), "sha256": sha256(proposal_path)}}
++    return packages, chain
++
++
++def parse_inventory(stdout_path: Path, runner_repo: Path) -> list[str]:
++    raw = stdout_path.read_bytes()
++    require(raw and raw.endswith(b"\n"), "Go inventory must be nonempty complete lines")
++    packages = [line.decode() for line in raw.splitlines()]
++    require(packages and all(p and p.strip() == p for p in packages), "invalid Go package line")
++    require(len(packages) == len(set(packages)), "duplicate Go package")
++    module_line = (runner_repo / "go.mod").read_text().splitlines()[0].split()
++    require(len(module_line) == 2 and module_line[0] == "module", "go.mod module line missing")
++    module = module_line[1]
++    require(all(p == module or p.startswith(module + "/") for p in packages), "package outside frozen module")
++    require(all("..." not in p for p in packages), "recursive package returned")
++    return packages
++
++
++def freeze_inventory_proposal(stdout_path: Path, runner_repo: Path, destination: Path, candidate_hash: str,
++                              runner_proof: dict) -> list[str]:
++    packages = parse_inventory(stdout_path, runner_repo)
++    module = (runner_repo / "go.mod").read_text().splitlines()[0].split()[1]
++    save_new(destination, {"schema": "grantiva.task9.go-packages.proposal.v1", "approved": False,
++                           "inventoryStdoutSHA256": sha256(stdout_path), "module": module,
++                           "candidateManifestSHA256": candidate_hash, "source": runner_proof,
++                           "packages": packages,
++                           "nextStep": "independent review must create grantiva.task9.go-packages.v1"})
++    return packages
++
++
++def path_entries(path: Path) -> dict:
++    if not path.exists() and not path.is_symlink():
++        return {"state": "absent", "entries": []}
++    entries = []
++    for item in sorted(path.rglob("*")):
++        kind = "symlink" if item.is_symlink() else "directory" if item.is_dir() else "file" if item.is_file() else "other"
++        entries.append({"path": str(item.relative_to(path)), "kind": kind})
++    return {"state": "present", "entries": entries}
++
++
++def protected_candidate_paths(candidate: dict, sources: dict[str, tuple[Path, str]]) -> list[Path]:
++    values = [repo for repo, _ in sources.values()]
++    for section, names in ((candidate.get("cli", {}), ("binary", "bundle")),
++                           (candidate.get("runner", {}), ("runnerHome", "packaged", "installed")),
++                           (candidate.get("demo", {}), ("androidAPK", "iosApp"))):
++        for name in names:
++            value = section.get(name)
++            if isinstance(value, dict):
++                value = value.get("path")
++            if value:
++                values.append(Path(value))
++    return [path.resolve() for path in values]
++
++
++def resolve_output(path: Path, protected: list[Path]) -> Path:
++    output = path.resolve()
++    require(not output.exists(), "output must be absent; evidence is never overwritten")
++    for frozen in protected:
++        require(not output.is_relative_to(frozen), f"output descends from frozen input: {frozen}")
++    return output
++
++
++def evaluate_postflight(results: list[dict], expected_exits: list[int], observed: dict, expected_head: str,
++                        baseline: dict, environment: dict[str, str]) -> tuple[dict, list[str]]:
++    contents = {key: path_entries(Path(value)) for key, value in environment.items()
++                if key != "GRANTIVA_API_KEY"}
++    command_passed = len(results) == len(expected_exits) and all(
++        not result["timedOut"] and result["exit"] == expected_exits[index]
++        for index, result in enumerate(results))
++    reasons = proof_failures(observed, expected_head, baseline)
++    reasons += [f"nonempty-{key}" for key in ("GRANTIVA_RUNNER_HOME", "MAESTRO_RUNNER_HOME")
++                if key in contents and contents[key]["entries"]]
++    if not command_passed:
++        reasons.append("command-exit-or-timeout")
++    return contents, reasons
++
++
++def command_argv(command_id: str, spec: dict, output: Path, packages: list[str] | None) -> tuple[list[list[str]], str]:
++    argv = list(spec["argv"])
++    if command_id in ("go-full", "go-vet"):
++        require(argv[-1] == PACKAGE_MARKER and packages, "reviewed literal package expansion missing")
++        argv = argv[:-1] + packages
++    elif command_id == "go-l53-scratch-build":
++        binary = output / "l53-runner-home" / "bin" / "grantiva-runner"
++        argv[3] = str(binary)
++        followup = list(spec["followup"])
++        followup[0] = str(binary)
++        return [argv, followup], spec["cwd"]
++    require((command_id == "go-inventory" or "./..." not in argv) and PACKAGE_MARKER not in argv,
++            "recursive or unresolved argv prohibited")
++    return [argv], spec["cwd"]
++
++
++def evidence_files(root: Path) -> list[dict]:
++    return [{"path": str(path.relative_to(root)), "sha256": sha256(path), "bytes": path.stat().st_size}
++            for path in sorted(root.rglob("*")) if path.is_file() and path.name != "source-window-manifest.json"]
++
++
++def inventory_rows(inventory: dict, completed: dict, external_join: Path | None) -> dict:
++    result = {}
++    for row, mapping in inventory["rows"].items():
++        commands = mapping.get("commands", [])
++        result[row] = {"commandEvidence": [completed[x] for x in commands if x in completed],
++                       "missingCommands": [x for x in commands if x not in completed],
++                       "inspection": mapping.get("inspection", []),
++                       "pendingClauses": mapping.get("separateEvidence", []),
++                       "provenanceJoinPending": bool(mapping.get("provenanceJoin")),
++                       "satisfiedHere": False}
++    if external_join:
++        result["AND-111"]["externalJoin"] = {"path": str(external_join.resolve()), "sha256": sha256(external_join)}
++    return result
++
++
++def main() -> None:
++    ap = argparse.ArgumentParser()
++    for name in ("candidate", "gate", "provision", "shutdown", "inventory", "output"):
++        ap.add_argument("--" + name, required=True, type=Path)
++    ap.add_argument("--phase", choices=("go-inventory", "execute"), required=True)
++    ap.add_argument("--packages", type=Path)
++    ap.add_argument("--inventory-result", type=Path)
++    ap.add_argument("--command", action="append", default=[])
++    ap.add_argument("--external-and111", type=Path)
++    ap.add_argument("--timeout", type=float, default=1800.0)
++    args = ap.parse_args()
++    candidate_path, gate_path = args.candidate.resolve(), args.gate.resolve()
++    candidate, inventory = load(candidate_path), load(args.inventory.resolve())
++    bindings = validate_gate(candidate_path, candidate, gate_path, args.provision.resolve(), args.shutdown.resolve())
++    require(inventory.get("schema") == "grantiva.task9.source-window-command-inventory.v1", "inventory schema mismatch")
++    require(sha256(args.inventory.resolve()) == INVENTORY_SHA, "reviewed command inventory hash mismatch")
++    require(inventory.get("candidate", {}).get("manifestSHA256") == BOUND_TASK8_CANDIDATE_SHA, "inventory lineage mismatch")
++    sources = candidate_sources(candidate)
++    args.output = resolve_output(args.output, protected_candidate_paths(candidate, sources))
++    before = {name: repo_proof(*value) for name, value in sources.items()}
++    args.output.mkdir(parents=True, exist_ok=False)
++    completed: dict[str, str] = {}
++    selected = ["go-inventory"] if args.phase == "go-inventory" else args.command
++    require(selected and len(selected) == len(set(selected)), "explicit unique command selection required")
++    require("go-inventory" not in selected or args.phase == "go-inventory", "go-inventory must be a separate phase")
++    packages = None
++    go_inventory_inputs = None
++    if args.phase == "execute" and any(x in ("go-full", "go-vet") for x in selected):
++        require(args.packages and args.inventory_result, "full Go execution requires reviewed package artifact and inventory result")
++        packages, go_inventory_inputs = package_artifact(
++            args.packages.resolve(), args.inventory_result.resolve(), sources["runnerRepo"][0].resolve(),
++            bindings["candidateManifestSHA256"], before["runnerRepo"])
++    env_base = os.environ.copy()
++    env_base.pop("GRANTIVA_API_KEY", None)
++    terminal_failure = None
++    for command_id in selected:
++        require(command_id in inventory["commands"] and command_id != "and-111-compile", f"unsupported source command: {command_id}")
++        spec = inventory["commands"][command_id]
++        argvs, cwd_key = command_argv(command_id, spec, args.output, packages)
++        repo, expected = sources[cwd_key]
++        command_dir = args.output / "commands" / command_id
++        command_dir.mkdir(parents=True, exist_ok=False)
++        env = env_base.copy()
++        environment = {"GRANTIVA_API_KEY": "unset"}
++        if command_id.startswith("swift-"):
++            for variable, leaf in (("GRANTIVA_RUNNER_HOME", "grantiva-home"), ("MAESTRO_RUNNER_HOME", "maestro-home")):
++                home = command_dir / leaf
++                require(not home.exists(), f"fresh home already exists: {home}")
++                env[variable] = str(home)
++                environment[variable] = str(home)
++        if command_id.startswith("go-"):
++            cache = command_dir / "gocache"
++            require(not cache.exists(), f"fresh cache already exists: {cache}")
++            env["GOCACHE"] = str(cache)
++            environment["GOCACHE"] = str(cache)
++        start_proof = observe_repo(repo)
++        start_failures = proof_failures(start_proof, expected, before[cwd_key])
++        save_new(command_dir / "start.json", {**bindings, "commandId": command_id, "cwd": start_proof["realpath"],
++                 "argv": argvs, "environment": environment, "source": start_proof})
++        if start_failures:
++            terminal_failure = {"commandId": command_id, "stage": "pre-command-source-proof",
++                                "reasons": start_failures, "observedSource": start_proof}
++            save_new(command_dir / "postflight.json", {"passed": False, **terminal_failure})
++            save_new(args.output / "terminal-failure.json", terminal_failure)
++            break
++        results = []
++        expected_exits = [0, 64] if command_id == "go-l53-scratch-build" else [0] * len(argvs)
++        for index, argv in enumerate(argvs):
++            unit = command_dir if len(argvs) == 1 else command_dir / f"step-{index + 1}"
++            unit.mkdir(parents=True, exist_ok=len(argvs) == 1)
++            results.append(run_bounded(argv, repo.resolve(), env, args.timeout, unit))
++            if results[-1]["timedOut"] or results[-1]["exit"] != expected_exits[index]:
++                break
++        end_proof = observe_repo(repo)
++        contents, reasons = evaluate_postflight(results, expected_exits, end_proof, expected,
++                                                start_proof, environment)
++        save_new(command_dir / "postflight.json", {"source": end_proof, "freshPathContents": contents,
++                 "expectedExits": expected_exits,
++                 "failureReasons": reasons, "passed": not reasons})
++        if command_id == "go-inventory" and not reasons:
++            freeze_inventory_proposal(command_dir / "stdout.bin", repo.resolve(),
++                                      command_dir / "packages-proposal.json",
++                                      bindings["candidateManifestSHA256"], start_proof)
++        completed[command_id] = str(command_dir.relative_to(args.output))
++        if reasons:
++            terminal_failure = {"commandId": command_id, "stage": "postflight", "reasons": reasons,
++                                "observedSource": end_proof, "freshPathContents": contents}
++            save_new(args.output / "terminal-failure.json", terminal_failure)
++            break
++    final = {name: observe_repo(value[0]) for name, value in sources.items()}
++    final_failures = {name: proof_failures(final[name], value[1], before[name]) for name, value in sources.items()}
++    final_failures = {name: failures for name, failures in final_failures.items() if failures}
++    if final_failures and terminal_failure is None:
++        terminal_failure = {"stage": "window-final-source-proof", "reasons": final_failures,
++                            "observedSources": final}
++        save_new(args.output / "terminal-failure.json", terminal_failure)
++    if args.external_and111:
++        external = load(args.external_and111.resolve())
++        require(external.get("schema") == "grantiva.task9.and111.v1" and external.get("passed") is True,
++                "AND-111 external evidence is not passing")
++        require(external.get("candidateManifestSHA256") == bindings["candidateManifestSHA256"] and
++                external.get("shutdownTransitionSHA256") == bindings["shutdownSHA256"],
++                "AND-111 external evidence binding mismatch")
++    manifest = {"schema": "grantiva.task9.source-window-manifest.v1",
++                "status": "CLOSED_NONPASS_UNREVIEWED" if terminal_failure else "EVIDENCE_ONLY_UNREVIEWED",
++                "phase": args.phase, **bindings, "inventorySHA256": sha256(args.inventory.resolve()),
++                "sourceBefore": before, "sourceAfter": final, "commands": completed,
++                "goInventoryInputs": go_inventory_inputs, "terminalFailure": terminal_failure,
++                "rows": inventory_rows(inventory, completed, args.external_and111),
++                "evidenceFiles": evidence_files(args.output),
++                "note": "No row verdict is assigned until independent review and required joins."}
++    save_new(args.output / "source-window-manifest.json", manifest)
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_source_window_fixtures.py b/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_source_window_fixtures.py
+new file mode 100755
+index 00000000..31fd949a
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_source_window_fixtures.py
+@@ -0,0 +1,289 @@
++#!/usr/bin/env python3
++"""Isolated fake-filesystem/subprocess checks for task9_source_window.py."""
++import importlib.util
++import json
++import os
++import sys
++import tempfile
++import unittest
++from pathlib import Path
++
++HERE = Path(__file__).resolve().parent
++SPEC = importlib.util.spec_from_file_location("source_window", HERE / "task9_source_window.py")
++sw = importlib.util.module_from_spec(SPEC)
++SPEC.loader.exec_module(sw)
++
++
++class SourceWindowFixtures(unittest.TestCase):
++    def test_fake_full_controller_closes_on_zero_exit_swift_home_contamination(self):
++        with tempfile.TemporaryDirectory() as raw:
++            root = Path(raw).resolve(); fakebin = root / "bin"; fakebin.mkdir()
++            repos = {}
++            for name, head in (("cli", sw.CLI_SHA), ("runner", sw.RUNNER_SHA), ("demo", sw.DEMO_SHA)):
++                repo = root / name; repo.mkdir(); (repo / "tracked.txt").write_text(name)
++                repos[name] = repo
++            (repos["runner"] / "go.mod").write_text("module example.test/mod\n")
++            git_script = fakebin / "git"
++            git_script.write_text("""#!/usr/bin/env python3
++import os,sys
++repo=sys.argv[sys.argv.index('-C')+1]; command=sys.argv[sys.argv.index('-C')+2]
++heads={'cli':'%s','runner':'%s','demo':'%s'}
++if command=='rev-parse': print(heads[os.path.basename(repo)])
++elif command=='status': pass
++elif command=='ls-files': os.write(1,b'tracked.txt\\0')
++else: raise SystemExit(2)
++""" % (sw.CLI_SHA, sw.RUNNER_SHA, sw.DEMO_SHA))
++            git_script.chmod(0o755)
++            swift_script = fakebin / "swift"
++            swift_script.write_text("""#!/usr/bin/env python3
++import os,pathlib
++pathlib.Path(os.environ['GRANTIVA_RUNNER_HOME'],'unexpected').mkdir(parents=True)
++print('fake swift success')
++""")
++            swift_script.chmod(0o755)
++            candidate = root / "candidate.json"; gate = root / "gate.json"; review = root / "review.md"
++            cleanup = root / "cleanup.json"; ownership_path = root / "ownership.json"
++            provision = root / "provision.json"; shutdown = root / "shutdown.json"; output = root / "output"
++            candidate.write_text(json.dumps({"schema":"grantiva.task9.candidate.v1",
++                "task8CandidateManifestSHA256":sw.BOUND_TASK8_CANDIDATE_SHA,
++                "cli":{"repoPath":str(repos["cli"]),"sourceSHA":sw.CLI_SHA},
++                "runner":{"repoPath":str(repos["runner"]),"sourceSHA":sw.RUNNER_SHA},
++                "demo":{"repoPath":str(repos["demo"]),"sourceSHA":sw.DEMO_SHA}}))
++            review.write_text("# fake approved review\n"); cleanup.write_text('{"passed":true}\n')
++            gate.write_text(json.dumps({"schema":"grantiva.task8.zero-gate.v1","passed":True,
++                "candidateManifestSHA256":sw.sha256(candidate),
++                "review":{"path":str(review),"sha256":sw.sha256(review)},
++                "cleanup":{"path":str(cleanup),"sha256":sw.sha256(cleanup)}}))
++            ownership = {"schema":"grantiva.task9.primary-ownership.v1",
++                "candidateManifestSHA256":sw.sha256(candidate),"gateEvidence":str(gate),
++                "devices":{"android":{"owned":True,"name":"cov4-android","avd":"cov4-android",
++                    "id":"emulator-5584","ownedPIDs":[321],"launch":{"pid":321,
++                    "argv":["emulator","-avd","cov4-android","-port","5584"]}}}}
++            ownership_path.write_text(json.dumps(ownership))
++            provision.write_text(json.dumps({"schema":"grantiva.task9.primary-provision.v1","passed":True,
++                "candidateManifestSHA256":sw.sha256(candidate),"gateEvidenceSHA256":sw.sha256(gate),
++                "ownership":ownership}))
++            shutdown.write_text(json.dumps({"schema":"grantiva.task9.android-shutdown-transition.v1",
++                "passed":True,"state":"created-shutdown","candidateManifestSHA256":sw.sha256(candidate),
++                "primaryProvisionSHA256":sw.sha256(provision),"gateEvidenceSHA256":sw.sha256(gate),
++                "allocation":{"avd":"cov4-android","serial":"emulator-5584","pid":321},
++                "ownership":{"path":str(ownership_path),"sha256":sw.sha256(ownership_path)}}))
++            inventory = HERE / "task9-source-window-command-inventory-draft.json"
++            old_argv, old_path = sys.argv, os.environ.get("PATH", "")
++            sys.argv = ["task9_source_window.py", "--candidate", str(candidate), "--gate", str(gate),
++                "--provision", str(provision), "--shutdown", str(shutdown), "--inventory", str(inventory),
++                "--output", str(output), "--phase", "execute", "--command", "swift-l74-json", "--timeout", "2"]
++            os.environ["PATH"] = str(fakebin) + os.pathsep + old_path
++            try:
++                sw.main()
++            finally:
++                sys.argv = old_argv; os.environ["PATH"] = old_path
++            manifest = json.loads((output / "source-window-manifest.json").read_text())
++            failure = json.loads((output / "terminal-failure.json").read_text())
++            postflight = json.loads((output / "commands/swift-l74-json/postflight.json").read_text())
++            self.assertEqual(manifest["status"], "CLOSED_NONPASS_UNREVIEWED")
++            self.assertIn("nonempty-GRANTIVA_RUNNER_HOME", failure["reasons"])
++            self.assertFalse(postflight["passed"])
++            self.assertEqual((output / "commands/swift-l74-json/stdout.bin").read_text(), "fake swift success\n")
++
++    def test_bounded_runner_keeps_complete_streams_and_refuses_overwrite(self):
++        with tempfile.TemporaryDirectory() as raw:
++            root = Path(raw); out = root / "evidence"; out.mkdir()
++            result = sw.run_bounded(
++                ["python3", "-c", "import sys; print('out'); print('err', file=sys.stderr)"],
++                root, {}, 2, out)
++            self.assertEqual(result["exit"], 0)
++            self.assertEqual((out / "stdout.bin").read_bytes(), b"out\n")
++            self.assertEqual((out / "stderr.bin").read_bytes(), b"err\n")
++            marker = root / "must-not-run"
++            with self.assertRaises(RuntimeError):
++                sw.run_bounded(["python3", "-c", f"open({str(marker)!r},'w').close()"], root, {}, 2, out)
++            self.assertFalse(marker.exists())
++
++    def test_timeout_is_bounded_and_retains_partial_stream(self):
++        with tempfile.TemporaryDirectory() as raw:
++            root = Path(raw); out = root / "timeout"; out.mkdir()
++            result = sw.run_bounded(
++                ["python3", "-c", "import time,sys; print('before', flush=True); time.sleep(2)"],
++                root, {}, .05, out)
++            self.assertTrue(result["timedOut"])
++            self.assertIsNone(result["exit"])
++            self.assertEqual((out / "stdout.bin").read_bytes(), b"before\n")
++
++    def test_inventory_proposal_rejects_duplicate_and_outside_module(self):
++        with tempfile.TemporaryDirectory() as raw:
++            root = Path(raw); (root / "go.mod").write_text("module example.test/mod\n")
++            good = root / "good"; good.write_bytes(b"example.test/mod/a\nexample.test/mod/b\n")
++            proof = {"head": sw.RUNNER_SHA, "status": "", "trackedTreeSHA256": "tree"}
++            packages = sw.freeze_inventory_proposal(good, root, root / "proposal.json", "candidate", proof)
++            self.assertEqual(packages, ["example.test/mod/a", "example.test/mod/b"])
++            for name, value in (("duplicate", b"example.test/mod/a\nexample.test/mod/a\n"),
++                                ("outside", b"elsewhere.test/pkg\n")):
++                path = root / name; path.write_bytes(value)
++                with self.assertRaises(RuntimeError):
++                    sw.freeze_inventory_proposal(path, root, root / f"{name}.json", "candidate", proof)
++
++    def test_reviewed_packages_require_hash_review_and_literal_module_paths(self):
++        with tempfile.TemporaryDirectory() as raw:
++            root = Path(raw); (root / "go.mod").write_text("module example.test/mod\n")
++            candidate_hash = "c" * 64
++            runner_proof = {"realpath": str(root), "head": sw.RUNNER_SHA, "status": "",
++                            "trackedFileCount": 1, "trackedTreeSHA256": "tree"}
++            stdout = root / "stdout.bin"; stdout.write_bytes(b"example.test/mod/a\nexample.test/mod/b\n")
++            result = root / "inventory-result.json"
++            result.write_text(json.dumps({"timedOut": False, "exit": 0,
++                "stdout": {"sha256": sw.sha256(stdout)}}) + "\n")
++            start = root / "start.json"
++            start.write_text(json.dumps({"commandId": "go-inventory", "argv": [["go", "list", "./..."]],
++                "candidateManifestSHA256": candidate_hash, "source": runner_proof}) + "\n")
++            review = root / "review.json"; review.write_text('{"approved":true}\n')
++            proposal = root / "proposal.json"
++            proposal.write_text(json.dumps({"schema": "grantiva.task9.go-packages.proposal.v1",
++                "approved": False, "inventoryStdoutSHA256": sw.sha256(stdout),
++                "candidateManifestSHA256": candidate_hash, "source": runner_proof,
++                "packages": ["example.test/mod/a", "example.test/mod/b"]}) + "\n")
++            artifact = root / "packages.json"
++            artifact.write_text(json.dumps({
++                "schema": "grantiva.task9.go-packages.v1", "approved": True,
++                "inventoryResultSHA256": sw.sha256(result),
++                "review": {"path": str(review), "sha256": sw.sha256(review)},
++                "inventoryStart": {"path": str(start), "sha256": sw.sha256(start)},
++                "inventoryStdout": {"path": str(stdout), "sha256": sw.sha256(stdout)},
++                "inventoryProposal": {"path": str(proposal), "sha256": sw.sha256(proposal)},
++                "packages": ["example.test/mod/a", "example.test/mod/b"]}) + "\n")
++            packages, chain = sw.package_artifact(artifact, result, root, candidate_hash, runner_proof)
++            self.assertEqual(packages, ["example.test/mod/a", "example.test/mod/b"])
++            self.assertEqual(chain["inventoryStdout"]["sha256"], sw.sha256(stdout))
++            doc = json.loads(artifact.read_text()); doc["packages"] = ["./..."]
++            artifact.write_text(json.dumps(doc))
++            with self.assertRaises(RuntimeError):
++                sw.package_artifact(artifact, result, root, candidate_hash, runner_proof)
++
++    def test_go_chain_rejects_failed_raw_and_candidate_source_mismatches(self):
++        with tempfile.TemporaryDirectory() as raw:
++            root = Path(raw); (root / "go.mod").write_text("module example.test/mod\n")
++            stdout = root / "stdout"; stdout.write_bytes(b"example.test/mod/a\n")
++            proof = {"head": sw.RUNNER_SHA, "status": ""}; candidate = "c" * 64
++            start = root / "start"; review = root / "review"; proposal = root / "proposal"; result = root / "result"
++            start.write_text(json.dumps({"commandId":"go-inventory","argv":[["go","list","./..."]],
++                "candidateManifestSHA256":candidate,"source":proof}))
++            review.write_text('{"approved":true}')
++            proposal.write_text(json.dumps({"schema":"grantiva.task9.go-packages.proposal.v1","approved":False,
++                "inventoryStdoutSHA256":sw.sha256(stdout),"candidateManifestSHA256":candidate,
++                "source":proof,"packages":["example.test/mod/a"]}))
++            def write_artifact():
++                artifact = root / "artifact"
++                artifact.write_text(json.dumps({"schema":"grantiva.task9.go-packages.v1","approved":True,
++                    "inventoryResultSHA256":sw.sha256(result),"packages":["example.test/mod/a"],
++                    "review":{"path":str(review),"sha256":sw.sha256(review)},
++                    "inventoryStart":{"path":str(start),"sha256":sw.sha256(start)},
++                    "inventoryStdout":{"path":str(stdout),"sha256":sw.sha256(stdout)},
++                    "inventoryProposal":{"path":str(proposal),"sha256":sw.sha256(proposal)}}))
++                return artifact
++            result.write_text(json.dumps({"timedOut":False,"exit":1,"stdout":{"sha256":sw.sha256(stdout)}}))
++            with self.assertRaises(RuntimeError):
++                sw.package_artifact(write_artifact(), result, root, candidate, proof)
++            result.write_text(json.dumps({"timedOut":False,"exit":0,"stdout":{"sha256":sw.sha256(stdout)}}))
++            stdout.write_bytes(b"example.test/mod/b\n")
++            with self.assertRaises(RuntimeError):
++                sw.package_artifact(write_artifact(), result, root, candidate, proof)
++            stdout.write_bytes(b"example.test/mod/a\n")
++            with self.assertRaises(RuntimeError):
++                sw.package_artifact(write_artifact(), result, root, "d" * 64, proof)
++            with self.assertRaises(RuntimeError):
++                sw.package_artifact(write_artifact(), result, root, candidate, {"head":"wrong","status":""})
++
++    def test_full_argv_expands_only_reviewed_literals_and_and111_stays_external(self):
++        argvs, cwd = sw.command_argv("go-full", {"cwd": "runnerRepo",
++            "argv": ["go", "test", "-count=1", sw.PACKAGE_MARKER]}, Path("/tmp/out"),
++            ["example.test/mod/a", "example.test/mod/b"])
++        self.assertEqual(cwd, "runnerRepo")
++        self.assertEqual(argvs[0][-2:], ["example.test/mod/a", "example.test/mod/b"])
++        with self.assertRaises(RuntimeError):
++            sw.command_argv("go-full", {"cwd": "runnerRepo",
++                "argv": ["go", "test", "-count=1", sw.PACKAGE_MARKER]}, Path("/tmp/out"), None)
++        inventory_argv, _ = sw.command_argv("go-inventory",
++            {"cwd": "runnerRepo", "argv": ["go", "list", "./..."]}, Path("/tmp/out"), None)
++        self.assertEqual(inventory_argv, [["go", "list", "./..."]])
++        rows = sw.inventory_rows({"rows": {"AND-111": {"commands": ["and-111-compile"],
++            "separateEvidence": ["shutdown proof"]}}}, {}, None)
++        self.assertFalse(rows["AND-111"]["satisfiedHere"])
++        self.assertEqual(rows["AND-111"]["missingCommands"], ["and-111-compile"])
++
++    def test_evidence_manifest_hashes_metadata_and_streams(self):
++        with tempfile.TemporaryDirectory() as raw:
++            root = Path(raw); (root / "command").mkdir()
++            (root / "command" / "start.json").write_text("{}\n")
++            (root / "command" / "stdout.bin").write_bytes(b"stream")
++            files = sw.evidence_files(root)
++            self.assertEqual([x["path"] for x in files], ["command/start.json", "command/stdout.bin"])
++            self.assertTrue(all(len(x["sha256"]) == 64 for x in files))
++
++    def test_output_is_absolute_and_excludes_frozen_descendants(self):
++        with tempfile.TemporaryDirectory() as raw:
++            root = Path(raw).resolve(); frozen = root / "repo"; frozen.mkdir()
++            output = sw.resolve_output(root / "evidence", [frozen])
++            self.assertTrue(output.is_absolute())
++            with self.assertRaises(RuntimeError):
++                sw.resolve_output(frozen / "ignored" / "evidence", [frozen])
++
++    def test_postflight_closes_on_home_entry_and_persists_drift_observation(self):
++        with tempfile.TemporaryDirectory() as raw:
++            root = Path(raw); grantiva = root / "grantiva"; maestro = root / "maestro"
++            command_out = root / "command"; command_out.mkdir()
++            command_result = sw.run_bounded(["python3", "-c",
++                "import os,pathlib; pathlib.Path(os.environ['GRANTIVA_RUNNER_HOME'],'created-directory').mkdir(parents=True)"],
++                root, {"GRANTIVA_RUNNER_HOME":str(grantiva)}, 2, command_out)
++            baseline = {"realpath":"/fake/repo","head":sw.CLI_SHA,"status":"",
++                        "trackedFileCount":1,"trackedTreeSHA256":"before"}
++            observed = {**baseline, "head":"changed", "status":" M source.swift\n",
++                        "trackedTreeSHA256":"after"}
++            contents, reasons = sw.evaluate_postflight(
++                [command_result], [0], observed, sw.CLI_SHA, baseline,
++                {"GRANTIVA_API_KEY":"unset", "GRANTIVA_RUNNER_HOME":str(grantiva),
++                 "MAESTRO_RUNNER_HOME":str(maestro)})
++            self.assertIn("head-mismatch", reasons)
++            self.assertIn("dirty-status", reasons)
++            self.assertIn("source-proof-drift", reasons)
++            self.assertIn("nonempty-GRANTIVA_RUNNER_HOME", reasons)
++            self.assertEqual(contents["GRANTIVA_RUNNER_HOME"]["entries"],
++                             [{"path":"created-directory","kind":"directory"}])
++
++    def test_gate_accepts_markdown_review_and_binds_provision_ownership(self):
++        with tempfile.TemporaryDirectory() as raw:
++            root = Path(raw); candidate = root / "candidate.json"; gate = root / "gate.json"
++            review = root / "review.md"; cleanup = root / "cleanup.json"
++            provision = root / "provision.json"; ownership_path = root / "ownership.json"
++            shutdown = root / "shutdown.json"
++            candidate.write_text('{"schema":"grantiva.task9.candidate.v1"}\n')
++            review.write_text("# approved static review\n"); cleanup.write_text('{"passed":true}\n')
++            ownership = {"schema":"grantiva.task9.primary-ownership.v1",
++                "candidateManifestSHA256":sw.sha256(candidate), "gateEvidence":str(gate),
++                "devices":{"android":{"owned":True,"name":"cov4-android","avd":"cov4-android",
++                    "id":"emulator-5584","ownedPIDs":[123],
++                    "launch":{"pid":123,"argv":["emulator","-avd","cov4-android","-port","5584"]}}}}
++            gate.write_text(json.dumps({"schema":"grantiva.task8.zero-gate.v1","passed":True,
++                "candidateManifestSHA256":sw.sha256(candidate),
++                "review":{"path":str(review),"sha256":sw.sha256(review)},
++                "cleanup":{"path":str(cleanup),"sha256":sw.sha256(cleanup)}}))
++            ownership_path.write_text(json.dumps(ownership))
++            provision.write_text(json.dumps({"schema":"grantiva.task9.primary-provision.v1","passed":True,
++                "candidateManifestSHA256":sw.sha256(candidate),"gateEvidenceSHA256":sw.sha256(gate),
++                "ownership":ownership}))
++            shutdown.write_text(json.dumps({"schema":"grantiva.task9.android-shutdown-transition.v1",
++                "passed":True,"state":"created-shutdown","candidateManifestSHA256":sw.sha256(candidate),
++                "primaryProvisionSHA256":sw.sha256(provision),"gateEvidenceSHA256":sw.sha256(gate),
++                "allocation":{"avd":"cov4-android","serial":"emulator-5584","pid":123},
++                "ownership":{"path":str(ownership_path),"sha256":sw.sha256(ownership_path)}}))
++            bindings = sw.validate_gate(candidate, json.loads(candidate.read_text()), gate, provision, shutdown)
++            self.assertEqual(bindings["ownershipSHA256"], sw.sha256(ownership_path))
++            wrong = json.loads(ownership_path.read_text()); wrong["devices"]["android"]["ownedPIDs"] = [456]
++            ownership_path.write_text(json.dumps(wrong))
++            doc = json.loads(shutdown.read_text()); doc["ownership"]["sha256"] = sw.sha256(ownership_path)
++            shutdown.write_text(json.dumps(doc))
++            with self.assertRaises(RuntimeError):
++                sw.validate_gate(candidate, json.loads(candidate.read_text()), gate, provision, shutdown)
++
++
++if __name__ == "__main__":
++    unittest.main()

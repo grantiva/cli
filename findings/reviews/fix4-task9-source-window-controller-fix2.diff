@@ -1,0 +1,132 @@
+--- a/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_source_window.py
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_source_window.py
+@@ -75,16 +75,27 @@
+     names = git(real, "ls-files", "-z").split(b"\0")
+     digest = hashlib.sha256()
+     count = 0
++    tracked_issues = []
+     for raw in names:
+         if not raw:
+             continue
+         rel = os.fsdecode(raw)
+         path = real / rel
+-        require(path.is_file() and path.resolve().is_relative_to(real), f"invalid tracked file: {rel}")
+-        digest.update(raw + b"\0" + hashlib.sha256(path.read_bytes()).digest())
+         count += 1
++        try:
++            if not path.exists():
++                tracked_issues.append({"path": rel, "issue": "missing"})
++                digest.update(raw + b"\0MISSING\0")
++            elif not path.is_file() or not path.resolve().is_relative_to(real):
++                tracked_issues.append({"path": rel, "issue": "invalid-type-or-location"})
++                digest.update(raw + b"\0INVALID\0")
++            else:
++                digest.update(raw + b"\0" + hashlib.sha256(path.read_bytes()).digest())
++        except OSError as error:
++            tracked_issues.append({"path": rel, "issue": "unreadable", "error": type(error).__name__})
++            digest.update(raw + b"\0UNREADABLE\0" + type(error).__name__.encode())
+     return {"realpath": str(real), "head": head, "status": status.decode(errors="replace"), "trackedFileCount": count,
+-            "trackedTreeSHA256": digest.hexdigest()}
++            "trackedTreeSHA256": digest.hexdigest(), "trackedEntryIssues": tracked_issues}
+ 
+ 
+ def proof_failures(observed: dict, expected_head: str, baseline: dict | None = None) -> list[str]:
+@@ -93,6 +104,8 @@
+         failures.append("head-mismatch")
+     if observed["status"] != "":
+         failures.append("dirty-status")
++    if observed.get("trackedEntryIssues"):
++        failures.append("invalid-tracked-entries")
+     if baseline is not None and observed != baseline:
+         failures.append("source-proof-drift")
+     return failures
+@@ -259,13 +272,18 @@
+ 
+ 
+ def path_entries(path: Path) -> dict:
+-    if not path.exists() and not path.is_symlink():
+-        return {"state": "absent", "entries": []}
++    if not os.path.lexists(path):
++        return {"state": "absent", "rootKind": "absent", "entries": []}
++    if path.is_symlink():
++        return {"state": "present", "rootKind": "symlink", "entries": []}
++    if not path.is_dir():
++        kind = "file" if path.is_file() else "other"
++        return {"state": "present", "rootKind": kind, "entries": []}
+     entries = []
+     for item in sorted(path.rglob("*")):
+         kind = "symlink" if item.is_symlink() else "directory" if item.is_dir() else "file" if item.is_file() else "other"
+         entries.append({"path": str(item.relative_to(path)), "kind": kind})
+-    return {"state": "present", "entries": entries}
++    return {"state": "present", "rootKind": "directory", "entries": entries}
+ 
+ 
+ def protected_candidate_paths(candidate: dict, sources: dict[str, tuple[Path, str]]) -> list[Path]:
+@@ -298,8 +316,14 @@
+         not result["timedOut"] and result["exit"] == expected_exits[index]
+         for index, result in enumerate(results))
+     reasons = proof_failures(observed, expected_head, baseline)
+-    reasons += [f"nonempty-{key}" for key in ("GRANTIVA_RUNNER_HOME", "MAESTRO_RUNNER_HOME")
+-                if key in contents and contents[key]["entries"]]
++    for key in ("GRANTIVA_RUNNER_HOME", "MAESTRO_RUNNER_HOME"):
++        if key not in contents:
++            continue
++        inventory = contents[key]
++        if inventory["state"] == "present" and inventory["rootKind"] != "directory":
++            reasons.append(f"invalid-root-{key}")
++        elif inventory["entries"]:
++            reasons.append(f"nonempty-{key}")
+     if not command_passed:
+         reasons.append("command-exit-or-timeout")
+     return contents, reasons
+--- a/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_source_window_fixtures.py
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_source_window_fixtures.py
+@@ -38,6 +38,7 @@
+             swift_script.write_text("""#!/usr/bin/env python3
+ import os,pathlib
+ pathlib.Path(os.environ['GRANTIVA_RUNNER_HOME'],'unexpected').mkdir(parents=True)
++pathlib.Path('tracked.txt').unlink()
+ print('fake swift success')
+ """)
+             swift_script.chmod(0o755)
+@@ -83,6 +84,9 @@
+             postflight = json.loads((output / "commands/swift-l74-json/postflight.json").read_text())
+             self.assertEqual(manifest["status"], "CLOSED_NONPASS_UNREVIEWED")
+             self.assertIn("nonempty-GRANTIVA_RUNNER_HOME", failure["reasons"])
++            self.assertIn("invalid-tracked-entries", failure["reasons"])
++            self.assertEqual(failure["observedSource"]["trackedEntryIssues"],
++                             [{"issue":"missing","path":"tracked.txt"}])
+             self.assertFalse(postflight["passed"])
+             self.assertEqual((output / "commands/swift-l74-json/stdout.bin").read_text(), "fake swift success\n")
+ 
+@@ -235,7 +239,7 @@
+                 "import os,pathlib; pathlib.Path(os.environ['GRANTIVA_RUNNER_HOME'],'created-directory').mkdir(parents=True)"],
+                 root, {"GRANTIVA_RUNNER_HOME":str(grantiva)}, 2, command_out)
+             baseline = {"realpath":"/fake/repo","head":sw.CLI_SHA,"status":"",
+-                        "trackedFileCount":1,"trackedTreeSHA256":"before"}
++                        "trackedFileCount":1,"trackedTreeSHA256":"before","trackedEntryIssues":[]}
+             observed = {**baseline, "head":"changed", "status":" M source.swift\n",
+                         "trackedTreeSHA256":"after"}
+             contents, reasons = sw.evaluate_postflight(
+@@ -249,6 +253,21 @@
+             self.assertEqual(contents["GRANTIVA_RUNNER_HOME"]["entries"],
+                              [{"path":"created-directory","kind":"directory"}])
+ 
++    def test_postflight_rejects_file_and_dangling_symlink_home_roots(self):
++        with tempfile.TemporaryDirectory() as raw:
++            root = Path(raw); proof = {"realpath":"/fake/repo","head":sw.CLI_SHA,"status":"",
++                "trackedFileCount":1,"trackedTreeSHA256":"same","trackedEntryIssues":[]}
++            for name, script in (("file", "import os,pathlib; pathlib.Path(os.environ['GRANTIVA_RUNNER_HOME']).write_text('x')"),
++                                 ("dangling", "import os,pathlib; pathlib.Path(os.environ['GRANTIVA_RUNNER_HOME']).symlink_to('missing-target')")):
++                home = root / name; out = root / (name + "-command"); out.mkdir()
++                result = sw.run_bounded(["python3", "-c", script], root,
++                                        {"GRANTIVA_RUNNER_HOME":str(home)}, 2, out)
++                contents, reasons = sw.evaluate_postflight([result], [0], proof, sw.CLI_SHA, proof,
++                    {"GRANTIVA_RUNNER_HOME":str(home), "MAESTRO_RUNNER_HOME":str(root / (name + "-absent"))})
++                self.assertIn("invalid-root-GRANTIVA_RUNNER_HOME", reasons)
++                self.assertEqual(contents["GRANTIVA_RUNNER_HOME"]["rootKind"],
++                                 "file" if name == "file" else "symlink")
++
+     def test_gate_accepts_markdown_review_and_binds_provision_ownership(self):
+         with tempfile.TemporaryDirectory() as raw:
+             root = Path(raw); candidate = root / "candidate.json"; gate = root / "gate.json"
