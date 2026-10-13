@@ -1,0 +1,6 @@
+264:    func testStopOfARunnerThatIgnoresSIGINTRemovesItsSessionFileAndSaysItKilled() async throws {
+500:                cleanup: { cleaned.set(cleaned.value + 1) }
+521:                cleanup: { cleaned.set(cleaned.value + 1) }
+530:        XCTAssertEqual(cleaned.value, 1, "cleanup must run once")
+783:        XCTAssertFalse(android.calls.contains("cleanupOrphans"), "\(android.calls)")
+874:            cleanupOrphans: { _ in events.append("orphans") },

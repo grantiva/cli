@@ -359,6 +359,19 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | MCP-074 | pass | findings/evidence/cov3-android/MCP074-D241-vrt-approve-errors-rerun1/ | In an isolated project containing two genuine current Android captures, `{screens: ["Home"]}` approved only Home, then `{}` approved Home and Deep Links. Both returned Android baseline directory `.grantiva/baselines/android`, and the two baseline PNGs were inventoried. |
 
+| MCP-022 | pass | findings/evidence/cov3-android/MCP-a11y-two-screens/mcp/check-landmarks-list.json, findings/evidence/cov3-android/MCP-a11y-two-screens/mcp/check-deep-links.json, findings/evidence/cov3-android/MCP-a11y-two-screens/mcp/tree-deep-links.json | On the live Landmarks list, the Android audit reported both `missing_label` and a 411x13dp `small_tap_target` against the 48dp minimum. After navigating to Deep Links, the audit found no violations; its tree contains the Compose button labels and no merged-text button was reported `missing_label`. |
+
+
+| MCP-066 | pass | findings/evidence/cov3-android/MCP064-066-B2K55-D241-vrt-equivalence-type-rerun1/ | With no runner session, MCP capture produced the same five-screen Android document shape and five PNG paths as the exact CLI `diff capture --platform android --device emulator-5554 --no-build --json` control. |
+| D2-41 [android] | pass | findings/evidence/cov3-android/MCP074-D241-vrt-approve-errors-rerun1/, findings/evidence/cov3-android/MCP064-066-B2K55-D241-vrt-equivalence-type-rerun1/ | Device-free capture/compare/approve failures each returned one `Error:` prefix. In a live Android session, the unfocused screen failed exactly as `Screen "Unfocused Type", step 1 (Type "round3"): No focused text field...`. Exact-head VRT production/tests construct argv arrays (including hostile screen-name tests) and invoke the process without a shell (inspected, not newly executed). |
+| MCP-056 | pass | findings/evidence/cov3-android/MCP056-057-emulator-list-boot-rerun1/ | From an empty directory with no config, MCP emulator list reported both installed AVDs and identified `cov3-android` as Booted at `emulator-5554` while `Pixel_8_API_35` remained Shutdown. |
+| MCP-057 | pass | findings/evidence/cov3-android/MCP056-057-emulator-list-boot-rerun1/ | Explicit `{name: "cov3-android"}` and empty arguments using configured `emulator: cov3-android` both safely reused the already-running owned AVD at `emulator-5554`; before/after inventories retained the same sole attached emulator. |
+
+
+| X-022 [android] | pass | findings/evidence/cov3-android/MCP064-066-B2K55-D241-vrt-equivalence-type-rerun1/ | On the same five-screen Android config, exact CLI, no-session MCP, and live keep-alive MCP captures share identical decoded stable top-level/device/screen key sets, ordered names, relative paths, emulator identity/dimensions, and step action/status structure. Independent measurement fields and PNG bytes legitimately vary. |
+
+| B2-K87 [android] | pass | findings/evidence/cov3-android/B2-K87-ten-runner-cycles-rerun2/ | Ten consecutive detached start/dump/stop cycles each returned valid numeric PID/port metadata, a live Android hierarchy, and stopped cleanly. All ten runner PIDs were unique and dead afterward; every cycle removed its project session and PID-specific global owner/runner/stop files, while the adb-forward inventory returned byte-for-byte to its initial state. Exact-head lifecycle/store cleanup tests were inspected, not newly executed. |
+
 ## Counts
 
-289 of 467 slice rows recorded: 271 pass, 12 fail, 4 blocked, 2 n/a.
+296 of 467 slice rows recorded: 278 pass, 12 fail, 4 blocked, 2 n/a.
