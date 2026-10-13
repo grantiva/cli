@@ -1,0 +1,12 @@
+diff --git a/ios/Landmarks/ContentView.swift b/ios/Landmarks/ContentView.swift
+index 00205b8..e4298b6 100644
+--- a/ios/Landmarks/ContentView.swift
++++ b/ios/Landmarks/ContentView.swift
+@@ -27,6 +27,7 @@ struct ContentView: View {
+                     .screenDestination(path: $navigator.deepLinksPath)
+             }
+         }
++        .ignoresSafeArea(.container)
+         .environment(navigator)
+         .onOpenURL { url in
+             navigator.handleDeepLink(url)
