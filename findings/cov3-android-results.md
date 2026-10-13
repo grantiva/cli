@@ -640,6 +640,40 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | AND-087 [android] | pass | findings/evidence/cov3-android/AND-087-unchanged/, findings/evidence/cov3-android/B2-K108-threshold-wording-devicefree-rerun1/ | The unchanged five-screen corpus passes in text and JSON with both thresholds present. The current pinned Android changed-pixel BOTH case fails both configured threshold dimensions in text and JSON; the invalid original perceptual-only classification is excluded. |
 
+| B3-L54.2 [android] | pass | findings/evidence/cov3-android/B3-L54.2-N3-09-two-cycle-rerun1/ | Two row-owned secondary-AVD cycles start the runner in the foreground and force targeted teardown from another cwd. Both teardowns exit zero; both foreground commands exit zero with the exact teardown/session-ended notice, and each exact runner PID, global files, and temporary AVD are absent afterward while the primary remains attached. |
+
+| N3-09 [android] | pass | findings/evidence/cov3-android/B3-L54.2-N3-09-two-cycle-rerun1/ | In both foreground teardown cycles, 100-ms inventories observe the exact runner PID's `.stop.json` beside its owner/session files before cleanup. Each marker and every other PID-prefixed file disappears, the runner dies, and the foreground command exits zero with the documented teardown notice. |
+
+| N2-06 [android] | pass | findings/evidence/cov3-android/N2-06-headless-matrix-rerun1/ | Seven isolated boots match the exact headless decision matrix in their qemu argv: only `CI=true`, `CI=1`, and `GRANTIVA_EMULATOR_HEADLESS=1` use `-no-window`; captured stdout, `CI=0`, `CI=false`, and empty CI remain windowed. Current command helps and Android docs state the same rule, and the owned AVD is removed without disturbing the primary. |
+
+| D2-09 [android] | pass | findings/evidence/cov3-android/D2-09-shutdown-appfile-capture-rerun1/ | From a row-owned shut-down AVD, the exact app-file capture boots the configured device, installs the supplied APK, and completes all five configured screens. The retained command, process, adb, and report evidence proves the prescribed shutdown-to-capture lifecycle and targeted cleanup. |
+
+| B2-K06 [android] | pass | findings/evidence/cov3-android/B2-K06-N06-three-fresh-captures-rerun2/ | Three independently booted emulator processes complete their first capture with five screens and eight passed steps, without a raw-socket failure or snapshot-restore warning. Distinct qemu PIDs and `killed:true` teardowns prove each cycle used a fresh process; the wrapper's `-no-snapshot-load` proxy is outside the criterion. |
+
+| N-06 [android] | pass | findings/evidence/cov3-android/B2-K06-N06-three-fresh-captures-rerun2/ | Three fresh emulator processes each complete the exact first capture successfully with five screens and eight passed steps. All cycles have distinct qemu PIDs, no raw-socket error, no snapshot-restore warning, and complete targeted teardown before the next boot. |
+
+| B2-L06 [android] | pass | findings/evidence/cov3-android/B2-L05-L06-exact-rerun3/ | Index-zero, relative-below, and width variants each fail 3/3 with `app_crash`; launch-to-FATAL is about 0.52 seconds and launch failure is 1.17–1.28 seconds. No selector step passes, and exact runner tests cover each selector path skipped after the permitted cold-launch crash. |
+
+| B3-L06 [android] | pass | findings/evidence/cov3-android/B2-L05-L06-exact-rerun3/, findings/evidence/cov3-android/D2-02-stock-ready-pass-rerun1/ | Index-one regex and tap-fallback variants add 3/3 permitted cold-launch `app_crash` failures to the B2 selector variants, with FATAL about 0.52 seconds after launch. Exact runner tests cover the skipped selector paths and the retained stock control passes. |
+
+| B2-K27 [android] | pass | findings/evidence/cov3-android/B2-K27-pty-windowed-rerun2/, findings/evidence/cov3-android/N2-06-headless-matrix-rerun1/ | A real terminal invocation uses the windowed emulator mode while the retained seven-mode matrix proves the documented CI and explicit-headless branches. The row-owned AVD, qemu process, and terminal transcript are preserved and targeted cleanup removes only that AVD. |
+
+| N-02 [android] | pass | findings/evidence/cov3-android/N-02-B2-K54-shutdown-mcp-build-run-rerun2/ | With its configured AVD shut down, empty-argument MCP build succeeds with the expected app/freeDebug product while adb inventory remains byte-identical and the AVD never boots. The paired run then boots that same configured AVD, launches the application, and cleans it up. |
+
+| B2-K54 [android] | pass | findings/evidence/cov3-android/N-02-B2-K54-shutdown-mcp-build-run-rerun2/ | Empty-argument MCP build on a shut-down configured AVD does not boot it; the subsequent empty-argument MCP run boots that exact AVD and reports the launched Android application. Both Gradle operations pass their recorded load gates and targeted cleanup removes the owned AVD. |
+
+| B2-L02 [android] | pass | findings/evidence/cov3-android/B2-B3-L02-L05-stock99-quiet-rerun2/ | Three controlled quiet-host stock crash runs report `app_crash` with flow durations 1.662–1.831 seconds, wall times 4.321–5.266 seconds, crash-to-failure 0.241–0.381 seconds, and first artifacts within 0.514–0.763 seconds. |
+
+| B2-L05 [android] | pass | findings/evidence/cov3-android/B2-B3-L02-L05-stock99-quiet-rerun2/, findings/evidence/cov3-android/S2-01-inputtext-three-runs-rerun1/, findings/evidence/cov3-android/D2-02-stock-ready-pass-rerun1/ | Controlled stock crashes satisfy the flow, wall, failure, and capture bounds; present lookups and taps satisfy their bounds, and the full-stock first HTTP lookup maximum is 1.146137 seconds. The separate optional-step CLI aggregation defect is tracked as AND3-OBS-01/L79. |
+
+| B3-L05 [android] | pass | findings/evidence/cov3-android/B2-B3-L02-L05-stock99-quiet-rerun2/, findings/evidence/cov3-android/S2-01-inputtext-three-runs-rerun1/, findings/evidence/cov3-android/D2-02-stock-ready-pass-rerun1/ | Quiet-host exact crash repetitions satisfy all timing and artifact bounds, while current present-element and full-stock evidence keeps first lookup and tap timing within the required maxima. The optional missing-step aggregation issue remains separately disclosed as AND3-OBS-01/L79. |
+
+| B3-L14.2 [android] | pass | findings/evidence/cov3-android/B3-L14.2-cancel-gradle-rerun1/ | A real empty-argument MCP build starts the scratch project's Gradle wrapper and `:app:assembleFreeDebug` under the recorded below-20 load gate. Cancellation removes the tracked Java descendant within five seconds, emits no stale build response, and the same server answers the subsequent tools/list request before clean reaping. |
+
+| B2-K32 [android] | pass | findings/evidence/cov3-android/B2-K32-absent-app-rerun2/ | On a unique fresh AVD with the package proven absent, exact `build install --no-build` exits 1 with one app/device-specific not-installed error and no monkey argument trace. Detached runner start remains clean and exits zero; targeted stop, teardown, and deletion succeed while the primary remains attached. |
+
+| AND3-OBS-01 | fail | findings/evidence/cov3-android/B2-L05-L06-exact-rerun3/ | An optional missing tap has fast first lookups and runner overall `PASS`, but the command-level failed entry is reconstructed by the CLI as one failed step, producing a failed summary and exit 1. This reporting defect is tracked by regression brief L79; it does not change the passing lookup-timing rows or the 467-row base count. |
+
 ## Counts
 
-429 of 467 slice rows recorded: 406 pass, 17 fail, 4 blocked, 2 n/a.
+445 of 467 slice rows recorded: 422 pass, 17 fail, 4 blocked, 2 n/a.
