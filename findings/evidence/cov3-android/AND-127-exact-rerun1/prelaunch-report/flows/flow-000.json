@@ -1,0 +1,198 @@
+{
+  "id": "flow-000",
+  "name": "01-browse",
+  "sourceFile": ".maestro/01-browse.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T22:15:27.476592-07:00",
+  "endTime": "2026-10-12T22:15:30.752109-07:00",
+  "duration": 3275,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T22:15:27.482521-07:00",
+      "endTime": "2026-10-12T22:15:28.937521-07:00",
+      "duration": 1455,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "passed",
+      "startTime": "2026-10-12T22:15:28.9381-07:00",
+      "endTime": "2026-10-12T22:15:29.0631-07:00",
+      "duration": 125,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0797-0000-002f00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Featured\"",
+      "status": "passed",
+      "startTime": "2026-10-12T22:15:29.063936-07:00",
+      "endTime": "2026-10-12T22:15:29.633936-07:00",
+      "duration": 570,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Featured"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0797-0000-003900000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-12T22:15:29.634494-07:00",
+      "endTime": "2026-10-12T22:15:29.772494-07:00",
+      "duration": 138,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-003-Home.png"
+      }
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Golden Gate Bridge\"",
+      "status": "passed",
+      "startTime": "2026-10-12T22:15:29.773696-07:00",
+      "endTime": "2026-10-12T22:15:29.981696-07:00",
+      "duration": 208,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate Bridge"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Golden Gate Bridge",
+        "bounds": {
+          "x": 0,
+          "y": 425,
+          "width": 1080,
+          "height": 189
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"San Francisco, CA\"",
+      "status": "passed",
+      "startTime": "2026-10-12T22:15:29.982848-07:00",
+      "endTime": "2026-10-12T22:15:30.596848-07:00",
+      "duration": 614,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "San Francisco, CA"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0797-0000-00ae00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-006",
+      "index": 6,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Plan Visit\"",
+      "status": "passed",
+      "startTime": "2026-10-12T22:15:30.597893-07:00",
+      "endTime": "2026-10-12T22:15:30.625893-07:00",
+      "duration": 28,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Plan Visit"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0797-0000-00b400000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-007",
+      "index": 7,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-12T22:15:30.626413-07:00",
+      "endTime": "2026-10-12T22:15:30.751413-07:00",
+      "duration": 125,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-007-Landmark Detail.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 8,
+    "mean": 407,
+    "p50": 138,
+    "p95": 1455,
+    "max": 1455,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}
