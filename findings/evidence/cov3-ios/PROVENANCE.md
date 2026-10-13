@@ -224,3 +224,21 @@ Attempt57's intermediate `cp .grantiva/diffs` looked in the wrong directory and 
 `findings/evidence/cov3-ios-attempt80b/` preserves five distinct startup windows whose immediate MCP calls all correctly report the runner session is still starting; those calls do not grade the post-ready half. Its five separate CLI runs use the exact fixture whose first post-launch step taps `No Such`; all five fail with Element-not-found and never HTTP 400. `findings/evidence/cov3-ios-attempt80c/` is the MCP-only correction: in each of five new detached sessions it preserves the immediate starting response, polls explicit-U1 hierarchy to a saved Landmarks-ready tree, then performs exactly one post-ready missing-label tap. All five return Element-not-found, never HTTP 400, keep the MCP server responsive, and stop their exact owner sessions.
 
 `findings/evidence/cov3-ios-attempt81/` is the exact ten-cycle K87 lifecycle repro on owned U1. Every distinct detached start and immediate hierarchy succeeds; every matching stop returns `stopped` with the same runner PID. The per-cycle post-stop `/tmp/grantiva-sessions/<pid>-*` inventories are all empty. Exact-head `RunnerLifecycleCommandTests` separately pins SIGKILL escalation and session-file cleanup for an uncooperative runner.
+
+`findings/evidence/cov3-ios-attempt84/` is the exact two-minute post-stop residue check on owned U1. Detached start and stop return matching runner PIDs. UTC timestamps prove the full 120-second wait. The complete process snapshot and UUID filter retain only the simulator-resident Landmarks app and launchd_sim; no Grantiva runner, WDA xcodebuild or diagnose process remains. Force teardown reports `reclaimed:false`, empty process arrays and no killed-diagnose message, while preserving campaign U1.
+
+`findings/evidence/cov3-ios-attempt85b/` packages the exact retained current-candidate iPhoneSimulator app into a standard Payload IPA, preserving the source app file hashes, supported-platform plist value and archive inventory. The IPA run extracts/installs and passes browse on explicit U1. A separate installed-app no-build run passes, then exact uninstall makes the same no-build input fail with the required bundle/name/remediation before runner execution. An EXIT guard and explicit successful-path restoration reinstall the exact app; the retained app-container path proves U1 is left usable.
+
+`findings/evidence/cov3-ios-attempt86/` is the no-report JSON contract batch on explicit U1. Flow pass/fail and configured two-screen pass/fail use independent exact configs and retain all four complete JSON documents. Every command reaches its expected exit; all omit `reportDir`, failure alone carries top-level error, and every executed entry preserves its required name/kind/passed/steps/screenshots shape. Both screen documents retain exactly one entry per configured screen even when Broken fails.
+
+### Attempt 87 — iphoneos app rejection
+
+- Harness: `findings/evidence/cov3-ios/run-attempt87.sh` (SHA-256 `c75380d5985cb4df2c6c8d0d4f26a7f0199510cdc2e911e0051a2d2dd02470d3`).
+- Fresh output: `findings/evidence/cov3-ios-attempt87/`; the candidate built the fixture for `iphoneos`, retained the app inventory and supported-platform plist output, then invoked `run --no-build --app-file` with explicit owned U1.
+- The build exits 0. Candidate validation exits 1 with a platform-specific rejection before install; the output is used only for IOS-043.
+
+### Attempt 88 — configless MCP run
+
+- Frozen harness: `findings/evidence/cov3-ios/run-attempt88.sh` (SHA-256 `504987acdfbf16fabec719d9f52334c19165723e9c71f20f051bef36438be8ec`).
+- Fresh output: `findings/evidence/cov3-ios-attempt88/`. The scratch copy excludes both Grantiva config files. The request supplies the matrix scheme and a safety-required explicit owned-U1 simulator selector, which contributes no bundle identifier.
+- The MCP result and full raw transcript show the app identifier recovered from the built product and a successful install/launch. Before/after inventories prove no device was created or deleted.
