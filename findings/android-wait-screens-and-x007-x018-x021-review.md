@@ -2,7 +2,7 @@
 
 ## Android screens complement
 
-`wait-screens-complement-rerun2/` is valid. Both plain and JSON **`diff capture --no-build`** commands exit 0; all configured screens and exact-selector actions pass. Live and summary text agree on `Wait 3s` and `Wait 1.5s`, no `evalScript` appears, and JSON uses those same actions. This supports B2-K90-a. It supports only the diff-capture half of B3-L18 `[android]`: the retained commands do not exercise the row's separately required `run --no-build` screens blocks. No other current-round Android artifact found by the review contains the 1.5-second run surface, so B3-L18 remains partial.
+`wait-screens-complement-rerun2/` is valid. Both plain and JSON **`diff capture --no-build`** commands exit 0; all configured screens and exact-selector actions pass. Live and summary text agree on `Wait 3s` and `Wait 1.5s`, no `evalScript` appears, and JSON uses those same actions. This supports B2-K90-a. `B3-L18-run-wait15-complement-rerun1` supplies the missing `run --platform android --device emulator-5554 --no-build` screens surface: exit 0, `Wait 3s`, `Wait 1.5s`, all exact markers, and no `evalScript`. Joined with diff text/JSON and exact source strings, B3-L18 `[android]` is fully supported.
 
 B-C09.2 `[android]` is also supported when joined with exact candidate and runner source. `FlowGeneratorTests.testWaitStepSleepsUnconditionally` pins a generated runner `wait` for config `wait:` while separate settle steps remain `waitForAnimationToEnd`. Runner `WaitStep` is a distinct fixed-duration construct, and `executeWait` uses a timer for the requested milliseconds rather than animation settling.
 
@@ -10,7 +10,7 @@ The JSON duration `2.999` for `Wait 3s` does not establish that the wait returne
 
 ## X-007
 
-Current evidence does not fully meet the exact paired input. iOS attempt 46 is paired text/JSON but has two screens, not five. iOS attempt 39 (`appfile-capture-five.out`) is a valid five-screen JSON capture. Android has a five-screen JSON capture at `flow-contracts-bulk-exact-rerun3/K17-capture-json/stdout.log` and five-screen text at `AND-027-065diff-exact-rerun1/AND-065-diff/stdout.log`. The decoded JSON common keys and screen-item shapes agree; Android adds the documented `emulator` object alongside `simulator`, and text uses `Emulator` where iOS uses `Simulator`. The remaining exact gap is a current five-screen iOS **text** capture paired to the JSON input (or an already retained equivalent that can be indexed). X-007 therefore remains partial; the available shape comparison does not justify silently substituting the two-screen pair.
+X-007 is now supported. iOS attempt 92 is a current plain five-screen capture of the same stock screen set as attempt 39's five-screen JSON capture: Home, Favorites, Deep Links, Lakes, and Detail, with matching action lists. Android has the corresponding five-screen JSON capture at `flow-contracts-bulk-exact-rerun3/K17-capture-json/stdout.log` and plain text at `AND-027-065diff-exact-rerun1/AND-065-diff/stdout.log`. Both text modes render the same screen/action hierarchy and device/display summary, substituting `Simulator` on iOS for `Emulator` on Android. The decoded JSON common keys and screen-item shapes agree; Android adds the documented `emulator` object alongside `simulator`. Dynamic duration, timestamp, byte size, device identity, and geometry values differ without changing shape. These are genuine current captures and complete the exact five-screen text/JSON comparison.
 
 ## X-018
 
