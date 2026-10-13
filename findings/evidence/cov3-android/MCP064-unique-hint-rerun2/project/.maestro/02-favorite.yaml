@@ -1,0 +1,19 @@
+appId: com.kylebrowning.landmarks
+---
+- launchApp
+- tapOn: "Lake Tahoe"
+- tapOn: "Favorite"
+- assertVisible: "Unfavorite"
+- tapOn: "Landmarks"
+- tapOn: "Favorites"
+- assertVisible: "Lake Tahoe"
+- takeScreenshot: "Favorites With Item"
+- swipe:
+    direction: LEFT
+    from: "Lake Tahoe"
+# The swipe action's own label: the row's inline "Remove" button would also
+# remove the favorite, so tapping "Remove" passed even when the swipe missed.
+- tapOn: "Remove from favorites"
+- assertNotVisible: "Lake Tahoe"
+- assertVisible: "Landmarks you favorite will appear here."
+- takeScreenshot: "Favorites Empty"

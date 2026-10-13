@@ -1,0 +1,53 @@
+04:48:26.356590 [INFO] === Test execution started ===
+04:48:26.356661 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B2-K07-N03-default-complement-rerun2/runs/fresh-1/report
+04:48:26.356667 [INFO] Platform: android
+04:48:26.356672 [INFO] Driver: uiautomator2
+04:48:26.357006 [INFO] Validated 1 flow(s)
+04:48:26.357030 [INFO] Single device execution mode
+04:48:26.357036 [INFO] Starting flow execution (parallel: false, devices: [])
+04:48:26.357041 [INFO] Creating driver for single device execution
+04:48:26.357046 [INFO] Connecting to Android device: emulator-5556
+04:48:26.518955 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5556, Emulator: true
+04:48:28.079146 [INFO] Starting UIAutomator2 server on device emulator-5556
+04:48:28.700696 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5556.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5556.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5556.sock' not found
+04:48:28.713631 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+04:48:31.327975 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+04:48:31.343094 [INFO] Session created successfully: 69a0ba91-02d9-4d89-8259-6c66fda22c14
+04:48:31.548028 [INFO] Driver created: android on google sdk_gphone64_arm64
+04:48:31.549558 [INFO] === Starting flow: 10-seed-many ===
+04:48:31.549563 [INFO] Flow file: .maestro/10-seed-many.yaml
+04:48:31.549567 [INFO] Total steps: 7
+04:48:31.558163 [DEBUG] Executing step 0: launchApp
+04:48:31.807245 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+04:48:31.807283 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 55ms
+04:48:32.911382 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.01s after launch, pids [3658], drawn=false crashed=false (read 70ms)
+04:48:33.302374 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.333s after launch, pids [3658], drawn=true crashed=false (read 139ms)
+04:48:33.302428 [DEBUG] Step 0 completed successfully (1744ms): launchApp
+04:48:33.302847 [DEBUG] Executing step 1: scroll: DOWN
+04:48:35.772560 [INFO] scroll down: dragged 1200 px in {0 432 1080 1632}, content moved 1179 px (measured=true)
+04:48:35.772592 [DEBUG] Step 1 completed successfully (2469ms): scroll: DOWN
+04:48:35.772958 [DEBUG] Executing step 2: scroll: DOWN
+04:48:36.994092 [INFO] scroll down: dragged 1200 px in {0 432 1080 1632}, content moved 1203 px (measured=true)
+04:48:36.994115 [DEBUG] Step 2 completed successfully (1221ms): scroll: DOWN
+04:48:36.994509 [DEBUG] Executing step 3: scroll: DOWN
+04:48:38.147637 [INFO] scroll down: dragged 1200 px in {0 432 1080 1632}, content moved 1179 px (measured=true)
+04:48:38.147667 [DEBUG] Step 3 completed successfully (1153ms): scroll: DOWN
+04:48:38.148078 [DEBUG] Executing step 4: scroll: DOWN
+04:48:39.366796 [INFO] scroll down: dragged 1200 px in {0 432 1080 1632}, content moved 1179 px (measured=true)
+04:48:39.366813 [DEBUG] Step 4 completed successfully (1218ms): scroll: DOWN
+04:48:39.367232 [DEBUG] Executing step 5: assertVisible: text="Landmark 28"
+04:48:39.367451 [DEBUG] Flutter: parallel search (text="Landmark 28", id="")
+04:48:39.442035 [DEBUG] Flutter: com.kylebrowning.landmarks has no libflutter.so; not searching the Flutter VM
+04:48:39.442074 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+04:48:39.445184 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 78ms)
+04:48:39.490003 [DEBUG] Step 5 completed successfully (122ms): assertVisible: text="Landmark 28"
+04:48:39.490400 [DEBUG] Executing step 6: takeScreenshot
+04:48:39.956709 [DEBUG] Step 6 completed successfully (466ms): takeScreenshot
+04:48:39.957965 [INFO] === Flow completed: 10-seed-many (status: passed, duration: 8407ms, passed: 7, failed: 0, skipped: 0) ===
+04:48:40.371714 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5556.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5556.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5556.sock' not found
+04:48:40.384556 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+04:48:40.384583 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+04:48:40.384793 [INFO] Generating reports...
+04:48:40.385620 [INFO] Shutting down devices started by maestro-runner...
+04:48:40.385645 [INFO] Shutting down all tracked emulators
+04:48:40.385652 [INFO] Shutting down all tracked simulators
