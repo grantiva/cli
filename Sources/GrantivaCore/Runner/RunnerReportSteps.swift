@@ -23,6 +23,13 @@ enum RunnerReportSteps {
                 let type: String?
                 let message: String?
             }
+            struct Artifacts: Decodable {
+                let screenshotBefore: String?
+                let screenshotAfter: String?
+                let viewHierarchy: String?
+                let logTail: String?
+                let notes: [String: String]?
+            }
             let index: Int?
             let type: String?
             let yaml: String?
@@ -30,9 +37,23 @@ enum RunnerReportSteps {
             /// Milliseconds, as the runner measured it.
             let duration: Double?
             let error: Failure?
-            let artifacts: [String: String]?
+            let artifacts: Artifacts?
+            let subCommands: [Command]?
         }
         let commands: [Command]?
+    }
+
+    /// Log-tail paths attributed to their top-level command. Nested commands
+    /// use their own filenames but belong to the enclosing step for trailing
+    /// trace selection.
+    static func logTailArtifacts(_ commands: [FlowData.Command]) -> [(path: String, commandIndex: Int)] {
+        func paths(in command: FlowData.Command, owner: Int) -> [(String, Int)] {
+            let own = command.artifacts?.logTail.map { [($0, owner)] } ?? []
+            return own + (command.subCommands ?? []).flatMap { paths(in: $0, owner: owner) }
+        }
+        return commands.enumerated().flatMap { position, command in
+            paths(in: command, owner: command.index ?? position)
+        }
     }
 
     static func report(in reportDir: String) -> Report? {

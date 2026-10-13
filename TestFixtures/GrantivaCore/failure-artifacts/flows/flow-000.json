@@ -1,0 +1,34 @@
+{
+  "id": "flow-000",
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "duration": 1445,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "extendedWaitUntil",
+      "yaml": "extendedWaitUntil: visible text=\"This never appears\"",
+      "status": "failed",
+      "duration": 294,
+      "error": {
+        "type": "app_crash",
+        "message": "app crashed after launch"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml",
+        "logTail": "assets/flow-000/cmd-001-log-tail.txt",
+        "notes": {
+          "hierarchy": "context deadline exceeded"
+        }
+      }
+    }
+  ]
+}

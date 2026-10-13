@@ -732,9 +732,9 @@ public enum RunnerSession {
         }
     }
 
-    /// Copies the runner's per-step artifacts (PNG screenshots + XML hierarchy
-    /// dumps) out of the temp report dir into a user-visible `trace/` folder,
-    /// applying the snapshot policy.
+    /// Copies the runner's per-step artifacts (PNG screenshots, XML hierarchy
+    /// dumps, and referenced failure log tails) out of the temp report dir
+    /// into a user-visible `trace/` folder, applying the snapshot policy.
     ///
     /// - `failure`: no trace/ files written. The simctl post-failure shot from
     ///   RunCommand is still captured separately.
@@ -783,25 +783,44 @@ public enum RunnerSession {
             guard fm.fileExists(atPath: flow.assetsURL.path, isDirectory: &isDirectory),
                   isDirectory.boolValue else { continue }
 
+            let reportFlow = RunnerReportSteps.report(in: reportDir)?.flows?.first { $0.id == flow.id }
+            let logTailReferences = RunnerReportSteps.logTailArtifacts(
+                reportFlow.map { RunnerReportSteps.commands(of: $0, in: reportDir) } ?? []
+            )
+            let logTails = Dictionary(
+                logTailReferences.map { (URL(fileURLWithPath: $0.path).lastPathComponent, $0) },
+                uniquingKeysWith: { first, _ in first }
+            )
+            let reportRoot = URL(fileURLWithPath: reportDir, isDirectory: true).standardizedFileURL
             var artifacts: [StepArtifact] = []
             for name in ((try? fm.contentsOfDirectory(atPath: flow.assetsURL.path)) ?? []).sorted() {
-                guard name.hasPrefix("cmd-") else { continue }
                 let lowercasedName = name.lowercased()
-                guard lowercasedName.hasSuffix(".png") || lowercasedName.hasSuffix(".xml") else {
-                    continue
-                }
-                let stripped = String(name.dropFirst("cmd-".count))
-                let parts = stripped.split(separator: "-", maxSplits: 1).map(String.init)
-                guard let indexStr = parts.first, let idx = Int(indexStr) else { continue }
+                let idx: Int
                 let kind: String
-                if name.hasSuffix("-before.png") {
-                    kind = "before"
-                } else if name.hasSuffix("-after.png") {
-                    kind = "after"
-                } else if name.hasSuffix(".xml") {
-                    kind = "xml"
+                if let referencedLog = logTails[name] {
+                    let reference = referencedLog.path
+                    guard !NSString(string: reference).isAbsolutePath,
+                    reportRoot.appendingPathComponent(reference).standardizedFileURL
+                        == flow.assetsURL.appendingPathComponent(name).standardizedFileURL else { continue }
+                    idx = referencedLog.commandIndex
+                    kind = "logTail"
                 } else {
-                    kind = "other"
+                    guard name.hasPrefix("cmd-"), lowercasedName.hasSuffix(".png") || lowercasedName.hasSuffix(".xml") else {
+                        continue
+                    }
+                    let stripped = String(name.dropFirst("cmd-".count))
+                    let parts = stripped.split(separator: "-", maxSplits: 1).map(String.init)
+                    guard let indexStr = parts.first, let parsedIndex = Int(indexStr) else { continue }
+                    idx = parsedIndex
+                    if name.hasSuffix("-before.png") {
+                        kind = "before"
+                    } else if name.hasSuffix("-after.png") {
+                        kind = "after"
+                    } else if name.hasSuffix(".xml") {
+                        kind = "xml"
+                    } else {
+                        kind = "other"
+                    }
                 }
                 do {
                     artifacts.append(StepArtifact(

@@ -64,6 +64,32 @@ final class RunnerReportContractTests: XCTestCase {
         XCTAssertEqual(steps.last?.message, "Element not visible")
     }
 
+    func testFailureArtifactSchemaKeepsCommandsAndFailureDetails() throws {
+        let fixture = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+            .deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("TestFixtures/GrantivaCore/failure-artifacts")
+        try FileManager.default.copyItem(at: fixture.appendingPathComponent("report.json"),
+                                         to: reportDir.appendingPathComponent("report.json"))
+        try FileManager.default.copyItem(at: fixture.appendingPathComponent("flows/flow-000.json"),
+                                         to: reportDir.appendingPathComponent("flows/flow-000.json"))
+
+        let flow = try XCTUnwrap(RunnerReportSteps.report(in: reportDir.path)?.flows?.first)
+        let commands = RunnerReportSteps.commands(of: flow, in: reportDir.path)
+        XCTAssertEqual(commands.count, 2)
+        XCTAssertEqual(commands.last?.artifacts?.logTail, "assets/flow-000/cmd-001-log-tail.txt")
+        XCTAssertEqual(commands.last?.artifacts?.notes?["hierarchy"], "context deadline exceeded")
+        XCTAssertEqual(RunnerReportSteps.steps(commands).last?.message, "app crashed after launch")
+        XCTAssertEqual(RunnerReportSteps.firstFailure(in: reportDir.path)?.line,
+                       "crash-flow: extendedWaitUntil: visible text=\"This never appears\": app crashed after launch")
+
+        RunnerReportFinalizer.finalize(reportDir: reportDir.path, status: "failed", reason: "ignored for terminal report")
+        RunnerReportRewriter.rewrite(reportDir: reportDir.path, stagedPathMap: ["/staged/crash.yaml": "flows/crash.yaml"])
+        let persisted = try json("flows/flow-000.json")
+        let artifacts = try XCTUnwrap((persisted["commands"] as? [[String: Any]])?.last?["artifacts"] as? [String: Any])
+        XCTAssertEqual(artifacts["logTail"] as? String, "assets/flow-000/cmd-001-log-tail.txt")
+        XCTAssertEqual((artifacts["notes"] as? [String: String])?["hierarchy"], "context deadline exceeded")
+    }
+
     func testScreenStepsCarryTheDurationsOfTheCommandsTheyGenerated() throws {
         let screens = [
             GrantivaConfig.Screen(name: "Home", path: .launch),
