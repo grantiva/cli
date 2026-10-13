@@ -358,3 +358,12 @@ Ruling: B3-L55.1/.2 input requiring a ready file with a running flow is an expec
 - Stale session replacement, subscription/unsubscription notification sequence, and quoted-label MCP script pass. Quoted-script wrapper expected an absent summary phrase; raw seven successful steps and real detail tree are authoritative. All-new/mixed baseline CLI and MCP comparisons now both report expected failure.
 - Android first-tap dispatch overhead is below300ms with plain query first; three edit runs and the nonclickable-parent control pass. Five input runs under generated load pass; all12 row-created yes PIDs were killed/reaped and absence verified.
 - Broad Android remaining-family audit distinguishes reusable exact joins from missing lifecycle/recording/gesture inputs. Full campaign and Task6 remain incomplete.
+
+
+### Repeated cleanup, swipe geometry, and threshold continuation
+
+- iOS115b three fresh-device ready/start/stop cycles return0; no device-matching WDA/xcodebuild/iproxy immediately or60s later; scoped teardown deletes the UUID.117 runner-home scan finds no dlrun directories.116 pipelined MCP context/list returns both IDs with captured simctl/xcodebuild descendants; wrapper1 only because debug stderr is empty, independent review pending.
+- AndroidL62 five runner continuation taps pass with visible Remove before and empty Favorites after. Original wrapper1 used incorrect Lake-label/screenshot-log proxies; additive raw decoding preserves the original and verifies exact screenshot-before-tap ordering. K09 ten swipe-from runs and stock02 pass, pointer trace matches the deliberate far-side start; acceptance review pending.
+- Manually started test-owned Android AVD is refused by unforced teardown/delete, then removed by force. Running primary AVD delete is refused even with force; primary remains available. All nine decoded controls pass and created secondary is removed.
+- iOS118 frozen-corpus pixel-only, perceptual-only and combined threshold failures name the corresponding exceeded limits in text/JSON. Android late-change recording observes last frame3510ms, track end3527ms, final video4.0s and correctly suppresses warning; wrapper1 only expects hyphenated wording instead of actual `note=not printed`.
+- Latest iOS audit460/478; Android391/467 before pending review additions. Full slices and Task6 remain incomplete; verification has not modified product sources.
