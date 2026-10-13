@@ -17,14 +17,14 @@ The slice used `/Users/kyle/.grantiva-qa/bin/grantiva` 2.1.0, SHA-256 `3f3293aaf
 ## Fails
 
 - `CLI-003` — matrix/brief triage: the old `findings/help/simulator_teardown.txt` lacks the L63 sentence that the candidate adds; the other 171 pages match.
-- `CLI-025` — matrix/brief triage: doctor puts the ambiguous-platform warning under Project, while toolchains are under Advisory; the corrected expectation names Advisory for the warning itself.
+- `CLI-025` — product contract failure: doctor puts the ambiguous-platform warning under Project in text and JSON; the binding corrected criterion requires Advisory, and candidate `DoctorCommand.swift:51-59` explicitly assigns `.project`. The independently approved L67 triage owns the fix.
 - `CLI-045` — matrix/brief triage: current round-3 usage ruling requires exit 64 and the usage block for `--device` plus `--emulator`; the older row still expects exit 1.
 - `CLI-145` — matrix/brief triage: the three platform-option errors match, but the older row expects exit 1 for `--device` plus `--emulator`; the round-3 usage ruling now requires exit 64 and the usage block.
 - `D2-27` — matrix/brief triage: the older seven-page expectation conflicts with L29, which intentionally removes `--headless` from `build build`.
 - `D2-47` — matrix/brief triage: 16/17 selected pages match; the old `findings/help/simulator_teardown.txt` lacks the L63 sentence that the candidate adds.
 - `N3-16` — matrix/brief triage: the documentation additions are present, but its old-corpus criterion fails because old `findings/help/simulator_teardown.txt` lacks the L63 sentence that the candidate adds.
 
-All seven fails are matrix/brief expectation or stale-evidence issues.
+One fail is a product contract failure (`CLI-025`). The other six are pending matrix or stale-corpus evidence corrections and are not product defects.
 
 ## Blocked rows
 
