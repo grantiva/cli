@@ -13,9 +13,9 @@ Candidate manifest: `findings/evidence/round4-smoke-candidate3/candidate.json`, 
 |---|---|---|
 | Fresh merged build, promotion, upgrade, freeze | PASS | Independent APPROVED |
 | Docs/output:172help pages,16tests | PASS | Independent APPROVED |
-| Owned provisioning | PASS | Pending |
-| iOS MCP selectors and transport | Running | Pending |
-| Android runner | Not run | Pending |
+| Owned provisioning | PASS | Independent APPROVED |
+| iOS MCP selectors and transport | PASS | Independent APPROVED |
+| Android runner | Running | Pending |
 | Lifecycle | Not run | Pending |
 | Joint forwarding ownership | Not run | Pending |
 | Android MCP | Not run | Pending |
