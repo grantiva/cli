@@ -1,0 +1,214 @@
+{
+  "id": "flow-007",
+  "name": "08-caching",
+  "sourceFile": ".maestro/08-caching.yaml",
+  "device": {
+    "id": "563907E1-703D-4322-AE5F-FC3B06D03143",
+    "name": "cov3-ios-26",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T00:51:20.336157-07:00",
+  "endTime": "2026-10-13T00:51:30.161834-07:00",
+  "duration": 9825,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T00:51:20.33722-07:00",
+      "endTime": "2026-10-13T00:51:22.37422-07:00",
+      "duration": 2037,
+      "artifacts": {
+        "screenshotBefore": "assets/flow-007/cmd-000-before.png",
+        "screenshotAfter": "assets/flow-007/cmd-000-after.png"
+      }
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:51:22.457512-07:00",
+      "endTime": "2026-10-13T00:51:24.278512-07:00",
+      "duration": 1821,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "1E000000-0000-0000-814B-010000000000",
+        "text": "Deep Links",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 240,
+          "y": 795,
+          "width": 95,
+          "height": 54
+        }
+      },
+      "artifacts": {
+        "screenshotBefore": "assets/flow-007/cmd-001-before.png",
+        "screenshotAfter": "assets/flow-007/cmd-001-after.png"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Caching Demo\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:51:24.364579-07:00",
+      "endTime": "2026-10-13T00:51:26.662579-07:00",
+      "duration": 2298,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Caching Demo"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "19010000-0000-0000-814B-010000000000",
+        "text": "Caching Demo",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 16,
+          "y": 260,
+          "width": 370,
+          "height": 53
+        }
+      },
+      "artifacts": {
+        "screenshotBefore": "assets/flow-007/cmd-002-before.png",
+        "screenshotAfter": "assets/flow-007/cmd-002-after.png"
+      }
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Cache Policy\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:51:26.742686-07:00",
+      "endTime": "2026-10-13T00:51:27.299686-07:00",
+      "duration": 557,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Cache Policy"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "B7010000-0000-0000-814B-010000000000",
+        "text": "Cache Policy",
+        "class": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 32,
+          "y": 542,
+          "width": 99,
+          "height": 21
+        }
+      },
+      "artifacts": {
+        "screenshotBefore": "assets/flow-007/cmd-003-before.png",
+        "screenshotAfter": "assets/flow-007/cmd-003-after.png"
+      }
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Fetch with Policy\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:51:27.37888-07:00",
+      "endTime": "2026-10-13T00:51:28.51088-07:00",
+      "duration": 1132,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Fetch with Policy"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "B9010000-0000-0000-814B-010000000000",
+        "text": "Fetch with Policy",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 16,
+          "y": 578,
+          "width": 370,
+          "height": 53
+        }
+      },
+      "artifacts": {
+        "screenshotBefore": "assets/flow-007/cmd-004-before.png",
+        "screenshotAfter": "assets/flow-007/cmd-004-after.png"
+      }
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-13T00:51:28.590063-07:00",
+      "endTime": "2026-10-13T00:51:28.848063-07:00",
+      "duration": 258,
+      "artifacts": {
+        "screenshotBefore": "assets/flow-007/cmd-005-before.png",
+        "screenshotAfter": "assets/flow-007/cmd-005-Caching Demo.png"
+      }
+    },
+    {
+      "id": "cmd-006",
+      "index": 6,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Clear Cache\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:51:28.919281-07:00",
+      "endTime": "2026-10-13T00:51:30.053281-07:00",
+      "duration": 1134,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Clear Cache"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "BC010000-0000-0000-814B-010000000000",
+        "text": "Clear Cache",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 16,
+          "y": 700,
+          "width": 370,
+          "height": 53
+        }
+      },
+      "artifacts": {
+        "screenshotBefore": "assets/flow-007/cmd-006-before.png",
+        "screenshotAfter": "assets/flow-007/cmd-006-after.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 7,
+    "mean": 1319,
+    "p50": 1134,
+    "p95": 2298,
+    "max": 2298,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}

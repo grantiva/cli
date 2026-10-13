@@ -185,3 +185,14 @@ Attempt57's intermediate `cp .grantiva/diffs` looked in the wrong directory and 
 
 
 `findings/evidence/cov3-ios-attempt65b/` is the installed-app discriminator for attempt65's no-app-file skipped control. On U1 with the app proven present, the exact command exits 0 and prints the documented Done/install-skipped line while preserving the same container. This does not erase attempt65's valid absent-app result: there the same control prints skipping then exits 1 NSPOSIX2. D2-08 records that literal product-contract failure while retaining the three successful app-file surfaces and permitted CI auth boundary.
+
+
+`findings/evidence/cov3-ios-attempt66/` is the coordinated no-bundle app-ID/build-status batch. Exact no-build flow fails with the required project-detection hint, while the built form detects the app ID and passes. Built launch and no-launch JSON return launched/installed. The final skipped-status leg is a harness input gap because the deliberately bundle-less D2-06 config cannot identify an installed app; it is not a product failure and D2-07 remains partial until attempt66b supplies the missing explicit bundle.
+
+
+`findings/evidence/cov3-ios-attempt66b/` supplies attempt66's one omitted build-install state using an explicit owned U1 and bundle ID with the app proven present. Exact JSON exits 0 with `status: skipped`; joined with attempt66's built launched/installed documents it closes D2-07.
+
+`findings/evidence/cov3-ios-attempt68/` is the complete pass/fail output-mode matrix. Quiet, JSON and JSON+verbose each use exact pass and exact-negative flows with separate retained reports; two additional plain commands omit report-dir. All expected exits occur. Raw streams demonstrate the binding L10 quiet distinction, JSON suppression, verbose runner restoration, failure Error preservation, and exact no-report notice without leaked temp paths.
+
+
+`findings/evidence/cov3-ios-attempt69b/` supersedes unrun attempt69. Its fail-config mutation replaces only the flows block and asserts that both pass/fail configs retain all five screens. The pass run adds exact snapshot-full and executes screens plus all twelve stock flows; the fail run executes the same five screens plus exact-negative. Both ready files list screens first, carry existing reportDir paths and earned terminal status. Both report roots retain their `screens/` subtree; the pass root also retains full trace captures.
