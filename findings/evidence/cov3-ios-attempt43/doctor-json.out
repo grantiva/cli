@@ -1,0 +1,56 @@
+[
+  {
+    "fix" : "Point at an installed Xcode: sudo xcode-select -s \/Applications\/Xcode.app (or unset DEVELOPER_DIR)",
+    "message" : "\/nonexistent does not exist",
+    "name" : "Xcode",
+    "section" : "Required",
+    "status" : "error"
+  },
+  {
+    "fix" : "Ensure Xcode is properly installed",
+    "message" : "Could not determine Xcode version",
+    "name" : "Xcode Version",
+    "section" : "Required",
+    "status" : "error"
+  },
+  {
+    "fix" : "Fix the Xcode check above (xcode-select -p, or unset DEVELOPER_DIR), then run grantiva doctor again",
+    "message" : "Could not list simulators: xcrun: error: missing DEVELOPER_DIR path: \/nonexistent",
+    "name" : "Booted Simulator",
+    "section" : "Advisory",
+    "status" : "warning"
+  },
+  {
+    "message" : "grantiva-runner 1.1.28-grantiva.13+android-drivers-2",
+    "name" : "Runner",
+    "section" : "Advisory",
+    "status" : "ok"
+  },
+  {
+    "message" : "Found",
+    "name" : "grantiva.yml",
+    "section" : "Project",
+    "status" : "ok"
+  },
+  {
+    "fix" : "Run: git init",
+    "message" : "Not a git repository",
+    "name" : "Git Repository",
+    "section" : "Project",
+    "status" : "warning"
+  },
+  {
+    "fix" : "Run: grantiva auth login",
+    "message" : "Not authenticated — remote baselines unavailable",
+    "name" : "Grantiva Auth",
+    "section" : "CI \/ Cloud",
+    "status" : "warning"
+  },
+  {
+    "fix" : "Install the GitHub App from your Grantiva dashboard settings",
+    "message" : "GitHub App not configured — Check Runs won't be posted",
+    "name" : "GitHub App",
+    "section" : "CI \/ Cloud",
+    "status" : "warning"
+  }
+]
