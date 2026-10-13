@@ -173,3 +173,6 @@ Attempt57's intermediate `cp .grantiva/diffs` looked in the wrong directory and 
 
 
 `findings/evidence/cov3-ios-attempt63/` is the fresh recording boundary/path/concurrency batch. It first retains a default recording, then proves the past-duration validation exits 64 quickly without changing those bytes and the equal-duration boundary is accepted. Unique relative and absolute text/JSON outputs preserve every MOV and extracted frame. For the scrolling case, the harness waits until exact flow 10 completes a live scroll while its PID remains active, records the observed line/epoch, then captures requested 500/1500 ms frames at actual 487/1493 ms while the remaining scroll steps run; both the recording and flow exit 0.
+
+
+`findings/evidence/cov3-ios-attempt64/` is the fresh four-row lifecycle/UI batch. Both owned simulators are preflighted booted. A config-selected U1 capture retains five plain-name PNGs while U2 keeps its exact app-container path and boot state. A foreground U1 keep-alive run reaches its passed hold without any runner-start command; exact dump-hierarchy fallback succeeds and a second same-UDID run promptly returns the owner PID/freeing guidance. After releasing only that PID, a fresh explicit-U1 detached session passes the literal three-step Favorites/wait/point-tap MCP script and is stopped by the same scratch owner.

@@ -1,0 +1,9 @@
+[
+ {"method":"initialize","params":{}},
+ {"_shell":"/Users/kyle/.grantiva-qa/bin/grantiva runner start --json --bundle-id com.kylebrowning.Landmarks --simulator 563907E1-703D-4322-AE5F-FC3B06D03143 --platform ios --detach"},
+ {"_shell":"xcrun simctl launch 563907E1-703D-4322-AE5F-FC3B06D03143 com.kylebrowning.Landmarks"},
+ {"_shell":"for n in {1..12}; do /Users/kyle/.grantiva-qa/bin/grantiva hierarchy --udid 563907E1-703D-4322-AE5F-FC3B06D03143 --format json > /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt64/readiness-$n.json 2> /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt64/readiness-$n.err && rg -q Landmarks /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt64/readiness-$n.json && exit 0; sleep 1; done; exit 1"},
+ {"method":"tools/call","params":{"name":"grantiva_script","arguments":{"steps":[{"tap":"Favorites"},{"wait":1},{"tap_xy":{"x":200,"y":400}}]}},"_save":"exact-script.json"},
+ {"method":"tools/call","params":{"name":"grantiva_a11y_tree","arguments":{}},"_save":"post-script-tree.json"},
+ {"method":"tools/list","params":{}}
+]
