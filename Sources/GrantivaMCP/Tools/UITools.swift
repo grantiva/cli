@@ -29,7 +29,7 @@ enum UITools {
         ),
         Tool(
             name: "grantiva_tap",
-            description: "Tap on a UI element by accessibility label or by coordinates. A label is matched against the accessibility label first; on iOS, when no element has that label, against the accessibility identifier (WDA's name) and then a text field's placeholder, and the result says which matched. After tapping, returns the updated accessibility tree so you can see what changed.",
+            description: "Tap on a UI element by accessibility label or by coordinates. A label is matched against the accessibility label first; on iOS, when no element has that label, against the accessibility identifier (WDA's identifier) and then a text field's placeholder, and the result says which matched. After tapping, returns the updated accessibility tree so you can see what changed.",
             inputSchema: .object([
                 "type": .string("object"),
                 "properties": .object([
