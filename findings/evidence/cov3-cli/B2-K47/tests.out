@@ -1,0 +1,11 @@
+93:    func testABogusFormatIsAUsageErrorNamingTheChoices() {
+94-        XCTAssertThrowsError(try DumpHierarchyCommand.parse(["--format", "bogus"])) { error in
+95-            XCTAssertEqual(DumpHierarchyCommand.exitCode(for: error), .validationFailure)
+96-            let message = DumpHierarchyCommand.message(for: error)
+97-            for choice in ["tree", "json", "xml"] {
+--
+103:    func testFormatIsCaseInsensitive() throws {
+104-        XCTAssertEqual(try DumpHierarchyCommand.parse(["--format", "Tree"]).outputFormat, "tree")
+105-        XCTAssertEqual(try DumpHierarchyCommand.parse(["--format", "JSON"]).outputFormat, "json")
+106-        XCTAssertNoThrow(try DumpHierarchyCommand.parse(["--json", "--format", "JSON"]))
+107-    }

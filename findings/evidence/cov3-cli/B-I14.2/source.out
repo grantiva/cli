@@ -1,0 +1,30 @@
+8:    private let capacity: SimulatorCapacity
+18:    /// Test seam: a scripted `simctl` and private capacity/provenance stores.
+21:        capacity: SimulatorCapacity = .live,
+26:        self.capacity = capacity
+73:    /// The line emitted while a boot waits for host capacity, and the level it
+82:    static func capacityWait(
+87:        return (.warning, "Waiting for simulator capacity (\(sessions.count)/\(maximum)): \(owners)")
+91:    /// the same device is not a capacity wait, and says so.
+92:    static func waitMessage(_ wait: SimulatorCapacity.Wait, maximum: Int) -> (level: Logger.Level, message: String) {
+94:        case .capacity(let sessions):
+95:            return capacityWait(sessions: sessions, maximum: maximum)
+101:    /// Boots a simulator and takes a capacity slot for it.
+115:            guard try capacity.sessions(devices: devices).contains(where: { $0.udid == device.udid }) else {
+119:        _ = try await capacity.reserve(device: device, ephemeral: ephemeral, devices: { try await listDevices() }) { wait, elapsed in
+121:            let line = Self.waitMessage(wait, maximum: capacity.maximum)
+133:            try capacity.activate(udid: device.udid, bootedByGrantiva: !current.isBooted)
+135:            try? capacity.releaseReservation(udid: device.udid)
+142:    /// Grantiva created (it is in the created-simulator ledger). A simulator
+143:    /// of that name the user created is refused, booted or not, before any
+145:    /// pick a simulator (`override`, see `DefaultSimulator.notCreatedRefusal`).
+152:    /// or prepares anything: the simulator named `name`, if Grantiva created it.
+158:                DefaultSimulator.notCreatedRefusal(name: device.name, udid: device.udid, override: override)
+165:    /// (nothing named one, no runner session), only if Grantiva created it:
+170:            throw GrantivaError.invalidArgument(DefaultSimulator.notCreatedRefusal(
+177:    /// The UDIDs in the created-simulator ledger; empty when it cannot be read.
+178:    public func createdUDIDs() -> Set<String> {
+236:        let (created, provisionedUDID): (Bool, String) = try await provenance.withProvisioningLock {
+279:                // A failed ensure (most often a capacity-wait timeout) leaves
+280:                // the host as it found it: remove a device this call created.
+282:                if created {

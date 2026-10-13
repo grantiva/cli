@@ -1,0 +1,70 @@
+
+// R02: a left swipe from text near the left edge used to run from its centre
+// to 10% of the screen, a 47 px drag that left the row closed. It now runs to
+// the screen edge, starting from the text's far side because its centre is
+// within a quarter of the screen of that edge.
+func TestSwipeFromNearEdgeElementReachesScreenEdge(t *testing.T) {
+	client := newAdbSwipeClient()
+	client.sourceFunc = favoritesSource("[42,469][269,532]")
+	shell := &mockShell{}
+	driver := New(client, &core.PlatformInfo{ScreenWidth: 1080, ScreenHeight: 2400}, shell)
+
+	step := &flow.SwipeStep{
+		Direction: "LEFT",
+		Selector:  &flow.Selector{Text: "Lake Tahoe"},
+		BaseStep:  flow.BaseStep{TimeoutMs: 1000},
+	}
+	if res := driver.swipe(step); !res.Success {
+		t.Fatalf("swipe failed: %v (%s)", res.Error, res.Message)
+	}
+	if len(shell.commands) != 1 || shell.commands[0] != "input swipe 246 500 0 500 300" {
+		t.Errorf("got %q, want [input swipe 246 500 0 500 300]", shell.commands)
+	}
+}
+
+// F01: an element without usable bounds fails the step instead of falling
+// through to a screen-centre swipe that ignores `from:`.
+pkg/driver/appium/swipe_geometry_test.go:46:	server := swipeActionsServer(map[string]interface{}{"x": 42.0, "y": 469.0, "width": 227.0, "height": 63.0}, &body)
+pkg/driver/appium/swipe_geometry_test.go:88:		{"pixels", "900, 520", "100, 520", []string{`"x":900,"y":520`, `"x":100,"y":520`}},
+pkg/driver/devicelab/swipe_geometry_test.go:79:		{"pixels", "900, 520", "100, 520", "input swipe 900 520 100 520 300"},
+pkg/driver/uiautomator2/swipe_geometry_test.go:11:// percentages, so `900, 520` became 900% of the screen and the swipe landed
+pkg/driver/uiautomator2/swipe_geometry_test.go:17:		{"pixels", "900, 520", "100, 520", "input swipe 900 520 100 520 300"},
+pkg/driver/uiautomator2/swipe_geometry_test.go:18:		{"pixels without spaces", "900,520", "100,520", "input swipe 900 520 100 520 300"},
+pkg/driver/wda/swipe_geometry_test.go:72:	if result := driver.swipe(&flow.SwipeStep{Start: "900, 520", End: "100, 520"}); result.Success {
+pkg/flow/swipe_coords_test.go:11:		{"plain pixels", "- swipe:\n    start: 900, 520\n    end: 100, 520\n", "900, 520", "100, 520"},
+func TestSwipeFromNearEdgeElementStartsOnFarSide(t *testing.T) {
+	shell := &MockShellExecutor{}
+	client := &MockUIA2Client{
+		findElementFunc: func(_, _ string) (*uiautomator2.Element, error) {
+			return uiautomator2.NewCachedElement("tahoe", "Lake Tahoe", uiautomator2.ElementRect{X: 42, Y: 469, Width: 227, Height: 63}), nil
+		},
+	}
+	d := New(client, screen1080(), shell)
+	r := d.swipe(&flow.SwipeStep{Direction: "LEFT", Selector: &flow.Selector{Text: "Lake Tahoe"}, BaseStep: flow.BaseStep{TimeoutMs: 1000}})
+	if !r.Success {
+		t.Fatalf("swipe failed: %s", r.Message)
+	}
+	// L07: a held drag through the server, not `input swipe`.
+	if len(shell.commands) != 0 {
+		t.Errorf("commands = %q, want none", shell.commands)
+	}
+	want := struct{ FromX, FromY, ToX, ToY, HoldMs, MoveMs int }{246, 500, 0, 500, 0, elementSwipeDurationMs}
+	if len(client.dragAndDropCalls) != 1 || client.dragAndDropCalls[0] != want {
+		t.Errorf("drags = %+v, want [%+v]", client.dragAndDropCalls, want)
+	}
+}
+
+// K06 fix round 2: a screenshot that fails because the server is gone names
+// the UIAutomator2 server once in the step line, not again as the cause.
+func TestScreenshotFailureNamesServerOnce(t *testing.T) {
+	down := &uiautomator2.ServerUnavailableError{
+		Device: "emulator-5556", Reason: "connection refused", Retries: 5, Replayable: true,
+		Err: errors.New("dial unix /tmp/uia2-emulator-5556.sock: connect: connection refused"),
+	}
+	for _, step := range []flow.Step{&flow.TakeScreenshotStep{Path: "x"}, &flow.WaitForAnimationToEndStep{}} {
+		d := New(&MockUIA2Client{screenshotErr: down}, screen1080(), nil)
+		r := d.Execute(step)
+		if r.Success {
+			t.Fatalf("%T: want failure", step)
+		}
+		line := renderedFailure(r)

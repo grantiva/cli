@@ -1,0 +1,21 @@
+scheme: Landmarks
+simulator: cov-missing
+bundle_id: com.kylebrowning.Landmarks
+screens:
+  - name: Home
+    path: launch
+  - name: All
+    path:
+      - tap: "Favorites"
+      - tap: {text: "Lakes", exact: true}
+      - swipe: up
+      - swipe: down
+      - swipe: left
+      - swipe: right
+      - swipe: UP
+      - type: "hello"
+      - wait: 1
+      - assert_visible: "Lakes"
+      - assert_not_visible: "Nope"
+      - assert_not_visible: {text: "Nope"}
+      - run_flow: "sub.yaml"

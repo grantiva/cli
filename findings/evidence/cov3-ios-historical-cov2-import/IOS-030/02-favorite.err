@@ -1,0 +1,75 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=7E846901-F93F-4220-A153-7043061033D7 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: 7E846901-F93F-4220-A153-7043061033D7
+Simulator booted: cov2-ios-1 (7E846901-F93F-4220-A153-7043061033D7)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one GrantivaAgent session: .maestro/02-favorite.yaml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8987
+
+  [1/1] 02-favorite (02-favorite.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Lake Tahoe" (1.9s)
+    ✓ tapOn: text="Favorite" (1.8s)
+    ✓ assertVisible: text="Unfavorite" (672ms)
+    ✓ tapOn: text="Landmarks" (708ms)
+    ✓ tapOn: text="Favorites" (2.0s)
+    ✓ assertVisible: text="Lake Tahoe" (170ms)
+    ✓ takeScreenshot (156ms)
+    ✓ swipe: LEFT from text="Lake Tahoe" (668ms)
+    ✓ tapOn: text="Remove" (1.7s)
+    ✓ assertNotVisible: text="Lake Tahoe" (2.4s)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (198ms)
+    ✓ takeScreenshot (71ms)
+✓ 02-favorite 16.9s
+
+  [1/1] 02-favorite (.maestro/02-favorite.yaml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Lake Tahoe" (1.9s)
+    ✓ tapOn: text="Favorite" (1.8s)
+    ✓ assertVisible: text="Unfavorite" (672ms)
+    ✓ tapOn: text="Landmarks" (708ms)
+    ✓ tapOn: text="Favorites" (2.0s)
+    ✓ assertVisible: text="Lake Tahoe" (170ms)
+    ✓ takeScreenshot (156ms)
+    ✓ swipe: LEFT from text="Lake Tahoe" (668ms)
+    ✓ tapOn: text="Remove" (1.7s)
+    ✓ assertNotVisible: text="Lake Tahoe" (2.4s)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (198ms)
+    ✓ takeScreenshot (71ms)
+✓ 02-favorite 16.9s
+
+  13 steps passing (16.9s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  02-favorite                    ✓ PASS      13     13      0      0      16.9s  cov2-ios-1 (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      13     13      0      0      16.9s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+

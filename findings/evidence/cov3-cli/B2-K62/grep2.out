@@ -1,0 +1,14 @@
+---
+11:///     grantiva doctor --json | jq '.[] | select(.status == "error")'
+runner home. `bundle_id`, and
+`udid` on Android, are the 2.1 names, kept for one release and deprecated.
+
+`.grantiva/session.json`, the file `runner start` leaves for `runner stop`,
+`dump-hierarchy` and the MCP server, uses the same names as `runner start
+--json`: `pid`, `port`, `platform`, `bundleId` and `udid` on iOS,
+`applicationId`, `serial` and `udid` on Android, plus `startedAt` and `state`.
+It is written the moment the runner is spawned with `"state": "starting"` and
+no port, and rewritten with `"state": "ready"` once the driver answers; what
+commands say meanwhile is in [docs/mcp.md](docs/mcp.md#a-session-that-is-starting).
+grantiva 2.1.0 reads a `starting` file (no port yet) as no session at
+Tests/GrantivaCoreTests/DoctorTests.swift:391:    func testTheEncodedStatusesAreExactlyOkWarningAndError() throws {

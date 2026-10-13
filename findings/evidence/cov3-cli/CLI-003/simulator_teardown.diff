@@ -1,0 +1,15 @@
+6,10c6,13
+< reports it as runnerSessionStopped. Without --force, a process still holding a
+< simulator the teardown deletes or shuts down that it did not start (a runner,
+< WebDriverAgent's xcodebuild, a simctl diagnose, a grantiva run) is not killed:
+< a warning on stderr names its pid and command, --json lists it in
+< leftoverProcesses, and the teardown goes on. --force reclaims such processes.
+---
+> reports it as runnerSessionStopped. The WebDriverAgent xcodebuild and simctl
+> diagnose the stopped run left writing into the simulator's runner home are then
+> ended (reapedProcesses in --json) before that home is removed. Without --force,
+> a process still holding a simulator the teardown deletes or shuts down that it
+> did not start (a runner, WebDriverAgent's xcodebuild, a simctl diagnose, a
+> grantiva run) is not killed: a warning on stderr names its pid and command,
+> --json lists it in leftoverProcesses, and the teardown goes on. --force
+> reclaims such processes.

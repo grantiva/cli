@@ -1,0 +1,62 @@
+{
+  "id": "flow-000",
+  "name": "scroll-until",
+  "sourceFile": "scroll-until.yaml",
+  "device": {
+    "id": "563907E1-703D-4322-AE5F-FC3B06D03143",
+    "name": "cov3-ios-26",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T23:36:25.70052-07:00",
+  "endTime": "2026-10-12T23:36:29.784415-07:00",
+  "duration": 4083,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T23:36:27.259723-07:00",
+      "endTime": "2026-10-12T23:36:29.269723-07:00",
+      "duration": 2010,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "scrollUntilVisible",
+      "yaml": "scrollUntilVisible: text=\"Landmark 70\"",
+      "status": "failed",
+      "startTime": "2026-10-12T23:36:29.2713-07:00",
+      "endTime": "2026-10-12T23:36:29.6183-07:00",
+      "duration": 347,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmark 70"
+        },
+        "direction": "DOWN",
+        "timeout": 15000
+      },
+      "error": {
+        "type": "app_crash",
+        "message": "Element not found: text='Landmark 70' — the app is not running (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 1178,
+    "p50": 347,
+    "p95": 2010,
+    "max": 2010,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

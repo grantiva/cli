@@ -1,0 +1,17 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/tree
+$ grep -rn -E 'leaseDirectory|leaseDir|runnerHome:' Sources/GrantivaCore/Runner/RunnerSession*.swift | cut -c1-200 | head -8; grep -rn -E 'TestHygiene|func testSuiteDoesNotWriteIntoTheRunnerHome|GRANTIVA_RUNNER_HOME' Tests .github/workflows/ci.yml | cut -c1-200 | head -12
+# exit=0 elapsed=.047s -> source.out / source.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/tree
+$ grep -rn -c 'leaseDirectory' Tests | grep -v ':0'; grep -rn -E 'leaseDirectory' Sources/GrantivaCore/Runner/RunnerManager.swift | head -5; grep -n -i -E 'runner_home|RUNNER_HOME|swift test' .github/workflows/ci.yml; grep -rln -E 'Hygiene|RunnerHome.*Empty|DoesNotWriteInto' Tests
+# exit=1 elapsed=.057s -> tests.out / tests.err
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-cli
+$ ls $GRANTIVA_RUNNER_HOME/locks | grep -c -E "FAKE|TEST-REPORT"; stat -f "%Sm %N" -t "%Y-%m-%dT%H:%M" $GRANTIVA_RUNNER_HOME/locks/FAKE-* $GRANTIVA_RUNNER_HOME/locks/TEST-REPORT-* 2>/dev/null | cut -c1-16 | sort | uniq -c | tail -6
+# exit=0 elapsed=.076s -> qa_home_locks.out / qa_home_locks.err
+# round-3 re-run: the round-2 commands replayed with paths mapped to the 8f2cff67 tree (inputs/replay.py) in fixtures rebuilt as round 2 had them; outputs compared with round 2 (inputs/cmpold.py)
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/tree
+$ sed -n 30,70p .github/workflows/ci.yml
+# exit=0 elapsed=.008s -> ci_step.out / ci_step.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad
+$ grep -c -E 'Test Case .* passed|✔ Test' fresh-home-final.log; grep -E 'Executed [0-9]+ tests|GRANTIVA_RUNNER_HOME=|Runner home stayed empty|error: swift test wrote' fresh-home-final.log | tail -6
+# exit=0 elapsed=.034s -> fixwave_fresh_home_log.out / fixwave_fresh_home_log.err
+# fixwave_fresh_home_log: read-only look at the fix wave's scripts/test-fresh-home.sh run (scratchpad/fresh-home-final.log, 2026-10-11 17:22); this slice does not run swift test

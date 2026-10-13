@@ -1,0 +1,38 @@
+# uptime: 12:40  up 4 days,  4:07, 5 users, load averages: 160.23 72.81 52.64
+# cwd: /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios (background)
+$ $GRANTIVA run --no-build --simulator 7E846901-F93F-4220-A153-7043061033D7 --flow .maestro/01-browse.yaml --keep-alive --ready-file $S/ka-tmp.ready  > ka-tmp.out 2> ka-tmp.err &
+# ready after 13s pid=20182: {
+  "finishedAt" : "2026-10-11T19:40:39Z",
+  "flows" : [
+    {
+      "name" : "01-browse",
+      "status" : "passed"
+    }
+  ],
+  "status" : "passed"
+}
+# uptime: 12:40  up 4 days,  4:08, 5 users, load averages: 125.69 69.46 51.79
+# cwd: /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ cat /tmp/grantiva-sessions/*.owner.json
+# exit=0 elapsed=.012s -> owner-ka.out / owner-ka.err
+# uptime: 12:40  up 4 days,  4:08, 5 users, load averages: 125.69 69.46 51.79
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios
+$ python3 -I $S/mcp/client.py mcp-private/requests.json mcp-private/ /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios -- $GRANTIVA mcp --project-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios 
+# elapsed=0s -> mcp-private/transcript.txt, stdout.raw, server.stderr
+# kill -9 20182 (the keep-alive grantiva run this row started from /tmp/…/ios)
+# uptime: 12:40  up 4 days,  4:08, 5 users, load averages: 115.95 68.37 51.51
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/mcp  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ ps -p 20303 >/dev/null && echo runner-alive || echo runner-gone; ls /tmp/grantiva-sessions; $GRANTIVA hierarchy --timeout 5; echo hierarchy_exit=$?
+# exit=0 elapsed=.030s -> after-kill9.out / after-kill9.err
+# uptime: 12:40  up 4 days,  4:08, 5 users, load averages: 115.95 68.37 51.51
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ bash -c "$GRANTIVA runner start --bundle-id com.kylebrowning.Landmarks --simulator $U1 --detach > /dev/null; echo starter-exit=\$?"; sleep 2; cat /tmp/grantiva-sessions/*.owner.json; echo; ps -p $(python3 -I -c "import json;print(json.load(open(\".grantiva/session.json\"))[\"pid\"])") -o pid,command | cut -c1-80
+# exit=0 elapsed=6.118s -> detached-start.out / detached-start.err
+# uptime: 12:40  up 4 days,  4:08, 5 users, load averages: 107.06 67.32 51.24
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA runner stop
+# exit=0 elapsed=.305s -> detached-stop.out / detached-stop.err
+# uptime: 12:41  up 4 days,  4:08, 5 users, load averages: 91.72 65.35 50.73
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator teardown --udid $U1 --force
+# exit=0 elapsed=3.462s -> cleanup-reclaim.out / cleanup-reclaim.err

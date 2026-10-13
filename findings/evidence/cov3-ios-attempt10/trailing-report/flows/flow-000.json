@@ -1,0 +1,95 @@
+{
+  "artifacts" : {
+
+  },
+  "commands" : [
+    {
+      "artifacts" : {
+
+      },
+      "duration" : 2067,
+      "endTime" : "2026-10-12T21:37:00.815458-07:00",
+      "id" : "cmd-000",
+      "index" : 0,
+      "startTime" : "2026-10-12T21:36:58.748458-07:00",
+      "status" : "passed",
+      "type" : "launchApp",
+      "yaml" : "launchApp"
+    },
+    {
+      "artifacts" : {
+        "screenshotAfter" : "assets/flow-000/cmd-001-after.png"
+      },
+      "duration" : 1208,
+      "element" : {
+        "bounds" : {
+          "height" : 83,
+          "width" : 370,
+          "x" : 16,
+          "y" : 208
+        },
+        "found" : true,
+        "text" : "Golden Gate Bridge"
+      },
+      "endTime" : "2026-10-12T21:37:02.103115-07:00",
+      "id" : "cmd-001",
+      "index" : 1,
+      "params" : {
+        "selector" : {
+          "type" : "text",
+          "value" : "Golden Gate.*"
+        }
+      },
+      "startTime" : "2026-10-12T21:37:00.895115-07:00",
+      "status" : "passed",
+      "type" : "assertVisible",
+      "yaml" : "assertVisible: text=\"Golden Gate.*\""
+    },
+    {
+      "artifacts" : {
+        "screenshotAfter" : "assets/flow-000/cmd-002-after.png",
+        "screenshotBefore" : "assets/flow-000/cmd-002-before.png",
+        "viewHierarchy" : "assets/flow-000/cmd-002-hierarchy.xml"
+      },
+      "duration" : 12389,
+      "endTime" : "2026-10-12T21:37:14.569714-07:00",
+      "error" : {
+        "message" : "Element not visible: text='Golden Gate.*', exact=true (cause: context deadline exceeded: no elements match selector; closest on-screen texts: \"Golden Gate Bridge\", \"Golden Gate Bridge, San Francisco, CA\", \"Categories\")",
+        "type" : "assertion"
+      },
+      "id" : "cmd-002",
+      "index" : 2,
+      "params" : {
+        "selector" : {
+          "type" : "text",
+          "value" : "Golden Gate.*"
+        }
+      },
+      "startTime" : "2026-10-12T21:37:02.180714-07:00",
+      "status" : "failed",
+      "type" : "assertVisible",
+      "yaml" : "assertVisible: text=\"Golden Gate.*\", exact=true"
+    }
+  ],
+  "device" : {
+    "id" : "563907E1-703D-4322-AE5F-FC3B06D03143",
+    "isSimulator" : true,
+    "name" : "cov3-ios-26",
+    "osVersion" : "26.0",
+    "platform" : "ios"
+  },
+  "duration" : 19264,
+  "endTime" : "2026-10-12T21:37:15.352666-07:00",
+  "id" : "flow-000",
+  "name" : "02-exact-negative",
+  "sourceFile" : ".maestro/coverage/02-exact-negative.yaml",
+  "startTime" : "2026-10-12T21:36:56.087661-07:00",
+  "stepLatency" : {
+    "count" : 3,
+    "max" : 12389,
+    "mean" : 5221,
+    "p50" : 2067,
+    "p95" : 12389,
+    "slowestType" : "assertVisible"
+  }
+}

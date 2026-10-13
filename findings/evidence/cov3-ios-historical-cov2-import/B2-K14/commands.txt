@@ -1,0 +1,29 @@
+# uptime: 12:07  up 4 days,  3:34, 5 users, load averages: 28.04 62.21 48.39
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios (background)
+$ $GRANTIVA run --no-build --simulator 7E846901-F93F-4220-A153-7043061033D7 --flow .maestro/01-browse.yaml --keep-alive --ready-file $S/ka.ready  > ka.out 2> ka.err &
+# ready after 13s pid=71926: {
+  "finishedAt" : "2026-10-11T19:07:44Z",
+  "flows" : [
+    {
+      "name" : "01-browse",
+      "status" : "passed"
+    }
+  ],
+  "status" : "passed"
+}
+# uptime: 12:07  up 4 days,  3:35, 5 users, load averages: 26.26 60.72 48.02
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ cd $S/p027 && $GRANTIVA runner stop; echo exit=$?; $GRANTIVA runner stop --json; echo exit=$?
+# exit=0 elapsed=.034s -> stop-other-dir.out / stop-other-dir.err
+# uptime: 12:07  up 4 days,  3:35, 5 users, load averages: 26.26 60.72 48.02
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA runner stop --json
+# exit=0 elapsed=.367s -> stop-json.out / stop-json.err
+# uptime: 12:07  up 4 days,  3:35, 5 users, load averages: 25.84 60.06 47.87
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ kill -0 71926 2>/dev/null && echo alive || echo gone; ls /tmp/grantiva-sessions | grep -c . ; ls $GRANTIVA_RUNNER_HOME/locks/7E846901-F93F-4220-A153-7043061033D7.lock 2>&1
+# exit=1 elapsed=.016s -> after.out / after.err
+# uptime: 12:07  up 4 days,  3:35, 5 users, load averages: 25.84 60.06 47.87
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA runner stop; echo exit=$?; $GRANTIVA runner stop --json
+# exit=0 elapsed=.027s -> no-session.out / no-session.err

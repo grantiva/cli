@@ -1,0 +1,13 @@
+47-        case .configNotFound:
+48-            return "grantiva.yml not found. Run: grantiva init"
+49:        case .commandFailed(let message, _):
+50-            // The message is the whole sentence; call sites that report a
+51-            // subprocess exit say so themselves (see `shell`).
+52-            return message
+53-        case .invalidArgument(let msg):
+54-            return "Invalid argument: \(msg)"
+55-        case .diffSizeMismatch(let baseline, let current):
+56-            return "Image size mismatch: baseline is \(baseline), current is \(current)"
+57-        case .noCaptures(let dir):
+58-            return "No captures found in \(dir). Run: grantiva diff capture"
+59-        case .runnerNotFound:

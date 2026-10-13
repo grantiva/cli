@@ -1,0 +1,54 @@
+8f2cff67:Sources/GrantivaCLI/InitCommand.swift:210:        return "\(article) \(noun) named \(listed.joined(separator: ", ")) already exists and was not created by Grantiva; runs from this directory will boot and drive it. "
+8f2cff67:Sources/GrantivaCore/Android/EmulatorManager.swift:549:    public static func notCreatedRefusal(avd name: String, force: String = "--force") -> String {
+8f2cff67:Sources/GrantivaCore/Android/EmulatorManager.swift:550:        "AVD \"\(name)\" was not created by Grantiva (grantiva emulator ensure). Pass \(force) to delete it anyway."
+8f2cff67:Sources/GrantivaCore/Android/EmulatorManager.swift:578:            throw GrantivaError.invalidArgument(Self.notCreatedRefusal(avd: name))
+8f2cff67:Sources/GrantivaCore/Doctor/DoctorRunner.swift:127:                + "(\"\(name)\" (\(theirs.udid)) was not created by Grantiva, so it is not used as the default)"
+8f2cff67:Sources/GrantivaCore/Platform/IOSPlatform.swift:119:        let device = try await simulators.soleBootedDefault()
+8f2cff67:Sources/GrantivaCore/Simulator/DefaultSimulator.swift:40:    /// tool's argument) in MCP. `soleBooted` is the `--no-build` capture's
+8f2cff67:Sources/GrantivaCore/Simulator/DefaultSimulator.swift:42:    public static func notCreatedRefusal(
+8f2cff67:Sources/GrantivaCore/Simulator/DefaultSimulator.swift:43:        name: String, udid: String, override: String = "--simulator", soleBooted: Bool = false
+8f2cff67:Sources/GrantivaCore/Simulator/DefaultSimulator.swift:45:        "Simulator \"\(name)\" (\(udid)) was not created by Grantiva. "
+8f2cff67:Sources/GrantivaCore/Simulator/DefaultSimulator.swift:46:            + (soleBooted ? "It is the only booted simulator, " : "It has the default simulator's name, ")
+8f2cff67:Sources/GrantivaCore/Simulator/SimulatorManager.swift:53:    public func soleBootedDevice() async throws -> SimulatorDevice {
+8f2cff67:Sources/GrantivaCore/Simulator/SimulatorManager.swift:54:        try Self.soleBooted(in: try await listDevices())
+8f2cff67:Sources/GrantivaCore/Simulator/SimulatorManager.swift:57:    static func soleBooted(in devices: [SimulatorDevice]) throws -> SimulatorDevice {
+8f2cff67:Sources/GrantivaCore/Simulator/SimulatorManager.swift:145:    /// pick a simulator (`override`, see `DefaultSimulator.notCreatedRefusal`).
+8f2cff67:Sources/GrantivaCore/Simulator/SimulatorManager.swift:158:                DefaultSimulator.notCreatedRefusal(name: device.name, udid: device.udid, override: override)
+8f2cff67:Sources/GrantivaCore/Simulator/SimulatorManager.swift:167:    public func soleBootedDefault(override: String = "--simulator") async throws -> SimulatorDevice {
+8f2cff67:Sources/GrantivaCore/Simulator/SimulatorManager.swift:168:        let device = try await soleBootedDevice()
+8f2cff67:Sources/GrantivaCore/Simulator/SimulatorManager.swift:170:            throw GrantivaError.invalidArgument(DefaultSimulator.notCreatedRefusal(
+8f2cff67:Sources/GrantivaCore/Simulator/SimulatorManager.swift:171:                name: device.name, udid: device.udid, override: override, soleBooted: true
+8f2cff67:Sources/GrantivaMCP/Tools/EmulatorTools.swift:124:        } catch GrantivaError.invalidArgument(let message) where message == EmulatorManager.notCreatedRefusal(avd: name) {
+8f2cff67:Sources/GrantivaMCP/Tools/EmulatorTools.swift:126:            return toolError(EmulatorManager.notCreatedRefusal(avd: name, force: "force: true"))
+8f2cff67:Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:13:    private let refusal = GrantivaError.invalidArgument("refused: not created by Grantiva")
+8f2cff67:Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:114:    func testTheSoleBootedSimulatorIsRefusedUnlessGrantivaCreatedIt() async throws {
+8f2cff67:Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:121:            XCTAssertTrue(text.hasPrefix("Invalid argument: Simulator \"Mine\" (USER-3) was not created by Grantiva. It is the only booted simulator, "), text)
+8f2cff67:Tests/GrantivaCLITests/InitAndroidTests.swift:115:            "An AVD named \"Pixel_8_API_35\" already exists and was not created by Grantiva; runs from this directory will boot and drive it. "
+8f2cff67:Tests/GrantivaCLITests/InitAndroidTests.swift:131:            "A simulator named \"iPhone 18 Pro\" (FE441EE5) already exists and was not created by Grantiva; runs from this directory will boot and drive it. "
+8f2cff67:Tests/GrantivaCLITests/InitIOSTests.swift:43:        XCTAssertTrue(warning?.contains("not created by Grantiva") == true, warning ?? "")
+8f2cff67:Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:30:                    "Invalid argument: Simulator \"iPhone 18 Pro\" (USER-1) was not created by Grantiva. It has the default simulator's name, "
+8f2cff67:Tests/GrantivaCoreTests/DoctorTests.swift:263:                + "(\"iPhone 18 Pro\" (USER-1) was not created by Grantiva, so it is not used as the default)"
+8f2cff67:Tests/GrantivaCoreTests/EmulatorManagerTests.swift:634:            XCTAssertTrue("\(error)".contains("was not created by Grantiva"), "\(error)")
+8f2cff67:Tests/GrantivaCoreTests/SimulatorManagerTests.swift:11:    func testSoleBootedReturnsTheOnlyBootedSimulator() throws {
+8f2cff67:Tests/GrantivaCoreTests/SimulatorManagerTests.swift:13:        XCTAssertEqual(try SimulatorManager.soleBooted(in: devices).udid, "QA-1")
+8f2cff67:Tests/GrantivaCoreTests/SimulatorManagerTests.swift:16:    func testSoleBootedRefusesToPickAmongSeveralAndNamesThem() {
+8f2cff67:Tests/GrantivaCoreTests/SimulatorManagerTests.swift:18:        XCTAssertThrowsError(try SimulatorManager.soleBooted(in: devices)) { error in
+8f2cff67:Tests/GrantivaCoreTests/SimulatorManagerTests.swift:27:    func testSoleBootedWithNoneBootedIsSimulatorNotRunning() {
+8f2cff67:Tests/GrantivaCoreTests/SimulatorManagerTests.swift:28:        XCTAssertThrowsError(try SimulatorManager.soleBooted(in: [device("Off", "OFF", "Shutdown")])) { error in
+8f2cff67:Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:76:            "Error: Invalid argument: Simulator \"\(name)\" (USER-0001) was not created by Grantiva. It has the default simulator's name, "
+8f2cff67:Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:88:        return "Invalid argument: Simulator \"\(name)\" (USER-0001) was not created by Grantiva. It has the default simulator's name, "
+8f2cff67:Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:121:    func testTheSoleBootedDefaultIsRefusedUnlessGrantivaCreatedIt() async throws {
+8f2cff67:Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:127:            "Invalid argument: Simulator \"Mine\" (USER-0002) was not created by Grantiva. It is the only booted simulator, "
+8f2cff67:Tests/GrantivaMCPTests/ToolErrorContractTests.swift:151:            #"AVD "fix-k53-hand" was not created by Grantiva (grantiva emulator ensure). Pass --force to delete it anyway."#
+62:    func testBuildWithTheDefaultNameRefusesASimulatorTheUserCreated() async throws {
+102:    func testRunAndTestAndSimBootWithTheDefaultNameRefuseItToo() async throws {
+121:    func testTheSoleBootedDefaultIsRefusedUnlessGrantivaCreatedIt() async throws {
+137:    func testANamedSimulatorIsUsedAsBeforeEvenWithTheDefaultName() async throws {
+148:    func testBuildWithTheDefaultNameBootsASimulatorGrantivaCreatedAndNamesIt() async throws {
+158:    func testRunNamesTheSimulatorWithItsUDID() async throws {
+169:    func testResolvedProjectMarksTheDefault() throws {
+27:    func testTargetDeviceTakesTheDefaultPathOnlyForTheDefault() async throws {
+34:    func testRunFlowWithoutASimulatorIsRefusedBeforeAnythingElse() async throws {
+56:    func testRunFlowWithANamedSimulatorSkipsTheCheck() async throws {
+72:    func testRunnerStartWithoutASimulatorTakesTheDefaultPath() async throws {
+114:    func testTheSoleBootedSimulatorIsRefusedUnlessGrantivaCreatedIt() async throws {

@@ -1,0 +1,75 @@
+Sources/GrantivaCore/Runner/RunnerSessionInfo.swift
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift
+Sources/GrantivaCore/Diff/DiffResult.swift
+Sources/GrantivaCore/Simulator/SimulatorDevice.swift
+Sources/GrantivaCLI/RunnerLifecycleDocument.swift
+20:    public static let renamed: [(camel: String, snake: String, commands: String)] = [
+21-        ("screenName", "screen_name", "diff capture, diff compare"),
+22-        ("sizeBytes", "size_bytes", "diff capture"),
+23-        ("pointDimensions", "point_dimensions", "diff capture, simulator ensure"),
+24-        ("pixelDimensions", "pixel_dimensions", "diff capture, simulator ensure"),
+25-        ("displayScale", "display_scale", "diff capture, simulator ensure"),
+26-        ("deviceType", "device_type", "simulator ensure"),
+27-        ("pixelDiffPercent", "pixel_diff_percent", "diff compare"),
+28-        ("perceptualDistance", "perceptual_distance", "diff compare"),
+29-        ("pixelThreshold", "pixel_threshold", "diff compare"),
+30-        ("perceptualThreshold", "perceptual_threshold", "diff compare"),
+31-        ("baselinePath", "baseline_path", "diff compare"),
+32-        ("capturePath", "capture_path", "diff compare"),
+33-        ("diffImagePath", "diff_image_path", "diff compare"),
+34-        ("approvedScreens", "approved_screens", "diff approve"),
+35-        ("baselineDirectory", "baseline_directory", "diff approve"),
+36-        ("bundleId", "bundle_id", "runner start, runner stop"),
+37-    ]
+38-
+39-    /// Aliases whose camelCase twin depends on the platform: on Android
+40-    /// `runner start/stop` write `bundle_id` beside `applicationId`.
+41-    public static let platformTwins: [String: [String]] = ["bundle_id": ["applicationId"]]
+42-
+43-    /// `.grantiva/session.json` keys 2.1.0 wrote that the file still writes
+44-    /// beside their replacements for one release (L43), and reads either way:
+45-    /// `wdaPort` beside `port`, and on Android `bundleId` beside
+46-    /// `applicationId`. The README lists them; the contract test checks the
+47-    /// file carries exactly these beside `runner start --json`'s keys.
+48-    public static let sessionFileTwins: [(new: String, old: String, androidOnly: Bool)] = [
+49-        ("port", "wdaPort", false),
+50-        ("applicationId", "bundleId", true),
+51-    ]
+52-
+53-    /// snake_case alias → its camelCase key.
+54-    public static let aliases: [String: String] = Dictionary(uniqueKeysWithValues: renamed.map { ($0.snake, $0.camel) })
+55-
+56-    /// camelCase key → its snake_case alias.
+57-    static let aliasOf: [String: String] = Dictionary(uniqueKeysWithValues: renamed.map { ($0.camel, $0.snake) })
+58-}
+59-
+60-extension KeyedEncodingContainer where K == LegacyJSONKeys {
+41:    public static let platformTwins: [String: [String]] = ["bundle_id": ["applicationId"]]
+42-
+43-    /// `.grantiva/session.json` keys 2.1.0 wrote that the file still writes
+44-    /// beside their replacements for one release (L43), and reads either way:
+45-    /// `wdaPort` beside `port`, and on Android `bundleId` beside
+46-    /// `applicationId`. The README lists them; the contract test checks the
+47-    /// file carries exactly these beside `runner start --json`'s keys.
+48-    public static let sessionFileTwins: [(new: String, old: String, androidOnly: Bool)] = [
+49-        ("port", "wdaPort", false),
+Every `--json` document, and the `--ready-file` file, uses camelCase keys.
+
+450:- `wdaPort` → `port` (.grantiva/session.json)
+451:- `bundleId` → `applicationId` (.grantiva/session.json on Android)
+501:- `screen_name` → `screenName` (diff capture, diff compare)
+502:- `size_bytes` → `sizeBytes` (diff capture)
+503:- `point_dimensions` → `pointDimensions` (diff capture, simulator ensure)
+504:- `pixel_dimensions` → `pixelDimensions` (diff capture, simulator ensure)
+505:- `display_scale` → `displayScale` (diff capture, simulator ensure)
+506:- `device_type` → `deviceType` (simulator ensure)
+507:- `pixel_diff_percent` → `pixelDiffPercent` (diff compare)
+508:- `perceptual_distance` → `perceptualDistance` (diff compare)
+509:- `pixel_threshold` → `pixelThreshold` (diff compare)
+510:- `perceptual_threshold` → `perceptualThreshold` (diff compare)
+511:- `baseline_path` → `baselinePath` (diff compare)
+512:- `capture_path` → `capturePath` (diff compare)
+513:- `diff_image_path` → `diffImagePath` (diff compare)
+514:- `approved_screens` → `approvedScreens` (diff approve)
+515:- `baseline_directory` → `baselineDirectory` (diff approve)
+516:- `bundle_id` → `bundleId` (runner start, runner stop; `applicationId` on Android)

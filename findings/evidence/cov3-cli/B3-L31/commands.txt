@@ -1,0 +1,8 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/tree
+$ grep -n -A18 -B5 -E 'fresh empty runner home|test-fresh-home' .github/workflows/ci.yml; sed -n '1,220p' scripts/test-fresh-home.sh; grep -rn 'testTheDefaultLockDirectoryWasNotCreatedByTests' Tests
+# exit=0 elapsed=.027s -> ci.out / ci.err
+# read-only GitHub Actions provenance
+$ gh run list --branch main --workflow ci --limit 1 --json databaseId,headSha,status,conclusion,url,createdAt
+# exit=0: run 38227743323, head 8f2cff676b3c12e951478920fa20e600cdca4e29, conclusion success
+$ gh run view 38227743323 --log
+# exit=0 -> ci-run-38227743323.log

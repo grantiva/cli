@@ -1,0 +1,74 @@
+struct RunnerVersionCommand: AsyncParsableCommand {
+    static let configuration = CommandConfiguration(
+        commandName: "version",
+        abstract: "Show the embedded runner version."
+    )
+
+    @OptionGroup var options: GlobalOptions
+
+    func run() async throws {
+        if options.json {
+            Output.line(try JSONOutput.string(["version": RunnerManager.runnerVersion]))
+        } else {
+            Output.line("grantiva-runner \(RunnerManager.runnerVersion)")
+        }
+    }
+}
+
+// MARK: - Start
+                    platform: existing.platform ?? (DeviceID.isAndroidSerial(existing.udid) ? .android : .ios), log: nil
+                )))
+            } else {
+                let label = Self.portLabel(DeviceID.isAndroidSerial(existing.udid) ? .android : .ios)
+                let state = existing.isReady ? "\(label) \(existing.wdaPort)" : "starting"
+                Output.line("Runner already running (pid \(existing.pid), \(state))")
+                Output.line("Use 'grantiva runner stop' to stop it first.")
+            }
+            return
+        }
+
+        let (platform, config) = try platformOptions.loadConfig()
+        if platform == .ios {
+            if emulator != nil { throw TargetOptions.otherPlatformFlagError("--emulator", platform: .ios) }
+            if device != nil { throw TargetOptions.otherPlatformFlagError("--device", platform: .ios) }
+            if headless { throw TargetOptions.otherPlatformFlagError("--headless", platform: .ios) }
+        }
+        if platform == .android, simulator != nil {
+            throw TargetOptions.otherPlatformFlagError("--simulator", platform: .android)
+        }
+        if let device { _ = try DeviceID.validate(device, flag: "--device") }
+        let resolvedAppID = try Self.appID(platform: platform, bundleId: bundleId, applicationId: applicationId, config: config)
+        let targetName = Self.target(platform: platform, simulator: simulator, emulator: emulator, device: device, config: config)
+
+        let platformDevice = try devicePlatform.make(platform, android: .init(headless: headless))
+        // The default name (nothing named a simulator) boots only a simulator Grantiva created (L08).
+        let booted = platform == .ios && simulator == nil && config?.simulator == nil
+            ? try await platformDevice.bootDefaultDevice(named: targetName, override: "--simulator")
+            : try await platformDevice.bootDevice(named: targetName)
+        // Held until the runner is up, then handed to the runner process: this
+        // command returns immediately, but the session it started still owns
+        // the device until `runner stop`.
+        let simulatorLease = try SimulatorLease.acquire(udid: booted.udid, platform: platform)
+        var handedOff = false
+        defer { if !handedOff { simulatorLease.release() } }
+
+        let deviceNoun = platform == .ios ? "Simulator" : "Device"
+        options.note("Starting runner...")
+        options.note("  \(platform == .ios ? "Bundle ID" : "Application ID"): \(resolvedAppID)")
+        options.note("  \(deviceNoun): \(booted.name) (\(booted.udid))")
+
+        let runner = RunnerManager.live
+        try await runner.ensureAvailable()
+        let runnerBin = runner.runnerPath()
+        let runnerDir = runner.runnerDir()
+
+        let flowYaml = """
+        appId: \(resolvedAppID)
+        ---
+        - launchApp
+        - waitForAnimationToEnd:
+            timeout: 3600000
+        """
+        let tempDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-session")
+        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)

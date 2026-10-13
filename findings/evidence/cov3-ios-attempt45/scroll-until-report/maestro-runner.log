@@ -1,0 +1,64 @@
+23:36:22.445934 [INFO] === Test execution started ===
+23:36:22.446058 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt45/scroll-until-report
+23:36:22.446068 [INFO] Platform: ios
+23:36:22.446072 [INFO] Driver: wda
+23:36:22.446374 [INFO] Validated 1 flow(s)
+23:36:22.567701 [INFO] Single device execution mode
+23:36:22.567717 [INFO] Starting flow execution (parallel: false, devices: [])
+23:36:22.567723 [INFO] Creating driver for single device execution
+23:36:22.567726 [INFO] Using specified iOS device: 563907E1-703D-4322-AE5F-FC3B06D03143
+23:36:22.680158 [INFO] Device 563907E1-703D-4322-AE5F-FC3B06D03143 is a simulator
+23:36:22.680252 [INFO] Building WDA for device 563907E1-703D-4322-AE5F-FC3B06D03143 (team ID: )
+23:36:22.909811 [INFO] WDA build reused from cache
+23:36:22.909827 [INFO] Starting WDA on device 563907E1-703D-4322-AE5F-FC3B06D03143 (port: 8511)
+23:36:23.193910 [INFO] Starting GrantivaAgent (attempt 1/4)
+23:36:25.198409 [INFO] GrantivaAgent started
+23:36:25.198719 [INFO] WDA started successfully on port 8511
+23:36:25.603794 [DEBUG] WDA GET /window/size
+23:36:25.698959 [DEBUG] WDA GET /window/size completed (95ms, status: 200)
+23:36:25.699017 [INFO] Driver created: ios on cov3-ios-26
+23:36:25.700520 [INFO] === Starting flow: scroll-until ===
+23:36:25.700525 [INFO] Flow file: scroll-until.yaml
+23:36:25.700528 [INFO] Total steps: 2
+23:36:25.700648 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+23:36:25.701194 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+23:36:25.701235 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+23:36:27.257045 [DEBUG] WDA POST /session completed (1555ms, status: 200)
+23:36:27.257180 [DEBUG] WDA POST /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+23:36:27.258278 [DEBUG] WDA POST /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/appium/settings completed (1ms, status: 200)
+23:36:27.258406 [DEBUG] WDA POST /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+23:36:27.259030 [DEBUG] WDA POST /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/appium/settings completed (0ms, status: 200)
+23:36:27.259707 [DEBUG] Executing step 0: launchApp
+23:36:27.734267 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[LANDMARKS_CRASH_ON_LAUNCH:1]
+23:36:27.734339 [DEBUG] WDA POST /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+23:36:27.735180 [DEBUG] WDA POST /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/appium/settings completed (0ms, status: 200)
+23:36:27.735236 [DEBUG] WDA POST /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+23:36:27.735640 [DEBUG] WDA POST /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/wda/apps/terminate completed (0ms, status: 200)
+23:36:27.735659 [DEBUG] WDA POST /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks","environment":{"LANDMARKS_CRASH_ON_LAUNCH":"1"}}
+23:36:29.270166 [DEBUG] WDA POST /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/wda/apps/launch completed (1534ms, status: 200)
+23:36:29.270290 [DEBUG] Step 0 completed successfully (2010ms): launchApp
+23:36:29.271279 [DEBUG] Executing step 1: scrollUntilVisible: text="Landmark 70"
+23:36:29.273905 [DEBUG] WDA GET /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/alert/text
+23:36:29.278110 [DEBUG] WDA GET /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/alert/text completed (4ms, status: 400)
+23:36:29.278583 [DEBUG] WDA GET /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/screenshot
+23:36:29.415922 [DEBUG] WDA GET /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/screenshot completed (137ms, status: 200)
+23:36:29.454376 [DEBUG] WDA GET /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/screenshot
+23:36:29.586543 [DEBUG] WDA GET /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/screenshot completed (132ms, status: 200)
+23:36:29.614284 [DEBUG] WDA POST /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/element body={"using":"predicate string","value":"(label ==[c] 'Landmark 70' OR value ==[c] 'Landmark 70')"}
+23:36:29.616413 [DEBUG] WDA POST /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/element completed (2ms, status: 400)
+23:36:29.616509 [DEBUG] WDA GET /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/source?excluded_attributes=visible%2Caccessible
+23:36:29.618150 [DEBUG] WDA GET /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/source?excluded_attributes=visible%2Caccessible completed (1ms, status: 400)
+23:36:29.618217 [DEBUG] WDA POST /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/wda/apps/state body={"bundleId":"com.kylebrowning.Landmarks"}
+23:36:29.618646 [DEBUG] WDA POST /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/wda/apps/state completed (0ms, status: 200)
+23:36:29.618673 [INFO] [wda] com.kylebrowning.Landmarks is not running (app state 1) during an element wait — treating it as crashed
+23:36:29.618701 [ERROR] Step 1 failed (347ms): scrollUntilVisible: text="Landmark 70" - Error: Element not found: text='Landmark 70' — the app is not running (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)
+23:36:29.618707 [DEBUG] WDA GET /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/screenshot
+23:36:29.753979 [DEBUG] WDA GET /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/screenshot completed (135ms, status: 200)
+23:36:29.780792 [DEBUG] WDA GET /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/source
+23:36:29.783036 [DEBUG] WDA GET /session/53ED31C3-748F-4A47-B45E-5FD75FACD433/source completed (2ms, status: 400)
+23:36:29.792127 [INFO] === Flow completed: scroll-until (status: failed, duration: 4083ms, passed: 1, failed: 1, skipped: 0) ===
+23:36:29.867043 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+23:36:29.867224 [INFO] Generating reports...
+23:36:29.870945 [INFO] Shutting down devices started by maestro-runner...
+23:36:29.870955 [INFO] Shutting down all tracked emulators
+23:36:29.870960 [INFO] Shutting down all tracked simulators

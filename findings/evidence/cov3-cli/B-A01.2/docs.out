@@ -1,0 +1,9 @@
+Android has no launch-time process environment, so `--env KEY=VALUE`, a flow header's
+`env:` block, and a `launchApp: environment:` map are delivered as string intent extras:
+Grantiva writes them into the staged flow's `launchApp: arguments:` (merging with any
+`arguments:` the step already has), which the runner passes to the launch intent. Read
+docs/android.md:90:`env:` block, and a `launchApp: environment:` map are delivered as string intent extras:
+docs/android.md:91:Grantiva writes them into the staged flow's `launchApp: arguments:` (merging with any
+docs/android.md:92:`arguments:` the step already has), which the runner passes to the launch intent. Read
+README.md:96:- **`--env KEY=VALUE`** — Sets an environment variable for the app under test (repeatable). Forwarded through the flow's `launchApp` (`environment:` on iOS, `arguments:` intent extras on Android), so an ephe
+README.md:186:A flow header `env:` block defines `${VAR}` values and is also passed to the app at launch, like `--env`: the runner gets it in every `launchApp` step's `environment:` (iOS) or `arguments:` (Android). `--en

@@ -1,0 +1,94 @@
+## Runner session
+
+`grantiva mcp` starts without a runner session and without a config file, so an agent can list tools
+and provision a device first. Only the tools marked **yes** in the **Session** column need a session:
+until one exists they return an error (`isError`) naming `grantiva runner start` and
+`grantiva run --keep-alive`, and they attach to it on the next call once it starts (and re-attach if it
+is replaced).
+
+Every tool, with or without a session, reports every failure as an `isError` result whose text starts
+with `Error: ` exactly once, never as a JSON-RPC error: a missing simulator or AVD, a refused delete, a
+failed build (`Error: Build FAILED`), a missing config file, a VRT command that fails, an unknown tool
+name (`Error: Unknown tool: <name>`). JSON-RPC errors are left for protocol faults (an unknown method, a
+malformed request). A `tools/call` cancelled with `notifications/cancelled` gets no response at all,
+whether the cancel arrives while the tool runs or right behind the request; a build in progress is
+stopped (its `xcodebuild` or Gradle process is terminated). A cancel for an unknown or finished request
+changes nothing.
+
+The texts read as follows. With no session, a session tool says
+``Error: No active runner session at <project>/.grantiva/session.json. Start one with `grantiva runner start` or `grantiva run --keep-alive` in <project>.``
+(adding how many keep-alive sessions from another directory or platform were ignored, when there
+were any). A failure caused by an argument, such as a simulator or AVD that does not exist, an AVD
+that is still running, or a required argument that is missing, carries the label `Invalid argument: `
+after `Error: `, for example `Error: Invalid argument: Simulator not found: "no-such-sim"`,
+``Error: Invalid argument: AVD "x" is running as emulator-5554. Run `grantiva emulator teardown --serial emulator-5554` first.``
+or `Error: Invalid argument: 'name' is required.` A no-session text never carries the label (a session
+tool reports the missing session before it looks at its arguments). The resource reads below report the
+same conditions without that label.
+
+### A session that is starting
+
+While a session is starting, on either platform, the session tools return an error (`isError`) saying
+so and to retry in a few seconds, never the "Start one with `grantiva runner start`" advice (following it would start a second runner on the device). A session
+is starting from the moment `grantiva runner start` (with or without `--detach`) or `grantiva run
+--keep-alive` in this project spawns its runner until the driver answers. Two texts cover that window:
+
+- `Error: The runner session is starting (WDA has no session yet). Retry in a few seconds.`
+  (`UIAutomator2` in place of `WDA` on Android) while there is no driver port to ask yet:
+  `runner start` writes `.grantiva/session.json` with `"state": "starting"` and no port the moment it
+  spawns the runner (rewritten with `"state": "ready"` and the port once the driver answers), and a
+  `run --keep-alive` runner (or a `runner start` runner, whose session flow runs first) is starting
+  until it publishes its keep-alive session, which it does once its flows have finished. The MCP tools
+  and resources, `grantiva runner dump-hierarchy` and `grantiva hierarchy` all print this one, for a
+  starting `session.json` and for a runner that has not published yet: they share one session
+  lookup with `runner stop` and both teardowns, which find such a runner too.
+- `Error: The runner session is starting (WDA on port <port> has no session yet). Retry in a few seconds.`
+  on iOS once the port is known but WebDriverAgent has not opened its session, for example in the
+  seconds after `runner start --detach` returns. The MCP tools and resources print it; `grantiva runner
+  dump-hierarchy` and `grantiva hierarchy` read the page source without a WDA session and do not.
+
+A call made once the driver is ready attaches as usual. `grantiva_screenshot` is the exception once
+`--detach` has returned and the session records its device: it takes the screenshot with `simctl` or `adb`, not WDA, so it
+succeeds in that last window.
+
+## Default simulator
+
+`grantiva_build`, `grantiva_run`, `grantiva_test` and `grantiva_sim_boot` called without a simulator
+(no `simulator` or `name` argument, no `simulator:` in `grantiva.yml`) use the default name, the newest
+installed iPhone type (for example `iPhone 18 Pro`). That is a stock name, so it may be a simulator you
+created for something else: the default is used only when Grantiva created that simulator (it is in
+Grantiva's created-simulator ledger, see the README). Otherwise the call boots nothing and returns
+``Error: Invalid argument: Simulator "iPhone 18 Pro" (<udid>) was not created by Grantiva. It has the default simulator's name, and Grantiva does not take a simulator you created as its default. Pass simulator: "iPhone 18 Pro" to use it anyway, or set simulator: in grantiva.yml (create one with grantiva simulator ensure --name "Grantiva iPhone 18 Pro").``
+(`grantiva_sim_boot` says `Pass name: "iPhone 18 Pro"`). `grantiva_vrt_capture` without a session
+captures on the only booted simulator when the config names none, under the same rule: a sole booted
+simulator Grantiva did not create is refused (`It is the only booted simulator, ...`). A simulator you name is used as named. Every
+`grantiva_build`, `grantiva_run` and `grantiva_test` result on iOS names the simulator it used:
+`Simulator: <name> (<udid>)` (`Device: <name> (<serial>)` for `grantiva_run` on Android; an Android
+`grantiva_build` boots nothing). The CLI's `run`, `build`, `diff capture`, `ci` and `runner start`
+follow the same rule for their default, naming `--simulator`.
+
+Tools that need a config file (`grantiva_build`, `grantiva_run`, `grantiva_test`, `grantiva_vrt_capture`)
+return an error naming the file and where it was looked for, for example
+`grantiva.yml not found at /path/to/project/grantiva.yml. Create one with grantiva init.` A `scheme`
+(iOS) or `module` (Android) argument stands in for the file for `grantiva_build` and `grantiva_run`.
+A config file created after the server started is read on the next call.
+
+The server uses a live `grantiva runner start` session in the project's `.grantiva/session.json`, or
+else a `grantiva run --keep-alive` (or `runner start`) session started from the same project directory
+(`--project-dir`, default the current directory) for the same platform. Sessions started from another
+directory, for the other platform, or by an earlier Grantiva that did not record the directory are
+never used. `grantiva_context` reports the session's simulator or emulator, or the configured one when
+there is no session. With neither, its `[Simulator]` section says `No runner session and no simulator in
+grantiva.yml.` and lists the booted simulators only as a hint: the UI tools act on none of them. Without
+a config file its `[Config]` section names the file it looked for and where, for example
+`grantiva.yml not found at /path/to/project/grantiva.yml. Create one with grantiva init.` (both
+`grantiva.yml` and `grantiva-android.yml` when the platform was not set with `--platform` or
+`GRANTIVA_PLATFORM`).
+
+| Session | Meaning |
+| --- | --- |
+| yes | Drives the app through the held runner session. |
+| no | Shells out to `xcodebuild`, Gradle, `simctl`, `adb`, or the diff pipeline; does not use the session. |
+| when live | Uses the session when one is live, and works without one. |
+
+## Tools

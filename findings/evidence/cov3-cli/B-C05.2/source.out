@@ -1,0 +1,9 @@
+62:        let argv0 = CommandLine.arguments[0]
+75:    /// Screen names are passed as they are, one argument each: no shell is
+92:        platform: Platform, arguments: [String: Value],
+96:            let output = try await runProcess(captureCommand(platform: platform, executable: executable), environment: environment)
+104:        platform: Platform, arguments: [String: Value],
+108:            let output = try await runProcess(compareCommand(platform: platform, executable: executable), environment: environment)
+127:        platform: Platform, arguments: [String: Value],
+130:        let screens = arguments["screens"]?.arrayValue?.compactMap(\.stringValue) ?? []
+132:            let output = try await runProcess(approveCommand(platform: platform, screens: screens, executable: executable), environment: environment)

@@ -1,0 +1,71 @@
+device helpers the stopped runner left running that `runner stop` then ended
+(`kind`, `pid`, `processGroup`, `command`, and `killed`, true once it was
+signalled; on iOS, the `simctl diagnose` that
+WebDriverAgent's xcodebuild starts when it is interrupted), and is `[]` when
+there were none. Only processes the runner started are ended: they name the
+device and descend from the runner, or write into its run directory under the
+runner home. `bundle_id`, and
+`udid` on Android, are the 2.1 names, kept for one release and deprecated.
+
+`.grantiva/session.json`, the file `runner start` leaves for `runner stop`,
+`dump-hierarchy` and the MCP server, uses the same names as `runner start
+--json`: `pid`, `port`, `platform`, `bundleId` and `udid` on iOS,
+`applicationId`, `serial` and `udid` on Android, plus `startedAt` and `state`.
+It is written the moment the runner is spawned with `"state": "starting"` and
+no port, and rewritten with `"state": "ready"` once the driver answers; what
+commands say meanwhile is in [docs/mcp.md](docs/mcp.md#a-session-that-is-starting).
+grantiva 2.1.0 reads a `starting` file (no port yet) as no session at
+all. The 2.1 names stay beside the new ones for one release, and files
+written by 2.1 are still read:
+
+- `wdaPort` → `port` (.grantiva/session.json)
+- `bundleId` → `applicationId` (.grantiva/session.json on Android)
+
+A foreground `runner start` ended by `grantiva runner stop` exits 0. One ended
+by `simulator teardown` or `emulator teardown`, run from any directory and at
+any point after `Runner started` (its session flow still running or its hold
+armed), exits 0 too and says `Runner stopped by teardown (pid N); the session has ended.`: the
+teardown writes `<pid>.stop.json` beside the runner's owner file in
+`/tmp/grantiva-sessions` before it stops it, so the marker is found whatever
+the directory or runner home either side uses. A marker counts only for the
+very process it names, and it is removed once read, or once its runner and
+its `runner start` are both gone.
+
+`runner stop` releases a `run --keep-alive` session started from the current
+directory as Ctrl-C would, whether its flows are still running (the run ends
+interrupted, exit 130; `port` is `null` in `--json` until the runner has
+published its session) or finished. If that run's flows had already finished,
+its `--ready-file` keeps the `passed` or `failed` it wrote (the ready file is
+written once) and the run exits with the status they earned; the `stopped`
+result of `runner stop` is the record of the release.
+
+```json
+{"pid": 64253, "platform": "ios", "port": 8235, "status": "started",
+ "bundleId": "com.example.app", "udid": "A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF"}
+```
+
+`runner install --json` reports `"extracted": false` when the installed runner
+was already current (the text output then says `Runner already installed at …`).
+
+### stdout is the result, stderr is the commentary
+
+Everything a caller captures or parses — a `--json` payload, the `ensure` UDID,
+a result table, a dumped hierarchy — goes to **stdout**, undecorated. Progress
+narration, warnings, and errors go to **stderr**. So both of these work, and
+neither sees the other's output:
+
+```bash
+udid=$(grantiva simulator ensure --name "iPhone 17 Pro")
+grantiva doctor --json | jq '.[] | select(.status == "error")'
+```
+
+Each doctor check's `status` is `ok`, `warning` or `error`. Only `error` makes `grantiva doctor` exit non-zero;
+a `warning` (an advisory check such as no booted simulator) never does.
+
+Every `--json` document, and the `--ready-file` file, uses camelCase keys.
+
+Some documents used snake_case keys before. For one deprecation period they
+write each of those values twice, under the camelCase key and under the old
+snake_case key beside it; read the camelCase key, as the snake_case one will be
+removed in a later release. The keys still written in both spellings:
+

@@ -1,0 +1,131 @@
+02:38:37.394974 [INFO] === Test execution started ===
+02:38:37.395036 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-ios/reports/FLOWS-27/14-runflow
+02:38:37.395041 [INFO] Platform: ios
+02:38:37.395044 [INFO] Driver: wda
+02:38:37.395338 [INFO] Validated 1 flow(s)
+02:38:37.504214 [INFO] Single device execution mode
+02:38:37.504227 [INFO] Starting flow execution (parallel: false, devices: [])
+02:38:37.504233 [INFO] Creating driver for single device execution
+02:38:37.504237 [INFO] Using specified iOS device: 1B1102EC-224B-4EF7-937E-370A0DC317DA
+02:38:37.607724 [INFO] Device 1B1102EC-224B-4EF7-937E-370A0DC317DA is a simulator
+02:38:37.607783 [INFO] Building WDA for device 1B1102EC-224B-4EF7-937E-370A0DC317DA (team ID: )
+02:38:37.814324 [INFO] WDA build reused from cache
+02:38:37.814339 [INFO] Starting WDA on device 1B1102EC-224B-4EF7-937E-370A0DC317DA (port: 8174)
+02:38:38.057703 [INFO] Starting GrantivaAgent (attempt 1/4)
+02:38:42.060929 [INFO] GrantivaAgent started
+02:38:42.061028 [INFO] WDA started successfully on port 8174
+02:38:42.420189 [DEBUG] WDA GET /window/size
+02:38:42.492781 [DEBUG] WDA GET /window/size completed (72ms, status: 200)
+02:38:42.492842 [INFO] Driver created: ios on cov3-ios-27
+02:38:42.494450 [INFO] === Starting flow: 14-runflow ===
+02:38:42.494458 [INFO] Flow file: .maestro/coverage/14-runflow.yaml
+02:38:42.494463 [INFO] Total steps: 4
+02:38:42.494609 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+02:38:42.495167 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+02:38:42.495307 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+02:38:46.410846 [DEBUG] WDA POST /session completed (3915ms, status: 200)
+02:38:46.411153 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+02:38:46.422310 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/appium/settings completed (11ms, status: 200)
+02:38:46.422472 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+02:38:46.423118 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/appium/settings completed (0ms, status: 200)
+02:38:46.424330 [DEBUG] Executing step 0: launchApp
+02:38:46.878667 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+02:38:46.878756 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+02:38:46.879564 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/appium/settings completed (0ms, status: 200)
+02:38:46.879646 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+02:38:46.880200 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/wda/apps/terminate completed (0ms, status: 200)
+02:38:46.880243 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+02:38:49.633247 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/wda/apps/launch completed (2752ms, status: 200)
+02:38:49.633434 [DEBUG] Step 0 completed successfully (3209ms): launchApp
+02:38:49.634908 [DEBUG] Executing step 1: runFlow: 14-runflow-sub.yaml
+02:38:49.785738 [DEBUG] Flutter: com.kylebrowning.Landmarks has no Flutter.framework; not searching the Flutter VM
+02:38:49.785776 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/alert/text
+02:38:49.945988 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/alert/text completed (160ms, status: 404)
+02:38:49.946064 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/screenshot
+02:38:50.030477 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/screenshot completed (84ms, status: 200)
+02:38:50.034682 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/screenshot
+02:38:50.102189 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/screenshot completed (67ms, status: 200)
+02:38:50.107439 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label ==[c] 'Deep Links' OR valu...
+02:38:50.107578 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Deep Links')`]"}
+02:38:50.107760 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label ==[c] 'Deep Links' OR value ==[c...
+02:38:50.107845 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+02:38:50.168444 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element completed (61ms, status: 404)
+02:38:50.212398 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element completed (104ms, status: 404)
+02:38:50.300905 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element completed (193ms, status: 200)
+02:38:50.392163 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element completed (284ms, status: 200)
+02:38:50.392288 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/24000000-0000-0000-E081-010000000000/name
+02:38:50.392332 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/24000000-0000-0000-E081-010000000000/rect
+02:38:50.392419 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/24000000-0000-0000-E081-010000000000/text
+02:38:50.392476 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/24000000-0000-0000-E081-010000000000/displayed
+02:38:50.437321 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/24000000-0000-0000-E081-010000000000/rect completed (45ms, status: 200)
+02:38:50.482206 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/24000000-0000-0000-E081-010000000000/name completed (89ms, status: 200)
+02:38:50.527529 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/24000000-0000-0000-E081-010000000000/text completed (135ms, status: 200)
+02:38:50.589999 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/24000000-0000-0000-E081-010000000000/displayed completed (197ms, status: 200)
+02:38:50.590099 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/wda/tap body={"x":287.5,"y":822}
+02:38:51.033738 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/wda/tap completed (443ms, status: 200)
+02:38:51.034031 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element body={"using":"predicate string","value":"(label ==[c] 'Caching Demo' OR value ==[c] 'Caching Demo')"}
+02:38:51.151862 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element completed (117ms, status: 200)
+02:38:51.151966 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/29010000-0000-0000-E081-010000000000/name
+02:38:51.152009 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/29010000-0000-0000-E081-010000000000/rect
+02:38:51.152055 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/29010000-0000-0000-E081-010000000000/text
+02:38:51.152108 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/29010000-0000-0000-E081-010000000000/displayed
+02:38:51.201787 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/29010000-0000-0000-E081-010000000000/name completed (49ms, status: 200)
+02:38:51.249952 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/29010000-0000-0000-E081-010000000000/rect completed (97ms, status: 200)
+02:38:51.296677 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/29010000-0000-0000-E081-010000000000/text completed (144ms, status: 200)
+02:38:51.347555 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/29010000-0000-0000-E081-010000000000/displayed completed (195ms, status: 200)
+02:38:51.347687 [DEBUG] Step 1 completed successfully (1712ms): runFlow: 14-runflow-sub.yaml
+02:38:51.349406 [DEBUG] Executing step 2: launchApp
+02:38:51.795282 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+02:38:51.795354 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+02:38:51.796091 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/appium/settings completed (0ms, status: 200)
+02:38:51.796162 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+02:38:51.796654 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/wda/apps/terminate completed (0ms, status: 200)
+02:38:51.796677 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+02:38:54.519572 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/wda/apps/launch completed (2722ms, status: 200)
+02:38:54.519746 [DEBUG] Step 2 completed successfully (3170ms): launchApp
+02:38:54.521516 [DEBUG] Executing step 3: runFlow: 14-runflow-sub.yaml
+02:38:54.522664 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/alert/text
+02:38:54.660381 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/alert/text completed (137ms, status: 404)
+02:38:54.660432 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/screenshot
+02:38:54.727398 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/screenshot completed (66ms, status: 200)
+02:38:54.728276 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/screenshot
+02:38:54.794158 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/screenshot completed (65ms, status: 200)
+02:38:54.794603 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/screenshot
+02:38:54.863298 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/screenshot completed (68ms, status: 200)
+02:38:54.864343 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/screenshot
+02:38:54.933827 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/screenshot completed (69ms, status: 200)
+02:38:54.935002 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+02:38:54.935021 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Deep Links')`]"}
+02:38:54.935059 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label ==[c] 'Deep Links' OR value ==[c...
+02:38:54.935085 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label ==[c] 'Deep Links' OR valu...
+02:38:55.058300 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element completed (123ms, status: 200)
+02:38:55.150679 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element completed (215ms, status: 200)
+02:38:55.194820 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element completed (259ms, status: 404)
+02:38:55.238962 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element completed (303ms, status: 404)
+02:38:55.239064 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/24000000-0000-0000-EE82-010000000000/name
+02:38:55.239098 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/24000000-0000-0000-EE82-010000000000/rect
+02:38:55.239144 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/24000000-0000-0000-EE82-010000000000/text
+02:38:55.239171 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/24000000-0000-0000-EE82-010000000000/displayed
+02:38:55.283466 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/24000000-0000-0000-EE82-010000000000/name completed (44ms, status: 200)
+02:38:55.325200 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/24000000-0000-0000-EE82-010000000000/text completed (86ms, status: 200)
+02:38:55.369262 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/24000000-0000-0000-EE82-010000000000/rect completed (130ms, status: 200)
+02:38:55.429178 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/24000000-0000-0000-EE82-010000000000/displayed completed (190ms, status: 200)
+02:38:55.429232 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/wda/tap body={"x":287.5,"y":822}
+02:38:55.871780 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/wda/tap completed (442ms, status: 200)
+02:38:55.872188 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element body={"using":"predicate string","value":"(label ==[c] 'Caching Demo' OR value ==[c] 'Caching Demo')"}
+02:38:56.099414 [DEBUG] WDA POST /session/406E605E-A29E-470D-9773-24F2564244C6/element completed (227ms, status: 200)
+02:38:56.099461 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/2D010000-0000-0000-EE82-010000000000/name
+02:38:56.099465 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/2D010000-0000-0000-EE82-010000000000/rect
+02:38:56.099477 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/2D010000-0000-0000-EE82-010000000000/text
+02:38:56.099490 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/2D010000-0000-0000-EE82-010000000000/displayed
+02:38:56.148736 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/2D010000-0000-0000-EE82-010000000000/name completed (49ms, status: 200)
+02:38:56.196528 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/2D010000-0000-0000-EE82-010000000000/rect completed (97ms, status: 200)
+02:38:56.242489 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/2D010000-0000-0000-EE82-010000000000/text completed (143ms, status: 200)
+02:38:56.294547 [DEBUG] WDA GET /session/406E605E-A29E-470D-9773-24F2564244C6/element/2D010000-0000-0000-EE82-010000000000/displayed completed (195ms, status: 200)
+02:38:56.294604 [DEBUG] Step 3 completed successfully (1773ms): runFlow: 14-runflow-sub.yaml
+02:38:56.296467 [INFO] === Flow completed: 14-runflow (status: passed, duration: 13800ms, passed: 6, failed: 0, skipped: 0) ===
+02:38:56.392407 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+02:38:56.392578 [INFO] Generating reports...
+02:38:56.393564 [INFO] Shutting down devices started by maestro-runner...
+02:38:56.393571 [INFO] Shutting down all tracked emulators
+02:38:56.393575 [INFO] Shutting down all tracked simulators

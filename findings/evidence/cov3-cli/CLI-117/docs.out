@@ -1,0 +1,23 @@
+## CI
+
+`grantiva ci run --platform android` is refused today, on any machine: Android baselines
+are local only until the Grantiva backend supports platforms ("Android baselines are local
+only until the Grantiva backend supports platforms; use local baselines"). Use the local
+commands instead: `grantiva diff capture`, `grantiva diff compare`, and
+`grantiva diff approve`.
+
+Once `ci run` supports Android, note that GitHub-hosted macOS runners cannot boot the
+Android emulator (no nested virtualization) and Grantiva does not run on Linux, so it will
+need a self-hosted Mac runner or a developer machine.
+
+See docs/android.md for using Grantiva with an Android project.
+---
+97-
+98-Android captures go to `.grantiva/captures/android/` and baselines to
+99:`.grantiva/baselines/android/`. Baselines are local only for now: `ci run` and remote
+100-baselines refuse Android with "Android baselines are local only until the Grantiva backend
+101-supports platforms; use local baselines". `diff capture`, `diff compare`, and
+102-`diff approve` work locally. On Android, `diff capture` prints `Emulator: <AVD> (<serial>)`,
+103-and its `--json` document adds an `emulator` object (name, udid, dimensions, scale) next
+104-to `simulator`, which carries the same values and is kept for compatibility. The MCP
+105-`grantiva_vrt_capture` tool returns the same document through a live runner session.

@@ -1,0 +1,55 @@
+# uptime: 12:20  up 4 days,  3:47, 5 users, load averages: 133.21 98.14 63.48
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA runner start --bundle-id com.kylebrowning.Landmarks --simulator $U1 --detach --json
+# exit=0 elapsed=4.122s -> a-start.out / a-start.err
+# (a) kill -9 90577 (the runner this row started)
+# uptime: 12:20  up 4 days,  3:48, 5 users, load averages: 115.69 95.55 62.97
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA runner stop --json
+# exit=0 elapsed=3.303s -> a-stop.out / a-stop.err
+# uptime: 12:20  up 4 days,  3:48, 5 users, load averages: 107.86 94.26 62.70
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ ls /tmp/grantiva-sessions; ls .grantiva/session.json 2>&1; ps -axo pid,command | grep "[g]rantiva-runner" | grep -c 7E846901
+# exit=1 elapsed=.066s -> a-after.out / a-after.err
+# uptime: 12:20  up 4 days,  3:48, 5 users, load averages: 94.43 91.83 62.21
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator ensure --name "cov2-ios-3 iPhone 17" --runtime 26.0
+# exit=0 elapsed=19.321s -> b-ensure3.out / b-ensure3.err
+# uptime: 12:21  up 4 days,  3:48, 5 users, load averages: 111.88 95.79 64.14
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA build install --no-launch --no-build --app-file $S/apps/Landmarks.app --simulator DEF4F64D-3764-4DFB-B28A-0E2E4A3D6E42
+# exit=0 elapsed=4.964s -> b-install3.out / b-install3.err
+# uptime: 12:21  up 4 days,  3:48, 5 users, load averages: 128.23 99.44 65.61
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios (background)
+$ $GRANTIVA run --no-build --simulator 7E846901-F93F-4220-A153-7043061033D7 --flow .maestro/01-browse.yaml --keep-alive --ready-file $S/kaB1.ready  > kaB1.out 2> kaB1.err &
+# ready after 15s pid=91585: {
+  "finishedAt" : "2026-10-11T19:21:31Z",
+  "flows" : [
+    {
+      "name" : "01-browse",
+      "status" : "passed"
+    }
+  ],
+  "status" : "passed"
+}
+# uptime: 12:21  up 4 days,  3:48, 5 users, load averages: 145.84 105.79 68.70
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios (background)
+$ $GRANTIVA run --no-build --simulator DEF4F64D-3764-4DFB-B28A-0E2E4A3D6E42 --flow .maestro/01-browse.yaml --keep-alive --ready-file $S/kaB3.ready  > kaB3.out 2> kaB3.err &
+# ready after 13s pid=91995: {
+  "finishedAt" : "2026-10-11T19:21:45Z",
+  "flows" : [
+    {
+      "name" : "01-browse",
+      "status" : "passed"
+    }
+  ],
+  "status" : "passed"
+}
+# uptime: 12:21  up 4 days,  3:49, 5 users, load averages: 138.11 105.45 69.01
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA runner stop --json
+# exit=0 elapsed=1.167s -> b-stop.out / b-stop.err
+# uptime: 12:21  up 4 days,  3:49, 5 users, load averages: 136.42 105.64 69.29
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ ls /tmp/grantiva-sessions; kill -0 91585 2>/dev/null && echo p1-alive || echo p1-gone; kill -0 91995 2>/dev/null && echo p3-alive || echo p3-gone; ls $GRANTIVA_RUNNER_HOME/locks/ | grep -cE '7E846901-F93F-4220-A153-7043061033D7|DEF4F64D-3764-4DFB-B28A-0E2E4A3D6E42'
+# exit=1 elapsed=.031s -> b-after.out / b-after.err

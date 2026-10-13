@@ -1,0 +1,33 @@
+# default-device guard: default read from the MCP tools/list schema (CLI-097/list_ios.out: grantiva_build simulator 'default: the newest installed iPhone type' = iPhone 18 Pro on this host) and from init's warning; findings/round3-smoke.md: the MCP no-simulator build check was blocked in both the smoke and the re-smoke (owner simulators booted), so it booted nothing; booted lists recorded before and after
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-153
+$ xcrun simctl list devices booted
+# exit=0 elapsed=.121s -> booted_before.out / booted_before.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-153
+$ grantiva() { "$GRANTIVA" "$@"; }; grantiva doctor
+# exit=0 elapsed=.191s -> doctor.out / doctor.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-153
+$ grantiva() { "$GRANTIVA" "$@"; }; grantiva init
+# exit=0 elapsed=.914s -> init.out / init.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-153
+$ grantiva() { "$GRANTIVA" "$@"; }; grantiva runner install
+# exit=0 elapsed=.474s -> runner_install.out / runner_install.err
+# not run: 'grantiva run --flow flows/onboarding.yaml' (a device command; the README's flows/onboarding.yaml does not exist in the demo) and 'grantiva auth login' (out of scope, n/a)
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-153
+$ grantiva() { "$GRANTIVA" "$@"; }; grantiva ci run
+# exit=1 elapsed=1.563s -> ci_run.out / ci_run.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-153
+$ xcrun simctl list devices booted
+# exit=0 elapsed=.120s -> booted_after.out / booted_after.err
+# second copy rows/CLI-153-one: the 'Landmarks (UI Testing)' shared scheme removed so init writes 'scheme: Landmarks'; same lines as written
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-153-one
+$ xcrun simctl list devices booted
+# exit=0 elapsed=.125s -> one_booted_before.out / one_booted_before.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-153-one
+$ grantiva() { "$GRANTIVA" "$@"; }; grantiva init
+# exit=0 elapsed=.958s -> one_init.out / one_init.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-153-one
+$ grantiva() { "$GRANTIVA" "$@"; }; grantiva ci run
+# exit=1 elapsed=1.496s -> one_ci_run.out / one_ci_run.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-153-one
+$ xcrun simctl list devices booted
+# exit=0 elapsed=.115s -> one_booted_after.out / one_booted_after.err

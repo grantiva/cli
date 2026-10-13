@@ -1,0 +1,61 @@
+23:35:34.213551 [INFO] === Test execution started ===
+23:35:34.213623 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt45/crash-1-report
+23:35:34.213628 [INFO] Platform: ios
+23:35:34.213633 [INFO] Driver: wda
+23:35:34.214011 [INFO] Validated 1 flow(s)
+23:35:34.337751 [INFO] Single device execution mode
+23:35:34.337779 [INFO] Starting flow execution (parallel: false, devices: [])
+23:35:34.337787 [INFO] Creating driver for single device execution
+23:35:34.337792 [INFO] Using specified iOS device: 563907E1-703D-4322-AE5F-FC3B06D03143
+23:35:34.459669 [INFO] Device 563907E1-703D-4322-AE5F-FC3B06D03143 is a simulator
+23:35:34.459748 [INFO] Building WDA for device 563907E1-703D-4322-AE5F-FC3B06D03143 (team ID: )
+23:35:34.706817 [INFO] WDA build reused from cache
+23:35:34.706833 [INFO] Starting WDA on device 563907E1-703D-4322-AE5F-FC3B06D03143 (port: 8511)
+23:35:34.984287 [INFO] Starting GrantivaAgent (attempt 1/4)
+23:35:36.986561 [INFO] GrantivaAgent started
+23:35:36.986612 [INFO] WDA started successfully on port 8511
+23:35:37.356596 [DEBUG] WDA GET /window/size
+23:35:37.432699 [DEBUG] WDA GET /window/size completed (76ms, status: 200)
+23:35:37.432793 [INFO] Driver created: ios on cov3-ios-26
+23:35:37.434266 [INFO] === Starting flow: 99-crash ===
+23:35:37.434272 [INFO] Flow file: .maestro/99-crash.yaml
+23:35:37.434276 [INFO] Total steps: 4
+23:35:37.434402 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+23:35:37.435027 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+23:35:37.435093 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+23:35:40.044800 [DEBUG] WDA POST /session completed (2609ms, status: 200)
+23:35:40.044848 [DEBUG] WDA POST /session/8714E40A-84A1-4D06-9465-4E321A235F87/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+23:35:40.045787 [DEBUG] WDA POST /session/8714E40A-84A1-4D06-9465-4E321A235F87/appium/settings completed (0ms, status: 200)
+23:35:40.045858 [DEBUG] WDA POST /session/8714E40A-84A1-4D06-9465-4E321A235F87/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+23:35:40.046433 [DEBUG] WDA POST /session/8714E40A-84A1-4D06-9465-4E321A235F87/appium/settings completed (0ms, status: 200)
+23:35:40.046831 [DEBUG] Executing step 0: launchApp
+23:35:40.508664 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[LANDMARKS_CRASH_ON_LAUNCH:1]
+23:35:40.508742 [DEBUG] WDA POST /session/8714E40A-84A1-4D06-9465-4E321A235F87/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+23:35:40.509533 [DEBUG] WDA POST /session/8714E40A-84A1-4D06-9465-4E321A235F87/appium/settings completed (0ms, status: 200)
+23:35:40.509634 [DEBUG] WDA POST /session/8714E40A-84A1-4D06-9465-4E321A235F87/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+23:35:40.510177 [DEBUG] WDA POST /session/8714E40A-84A1-4D06-9465-4E321A235F87/wda/apps/terminate completed (0ms, status: 200)
+23:35:40.510216 [DEBUG] WDA POST /session/8714E40A-84A1-4D06-9465-4E321A235F87/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks","environment":{"LANDMARKS_CRASH_ON_LAUNCH":"1"}}
+23:35:42.058524 [DEBUG] WDA POST /session/8714E40A-84A1-4D06-9465-4E321A235F87/wda/apps/launch completed (1548ms, status: 200)
+23:35:42.058574 [DEBUG] Step 0 completed successfully (2011ms): launchApp
+23:35:42.058953 [DEBUG] Executing step 1: assertVisible: text="Landmarks"
+23:35:42.189321 [DEBUG] Flutter: com.kylebrowning.Landmarks has no Flutter.framework; not searching the Flutter VM
+23:35:42.189357 [DEBUG] WDA GET /session/8714E40A-84A1-4D06-9465-4E321A235F87/alert/text
+23:35:42.196627 [DEBUG] WDA GET /session/8714E40A-84A1-4D06-9465-4E321A235F87/alert/text completed (7ms, status: 400)
+23:35:42.196785 [DEBUG] WDA POST /session/8714E40A-84A1-4D06-9465-4E321A235F87/element body={"using":"predicate string","value":"(label ==[c] 'Landmarks' OR value ==[c] 'Landmarks')"}
+23:35:42.200144 [DEBUG] WDA POST /session/8714E40A-84A1-4D06-9465-4E321A235F87/element completed (3ms, status: 400)
+23:35:42.200219 [DEBUG] WDA GET /session/8714E40A-84A1-4D06-9465-4E321A235F87/source
+23:35:42.202015 [DEBUG] WDA GET /session/8714E40A-84A1-4D06-9465-4E321A235F87/source completed (1ms, status: 400)
+23:35:42.202094 [DEBUG] WDA POST /session/8714E40A-84A1-4D06-9465-4E321A235F87/wda/apps/state body={"bundleId":"com.kylebrowning.Landmarks"}
+23:35:42.202631 [DEBUG] WDA POST /session/8714E40A-84A1-4D06-9465-4E321A235F87/wda/apps/state completed (0ms, status: 200)
+23:35:42.202659 [INFO] [wda] com.kylebrowning.Landmarks is not running (app state 1) during an element wait — treating it as crashed
+23:35:42.202682 [ERROR] Step 1 failed (143ms): assertVisible: text="Landmarks" - Error: Element not visible: text='Landmarks' (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)
+23:35:42.202690 [DEBUG] WDA GET /session/8714E40A-84A1-4D06-9465-4E321A235F87/screenshot
+23:35:42.340241 [DEBUG] WDA GET /session/8714E40A-84A1-4D06-9465-4E321A235F87/screenshot completed (137ms, status: 200)
+23:35:42.350466 [DEBUG] WDA GET /session/8714E40A-84A1-4D06-9465-4E321A235F87/source
+23:35:42.352410 [DEBUG] WDA GET /session/8714E40A-84A1-4D06-9465-4E321A235F87/source completed (1ms, status: 400)
+23:35:42.356124 [INFO] === Flow completed: 99-crash (status: failed, duration: 4918ms, passed: 1, failed: 1, skipped: 2) ===
+23:35:42.430368 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+23:35:42.430720 [INFO] Generating reports...
+23:35:42.432452 [INFO] Shutting down devices started by maestro-runner...
+23:35:42.432461 [INFO] Shutting down all tracked emulators
+23:35:42.432465 [INFO] Shutting down all tracked simulators

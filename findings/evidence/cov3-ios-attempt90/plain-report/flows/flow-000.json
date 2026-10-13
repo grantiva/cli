@@ -1,0 +1,83 @@
+{
+  "id": "flow-000",
+  "name": "fail-early",
+  "sourceFile": "fail-early.yaml",
+  "device": {
+    "id": "563907E1-703D-4322-AE5F-FC3B06D03143",
+    "name": "cov3-ios-26",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T02:00:16.917991-07:00",
+  "endTime": "2026-10-13T02:00:35.788752-07:00",
+  "duration": 18870,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T02:00:19.565841-07:00",
+      "endTime": "2026-10-13T02:00:21.518841-07:00",
+      "duration": 1953,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"No Such Element\"",
+      "status": "failed",
+      "startTime": "2026-10-13T02:00:21.520491-07:00",
+      "endTime": "2026-10-13T02:00:35.053491-07:00",
+      "duration": 13533,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "No Such Element"
+        }
+      },
+      "error": {
+        "type": "element_not_found",
+        "message": "Element not found: text='No Such Element' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such Element' OR value ==[c] 'No Such Element')'; page source: no elements match selector; closest on-screen texts: \"Half Dome, Yosemite, CA\", \"Half Dome\", \"Mountains\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "skipped",
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 7743,
+    "p50": 1953,
+    "p95": 13533,
+    "max": 13533,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}

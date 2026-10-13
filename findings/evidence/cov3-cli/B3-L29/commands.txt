@@ -1,0 +1,9 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B3-L29
+$ for p in 'build build' 'build install' run 'ci run' 'diff capture' 'diff compare' 'emulator ensure'; do echo ==$p; /Users/kyle/.grantiva-qa/bin/grantiva $p --help | grep -E -- '--headless|--emulator|--allow-device-settings|--device'; done
+# exit=0 elapsed=.071s -> helps.out / helps.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B3-L29
+$ /Users/kyle/.grantiva-qa/bin/grantiva build build --headless --module NoSuchModule
+# exit=1 elapsed=.182s -> headless.out / headless.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B3-L29
+$ /Users/kyle/.grantiva-qa/bin/grantiva build build --emulator cov-missing --module NoSuchModule
+# exit=1 elapsed=.081s -> emulator.out / emulator.err

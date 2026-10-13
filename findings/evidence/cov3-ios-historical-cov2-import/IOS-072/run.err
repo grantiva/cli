@@ -1,0 +1,103 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=7E846901-F93F-4220-A153-7043061033D7 screens=0 flows=2
+Preparing runner...
+Runner ready
+Booting simulator: 7E846901-F93F-4220-A153-7043061033D7
+Simulator booted: cov2-ios-1 (7E846901-F93F-4220-A153-7043061033D7)
+Skipping build and install (--no-build)
+Running 2 flow(s) in one GrantivaAgent session: qa/a/same.yaml, qa/b/same.yaml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 2 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p072/out
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8987
+
+  [1/2] qa/a/same (same.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+      ▸ Run 14-runflow-sub.yaml
+        ✓ tapOn: text="Deep Links" (1.9s)
+        ✓ assertVisible: text="Caching Demo" (301ms)
+    ✓ runFlow: 14-runflow-sub.yaml (2.2s)
+    ✓ launchApp (1.9s)
+      ▸ Run 14-runflow-sub.yaml
+        ✓ tapOn: text="Deep Links" (1.8s)
+        ✓ assertVisible: text="Caching Demo" (300ms)
+    ✓ runFlow: 14-runflow-sub.yaml (2.1s)
+✓ qa/a/same 10.7s
+
+  [2/2] qa/b/same (same.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+      ▸ Run 14-runflow-sub.yaml
+        ✓ tapOn: text="Deep Links" (1.8s)
+        ✓ assertVisible: text="Caching Demo" (299ms)
+    ✓ runFlow: 14-runflow-sub.yaml (2.1s)
+    ✓ launchApp (1.9s)
+      ▸ Run 14-runflow-sub.yaml
+        ✓ tapOn: text="Deep Links" (1.9s)
+        ✓ assertVisible: text="Caching Demo" (311ms)
+    ✓ runFlow: 14-runflow-sub.yaml (2.2s)
+✓ qa/b/same 8.2s
+
+  [1/2] qa/a/same (qa/a/same.yaml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ runFlow: 14-runflow-sub.yaml (2.2s)
+      ✓ tapOn: text="Deep Links" (1.9s)
+      ✓ assertVisible: text="Caching Demo" (301ms)
+    ✓ launchApp (1.9s)
+    ✓ runFlow: 14-runflow-sub.yaml (2.1s)
+      ✓ tapOn: text="Deep Links" (1.8s)
+      ✓ assertVisible: text="Caching Demo" (300ms)
+✓ qa/a/same 10.7s
+
+  [2/2] qa/b/same (qa/b/same.yaml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ runFlow: 14-runflow-sub.yaml (2.1s)
+      ✓ tapOn: text="Deep Links" (1.8s)
+      ✓ assertVisible: text="Caching Demo" (299ms)
+    ✓ launchApp (1.9s)
+    ✓ runFlow: 14-runflow-sub.yaml (2.2s)
+      ✓ tapOn: text="Deep Links" (1.9s)
+      ✓ assertVisible: text="Caching Demo" (311ms)
+✓ qa/b/same 8.2s
+
+  12 steps passing (18.9s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  qa/a/same                      ✓ PASS       6      6      0      0      10.7s  cov2-ios-1 (ios 26.0 Simula...
+  qa/b/same                      ✓ PASS       6      6      0      0       8.2s  cov2-ios-1 (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             2/2      12     12      0      0      18.9s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p072/out
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p072/out/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p072/out/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p072/out/allure-results
+
+  Built by Grantiva
+

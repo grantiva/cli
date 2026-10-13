@@ -1,0 +1,84 @@
+[debug] 2026-10-13T07:21:06Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:06Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:06Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:06Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:06Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:06Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:06Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:06Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:06Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:06Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:06Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T07:21:06Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T07:21:06Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T07:21:07Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T07:21:07Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T07:21:07Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T07:21:07Z com.grantiva.cli: $ xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T07:21:07Z com.grantiva.cli: exit 0: xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T07:21:07Z com.grantiva.cli: $ /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform ios --device 563907E1-703D-4322-AE5F-FC3B06D03143 --no-ansi --no-app-install test --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-0C9BBF81-AECF-43DF-B32B-73FE8B255F22 --flatten --wait-for-idle-timeout 0 --artifacts failure /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-C10964C4-29AF-475D-B848-736D71ECB633/grantiva.yml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8511
+
+  [1/1] screens (grantiva.yml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Deep Links" (1.9s)
+    ✓ waitForAnimationToEnd (936ms)
+    ✓ tapOn: text="Caching Demo" (1.0s)
+    ✓ waitForAnimationToEnd (708ms)
+    ✗ extendedWaitUntil: visible text="No Such Element" (2.5s)
+      ╰─ Element 'No Such Element' not visible within 2s (cause: context deadline exceeded)
+✗ screens 12.7s
+
+  [1/1] screens (grantiva.yml) - Device: cov3-ios-26 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Deep Links" (1.9s)
+    ✓ waitForAnimationToEnd (936ms)
+    ✓ tapOn: text="Caching Demo" (1.0s)
+    ✓ waitForAnimationToEnd (708ms)
+    ✗ extendedWaitUntil: visible text="No Such Element" (2.5s)
+      ╰─ Element 'No Such Element' not visible within 2s (cause: context deadline exceeded)
+    - waitForAnimationToEnd (skipped)
+    - takeScreenshot (skipped)
+✗ screens 12.7s
+
+  5 steps passing (12.7s)
+  1 steps failing
+  2 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  screens                        ✗ FAIL       8      5      1      2      12.7s  cov3-ios-26 (ios 26.0 Simul...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       8      5      1      2      12.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+[debug] 2026-10-13T07:21:23Z com.grantiva.cli: exit 1: /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform ios --device 563907E1-703D-4322-AE5F-FC3B06D03143 --no-ansi --no-app-install test --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-0C9BBF81-AECF-43DF-B32B-73FE8B255F22 --flatten --wait-for-idle-timeout 0 --artifacts failure /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-C10964C4-29AF-475D-B848-736D71ECB633/grantiva.yml
+[debug] 2026-10-13T07:21:23Z com.grantiva.cli: $ xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 clear
+[debug] 2026-10-13T07:21:23Z com.grantiva.cli: exit 0: xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 clear
+Error: Runner failed (exit 1): Screen "Should Not Exist" failed at extendedWaitUntil: visible text="No Such Element": Element 'No Such Element' not visible within 2s (cause: context deadline exceeded)
+Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.

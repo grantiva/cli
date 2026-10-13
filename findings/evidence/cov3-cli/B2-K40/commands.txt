@@ -1,0 +1,22 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B2-K40
+$ $GRANTIVA run --snapshot bogus
+# exit=64 elapsed=.021s -> snapshot.out / snapshot.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B2-K40
+$ $GRANTIVA hierarchy --format bogus
+# exit=64 elapsed=.018s -> hierarchy.out / hierarchy.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B2-K40
+$ $GRANTIVA run --platform bogus
+# exit=64 elapsed=.019s -> platform.out / platform.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/tree
+$ grep -rn -E 'ExpressibleByArgument' Sources/GrantivaCLI | cut -c1-200
+# exit=0 elapsed=.019s -> enums.out / enums.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/tree
+$ grep -rn -E 'ExpressibleByArgument' Sources/GrantivaCLI | grep -v CaseIterable; grep -rn -E 'enum (Platform|LogStreamLevel)' Sources/GrantivaCore | cut -c1-200; grep -rn -E 'extension (Platform|LogStreamLevel).*CaseIterable|enum (Platform|LogStreamLevel).*CaseIterable' Sources | cut -c1-200
+# exit=0 elapsed=1.535s -> enums_without_caseiterable.out / enums_without_caseiterable.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/tree
+$ grep -rn -E 'func test.*(Snapshot|Format).*(Bogus|Invalid|Values|List|Name)' Tests/GrantivaCLITests | cut -c1-200
+# exit=0 elapsed=.022s -> tests.out / tests.err
+# round-3 re-run: the round-2 commands replayed with paths mapped to the 8f2cff67 tree (inputs/replay.py) in fixtures rebuilt as round 2 had them; outputs compared with round 2 (inputs/cmpold.py)
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/tree
+$ grep -rn -E 'ExpressibleByArgument' Sources | cut -c1-200; grep -rn -E 'enum (Platform|LogStreamLevel)' Sources | cut -c1-200
+# exit=0 elapsed=1.042s -> enums_r3.out / enums_r3.err

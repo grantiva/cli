@@ -1,0 +1,40 @@
+{
+  "allPassed" : false,
+  "error" : "Runner failed (exit 1): Screen \"Broken\" failed at tapOn: text=\"No Such Element\": Element not found: text='No Such Element' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such Element' OR value ==[c] 'No Such Element')'; page source: no elements match selector; closest on-screen texts: \"Half Dome, Yosemite, CA\", \"Half Dome\", \"Mountains\")\nRun grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.",
+  "screens" : [
+    {
+      "kind" : "screen",
+      "name" : "Home",
+      "passed" : true,
+      "screenshots" : [
+        {
+          "name" : "Home",
+          "path" : ".grantiva\/run-captures\/Home.png"
+        }
+      ],
+      "steps" : [
+        {
+          "action" : "Launch app",
+          "duration" : 2.437,
+          "status" : "passed"
+        }
+      ]
+    },
+    {
+      "kind" : "screen",
+      "name" : "Broken",
+      "passed" : false,
+      "screenshots" : [
+
+      ],
+      "steps" : [
+        {
+          "action" : "Tap on \"No Such Element\"",
+          "duration" : 12.859,
+          "message" : "Element not found: text='No Such Element' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such Element' OR value ==[c] 'No Such Element')'; page source: no elements match selector; closest on-screen texts: \"Half Dome, Yosemite, CA\", \"Half Dome\", \"Mountains\")",
+          "status" : "failed"
+        }
+      ]
+    }
+  ]
+}

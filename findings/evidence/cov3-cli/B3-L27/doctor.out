@@ -1,0 +1,47 @@
+
+  Grantiva Doctor
+  ──────────────────────────────────────────────────
+
+  Required
+
+    ✓ Xcode          /Applications/Xcode-27.0.0.app/Contents/Developer
+    ✓ Xcode Version  Xcode 27.0
+
+  Advisory
+
+    ● Booted Simulator  Could not list simulators: 2026-10-12 13:14:00.028 simctl[9423:22128047] CoreSimulatorService connection became invalid.  Simulator services will no longer be available.
+2026-10-12 13:14:00.079 simctl[9423:22128047] Logging connecton invalid: <OS_xpc_error: <dictionary: 0x2008962b0> { count = 1, transaction: 0, voucher = 0x0, contents =
+	"XPCErrorDescription" => <string: 0x2008963f0> { string cache = 0x0, length = 18, contents = "Connection invalid" }
+}>
+2026-10-12 13:14:00.079 simctl[9423:22128047] Error opening log file (/Users/kyle/Library/Logs/CoreSimulator/CoreSimulator.com.apple.CoreSimulator.simctl.log): Operation not permitted
+[-[SimServiceContext initWithDeveloperDir:connectionType:error:]:499] WARN  : Unable to discover any Simulator runtimes. Developer Directory is /Applications/Xcode-27.0.0.app/Contents/Developer.
+[-[SimDiskImageManager _onQueue_checkConnection:]:239] ERROR : simdiskimaged returned error (invalid), marking disconnected.
+[-[SimDiskImageManager _onQueue_checkConnection:]:239] ERROR : simdiskimaged returned error (invalid), marking disconnected.
+[-[SimDiskImageManager init]:175] ERROR : Could not kickstart simdiskimaged; SimDiskImageManager services will not be available: Error Domain=NSPOSIXErrorDomain Code=53 "Software caused connection abort" UserInfo={NSLocalizedDescription=Error returned in reply from CoreSimulatorService: Connection invalid}
+[-[SimServiceContext initWithDeveloperDir:connectionType:error:]_block_invoke:556] ERROR : Could not get list of trusted mount directories: Error Domain=com.apple.CoreSimulator.SimError Code=410 "The service used to manage runtime disk images (simdiskimaged) crashed or is not responding" UserInfo={NSLocalizedDescription=The service used to manage runtime disk images (simdiskimaged) crashed or is not responding}
+[-[SimServiceContext sendRequest:reply:error:]:1982] ERROR : Unable to deliver request ({
+    request = "notification_subscription";
+    "set_path" = "/Users/kyle/Library/Developer/CoreSimulator/Devices";
+}) because we are not connected to CoreSimulatorService.
+2026-10-12 13:14:00.079 simctl[9423:22128044] Error Domain=NSPOSIXErrorDomain Code=61 "Connection refused" UserInfo={NSLocalizedDescription=CoreSimulatorService connection became invalid.  Simulator services will no longer be available.}
+Unable to locate device set: Error Domain=NSPOSIXErrorDomain Code=61 "Connection refused" UserInfo={NSLocalizedFailureReason=Failed to subscribe to notifications from CoreSimulatorService., NSLocalizedDescription=Failed to initialize simulator device set., NSUnderlyingError=0x77e49dc510 {Error Domain=NSPOSIXErrorDomain Code=61 "Connection refused" UserInfo={NSLocalizedDescription=CoreSimulatorService connection became invalid.  Simulator services will no longer be available.}}}
+                          Fix the Xcode check above (xcode-select -p, or unset DEVELOPER_DIR), then run grantiva doctor again
+    ✓ Runner            grantiva-runner 1.1.28-grantiva.13+android-drivers-2
+
+  Project
+
+    ● grantiva.yml    Not found
+                        Run: grantiva init
+    ● Git Repository  Not a git repository
+                        Run: git init
+
+  CI / Cloud
+
+    ● Grantiva Auth  Not authenticated — remote baselines unavailable
+                       Run: grantiva auth login
+    ● GitHub App     GitHub App not configured — Check Runs won't be posted
+                       Install the GitHub App from your Grantiva dashboard settings
+
+  ──────────────────────────────────────────────────
+  3 passed · 5 optional
+

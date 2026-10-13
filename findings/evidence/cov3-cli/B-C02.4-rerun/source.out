@@ -1,0 +1,60 @@
+    }
+
+    /// C02: adb missed the user's emulator, Grantiva spawned a second copy on
+    /// the same port, and that copy died just as the user's emulator answered
+    /// `boot_completed=1` on the serial. The boot must fail and leave no record.
+    func testBootFailsAndLeavesNoRecordWhenTheSpawnedEmulatorDiesWhileTheSerialAnswers() async throws {
+        let shell = ScriptedShell([
+            .success("List of devices attached"),          // boot: adb devices (port choice) misses emulator-5554
+            .success("1"), .success("package:x"), .success(""), // the user's emulator answers the boot probes
+        ])
+        let emulators = EmulatorProcesses(shell)
+        let pid = try emulators.start(serial: "emulator-5554")
+        emulators.killOn = "sys.boot_completed"            // the duplicate dies during the first probe
+        let manager = EmulatorManager(
+            sdk: AndroidSDK(root: "/sdk"), adb: ADB(path: "/sdk/platform-tools/adb", execute: emulators.execute),
+            execute: emulators.execute, spawn: FixedPIDSpawn(pid: pid).spawn, provenance: AndroidProvenance(directory: scratch.path),
+            headless: true, bootTimeout: 1, pollInterval: 0.01, environment: [:], killTimeout: 1,
+            consolePortBound: { _ in false }, consolePortOwners: { _ in nil }
+        )
+        do {
+            _ = try await manager.boot(avd: "Pixel_8_API_35")
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("exited"), "\(error)")
+        }
+        XCTAssertEqual(try AndroidProvenance(directory: scratch.path).all(), [])
+    }
+    /// C02: the user's emulator-5554 carries a dead-pid record with its own
+    /// AVD name (the shared-host state). `teardown --all` leaves it running.
+    func testTeardownAllSkipsADeadPIDRecordWhoseSerialRunsTheSameAVD() async throws {
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: try deadPID()))
+        let afterKill = "List of devices attached\nemulator-5554 device"
+        let both = "List of devices attached\nemulator-5554 device\nemulator-5556 device"
+        let shell = ScriptedShell([
+            // emulator-5554: dead pid, serial listed; refused and dropped
+            .success(both),
+            // emulator-5556: ours, torn down
+            .success(""), .success(""), .success(""),                    // force-stop x2, forward --list
+            .success(both), .success(""), .success(""), .success(afterKill), // listed, sync, emu kill, gone
+        ])
+        let emulators = EmulatorProcesses(shell)
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5556", avd: "B", pid: try emulators.start(serial: "emulator-5556")))
+        let outcomes = try await manager(emulators).teardownAll()
+        XCTAssertEqual(outcomes, [EmulatorTeardownOutcome(serial: "emulator-5556", avd: "B", killed: true, recorded: true)])
+        XCTAssertEqual(try ledger.all(), [])
+        XCTAssertEqual(shell.commands.filter { $0.hasSuffix("emu kill") }, ["'/sdk/platform-tools/adb' -s 'emulator-5556' emu kill"])
+        XCTAssertFalse(shell.commands.contains { $0.contains("'emulator-5554'") }, "nothing is sent to the user's emulator")
+    }
+
+    func testDeleteRefusesWhenARunningEmulatorsNameCannotBeRead() async {
+        let shell = ScriptedShell([
+            .success("List of devices attached\nemulator-5554 offline"),
+            .failure(GrantivaError.commandFailed("offline", 1)),
+        ])
+        do {
+            try await manager(shell).deleteAVD(name: "Pixel_8_API_35", force: true)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("refusing to delete"), "\(error)")

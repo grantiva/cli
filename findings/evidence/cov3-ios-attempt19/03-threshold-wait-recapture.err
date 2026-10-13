@@ -1,0 +1,202 @@
+[debug] 2026-10-13T05:11:49Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T05:11:49Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T05:11:49Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T05:11:49Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T05:11:49Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T05:11:49Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T05:11:49Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T05:11:49Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T05:11:49Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T05:11:49Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T05:11:49Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T05:11:49Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T05:11:49Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T05:11:50Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T05:11:50Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T05:11:50Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T05:11:50Z com.grantiva.cli: $ xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T05:11:50Z com.grantiva.cli: exit 0: xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T05:11:50Z com.grantiva.cli: $ /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform ios --device 563907E1-703D-4322-AE5F-FC3B06D03143 --no-ansi --no-app-install test --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-BC35C1C1-CD64-4DA1-B2FA-4A46F159BE34 --flatten --wait-for-idle-timeout 0 --artifacts failure /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-7DEE3237-926E-4349-96DA-52ABA2257745/grantiva.yml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8511
+
+  [1/1] screens (grantiva.yml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ waitForAnimationToEnd (282ms)
+    ✓ takeScreenshot (234ms)
+      ▸ Run .maestro/coverage/cfg-relaunch.yaml
+        ✓ launchApp (2.0s)
+    ✓ runFlow: .maestro/coverage/cfg-relaunch.yaml (2.0s)
+    ✓ waitForAnimationToEnd (260ms)
+    ✓ assertVisible: text="Golden Gate.*" (1.0s)
+    ✓ assertNotVisible: text="Golden Gate.*", exact=true (732ms)
+    ✓ tapOn: text="Lakes", exact=true (902ms)
+    ✓ waitForAnimationToEnd (652ms)
+    ✓ assertVisible: text="Mono Lake", exact=true (300ms)
+    ✓ waitForAnimationToEnd (212ms)
+    ✓ takeScreenshot (59ms)
+      ▸ Run .maestro/coverage/cfg-relaunch.yaml
+        ✓ launchApp (2.0s)
+    ✓ runFlow: .maestro/coverage/cfg-relaunch.yaml (2.0s)
+    ✓ waitForAnimationToEnd (255ms)
+    ✓ tapOn: text="Deep Links" (1.2s)
+    ✓ waitForAnimationToEnd (745ms)
+    ✓ tapOn: text="Caching Demo" (918ms)
+    ✓ waitForAnimationToEnd (998ms)
+    ✓ Wait 3s (3.0s)
+    ✓ assertVisible: text="Cache Policy" (501ms)
+    ✓ waitForAnimationToEnd (266ms)
+    ✓ takeScreenshot (81ms)
+      ▸ Run .maestro/coverage/cfg-relaunch.yaml
+        ✓ launchApp (2.0s)
+    ✓ runFlow: .maestro/coverage/cfg-relaunch.yaml (2.0s)
+    ✓ waitForAnimationToEnd (253ms)
+    ✓ tapOn: text="Deep Links" (1.1s)
+    ✓ waitForAnimationToEnd (759ms)
+    ✓ tapOn: text="Edit Landmark" (922ms)
+    ✓ waitForAnimationToEnd (706ms)
+    ✓ tapOn: text="Name" (1.0s)
+    ✓ waitForAnimationToEnd (482ms)
+    ✓ inputText: " typed" (488ms)
+    ✓ waitForAnimationToEnd (272ms)
+    ✓ tapOn: text="Done" (1.1s)
+    ✓ waitForAnimationToEnd (758ms)
+    ✓ assertVisible: text="Golden Gate Bridge typed" (302ms)
+    ✓ waitForAnimationToEnd (250ms)
+    ✓ takeScreenshot (170ms)
+      ▸ Run .maestro/coverage/cfg-relaunch.yaml
+        ✓ launchApp (2.0s)
+    ✓ runFlow: .maestro/coverage/cfg-relaunch.yaml (2.0s)
+    ✓ waitForAnimationToEnd (249ms)
+    ✓ tapOn: text="Deep Links" (1.1s)
+    ✓ waitForAnimationToEnd (798ms)
+    ✓ tapOn: text="Gesture Lab" (1.0s)
+    ✓ waitForAnimationToEnd (660ms)
+    ✓ swipe: UP (666ms)
+    ✓ waitForAnimationToEnd (263ms)
+    ✓ swipe: DOWN (582ms)
+    ✓ waitForAnimationToEnd (266ms)
+    ✓ swipe: LEFT (576ms)
+    ✓ waitForAnimationToEnd (266ms)
+    ✓ swipe: RIGHT (569ms)
+    ✓ waitForAnimationToEnd (245ms)
+    ✓ assertVisible: text="Last swipe: right" (137ms)
+    ✓ waitForAnimationToEnd (221ms)
+    ✓ takeScreenshot (68ms)
+      ▸ Run .maestro/coverage/cfg-relaunch.yaml
+        ✓ launchApp (1.9s)
+    ✓ runFlow: .maestro/coverage/cfg-relaunch.yaml (1.9s)
+    ✓ waitForAnimationToEnd (1.2s)
+      ▸ Run .maestro/coverage/14-runflow-sub.yaml
+        ✓ tapOn: text="Deep Links" (1.0s)
+        ✓ assertVisible: text="Caching Demo" (316ms)
+    ✓ runFlow: .maestro/coverage/14-runflow-sub.yaml (1.3s)
+    ✓ waitForAnimationToEnd (466ms)
+    ✓ takeScreenshot (73ms)
+✓ screens 46.5s
+
+  [1/1] screens (grantiva.yml) - Device: cov3-ios-26 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ waitForAnimationToEnd (282ms)
+    ✓ takeScreenshot (234ms)
+    ✓ runFlow: .maestro/coverage/cfg-relaunch.yaml (2.0s)
+      ✓ launchApp (2.0s)
+    ✓ waitForAnimationToEnd (260ms)
+    ✓ assertVisible: text="Golden Gate.*" (1.0s)
+    ✓ assertNotVisible: text="Golden Gate.*", exact=true (732ms)
+    ✓ tapOn: text="Lakes", exact=true (902ms)
+    ✓ waitForAnimationToEnd (652ms)
+    ✓ assertVisible: text="Mono Lake", exact=true (300ms)
+    ✓ waitForAnimationToEnd (212ms)
+    ✓ takeScreenshot (59ms)
+    ✓ runFlow: .maestro/coverage/cfg-relaunch.yaml (2.0s)
+      ✓ launchApp (2.0s)
+    ✓ waitForAnimationToEnd (255ms)
+    ✓ tapOn: text="Deep Links" (1.2s)
+    ✓ waitForAnimationToEnd (745ms)
+    ✓ tapOn: text="Caching Demo" (918ms)
+    ✓ waitForAnimationToEnd (998ms)
+    ✓ Wait 3s (3.0s)
+    ✓ assertVisible: text="Cache Policy" (501ms)
+    ✓ waitForAnimationToEnd (266ms)
+    ✓ takeScreenshot (81ms)
+    ✓ runFlow: .maestro/coverage/cfg-relaunch.yaml (2.0s)
+      ✓ launchApp (2.0s)
+    ✓ waitForAnimationToEnd (253ms)
+    ✓ tapOn: text="Deep Links" (1.1s)
+    ✓ waitForAnimationToEnd (759ms)
+    ✓ tapOn: text="Edit Landmark" (922ms)
+    ✓ waitForAnimationToEnd (706ms)
+    ✓ tapOn: text="Name" (1.0s)
+    ✓ waitForAnimationToEnd (482ms)
+    ✓ inputText: " typed" (488ms)
+    ✓ waitForAnimationToEnd (272ms)
+    ✓ tapOn: text="Done" (1.1s)
+    ✓ waitForAnimationToEnd (758ms)
+    ✓ assertVisible: text="Golden Gate Bridge typed" (302ms)
+    ✓ waitForAnimationToEnd (250ms)
+    ✓ takeScreenshot (170ms)
+    ✓ runFlow: .maestro/coverage/cfg-relaunch.yaml (2.0s)
+      ✓ launchApp (2.0s)
+    ✓ waitForAnimationToEnd (249ms)
+    ✓ tapOn: text="Deep Links" (1.1s)
+    ✓ waitForAnimationToEnd (798ms)
+    ✓ tapOn: text="Gesture Lab" (1.0s)
+    ✓ waitForAnimationToEnd (660ms)
+    ✓ swipe: UP (666ms)
+    ✓ waitForAnimationToEnd (263ms)
+    ✓ swipe: DOWN (582ms)
+    ✓ waitForAnimationToEnd (266ms)
+    ✓ swipe: LEFT (576ms)
+    ✓ waitForAnimationToEnd (266ms)
+    ✓ swipe: RIGHT (569ms)
+    ✓ waitForAnimationToEnd (245ms)
+    ✓ assertVisible: text="Last swipe: right" (137ms)
+    ✓ waitForAnimationToEnd (221ms)
+    ✓ takeScreenshot (68ms)
+    ✓ runFlow: .maestro/coverage/cfg-relaunch.yaml (1.9s)
+      ✓ launchApp (1.9s)
+    ✓ waitForAnimationToEnd (1.2s)
+    ✓ runFlow: .maestro/coverage/14-runflow-sub.yaml (1.3s)
+      ✓ tapOn: text="Deep Links" (1.0s)
+      ✓ assertVisible: text="Caching Demo" (316ms)
+    ✓ waitForAnimationToEnd (466ms)
+    ✓ takeScreenshot (73ms)
+✓ screens 46.5s
+
+  60 steps passing (46.5s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  screens                        ✓ PASS      60     60      0      0      46.5s  cov3-ios-26 (ios 26.0 Simul...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      60     60      0      0      46.5s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+[debug] 2026-10-13T05:12:41Z com.grantiva.cli: exit 0: /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform ios --device 563907E1-703D-4322-AE5F-FC3B06D03143 --no-ansi --no-app-install test --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-BC35C1C1-CD64-4DA1-B2FA-4A46F159BE34 --flatten --wait-for-idle-timeout 0 --artifacts failure /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-7DEE3237-926E-4349-96DA-52ABA2257745/grantiva.yml
+[debug] 2026-10-13T05:12:41Z com.grantiva.cli: $ xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 clear
+[debug] 2026-10-13T05:12:41Z com.grantiva.cli: exit 0: xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 clear

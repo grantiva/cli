@@ -1,0 +1,44 @@
+#!/bin/zsh
+set -u
+export GRANTIVA=/Users/kyle/.grantiva-qa/bin/grantiva
+export GRANTIVA_RUNNER_HOME=/Users/kyle/.grantiva-qa/runner
+export GRANTIVA_SESSION_ID=cov3-ios
+unset GRANTIVA_API_KEY
+WT=/Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios
+ROOT="$WT/findings/evidence/cov3-ios-attempt76"
+BASE=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-ios
+SCRATCH="$BASE/attempt76-ios"; U1=563907E1-703D-4322-AE5F-FC3B06D03143
+CLIENT="$WT/findings/evidence/cov3-ios/attempt16-client.py"
+if [[ -e "$ROOT" || -e "$SCRATCH" ]]; then print -u2 'refusing overwrite attempt76'; exit 73; fi
+mkdir -p "$ROOT" "$SCRATCH"; cp "$0" "$ROOT/harness.sh"; cp "$CLIENT" "$ROOT/client.py"
+cat > "$SCRATCH/grantiva.yml" <<'YAML'
+simulator: cov3-ios-26
+bundle_id: com.kylebrowning.Landmarks
+screens:
+  - name: Type Without Focus
+    path:
+      - launchApp
+      - type: "hello"
+YAML
+cat > "$ROOT/requests.json" <<JSON
+[
+ {"method":"initialize","params":{}},
+ {"_shell":"$GRANTIVA runner start --bundle-id com.kylebrowning.Landmarks --simulator $U1 --detach --json"},
+ {"_shell":"for n in 1 2 3 4 5 6 7 8 9 10 11 12; do $GRANTIVA hierarchy --udid $U1 --format json > $ROOT/readiness-\$n.json 2> $ROOT/readiness-\$n.err && exit 0; sleep 1; done; exit 1"},
+ {"method":"tools/call","params":{"name":"grantiva_vrt_capture","arguments":{}}},
+ {"method":"tools/list","params":{}},
+ {"_shell":"$GRANTIVA runner stop --json"}
+]
+JSON
+{
+ echo "started_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"; shasum -a 256 "$GRANTIVA" "$CLIENT"; echo "owned_device_udid=$U1"
+ echo "command=python3 -I $ROOT/client.py $ROOT/requests.json $ROOT/mcp $SCRATCH -- $GRANTIVA mcp --project-dir $SCRATCH --platform ios"
+} > "$ROOT/commands.txt"
+xcrun simctl list devices -j > "$ROOT/simulators-before.json"
+python3 -I "$ROOT/client.py" "$ROOT/requests.json" "$ROOT/mcp" "$SCRATCH" -- "$GRANTIVA" mcp --project-dir "$SCRATCH" --platform ios > "$ROOT/client.out" 2> "$ROOT/client.err"
+rc=$?; print -r -- "$rc" > "$ROOT/client.exit.txt"
+xcrun simctl list devices -j > "$ROOT/simulators-after.json"
+mkdir -p "$ROOT/preserved-project-grantiva"; cp -pR "$SCRATCH/.grantiva/." "$ROOT/preserved-project-grantiva/" 2>/dev/null || true
+print -r -- "finished_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$ROOT/commands.txt"
+find "$ROOT" -type f ! -name all-files.sha256 -print0 | sort -z | xargs -0 shasum -a 256 > "$ROOT/all-files.sha256"
+exit $rc

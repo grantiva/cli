@@ -1,0 +1,69 @@
+{
+  "id": "flow-000",
+  "name": "quote-emoji",
+  "sourceFile": "/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-ios/attempt5/flows/quote-emoji.yaml",
+  "device": {
+    "id": "563907E1-703D-4322-AE5F-FC3B06D03143",
+    "name": "cov3-ios-26",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T21:28:16.324803-07:00",
+  "endTime": "2026-10-12T21:28:35.035931-07:00",
+  "duration": 18711,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T21:28:18.926034-07:00",
+      "endTime": "2026-10-12T21:28:20.908034-07:00",
+      "duration": 1982,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Mount \"Denali\" 🏔️\"",
+      "status": "failed",
+      "startTime": "2026-10-12T21:28:20.909762-07:00",
+      "endTime": "2026-10-12T21:28:34.282762-07:00",
+      "duration": 13373,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Mount \"Denali\" 🏔️"
+        }
+      },
+      "error": {
+        "type": "element_not_found",
+        "message": "Element not found: text='Mount \"Denali\" 🏔️' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'Mount \"Denali\" 🏔️' OR value ==[c] 'Mount \"Denali\" 🏔️')'; page source: no elements match selector; closest on-screen texts: \"Mountains\", \"mountain.2\", \"Deep Links\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "skipped",
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 7677,
+    "p50": 1982,
+    "p95": 13373,
+    "max": 13373,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}

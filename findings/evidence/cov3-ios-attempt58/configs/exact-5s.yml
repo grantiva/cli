@@ -1,0 +1,9 @@
+appId: com.kylebrowning.Landmarks
+---
+- launchApp
+- tapOn: "Deep Links"
+- tapOn: "Caching Demo"
+- extendedWaitUntil:
+    visible: {text: "Cache Policy", exact: true}
+    timeout: 5000
+- takeScreenshot: "Exact 5s"

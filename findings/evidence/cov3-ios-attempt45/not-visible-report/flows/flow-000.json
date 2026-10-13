@@ -1,0 +1,60 @@
+{
+  "id": "flow-000",
+  "name": "not-visible",
+  "sourceFile": "not-visible.yaml",
+  "device": {
+    "id": "563907E1-703D-4322-AE5F-FC3B06D03143",
+    "name": "cov3-ios-26",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T23:36:16.337687-07:00",
+  "endTime": "2026-10-12T23:36:20.088611-07:00",
+  "duration": 3750,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T23:36:17.891886-07:00",
+      "endTime": "2026-10-12T23:36:19.890886-07:00",
+      "duration": 1999,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertNotVisible",
+      "yaml": "assertNotVisible: text=\"Landmarks\"",
+      "status": "failed",
+      "startTime": "2026-10-12T23:36:19.892784-07:00",
+      "endTime": "2026-10-12T23:36:19.906784-07:00",
+      "duration": 14,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "error": {
+        "type": "app_crash",
+        "message": "Could not check that text='Landmarks' is not visible: the app is not running (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 1006,
+    "p50": 14,
+    "p95": 1999,
+    "max": 1999,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

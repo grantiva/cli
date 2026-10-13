@@ -1,0 +1,131 @@
+02:36:23.615319 [INFO] === Test execution started ===
+02:36:23.615396 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-ios/reports/FLOWS-27/07-swipe-from-missing
+02:36:23.615403 [INFO] Platform: ios
+02:36:23.615407 [INFO] Driver: wda
+02:36:23.615635 [INFO] Validated 1 flow(s)
+02:36:23.731077 [INFO] Single device execution mode
+02:36:23.731095 [INFO] Starting flow execution (parallel: false, devices: [])
+02:36:23.731101 [INFO] Creating driver for single device execution
+02:36:23.731105 [INFO] Using specified iOS device: 1B1102EC-224B-4EF7-937E-370A0DC317DA
+02:36:23.841359 [INFO] Device 1B1102EC-224B-4EF7-937E-370A0DC317DA is a simulator
+02:36:23.841414 [INFO] Building WDA for device 1B1102EC-224B-4EF7-937E-370A0DC317DA (team ID: )
+02:36:24.067130 [INFO] WDA build reused from cache
+02:36:24.067149 [INFO] Starting WDA on device 1B1102EC-224B-4EF7-937E-370A0DC317DA (port: 8174)
+02:36:24.342035 [INFO] Starting GrantivaAgent (attempt 1/4)
+02:36:28.344439 [INFO] GrantivaAgent started
+02:36:28.344549 [INFO] WDA started successfully on port 8174
+02:36:28.708270 [DEBUG] WDA GET /window/size
+02:36:28.750332 [DEBUG] WDA GET /window/size completed (42ms, status: 200)
+02:36:28.750395 [INFO] Driver created: ios on cov3-ios-27
+02:36:28.751853 [INFO] === Starting flow: 07-swipe-from-missing ===
+02:36:28.751858 [INFO] Flow file: .maestro/coverage/07-swipe-from-missing.yaml
+02:36:28.751861 [INFO] Total steps: 2
+02:36:28.751977 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+02:36:28.752597 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+02:36:28.752649 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+02:36:32.558072 [DEBUG] WDA POST /session completed (3805ms, status: 200)
+02:36:32.558128 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+02:36:32.568663 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/appium/settings completed (10ms, status: 200)
+02:36:32.568745 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+02:36:32.569305 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/appium/settings completed (0ms, status: 200)
+02:36:32.569693 [DEBUG] Executing step 0: launchApp
+02:36:32.992813 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+02:36:32.992897 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+02:36:32.993616 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/appium/settings completed (0ms, status: 200)
+02:36:32.993713 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+02:36:32.994212 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/wda/apps/terminate completed (0ms, status: 200)
+02:36:32.994236 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+02:36:35.730812 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/wda/apps/launch completed (2736ms, status: 200)
+02:36:35.731102 [DEBUG] Step 0 completed successfully (3161ms): launchApp
+02:36:35.732473 [DEBUG] Executing step 1: swipe: LEFT from text="No Such Row"
+02:36:35.733342 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/alert/text
+02:36:35.961629 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/alert/text completed (228ms, status: 404)
+02:36:35.961701 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/screenshot
+02:36:36.045986 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/screenshot completed (84ms, status: 200)
+02:36:36.048501 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/screenshot
+02:36:36.119199 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/screenshot completed (70ms, status: 200)
+02:36:36.122222 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element body={"using":"predicate string","value":"(label ==[c] 'No Such Row' OR value ==[c] 'No Such Row')"}
+02:36:36.193227 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element completed (71ms, status: 404)
+02:36:36.193434 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source
+02:36:36.830225 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source completed (636ms, status: 200)
+02:36:36.883706 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element body={"using":"predicate string","value":"(label ==[c] 'No Such Row' OR value ==[c] 'No Such Row')"}
+02:36:36.937782 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element completed (54ms, status: 404)
+02:36:36.938100 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source
+02:36:37.568149 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source completed (630ms, status: 200)
+02:36:37.622857 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element body={"using":"predicate string","value":"(label ==[c] 'No Such Row' OR value ==[c] 'No Such Row')"}
+02:36:37.678348 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element completed (55ms, status: 404)
+02:36:37.678434 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source
+02:36:38.300913 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source completed (622ms, status: 200)
+02:36:38.355778 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/alert/text
+02:36:38.447638 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/alert/text completed (91ms, status: 404)
+02:36:38.447695 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element body={"using":"predicate string","value":"(label ==[c] 'No Such Row' OR value ==[c] 'No Such Row')"}
+02:36:38.498207 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element completed (50ms, status: 404)
+02:36:38.498299 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source
+02:36:39.136453 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source completed (638ms, status: 200)
+02:36:39.191360 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element body={"using":"predicate string","value":"(label ==[c] 'No Such Row' OR value ==[c] 'No Such Row')"}
+02:36:39.244892 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element completed (53ms, status: 404)
+02:36:39.245076 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source
+02:36:39.842271 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source completed (597ms, status: 200)
+02:36:39.899529 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element body={"using":"predicate string","value":"(label ==[c] 'No Such Row' OR value ==[c] 'No Such Row')"}
+02:36:39.954236 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element completed (54ms, status: 404)
+02:36:39.954478 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source
+02:36:40.556596 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source completed (602ms, status: 200)
+02:36:40.613878 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/alert/text
+02:36:40.704214 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/alert/text completed (90ms, status: 404)
+02:36:40.704316 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element body={"using":"predicate string","value":"(label ==[c] 'No Such Row' OR value ==[c] 'No Such Row')"}
+02:36:40.752579 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element completed (48ms, status: 404)
+02:36:40.752661 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source
+02:36:41.352314 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source completed (599ms, status: 200)
+02:36:41.410133 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element body={"using":"predicate string","value":"(label ==[c] 'No Such Row' OR value ==[c] 'No Such Row')"}
+02:36:41.462959 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element completed (52ms, status: 404)
+02:36:41.463184 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source
+02:36:42.075282 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source completed (612ms, status: 200)
+02:36:42.130087 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element body={"using":"predicate string","value":"(label ==[c] 'No Such Row' OR value ==[c] 'No Such Row')"}
+02:36:42.183522 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element completed (53ms, status: 404)
+02:36:42.183610 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source
+02:36:42.791571 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source completed (607ms, status: 200)
+02:36:42.847065 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/alert/text
+02:36:42.941014 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/alert/text completed (93ms, status: 404)
+02:36:42.941065 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element body={"using":"predicate string","value":"(label ==[c] 'No Such Row' OR value ==[c] 'No Such Row')"}
+02:36:42.989457 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element completed (48ms, status: 404)
+02:36:42.989556 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source
+02:36:43.596526 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source completed (606ms, status: 200)
+02:36:43.652906 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element body={"using":"predicate string","value":"(label ==[c] 'No Such Row' OR value ==[c] 'No Such Row')"}
+02:36:43.702623 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element completed (49ms, status: 404)
+02:36:43.703209 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source
+02:36:44.305178 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source completed (601ms, status: 200)
+02:36:44.362169 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element body={"using":"predicate string","value":"(label ==[c] 'No Such Row' OR value ==[c] 'No Such Row')"}
+02:36:44.415661 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element completed (53ms, status: 404)
+02:36:44.415852 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source
+02:36:45.013665 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source completed (597ms, status: 200)
+02:36:45.070853 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/alert/text
+02:36:45.165448 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/alert/text completed (94ms, status: 404)
+02:36:45.165502 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element body={"using":"predicate string","value":"(label ==[c] 'No Such Row' OR value ==[c] 'No Such Row')"}
+02:36:45.214103 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element completed (48ms, status: 404)
+02:36:45.214175 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source
+02:36:45.823264 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source completed (609ms, status: 200)
+02:36:45.878582 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element body={"using":"predicate string","value":"(label ==[c] 'No Such Row' OR value ==[c] 'No Such Row')"}
+02:36:45.932805 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element completed (54ms, status: 404)
+02:36:45.933003 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source
+02:36:46.551867 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source completed (618ms, status: 200)
+02:36:46.609310 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element body={"using":"predicate string","value":"(label ==[c] 'No Such Row' OR value ==[c] 'No Such Row')"}
+02:36:46.663283 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element completed (54ms, status: 404)
+02:36:46.663364 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source
+02:36:47.273567 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source completed (610ms, status: 200)
+02:36:47.331006 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/alert/text
+02:36:47.424377 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/alert/text completed (93ms, status: 404)
+02:36:47.424424 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element body={"using":"predicate string","value":"(label ==[c] 'No Such Row' OR value ==[c] 'No Such Row')"}
+02:36:47.472097 [DEBUG] WDA POST /session/53A787C4-948B-4193-924C-1EEA138AC4A6/element completed (47ms, status: 404)
+02:36:47.472330 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source
+02:36:48.074504 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source completed (602ms, status: 200)
+02:36:48.132430 [ERROR] Step 1 failed (12399ms): swipe: LEFT from text="No Such Row" - Error: Element not found for swipe: text='No Such Row' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Road With Lane Markings", "show map", "Vertical scroll bar, 2 pages")
+02:36:48.132456 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/screenshot
+02:36:48.217714 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/screenshot completed (85ms, status: 200)
+02:36:48.218986 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source
+02:36:48.861681 [DEBUG] WDA GET /session/53A787C4-948B-4193-924C-1EEA138AC4A6/source completed (642ms, status: 200)
+02:36:48.866707 [INFO] === Flow completed: 07-swipe-from-missing (status: failed, duration: 20111ms, passed: 1, failed: 1, skipped: 0) ===
+02:36:48.962704 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+02:36:48.962855 [INFO] Generating reports...
+02:36:48.963944 [INFO] Shutting down devices started by maestro-runner...
+02:36:48.963956 [INFO] Shutting down all tracked emulators
+02:36:48.963962 [INFO] Shutting down all tracked simulators

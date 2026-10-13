@@ -1,0 +1,101 @@
+{
+  "id": "flow-000",
+  "name": "screens",
+  "sourceFile": "screens",
+  "device": {
+    "id": "563907E1-703D-4322-AE5F-FC3B06D03143",
+    "name": "cov3-ios-26",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T22:05:10.175946-07:00",
+  "endTime": "2026-10-12T22:05:28.208394-07:00",
+  "duration": 18032,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T22:05:12.790093-07:00",
+      "endTime": "2026-10-12T22:05:14.782093-07:00",
+      "duration": 1992,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "passed",
+      "startTime": "2026-10-12T22:05:14.785358-07:00",
+      "endTime": "2026-10-12T22:05:15.022358-07:00",
+      "duration": 237,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-12T22:05:15.023652-07:00",
+      "endTime": "2026-10-12T22:05:15.239652-07:00",
+      "duration": 216,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-002-Home.png"
+      }
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"No Such Element\"",
+      "status": "failed",
+      "startTime": "2026-10-12T22:05:15.24058-07:00",
+      "endTime": "2026-10-12T22:05:27.47758-07:00",
+      "duration": 12237,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "No Such Element"
+        }
+      },
+      "error": {
+        "type": "element_not_found",
+        "message": "Element not found: text='No Such Element' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such Element' OR value ==[c] 'No Such Element')'; page source: no elements match selector; closest on-screen texts: \"Half Dome, Yosemite, CA\", \"Half Dome\", \"Mountains\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-003-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-003-hierarchy.xml"
+      }
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "skipped",
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "skipped",
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 4,
+    "mean": 3670,
+    "p50": 237,
+    "p95": 12237,
+    "max": 12237,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}

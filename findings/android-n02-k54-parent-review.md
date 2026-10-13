@@ -1,0 +1,3 @@
+# Android N-02 / B2-K54 parent review
+
+Both PASS. N-02-B2-K54-shutdown-mcp-build-run-rerun2 creates a unique unbooted AVD and proves it is absent from attached device names. Exact empty-argument grantiva_build succeeds with configured app/freeDebug APK while adb inventory stays byte-identical and the AVD stays unbooted. Subsequent empty-argument grantiva_run builds and launches the expected app on the configured newly booted AVD. Both client envelopes/results are retained; their content confirms success, not merely transport exit0. Measured load before each Gradle-producing request is4.8037, below20. Targeted cleanup removes the created AVD. All ten decoded checks pass. Existing exact BuildToolsTests supply the no-boot semantic branch.

@@ -1,0 +1,17 @@
+        terminationCleanup = SignalRelay.shared.onTermination { [self] in stop() }
+    }
+
+    /// Stops the log stream subprocess. Safe to call multiple times.
+    public func stop() {
+        lock.lock()
+        defer { lock.unlock() }
+
+        guard !stopped else { return }
+        stopped = true
+        if let terminationCleanup {
+            SignalRelay.shared.removeCleanup(terminationCleanup)
+            self.terminationCleanup = nil
+        }
+
+        stdoutPipe?.fileHandleForReading.readabilityHandler = nil
+        stderrPipe?.fileHandleForReading.readabilityHandler = nil

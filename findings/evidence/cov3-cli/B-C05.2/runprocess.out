@@ -1,0 +1,31 @@
+    static var executable: String {
+        if let path = Bundle.main.executablePath { return path }
+        let argv0 = CommandLine.arguments[0]
+        if !argv0.contains("/"), let found = which(argv0) { return found }
+        return URL(fileURLWithPath: argv0).standardizedFileURL.path
+    }
+
+    static func captureCommand(platform: Platform, executable: String = VRTTools.executable) -> [String] {
+        [executable, "diff", "capture", "--no-build", "--json", "--platform", platform.rawValue]
+    }
+
+    static func compareCommand(platform: Platform, executable: String = VRTTools.executable) -> [String] {
+        [executable, "diff", "compare", "--json", "--platform", platform.rawValue]
+    }
+
+    /// Screen names are passed as they are, one argument each: no shell is
+    /// involved, so nothing in them is interpreted.
+    static func approveCommand(platform: Platform, screens: [String], executable: String = VRTTools.executable) -> [String] {
+        [executable, "diff", "approve", "--json", "--platform", platform.rawValue] + screens
+    }
+
+    /// The one shape of a VRT failure: `Error: <message>`, with the CLI's
+    /// own leading `Error: ` (one or more) folded into it.
+    static func failure(_ message: String) -> CallTool.Result {
+        var text = message.trimmingCharacters(in: .whitespacesAndNewlines)
+        while text.hasPrefix("Error:") {
+            text = String(text.dropFirst("Error:".count)).trimmingCharacters(in: .whitespaces)
+        }
+        return CallTool.Result(content: [.text(text: "Error: \(text)", annotations: nil, _meta: nil)], isError: true)
+    }
+

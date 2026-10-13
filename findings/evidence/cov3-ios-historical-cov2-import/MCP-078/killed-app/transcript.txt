@@ -1,0 +1,33 @@
+>> {"method": "initialize", "params": {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "cov2", "version": "1"}}, "id": 1, "jsonrpc": "2.0"}
+<< [0.0s @11:30:29] {"id": 1, "jsonrpc": "2.0", "result": {"capabilities": {"resources": {"listChanged": false, "subscribe": true}, "tools": {"listChanged": false}}, "instructions": "Grantiva MCP server for iOS simulator and Android emulator automation. Use grantiva_* tools to interact with the device: tap, swipe, type, take screenshots, inspect the accessibility tree, build and run apps, manage simulators and emulators, and run visual regression tests.", "protocolVersion": "2025-03-26", "serverInfo": {"name": "grantiva", "version": "2.1.0"}}}
+>> {"jsonrpc": "2.0", "method": "notifications/initialized"}
+>> {"method": "tools/call", "params": {"name": "grantiva_tap", "arguments": {"label": "No Such"}}, "id": 2, "jsonrpc": "2.0"}
+<< [0.1s @11:30:29] {"id": 2, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: Element not found: \"No Such\". Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.", "type": "text"}], "isError": true}}
+## shell [0.1s] exit=0: xcrun simctl terminate 7E846901-F93F-4220-A153-7043061033D7 com.kylebrowning.Landmarks; echo terminated=$?
+## stdout: terminated=0
+
+## stderr: 
+>> {"method": "tools/call", "params": {"name": "grantiva_screenshot", "arguments": {}}, "id": 3, "jsonrpc": "2.0"}
+<< [1.3s @11:30:30] {"id": 3, "jsonrpc": "2.0", "result": {"content": [{"data": "iVBORw0KGgoAAAANSUhEUgAABLYAAAo+CAYAAACS...<b64 len>", "mimeType": "image/png", "type": "image"}]}}
+>> {"method": "tools/call", "params": {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}, "id": 4, "jsonrpc": "2.0"}
+<< [1.0s @11:30:31] {"id": 4, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: com.kylebrowning.Landmarks is not running. Relaunch it (grantiva_run, or restart the session with grantiva runner stop and grantiva runner start).", "type": "text"}], "isError": true}}
+>> {"method": "tools/call", "params": {"name": "grantiva_tap", "arguments": {"x": 100, "y": 100}}, "id": 5, "jsonrpc": "2.0"}
+<< [0.0s @11:30:31] {"id": 5, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: com.kylebrowning.Landmarks is not running. Relaunch it (grantiva_run, or restart the session with grantiva runner stop and grantiva runner start).", "type": "text"}], "isError": true}}
+>> {"method": "tools/call", "params": {"name": "grantiva_swipe", "arguments": {"direction": "up"}}, "id": 6, "jsonrpc": "2.0"}
+<< [0.0s @11:30:31] {"id": 6, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: com.kylebrowning.Landmarks is not running. Relaunch it (grantiva_run, or restart the session with grantiva runner stop and grantiva runner start).", "type": "text"}], "isError": true}}
+>> {"method": "tools/call", "params": {"name": "grantiva_type", "arguments": {"text": "x"}}, "id": 7, "jsonrpc": "2.0"}
+<< [0.0s @11:30:31] {"id": 7, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: com.kylebrowning.Landmarks is not running. Relaunch it (grantiva_run, or restart the session with grantiva runner stop and grantiva runner start).", "type": "text"}], "isError": true}}
+>> {"method": "tools/call", "params": {"name": "grantiva_a11y_tree", "arguments": {}}, "id": 8, "jsonrpc": "2.0"}
+<< [0.0s @11:30:31] {"id": 8, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: com.kylebrowning.Landmarks is not running. Relaunch it (grantiva_run, or restart the session with grantiva runner stop and grantiva runner start).", "type": "text"}], "isError": true}}
+>> {"method": "tools/call", "params": {"name": "grantiva_a11y_check", "arguments": {}}, "id": 9, "jsonrpc": "2.0"}
+<< [0.0s @11:30:31] {"id": 9, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: com.kylebrowning.Landmarks is not running. Relaunch it (grantiva_run, or restart the session with grantiva runner stop and grantiva runner start).", "type": "text"}], "isError": true}}
+>> {"method": "tools/call", "params": {"name": "grantiva_script", "arguments": {"steps": [{"tap": "Landmarks"}]}}, "id": 10, "jsonrpc": "2.0"}
+<< [1.0s @11:30:32] {"id": 10, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: Step 1 (tap \"Landmarks\") failed: com.kylebrowning.Landmarks is not running. Relaunch it (grantiva_run, or restart the session with grantiva runner stop and grantiva runner start).", "type": "text"}], "isError": true}}
+>> {"method": "tools/call", "params": {"name": "grantiva_tap", "arguments": {"label": "No Such"}}, "id": 11, "jsonrpc": "2.0"}
+<< [1.0s @11:30:33] {"id": 11, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: com.kylebrowning.Landmarks is not running. Relaunch it (grantiva_run, or restart the session with grantiva runner stop and grantiva runner start).", "type": "text"}], "isError": true}}
+>> {"method": "resources/read", "params": {"uri": "grantiva://hierarchy"}, "id": 12, "jsonrpc": "2.0"}
+<< [0.0s @11:30:34] {"error": {"code": -32002, "message": "com.kylebrowning.Landmarks is not running. Relaunch it (grantiva_run, or restart the session with grantiva runner stop and grantiva runner start)."}, "id": 12, "jsonrpc": "2.0"}
+>> {"method": "tools/call", "params": {"name": "grantiva_context", "arguments": {}}, "id": 13, "jsonrpc": "2.0"}
+<< [0.2s @11:30:34] {"id": 13, "jsonrpc": "2.0", "result": {"content": [{"text": "[Config]\n  platform: ios\n  source: grantiva.yml\n  scheme: Landmarks (UI Testing)\n  simulator: cov2-ios-1\n  bundle_id: com.kylebrowning.Landmarks\n  screens: 5\n\n[Simulator]\n  name: cov2-ios-1\n  udid: 7E846901-F93F-4220-A153-7043061033D7\n  runtime: iOS 26.0\n  state: Booted\n  source: runner session\n\n[Xcode]\n  Xcode 27.0\n  Build version 27A266a\n\n[Runner Session]\n  pid: 14876\n  wda_port: 8987\n  bundle_id: com.kylebrowning.Landmarks\n  udid: 7E846901-F93F-4220-A153-7043061033D7", "type": "text"}]}}
+nonjson_lines=0 server_alive=True
+exit=0

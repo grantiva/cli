@@ -1,0 +1,17 @@
+258:    // MARK: - L25: a malformed extra track does not stop the hold
+259-
+260-    func testAnExtraTrackWithoutMdiaIsSkippedInEitherOrder() throws {
+261-        for position in [MP4Fixture.ExtraTrak.Position.after, .before] {
+--
+362:    /// A second `trak` that is not a readable video track (L25).
+363-    struct ExtraTrak {
+364-        enum Position { case before, after }
+365-        enum Kind { case noMdia, mdiaWithoutHdlr }
+52:    func testRecordedSecondsIsTheTrackLengthBeforeTheHold() throws {
+71:    func testTimingReportsTheLastFramesStartAndTheTrackEnd() throws {
+94:    func testHoldFileReportsTheTimingWhenTheTrackAlreadyLastsTheRequestedLength() throws {
+111:    func testAnOverrunningTrackIsTrimmedToTheRequestedLength() throws {
+129:    func testATrackExactlyAsLongAsRequestedIsUnchanged() throws {
+260:    func testAnExtraTrackWithoutMdiaIsSkippedInEitherOrder() throws {
+281:    func testAFileWithOnlyAnMdiaLessTrackHasNoVideoTrack() {
+289:    func testHoldFileReportsTheTimingOfAHeldTrack() throws {

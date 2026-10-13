@@ -1,0 +1,29 @@
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:8:    func testSingleZeroLengthFrameIsHeldToTheRequestedDuration() throws {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:21:    func testRunOfEqualDeltasIsSplitAndChunkOffsetsFollowTheGrownMoov() throws {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:32:    func testRecordingAlreadyAsLongAsRequestedIsLeftAlone() {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:38:    func testVersion1BoxesAreHeldThroughTheir64BitFields() throws {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:52:    func testRecordedSecondsIsTheTrackLengthBeforeTheHold() throws {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:59:    func testShortHeaderBoxesAreLeftAloneInsteadOfTrapping() {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:71:    func testTimingReportsTheLastFramesStartAndTheTrackEnd() throws {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:82:    func testASingleFrameStartsAndEndsAtZero() throws {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:94:    func testHoldFileReportsTheTimingWhenTheTrackAlreadyLastsTheRequestedLength() throws {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:111:    func testAnOverrunningTrackIsTrimmedToTheRequestedLength() throws {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:129:    func testATrackExactlyAsLongAsRequestedIsUnchanged() throws {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:141:    func testALastFrameAfterTheRequestedLengthIsNotTrimmed() throws {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:157:    func testASimctlOneSampleMovieIsHeldToExactlyTheRequestedLength() throws {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:187:    func testASimctlMovieThatRanPastTheRequestIsTrimmedWithItsEditList() throws {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:216:    func testALastDecodedSampleThatIsNotTheLastShownIsNotShortened() throws {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:243:    func testAHeldMovieWithBFramesMovesItsCompositionEnd() throws {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:260:    func testAnExtraTrackWithoutMdiaIsSkippedInEitherOrder() throws {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:281:    func testAFileWithOnlyAnMdiaLessTrackHasNoVideoTrack() {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:289:    func testHoldFileReportsTheTimingOfAHeldTrack() throws {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:302:    func testAFileThatCannotBeParsedReportsWhy() throws {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:322:    func testOutOfRangeLengthAndMissingAtomsAreNamed() throws {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:347:    func testNonMP4InputIsLeftAlone() {
+Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:23:    func testTruncatedRecordingIsLeftUnchanged() throws {
+Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:37:    func testHugeLargesizeIsLeftUnchanged() throws {
+Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:52:    func testWordFuzzOverTheMoovNeverTraps() throws {
+Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:69:    func testTwoFrameMovieStillDecodesAfterTheHold() async throws {
+Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:96:    func testAnOverrunningMovieIsTrimmedAndStillDecodes() async throws {
+Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:119:    func testHoldDiagnosticsNameTheTrim() {
+Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:133:    func testHeldRecordingNoteOnlyWhenMoreThanHalfWasHeld() {

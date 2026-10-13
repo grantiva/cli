@@ -1,0 +1,66 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=7E846901-F93F-4220-A153-7043061033D7 screens=2 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: 7E846901-F93F-4220-A153-7043061033D7
+Simulator booted: cov2-ios-1 (7E846901-F93F-4220-A153-7043061033D7)
+Skipping build and install (--no-build)
+Capturing 2 screen(s), then running 1 flow(s)...
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8987
+
+  [1/1] screens (grantiva.yml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ waitForAnimationToEnd (228ms)
+    ✓ takeScreenshot (209ms)
+    ✗ tapOn: text="No Such Element" (12.9s)
+      ╰─ Element not found: text='No Such Element' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such Element' OR value ==[c] 'No Such Element')'; page source: no elements match selector; closest on-screen texts: "Half Dome, Yosemite, CA", "Half Dome", "Mountains")
+✗ screens 18.6s
+
+  [1/1] screens (grantiva.yml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ waitForAnimationToEnd (228ms)
+    ✓ takeScreenshot (209ms)
+    ✗ tapOn: text="No Such Element" (12.9s)
+      ╰─ Element not found: text='No Such Element' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such Element' OR value ==[c] 'No Such Element')'; page source: no elements match selector; closest on-screen texts: "Half Dome, Yosemite, CA", "Half Dome", "Mountains")
+    - waitForAnimationToEnd (skipped)
+    - takeScreenshot (skipped)
+✗ screens 18.6s
+
+  3 steps passing (18.6s)
+  1 steps failing
+  2 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  screens                        ✗ FAIL       6      3      1      2      18.6s  cov2-ios-1 (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       6      3      1      2      18.6s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+Failure screenshot: .grantiva/run-captures/failure-1791741492.png
+Error: Runner failed (exit 1): Screen "Broken" failed at tapOn: text="No Such Element": Element not found: text='No Such Element' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such Element' OR value ==[c] 'No Such Element')'; page source: no elements match selector; closest on-screen texts: "Half Dome, Yosemite, CA", "Half Dome", "Mountains")
+Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.

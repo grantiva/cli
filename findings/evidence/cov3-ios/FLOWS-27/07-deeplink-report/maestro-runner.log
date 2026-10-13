@@ -1,0 +1,160 @@
+02:41:41.902563 [INFO] === Test execution started ===
+02:41:41.902623 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-ios/reports/FLOWS-27/07-deeplink
+02:41:41.902628 [INFO] Platform: ios
+02:41:41.902631 [INFO] Driver: wda
+02:41:41.902880 [INFO] Validated 1 flow(s)
+02:41:42.012243 [INFO] Single device execution mode
+02:41:42.012257 [INFO] Starting flow execution (parallel: false, devices: [])
+02:41:42.012263 [INFO] Creating driver for single device execution
+02:41:42.012267 [INFO] Using specified iOS device: 1B1102EC-224B-4EF7-937E-370A0DC317DA
+02:41:42.116355 [INFO] Device 1B1102EC-224B-4EF7-937E-370A0DC317DA is a simulator
+02:41:42.116401 [INFO] Building WDA for device 1B1102EC-224B-4EF7-937E-370A0DC317DA (team ID: )
+02:41:42.322602 [INFO] WDA build reused from cache
+02:41:42.322617 [INFO] Starting WDA on device 1B1102EC-224B-4EF7-937E-370A0DC317DA (port: 8174)
+02:41:42.563665 [INFO] Starting GrantivaAgent (attempt 1/4)
+02:41:46.567247 [INFO] GrantivaAgent started
+02:41:46.567413 [INFO] WDA started successfully on port 8174
+02:41:46.919075 [DEBUG] WDA GET /window/size
+02:41:46.965549 [DEBUG] WDA GET /window/size completed (46ms, status: 200)
+02:41:46.965614 [INFO] Driver created: ios on cov3-ios-27
+02:41:46.967057 [INFO] === Starting flow: 07-deeplink ===
+02:41:46.967062 [INFO] Flow file: .maestro/07-deeplink.yaml
+02:41:46.967065 [INFO] Total steps: 5
+02:41:46.967197 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+02:41:46.971160 [DEBUG] WDA POST /appium/settings completed (3ms, status: 404)
+02:41:46.971274 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+02:41:50.863451 [DEBUG] WDA POST /session completed (3892ms, status: 200)
+02:41:50.863516 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+02:41:50.865999 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/appium/settings completed (2ms, status: 200)
+02:41:50.866054 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+02:41:50.866991 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/appium/settings completed (0ms, status: 200)
+02:41:50.867328 [DEBUG] Executing step 0: launchApp
+02:41:51.320961 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+02:41:51.321033 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+02:41:51.321739 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/appium/settings completed (0ms, status: 200)
+02:41:51.321830 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+02:41:51.322240 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/wda/apps/terminate completed (0ms, status: 200)
+02:41:51.322263 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+02:41:54.091141 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/wda/apps/launch completed (2768ms, status: 200)
+02:41:54.091281 [DEBUG] Step 0 completed successfully (3223ms): launchApp
+02:41:54.092094 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+02:41:54.218298 [DEBUG] Flutter: com.kylebrowning.Landmarks has no Flutter.framework; not searching the Flutter VM
+02:41:54.218335 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/alert/text
+02:41:54.367455 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/alert/text completed (149ms, status: 404)
+02:41:54.367499 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:54.450063 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (82ms, status: 200)
+02:41:54.452187 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:54.518943 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (66ms, status: 200)
+02:41:54.522951 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+02:41:54.523020 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label ==[c] 'Deep Links' OR value ==[c...
+02:41:54.523057 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Deep Links')`]"}
+02:41:54.523272 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label ==[c] 'Deep Links' OR valu...
+02:41:54.630817 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element completed (107ms, status: 200)
+02:41:54.720123 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element completed (197ms, status: 200)
+02:41:54.765764 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element completed (242ms, status: 404)
+02:41:54.808912 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element completed (285ms, status: 404)
+02:41:54.809296 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/24000000-0000-0000-AE1F-000000000000/name
+02:41:54.809369 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/24000000-0000-0000-AE1F-000000000000/rect
+02:41:54.809464 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/24000000-0000-0000-AE1F-000000000000/text
+02:41:54.809526 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/24000000-0000-0000-AE1F-000000000000/displayed
+02:41:54.853692 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/24000000-0000-0000-AE1F-000000000000/name completed (44ms, status: 200)
+02:41:54.896921 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/24000000-0000-0000-AE1F-000000000000/rect completed (87ms, status: 200)
+02:41:54.938558 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/24000000-0000-0000-AE1F-000000000000/text completed (129ms, status: 200)
+02:41:55.003536 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/24000000-0000-0000-AE1F-000000000000/displayed completed (194ms, status: 200)
+02:41:55.003593 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/wda/tap body={"x":287.5,"y":822}
+02:41:55.450782 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/wda/tap completed (447ms, status: 200)
+02:41:55.450880 [DEBUG] Step 1 completed successfully (1358ms): tapOn: text="Deep Links"
+02:41:55.452018 [DEBUG] Executing step 2: tapOn: text="landmarks://category/lakes"
+02:41:55.452890 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:55.524072 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (71ms, status: 200)
+02:41:55.529771 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:55.599085 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (69ms, status: 200)
+02:41:55.604414 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:55.668258 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (63ms, status: 200)
+02:41:55.670685 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:55.740986 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (70ms, status: 200)
+02:41:55.744126 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:55.807626 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (63ms, status: 200)
+02:41:55.810785 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:55.873856 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (63ms, status: 200)
+02:41:55.876849 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:55.939546 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (62ms, status: 200)
+02:41:55.942185 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:56.004711 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (62ms, status: 200)
+02:41:56.005887 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:56.074061 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (68ms, status: 200)
+02:41:56.076653 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:56.145988 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (69ms, status: 200)
+02:41:56.149117 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:56.215928 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (66ms, status: 200)
+02:41:56.219003 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:56.285984 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (66ms, status: 200)
+02:41:56.289883 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:56.354870 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (64ms, status: 200)
+02:41:56.358120 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:56.423845 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (65ms, status: 200)
+02:41:56.426852 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:56.495814 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (68ms, status: 200)
+02:41:56.499286 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:56.565889 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (66ms, status: 200)
+02:41:56.569730 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:56.636455 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (66ms, status: 200)
+02:41:56.640649 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:56.709042 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (68ms, status: 200)
+02:41:56.712929 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:56.779303 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (66ms, status: 200)
+02:41:56.781739 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:56.846180 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (64ms, status: 200)
+02:41:56.849297 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:56.913960 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (64ms, status: 200)
+02:41:56.917611 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:56.983487 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (65ms, status: 200)
+02:41:56.987601 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:57.052485 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (64ms, status: 200)
+02:41:57.055684 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/alert/text
+02:41:57.154984 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/alert/text completed (99ms, status: 404)
+02:41:57.155066 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+02:41:57.155096 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label ==[c] 'landmarks://category/lake...
+02:41:57.155120 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label ==[c] 'landmarks://categor...
+02:41:57.155150 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'landmarks://category/lakes')...
+02:41:57.247243 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element completed (92ms, status: 200)
+02:41:57.290192 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element completed (135ms, status: 404)
+02:41:57.333127 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element completed (178ms, status: 404)
+02:41:57.421345 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element completed (266ms, status: 200)
+02:41:57.421452 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/1D010000-0000-0000-AE1F-000000000000/name
+02:41:57.421481 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/1D010000-0000-0000-AE1F-000000000000/rect
+02:41:57.421537 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/1D010000-0000-0000-AE1F-000000000000/text
+02:41:57.421603 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/1D010000-0000-0000-AE1F-000000000000/displayed
+02:41:57.463652 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/1D010000-0000-0000-AE1F-000000000000/name completed (42ms, status: 200)
+02:41:57.503336 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/1D010000-0000-0000-AE1F-000000000000/text completed (81ms, status: 200)
+02:41:57.545888 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/1D010000-0000-0000-AE1F-000000000000/rect completed (124ms, status: 200)
+02:41:57.589823 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/1D010000-0000-0000-AE1F-000000000000/displayed completed (168ms, status: 200)
+02:41:57.589934 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/wda/tap body={"x":201,"y":565}
+02:41:58.034356 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/wda/tap completed (444ms, status: 200)
+02:41:58.034713 [DEBUG] Step 2 completed successfully (2582ms): tapOn: text="landmarks://category/lakes"
+02:41:58.037496 [DEBUG] Executing step 3: assertVisible: text="Mono Lake"
+02:41:58.038530 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element body={"using":"predicate string","value":"(label ==[c] 'Mono Lake' OR value ==[c] 'Mono Lake')"}
+02:41:58.094578 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element completed (56ms, status: 404)
+02:41:58.094846 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/source
+02:41:58.618432 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/source completed (523ms, status: 200)
+02:41:58.672947 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element body={"using":"predicate string","value":"(label ==[c] 'Mono Lake' OR value ==[c] 'Mono Lake')"}
+02:41:58.731030 [DEBUG] WDA POST /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element completed (58ms, status: 200)
+02:41:58.731134 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/A4010000-0000-0000-AE1F-000000000000/name
+02:41:58.731154 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/A4010000-0000-0000-AE1F-000000000000/rect
+02:41:58.731201 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/A4010000-0000-0000-AE1F-000000000000/displayed
+02:41:58.731233 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/A4010000-0000-0000-AE1F-000000000000/text
+02:41:58.756003 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/A4010000-0000-0000-AE1F-000000000000/name completed (24ms, status: 200)
+02:41:58.780796 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/A4010000-0000-0000-AE1F-000000000000/rect completed (49ms, status: 200)
+02:41:58.807011 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/A4010000-0000-0000-AE1F-000000000000/displayed completed (75ms, status: 200)
+02:41:58.829985 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/element/A4010000-0000-0000-AE1F-000000000000/text completed (98ms, status: 200)
+02:41:58.830068 [DEBUG] Step 3 completed successfully (792ms): assertVisible: text="Mono Lake"
+02:41:58.831045 [DEBUG] Executing step 4: takeScreenshot
+02:41:58.831594 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot
+02:41:58.892857 [DEBUG] WDA GET /session/50335B4C-ED86-4FD1-ADE9-8B5934CCF883/screenshot completed (61ms, status: 200)
+02:41:58.896258 [DEBUG] Step 4 completed successfully (65ms): takeScreenshot
+02:41:58.900165 [INFO] === Flow completed: 07-deeplink (status: passed, duration: 11930ms, passed: 5, failed: 0, skipped: 0) ===
+02:41:58.997452 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+02:41:58.997645 [INFO] Generating reports...
+02:41:58.998553 [INFO] Shutting down devices started by maestro-runner...
+02:41:58.998567 [INFO] Shutting down all tracked emulators
+02:41:58.998573 [INFO] Shutting down all tracked simulators

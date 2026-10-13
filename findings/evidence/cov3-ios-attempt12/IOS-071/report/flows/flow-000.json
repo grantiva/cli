@@ -1,0 +1,88 @@
+{
+  "id": "flow-000",
+  "name": "02-exact-negative",
+  "sourceFile": ".maestro/coverage/02-exact-negative.yaml",
+  "device": {
+    "id": "563907E1-703D-4322-AE5F-FC3B06D03143",
+    "name": "cov3-ios-26",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T21:45:03.315078-07:00",
+  "endTime": "2026-10-12T21:45:22.349928-07:00",
+  "duration": 19034,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T21:45:05.981046-07:00",
+      "endTime": "2026-10-12T21:45:07.976046-07:00",
+      "duration": 1995,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Golden Gate.*\"",
+      "status": "passed",
+      "startTime": "2026-10-12T21:45:07.97723-07:00",
+      "endTime": "2026-10-12T21:45:09.08723-07:00",
+      "duration": 1110,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate.*"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Golden Gate Bridge",
+        "bounds": {
+          "x": 16,
+          "y": 208,
+          "width": 370,
+          "height": 83
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Golden Gate.*\", exact=true",
+      "status": "failed",
+      "startTime": "2026-10-12T21:45:09.087592-07:00",
+      "endTime": "2026-10-12T21:45:21.573592-07:00",
+      "duration": 12486,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate.*"
+        }
+      },
+      "error": {
+        "type": "assertion",
+        "message": "Element not visible: text='Golden Gate.*', exact=true (cause: context deadline exceeded: no elements match selector; closest on-screen texts: \"Golden Gate Bridge\", \"Golden Gate Bridge, San Francisco, CA\", \"Categories\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-002-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-002-hierarchy.xml"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 5197,
+    "p50": 1995,
+    "p95": 12486,
+    "max": 12486,
+    "slowestType": "assertVisible"
+  },
+  "artifacts": {}
+}

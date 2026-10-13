@@ -1,0 +1,28 @@
+# uptime: 11:30  up 4 days,  2:58, 5 users, load averages: 4.05 25.15 26.24
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios (background)
+$ $GRANTIVA run --no-build --simulator 7E846901-F93F-4220-A153-7043061033D7 --flow .maestro/01-browse.yaml --keep-alive --ready-file $S/ka.ready  > ka.out 2> ka.err &
+# ready after 11s pid=19438: {
+  "finishedAt" : "2026-10-11T18:31:03Z",
+  "flows" : [
+    {
+      "name" : "01-browse",
+      "status" : "passed"
+    }
+  ],
+  "status" : "passed"
+}
+# server started in $S/p027 (stock config without scheme, simulator cov2-ios-1) while a run --keep-alive session from $APP holds cov2-ios-1
+# uptime: 11:31  up 4 days,  2:58, 5 users, load averages: 4.24 24.16 25.87
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p027
+$ python3 -I $S/mcp/client.py other-dir/requests.json other-dir/ /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p027 -- $GRANTIVA mcp --project-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p027 
+# elapsed=0s -> other-dir/transcript.txt, stdout.raw, server.stderr
+# keep-alive pid 19438 released with kill -INT after the row
+# other-platform/: Android slice's keep-alive session (owner 23084, platform android, its own project dir) live in /tmp/grantiva-sessions; server in $APP with no iOS session
+# uptime: 11:35  up 4 days,  3:03, 5 users, load averages: 114.32 75.18 46.50
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ ls /tmp/grantiva-sessions; cat /tmp/grantiva-sessions/*.owner.json
+# exit=0 elapsed=.011s -> sessions-dir.out / sessions-dir.err
+# uptime: 11:35  up 4 days,  3:03, 5 users, load averages: 114.32 75.18 46.50
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios
+$ python3 -I $S/mcp/client.py other-platform/requests.json other-platform/ /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios -- $GRANTIVA mcp --project-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios 
+# elapsed=0s -> other-platform/transcript.txt, stdout.raw, server.stderr

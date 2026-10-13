@@ -1,0 +1,16 @@
+# uptime: 12:25  up 4 days,  3:53, 5 users, load averages: 21.52 68.82 62.61
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA build install --no-build --no-launch --simulator $U1
+# exit=0 elapsed=.691s -> nobuild-only-text.out / nobuild-only-text.err
+# uptime: 12:25  up 4 days,  3:53, 5 users, load averages: 21.52 68.82 62.61
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ xcrun simctl uninstall $U1 com.kylebrowning.Landmarks; $GRANTIVA diff capture --no-build --app-file $S/apps/Landmarks.app --simulator $U1 | grep Captured; xcrun simctl listapps $U1 | grep -c com.kylebrowning.Landmarks
+# exit=0 elapsed=24.387s -> capture-pair.out / capture-pair.err
+# uptime: 12:26  up 4 days,  3:53, 5 users, load averages: 18.00 62.76 60.65
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ xcrun simctl uninstall $U1 com.kylebrowning.Landmarks; $GRANTIVA ci run --no-build --app-file $S/apps/Landmarks.app --simulator $U1 2>&1 | tail -5; echo exit=${PIPESTATUS[0]}; xcrun simctl listapps $U1 | grep -c com.kylebrowning.Landmarks
+# exit=1 elapsed=.319s -> ci-pair.out / ci-pair.err
+# uptime: 12:26  up 4 days,  3:53, 5 users, load averages: 16.88 61.79 60.32
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA build install --no-launch --simulator $U1
+# exit=0 elapsed=2.624s -> reinstall.out / reinstall.err

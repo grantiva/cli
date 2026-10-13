@@ -1,0 +1,55 @@
+README.md:488:grantiva doctor --json | jq '.[] | select(.status == "error")'
+docs/superpowers/plans/2026-10-08-android-support-3-hierarchy-mcp-emulator.md:967:        guard status == 200 else {
+docs/superpowers/plans/2026-10-08-android-support-3-hierarchy-mcp-emulator.md:1006:        guard status == 200 else {
+Sources/GrantivaCore/WDA/WDAClient.swift:103:                guard status == 200 else {
+Sources/GrantivaCore/WDA/WDAClient.swift:140:                guard status == 200 else {
+Sources/GrantivaCore/WDA/WDAClient.swift:157:                if status == 404 {
+Sources/GrantivaCore/WDA/WDAClient.swift:160:                guard status == 200 else {
+Sources/GrantivaCore/WDA/WDAClient.swift:210:                guard status == 200 else {
+Sources/GrantivaCore/WDA/WDAClient.swift:217:                guard status == 200 else {
+Sources/GrantivaCore/WDA/WDAClient.swift:266:            if status == 404 { index += 1; continue }
+Sources/GrantivaCore/WDA/WDAClient.swift:272:            if status == 400, !retried {
+Sources/GrantivaCore/WDA/WDAClient.swift:279:            guard status == 200 else {
+Sources/GrantivaCore/WDA/WDAClient.swift:354:        guard status == 200 else {
+Sources/GrantivaCore/WDA/WDAClient.swift:374:        guard status == 200 else {
+Sources/GrantivaCore/Runner/RunnerFailureReport.swift:90:            .filter { $0.status == "skipped" }.map { $0.name ?? "flow" }
+Sources/GrantivaCore/Runner/RunnerFailureReport.swift:106:            if flow.status != "passed", !steps.contains(where: { $0.status == .failed }) {
+Sources/GrantivaCore/Runner/SignalRelay.swift:199:        return status == 130
+Sources/GrantivaCore/Runner/RunnerReportSteps.swift:139:                    unfinished: command.status == "running"
+Sources/GrantivaCore/Runner/RunnerReportSteps.swift:145:                    errorType: nil, unfinished: status == "running"
+Sources/GrantivaCore/Runner/RunnerSession+Screens.swift:86:                if !steps.contains(where: { $0.status == .failed }) {
+Sources/GrantivaCore/Runner/RunnerSession+Screens.swift:115:            let message = failed.status == "running" ? "Did not finish" : failed.error?.message
+Sources/GrantivaCore/Runner/ReadyFile.swift:33:    public var passed: Bool { status == "passed" }
+Sources/GrantivaCore/Runner/ReadyFile.swift:211:        let status = state.status == "passed" && leadingFailed ? "failed" : state.status
+Sources/GrantivaCore/Platform/IOSPlatform.swift:71:            where status == 2 || message.contains("No such file or directory") {
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:53:        checks.contains { $0.status == .error }
+Sources/GrantivaCore/Doctor/DoctorFormatter.swift:64:        let errors = checks.filter { $0.status == .error }.count
+Sources/GrantivaCore/Doctor/DoctorFormatter.swift:65:        let warnings = checks.filter { $0.status == .warning }.count
+Sources/GrantivaCore/Doctor/DoctorFormatter.swift:66:        let ok = checks.filter { $0.status == .ok }.count
+Sources/GrantivaCore/Output/TableOutput.swift:89:        let passCount = result.screens.filter { $0.status == .passed }.count
+Sources/GrantivaCore/Output/TableOutput.swift:90:        let failCount = result.screens.filter { $0.status == .failed }.count
+Sources/GrantivaCore/Output/TableOutput.swift:91:        let newCount = result.screens.filter { $0.status == .newScreen }.count
+Sources/GrantivaCore/Output/TableOutput.swift:92:        let errCount = result.screens.filter { $0.status == .error }.count
+Sources/GrantivaCore/Output/Output.swift:11:///     grantiva doctor --json | jq '.[] | select(.status == "error")'
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:76:        guard status == 200 else {
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:115:        guard status == 200 else {
+Sources/GrantivaCLI/RunCommand.swift:590:        let allPassed = captures.allSatisfy { $0.steps.allSatisfy { $0.status == .passed } }
+Sources/GrantivaCLI/DiffCommand.swift:204:                        let icon = step.status == .passed ? "\u{2713}" : "\u{2717}"
+Sources/GrantivaCLI/DiffCommand.swift:425:                            let icon = step.status == .passed ? "\u{2713}" : "\u{2717}"
+Sources/GrantivaCLI/ConsoleVRTCommand.swift:128:                let promoted = detail.screens.filter { $0.status == "approved" }.map(\.screenName)
+Sources/GrantivaCLI/ConsoleVRTCommand.swift:249:        if case GrantivaError.networkError(let body, let status) = error, status == 409 || status == 400 {
+Sources/GrantivaCLI/ConsoleVRTCommand.swift:250:            let message = ConsoleSupport.errorMessage(fromBody: body) ?? (status == 409 ? "run is not in a reviewable state" : "bad request")
+Sources/GrantivaCLI/RunCommand+Result.swift:21:                let icon = step.status == .passed ? "\u{2713}" : "\u{2717}"
+Sources/GrantivaCLI/RunCommand+Result.swift:47:        func passed(_ capture: ScreenCapture) -> Bool { capture.steps.allSatisfy { $0.status == .passed } }
+Sources/GrantivaCLI/RunCommand+Result.swift:149:                passed = capture.steps.allSatisfy { $0.status == .passed }
+Sources/GrantivaCLI/CICommand.swift:106:                let message = capture.steps.first(where: { $0.status == .failed })?.message
+Sources/GrantivaCLI/CICommand.swift:370:                            let icon = step.status == .passed ? "\u{2713}" : "\u{2717}"
+Sources/GrantivaCLI/ConsoleOpenCommand.swift:84:        guard status == 0 else {
+Sources/GrantivaCLI/AuthCommand.swift:119:                if pollResult.status == "active",
+Sources/GrantivaCLI/DriverCommand.swift:789:        status == 0
+///
+///     udid=$(grantiva simulator ensure --name "iPhone 17")
+///     grantiva doctor --json | jq '.[] | select(.status == "error")'
+///
+/// A command substitution captures stdout verbatim, and `jq` refuses anything
+491:Each doctor check's `status` is `ok`, `warning` or `error`. Only `error` makes `grantiva doctor` exit non-zero;

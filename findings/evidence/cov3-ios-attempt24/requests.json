@@ -1,0 +1,19 @@
+[
+ {"method":"initialize","params":{}},
+ {"method":"tools/call","params":{"name":"grantiva_vrt_approve","arguments":{"screens":["Home; touch /tmp/pwn"]}}},
+ {"_shell":"test ! -e /tmp/pwn"},
+ {"method":"tools/call","params":{"name":"grantiva_sim_ensure","arguments":{}}},
+ {"method":"tools/call","params":{"name":"grantiva_type","arguments":{}}},
+ {"method":"tools/call","params":{"name":"grantiva_swipe","arguments":{}}},
+ {"method":"tools/call","params":{"name":"grantiva_script","arguments":{}}},
+ {"method":"tools/call","params":{"name":"grantiva_emulator_ensure","arguments":{}}},
+ {"method":"tools/call","params":{"name":"grantiva_no_such_tool","arguments":{}}},
+ {"method":"tools/list","params":{}},
+ {"_shell":"/Users/kyle/.grantiva-qa/bin/grantiva runner start --json --bundle-id com.kylebrowning.Landmarks --simulator 563907E1-703D-4322-AE5F-FC3B06D03143 --detach"},
+ {"_shell":"xcrun simctl launch 563907E1-703D-4322-AE5F-FC3B06D03143 com.kylebrowning.Landmarks"},
+ {"_shell":"for n in 1 2 3 4 5 6 7 8 9 10 11 12; do /Users/kyle/.grantiva-qa/bin/grantiva hierarchy --udid 563907E1-703D-4322-AE5F-FC3B06D03143 --format json > /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt24/readiness-$n.json 2> /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt24/readiness-$n.err && exit 0; sleep 1; done; exit 1"},
+ {"method":"tools/call","params":{"name":"grantiva_script","arguments":{"steps":[{"tap":"Deep Links"},{"tap":"Edit Landmark"},{"tap":"Name"}]}}},
+ {"method":"tools/call","params":{"name":"grantiva_type","arguments":{"text":"Yosemite"}}},
+ {"_shell":"/Users/kyle/.grantiva-qa/bin/grantiva runner stop --json"},
+ {"method":"tools/list","params":{}}
+]

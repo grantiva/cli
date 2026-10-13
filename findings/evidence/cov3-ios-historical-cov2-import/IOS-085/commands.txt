@@ -1,0 +1,24 @@
+# uptime: 11:02  up 4 days,  2:30, 5 users, load averages: 10.93 12.15 18.34
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA runner dump-hierarchy --format tree | head -5
+# exit=0 elapsed=.748s -> tree.out / tree.err
+# uptime: 11:02  up 4 days,  2:30, 5 users, load averages: 10.93 12.15 18.34
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA runner dump-hierarchy --format json | python3 -I -c "import json,sys;d=json.load(sys.stdin);print(sorted(d.keys()))"
+# exit=0 elapsed=.684s -> json.out / json.err
+# uptime: 11:02  up 4 days,  2:30, 5 users, load averages: 10.37 12.02 18.25
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA runner dump-hierarchy --format xml | head -3
+# exit=0 elapsed=.660s -> xml.out / xml.err
+# uptime: 11:02  up 4 days,  2:30, 5 users, load averages: 10.37 12.02 18.25
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA runner dump-hierarchy -f json | head -c 120
+# exit=0 elapsed=.663s -> f-json.out / f-json.err
+# uptime: 11:02  up 4 days,  2:30, 5 users, load averages: 10.37 12.02 18.25
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA runner dump-hierarchy -p 8987 | head -3
+# exit=0 elapsed=.665s -> p-port.out / p-port.err
+# uptime: 11:02  up 4 days,  2:30, 5 users, load averages: 10.37 12.02 18.25
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA runner dump-hierarchy --json | head -c 120
+# exit=0 elapsed=.710s -> json-flag.out / json-flag.err

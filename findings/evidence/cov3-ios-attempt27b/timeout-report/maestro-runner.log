@@ -1,0 +1,203 @@
+22:40:39.302848 [INFO] === Test execution started ===
+22:40:39.302918 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt27b/timeout-report
+22:40:39.302923 [INFO] Platform: ios
+22:40:39.302927 [INFO] Driver: wda
+22:40:39.303169 [INFO] Validated 1 flow(s)
+22:40:39.427754 [INFO] Single device execution mode
+22:40:39.427773 [INFO] Starting flow execution (parallel: false, devices: [])
+22:40:39.427779 [INFO] Creating driver for single device execution
+22:40:39.427783 [INFO] Using specified iOS device: 563907E1-703D-4322-AE5F-FC3B06D03143
+22:40:39.543350 [INFO] Device 563907E1-703D-4322-AE5F-FC3B06D03143 is a simulator
+22:40:39.543410 [INFO] Building WDA for device 563907E1-703D-4322-AE5F-FC3B06D03143 (team ID: )
+22:40:39.771755 [INFO] WDA build reused from cache
+22:40:39.771773 [INFO] Starting WDA on device 563907E1-703D-4322-AE5F-FC3B06D03143 (port: 8511)
+22:40:40.052228 [INFO] Starting GrantivaAgent (attempt 1/4)
+22:40:42.055923 [INFO] GrantivaAgent started
+22:40:42.055972 [INFO] WDA started successfully on port 8511
+22:40:42.449309 [DEBUG] WDA GET /window/size
+22:40:42.515548 [DEBUG] WDA GET /window/size completed (66ms, status: 200)
+22:40:42.515622 [INFO] Driver created: ios on cov3-ios-26
+22:40:42.517163 [INFO] === Starting flow: 18-long-wait ===
+22:40:42.517169 [INFO] Flow file: .maestro/coverage/18-long-wait.yaml
+22:40:42.517173 [INFO] Total steps: 2
+22:40:42.517298 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+22:40:42.518089 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+22:40:42.518185 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+22:40:45.111560 [DEBUG] WDA POST /session completed (2593ms, status: 200)
+22:40:45.111721 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+22:40:45.113480 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/appium/settings completed (1ms, status: 200)
+22:40:45.113655 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+22:40:45.114870 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/appium/settings completed (1ms, status: 200)
+22:40:45.116878 [DEBUG] Executing step 0: launchApp
+22:40:45.565744 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+22:40:45.565821 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+22:40:45.566575 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/appium/settings completed (0ms, status: 200)
+22:40:45.566640 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+22:40:45.567075 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/wda/apps/terminate completed (0ms, status: 200)
+22:40:45.567112 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+22:40:47.106322 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/wda/apps/launch completed (1539ms, status: 200)
+22:40:47.106403 [DEBUG] Step 0 completed successfully (1989ms): launchApp
+22:40:47.107928 [DEBUG] Executing step 1: extendedWaitUntil: visible text="This never appears"
+22:40:47.108920 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text
+22:40:47.272125 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text completed (163ms, status: 404)
+22:40:47.272204 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:40:47.335145 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (62ms, status: 404)
+22:40:47.335310 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:40:48.056637 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (721ms, status: 200)
+22:40:48.060396 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:40:48.110117 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (49ms, status: 404)
+22:40:48.110292 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:40:48.766509 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (656ms, status: 200)
+22:40:48.778426 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:40:48.829998 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (51ms, status: 404)
+22:40:48.830227 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:40:49.494108 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (663ms, status: 200)
+22:40:49.502545 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text
+22:40:49.599697 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text completed (97ms, status: 404)
+22:40:49.599805 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:40:49.647647 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (47ms, status: 404)
+22:40:49.647846 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:40:50.350972 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (703ms, status: 200)
+22:40:50.361060 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:40:50.409743 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (48ms, status: 404)
+22:40:50.409910 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:40:51.064604 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (654ms, status: 200)
+22:40:51.073388 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:40:51.121348 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (47ms, status: 404)
+22:40:51.121492 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:40:51.775017 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (653ms, status: 200)
+22:40:51.779209 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text
+22:40:51.877221 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text completed (98ms, status: 404)
+22:40:51.877312 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:40:51.924825 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (47ms, status: 404)
+22:40:51.925079 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:40:52.603189 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (678ms, status: 200)
+22:40:52.611634 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:40:52.660598 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (48ms, status: 404)
+22:40:52.660787 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:40:53.307531 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (646ms, status: 200)
+22:40:53.319191 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:40:53.369530 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (50ms, status: 404)
+22:40:53.369730 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:40:54.025335 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (655ms, status: 200)
+22:40:54.035827 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text
+22:40:54.131384 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text completed (95ms, status: 404)
+22:40:54.131563 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:40:54.182611 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (51ms, status: 404)
+22:40:54.182778 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:40:54.960054 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (777ms, status: 200)
+22:40:54.969228 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:40:55.018263 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (49ms, status: 404)
+22:40:55.018435 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:40:55.696468 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (678ms, status: 200)
+22:40:55.703703 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:40:55.753101 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (49ms, status: 404)
+22:40:55.753295 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:40:56.409001 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (655ms, status: 200)
+22:40:56.418667 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text
+22:40:56.513462 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text completed (94ms, status: 404)
+22:40:56.513606 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:40:56.561461 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (47ms, status: 404)
+22:40:56.562172 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:40:57.217215 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (655ms, status: 200)
+22:40:57.225341 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:40:57.274651 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (49ms, status: 404)
+22:40:57.274796 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:40:57.937296 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (662ms, status: 200)
+22:40:57.949552 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:40:57.998745 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (49ms, status: 404)
+22:40:57.999027 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:40:58.672916 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (673ms, status: 200)
+22:40:58.681838 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text
+22:40:58.775993 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text completed (94ms, status: 404)
+22:40:58.776091 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:40:58.823666 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (47ms, status: 404)
+22:40:58.823919 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:40:59.482566 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (658ms, status: 200)
+22:40:59.487496 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:40:59.536692 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (49ms, status: 404)
+22:40:59.536779 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:41:00.212682 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (675ms, status: 200)
+22:41:00.222206 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:41:00.280230 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (58ms, status: 404)
+22:41:00.280327 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:41:00.978340 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (698ms, status: 200)
+22:41:00.987827 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text
+22:41:01.087641 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text completed (99ms, status: 404)
+22:41:01.087739 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:41:01.136991 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (49ms, status: 404)
+22:41:01.137138 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:41:01.792164 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (655ms, status: 200)
+22:41:01.803112 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:41:01.852639 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (49ms, status: 404)
+22:41:01.852825 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:41:02.512457 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (659ms, status: 200)
+22:41:02.524101 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:41:02.579183 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (55ms, status: 404)
+22:41:02.579353 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:41:03.263811 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (684ms, status: 200)
+22:41:03.270730 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text
+22:41:03.368918 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text completed (98ms, status: 404)
+22:41:03.368974 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:41:03.417320 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (48ms, status: 404)
+22:41:03.418151 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:41:04.079987 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (661ms, status: 200)
+22:41:04.085332 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:41:04.134335 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (49ms, status: 404)
+22:41:04.134653 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:41:04.793556 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (658ms, status: 200)
+22:41:04.799818 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:41:04.849756 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (49ms, status: 404)
+22:41:04.849930 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:41:05.508863 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (658ms, status: 200)
+22:41:05.522050 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text
+22:41:05.618094 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text completed (96ms, status: 404)
+22:41:05.618180 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:41:05.667312 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (49ms, status: 404)
+22:41:05.667454 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:41:06.316679 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (649ms, status: 200)
+22:41:06.328115 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:41:06.376195 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (48ms, status: 404)
+22:41:06.376361 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:41:07.043893 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (667ms, status: 200)
+22:41:07.048705 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:41:07.098123 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (49ms, status: 404)
+22:41:07.098286 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:41:07.759108 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (660ms, status: 200)
+22:41:07.769911 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text
+22:41:07.869368 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/alert/text completed (99ms, status: 404)
+22:41:07.869469 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:41:07.917745 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (48ms, status: 404)
+22:41:07.919189 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:41:08.600050 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (680ms, status: 200)
+22:41:08.608584 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:41:08.657998 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (49ms, status: 404)
+22:41:08.658182 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:41:09.317457 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source completed (659ms, status: 200)
+22:41:09.325803 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:41:09.374131 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element completed (48ms, status: 404)
+22:41:09.374864 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:41:09.497663 [INFO] Received signal interrupt, cleaning up...
+22:41:09.595489 [ERROR] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source failed (220ms): Get "http://127.0.0.1:8511/session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:41:09.595539 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:41:09.595669 [ERROR] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element failed (0ms): Post "http://127.0.0.1:8511/session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:41:09.595686 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:41:09.595834 [ERROR] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source failed (0ms): Get "http://127.0.0.1:8511/session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:41:09.595851 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:41:09.595959 [ERROR] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element failed (0ms): Post "http://127.0.0.1:8511/session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:41:09.595974 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:41:09.596058 [ERROR] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source failed (0ms): Get "http://127.0.0.1:8511/session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:41:09.596079 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:41:09.596185 [ERROR] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element failed (0ms): Post "http://127.0.0.1:8511/session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:41:09.596201 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:41:09.596309 [ERROR] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source failed (0ms): Get "http://127.0.0.1:8511/session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:41:09.596336 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:41:09.596437 [ERROR] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element failed (0ms): Post "http://127.0.0.1:8511/session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:41:09.596446 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:41:09.596587 [ERROR] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source failed (0ms): Get "http://127.0.0.1:8511/session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:41:09.596607 [DEBUG] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:41:09.596693 [ERROR] WDA POST /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element failed (0ms): Post "http://127.0.0.1:8511/session/69DA4BA9-62B3-4042-A971-C24D12152AF5/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:41:09.596702 [DEBUG] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source
+22:41:09.596769 [ERROR] WDA GET /session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source failed (0ms): Get "http://127.0.0.1:8511/session/69DA4BA9-62B3-4042-A971-C24D12152AF5/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:41:09.596786 [INFO] Shutting down all tracked emulators
+22:41:09.596796 [INFO] Shutting down all tracked simulators

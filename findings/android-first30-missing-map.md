@@ -1,0 +1,36 @@
+# Android first-30 missing-row map
+
+This read-only handoff covers the first 30 B/B2/B3/N/D2 IDs in the current Android missing list. Evidence paths are beneath `/Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/`. Candidate CLI HEAD is `8f2cff67`; runner HEAD is `fd9d8e8`. The table intentionally records gaps as well as reuse opportunities.
+
+| ID | Reusable current evidence / source | Smallest remaining input |
+|---|---|---|
+| B-A01.1 | `AND-106/` supplies stock seed flows; current `CF-crash1/`…`CF-crash5/` supply crash classification. | Add exact `LANDMARKS_NOTE=a=b c` logcat assertion and select the precise crash report showing `app_crash`. |
+| B-A01.3 | `AND-106/` establishes current flow-header env behavior. | Decide/document substitution-only versus delivered launch environment; cite README/CHANGELOG and one runtime observation matching that decision. |
+| B-A02.1 | Current stock `02-favorite` is in `AND-106/`; missing-selector failures exist in current flow batches. | Extract runner lookup and swipe coordinates relative to Lake Tahoe bounds, retain revealed-action image, and cite the exact missing-row failure. |
+| B-A02.2 | Same stock runtime is reusable. | Needs 10/10 revealed-action outcomes plus runner selector/far-side source assertion; one passing stock run is insufficient. |
+| B-A06.1 | Current timeout/SIGINT groups and ready-file groups exist (`duration-snapshot1770/`, lifecycle batches). | Join genuine SIGINT interrupted/no-running-flow, timeout failed/no-running-flow, and no-report-dir omission in one clause audit. |
+| B-A06.2 | `RunnerExecution.swift:125-133` writes interruption cleanup before termination handling; cleanup test source asserts terminal state. | Cite the exact semantic assertion in candidate test source and one real interrupt ordering observation; no fresh test execution is required by the plan, and source order alone does not prove runtime completion. |
+| B-A07.1 | Current log-stream lifecycle groups capture logging process cleanup. | Record target logcat PID/process group before SIGINT and absence after exit 130; generic process listing is insufficient. |
+| B-A08.1 | Current output/logging batches contain some log-level variants. | Run/cite exact default, explicit default, debug, info, and invalid warning; compare included levels and usage-64 valid-values text. |
+| B-A08.3 | Candidate `LogStreamer` source uses time-bounded logcat rather than clearing if current source confirms it. | Retain verbose command showing `-T` and absence of `logcat -c`; source only can close implementation clause if runtime command already exists. |
+| B-A10.1 | Existing lease-refusal current batches cover owner conflict and no-device-action failure. | Cite exact Android wording, absence of generic suffix, suggested teardown/unique-name commands, and prove no failure screenshot was written. |
+| B-A11.1 | Current MCP a11y batches include Deep Links checks. | Need exact Deep Links result showing no `missing_label` while allowing `small_tap_target`. |
+| B-A11.2 | UIAutomator2 accessibility source can prove focus-node/ancestor rule. | Join semantic source assertion with the Deep Links runtime tree/result; test name alone is insufficient. |
+| B-A13.1 | `B2-K24-exact-rerun1/source/` already retains mapping-form id generation semantics, not exact-text semantics. | Run/cite mapping `{text: Landmarks, exact: true}` through tap/assert-visible/assert-not-visible and add FlowGenerator source assertion/README+CHANGELOG. |
+| B-C02.1 | Secondary-AVD lifecycle groups show owned-device teardown controls. | Need the spoof/dead record repro and proof `teardown --all` leaves emulator-5554; global safety exclusion must be respected if `--all` remains forbidden. |
+| B-C02.2 | Emulator manager source can establish port/pid validation. | Runtime needs a bound console-port collision and proof no stale record survives when spawned pid exits while serial answers. |
+| B-C02.3 | Teardown refusal source/CLI tests may cover dead pid. | One dead-pid record without force must refuse regardless of AVD name; cite exact stderr/exit and unchanged record. |
+| B-C03.2 | Current dual-device and keep-alive batches contain project/platform ownership metadata. | Explicit wrong-directory and wrong-platform attempts must refuse/refrain, while same-directory/platform attaches. |
+| B-C04.1 | Current screens timeout/report batches retain output and ready files. | Cite one explicit `--report-dir out` exit with assets still present and byte-equal ready `reportDir`. |
+| B-C04.2 | `AND-119-exact-rerun1` supplies exact ~30 s slow-screen timeout; `output-contracts-exact-rerun2/B2-K20-ready` supplies continue-after-failure behavior. | Join exact elapsed time and enumerate every configured screen outcome; do not infer from wrapper exit. |
+| B-C08.2 | `B2-K24-exact-rerun1/source/` has native id config, platform-independent FlowGenerator production/tests, and exact-head CI lines. | Confirm source excerpts cover tap/assertVisible/assertNotVisible/scrollUntilVisible/extendedWaitUntil id forms; runtime currently proves tap/assert pair only, so add missing forms or keep partial. |
+| B-C09.1 | Current screens-steps runs exist in phase-b batches. | Cite a `wait: 3` step with measured duration at least 3 s, not only printed label. |
+| B-C09.2 | FlowGenerator source identifies unconditional sleep encoding. | Join staged YAML/runtime for unconditional wait and a separate Maestro `waitForAnimationToEnd` settle mapping. |
+| B-C10.2 | `CF-16-setpermissions/` proves nearby header-app config behavior. | Exact no-config/no-bundle-id `run --flow` must resolve the flow header appId and pass. |
+| B-C11.2 | Current no-session MCP batches cover tools independently; lazy attach groups exist. | Index all seven named tools' exact no-session `isError`, then same-server post-start lazy attach. |
+| B-C11.3 | Current no-config MCP batches cover config-dependent tool errors and explicit-platform device-free calls. | Index every config-dependent tool plus the exact emulator-tool no-config behavior required by the brief. A listing call closes this only if the brief includes it among the tools that must work; do not substitute a convenient device-free operation for a differently named tool. |
+| B-C15.2 | Current swipe/flow config batches prove lowercase directions. | One uppercase `UP` invocation with observable successful movement is still required. |
+| B-C22.2 | Candidate shared JSON encoder source/tests cover ISO-8601 dates. | Inventory every date-bearing Android JSON result (sessions and teardown), confirm runtime strings decode as ISO-8601, and cite CHANGELOG. |
+| B-D01.1 | Current hierarchy and runner-dump JSON captures exist in hierarchy batches. | Compare `--json` with `--format json` for both commands and capture usage-64 for `--json --format xml`, or verify help hides the alias. |
+| B-I16.1 | Current Android VRT batches contain Deep Links captures/diffs and JSON documents. | Cite literal filesystem names plus matching JSON paths from the same invocation. |
+| B-R01.1 | `AND-106/01.out` and report prove stock edit completes renamed assertion. | Add `--snapshot full` capture after input and visually/structurally prove the Name field contains `Golden Gate Bridge Renamed`. |

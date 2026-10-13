@@ -1,0 +1,14 @@
+              echo "::error::Bump RunnerManager.runnerVersion (or rebuild the runner tarball)"
+              echo "::error::so the CLI forces re-extraction on upgrade."
+              exit 1
+            fi
+            echo "$architecture runner version matches: $actual"
+          done
+
+      - name: Build
+        run: swift build
+
+      # Runs the whole suite with GRANTIVA_RUNNER_HOME at a fresh empty
+      # directory and fails, listing the paths, if any test wrote there.
+      - name: Test (fresh empty runner home)
+        run: scripts/test-fresh-home.sh

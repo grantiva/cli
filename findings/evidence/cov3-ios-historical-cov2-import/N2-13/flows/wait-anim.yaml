@@ -1,0 +1,8 @@
+appId: com.kylebrowning.Landmarks
+env:
+  LANDMARKS_CRASH_ON_LAUNCH: "1"
+---
+- launchApp
+- waitForAnimationToEnd:
+    timeout: 5000
+- assertVisible: "Featured"

@@ -1,0 +1,10 @@
+[
+ {"method":"initialize","params":{}},
+ {"_shell":"/Users/kyle/.grantiva-qa/bin/grantiva runner start --bundle-id com.kylebrowning.Landmarks --simulator 563907E1-703D-4322-AE5F-FC3B06D03143 --detach --json"},
+ {"_shell":"xcrun simctl terminate 563907E1-703D-4322-AE5F-FC3B06D03143 com.kylebrowning.Landmarks >/dev/null 2>&1 || true; xcrun simctl launch 563907E1-703D-4322-AE5F-FC3B06D03143 com.kylebrowning.Landmarks"},
+ {"method":"tools/call","params":{"name":"grantiva_tap","arguments":{"label":"No Such"}}},
+ {"_shell":"for n in 1 2 3 4 5 6 7 8 9 10 11 12; do /Users/kyle/.grantiva-qa/bin/grantiva hierarchy --udid 563907E1-703D-4322-AE5F-FC3B06D03143 --format json > /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt80c/readiness-4-$n.json 2> /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt80c/readiness-4-$n.err && grep -q '\"label\" : \"Landmarks\"' /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt80c/readiness-4-$n.json && exit 0; sleep 1; done; exit 1"},
+ {"method":"tools/call","params":{"name":"grantiva_tap","arguments":{"label":"No Such"}}},
+ {"method":"tools/list","params":{}},
+ {"_shell":"/Users/kyle/.grantiva-qa/bin/grantiva runner stop --json"}
+]

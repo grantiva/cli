@@ -1,0 +1,14 @@
+# uptime: 10:33  up 4 days, 2 hrs, 5 users, load averages: 63.51 76.05 66.31
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ ps -axo pid,ppid,command | grep BEE381AC-0D32-4D84-B304-068815F08B2F | grep -v grep | grep -v launchd_sim | cut -c1-160; ls /tmp/grantiva-sessions/; ls $GRANTIVA_RUNNER_HOME/locks 2>/dev/null; $GRANTIVA simulator sessions --json | grep -c udid
+# exit=0 elapsed=.190s -> before.out / before.err
+# kill -INT 29554 (keep-alive run on cov2-ios-2 started in IOS-052)
+# process gone after 1s
+# uptime: 10:33  up 4 days, 2 hrs, 5 users, load averages: 63.51 76.05 66.31
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ ps -axo pid,ppid,command | grep BEE381AC-0D32-4D84-B304-068815F08B2F | grep -v grep | grep -v launchd_sim | cut -c1-160; echo ---sessions-dir; ls /tmp/grantiva-sessions/; echo ---locks; ls -la $GRANTIVA_RUNNER_HOME/locks 2>/dev/null; echo ---; $GRANTIVA simulator sessions; ps -axo pid,command | grep 'simctl diagnose' | grep BEE381AC-0D32-4D84-B304-068815F08B2F | grep -v grep
+# exit=1 elapsed=.243s -> after.out / after.err
+# uptime: 10:33  up 4 days, 2 hrs, 5 users, load averages: 49.04 71.97 65.08
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-ios/findings/evidence/cov2-ios/IOS-057  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ ps -o pid,command -p 30150 | cut -c1-220
+# exit=0 elapsed=.011s -> proc30150.out / proc30150.err

@@ -1,0 +1,17 @@
+# setup: iOS copy (simulator cov-missing) with the round-2 .grantiva/captures/Home.png
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B2-K49
+$ $GRANTIVA diff approve NoSuchScreen
+# exit=1 elapsed=.021s -> approve.out / approve.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/tree
+$ grep -rn -A6 -E 'func test.*(Unknown|NoSuch|Unconfigured).*(Screen|Approve)' Tests/GrantivaCLITests/DiffCommandTests.swift | grep -E 'func|No captures found|No capture found' | head
+# exit=0 elapsed=.012s -> tests.out / tests.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/tree
+$ grep -rn -B6 'No capture found for' Tests | grep -E 'func test|No captures found in|No capture found for' | head
+# exit=0 elapsed=.021s -> tests2.out / tests2.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/tree
+$ sed -n 160,180p Tests/GrantivaCLITests/DiffCommandTests.swift
+# exit=0 elapsed=.010s -> tests3.out / tests3.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B2-K49
+$ MCP_STDERR=/Users/kyle/Developer/grantiva-cli/.worktrees/cov3-cli/findings/evidence/cov3-cli/B2-K49/mcp.err bash /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-cli/findings/evidence/cov3-cli/inputs/send.sh /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B2-K49 - /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-cli/findings/evidence/cov3-cli/B2-K49/mcp.requests.jsonl > /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-cli/findings/evidence/cov3-cli/B2-K49/mcp.out
+# exit=0
+# round-3 re-run: the round-2 commands replayed with paths mapped to the 8f2cff67 tree (inputs/replay.py) in fixtures rebuilt as round 2 had them; outputs compared with round 2 (inputs/cmpold.py)

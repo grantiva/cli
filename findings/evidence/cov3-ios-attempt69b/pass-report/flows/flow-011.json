@@ -1,0 +1,150 @@
+{
+  "id": "flow-011",
+  "name": "12-quote-label",
+  "sourceFile": ".maestro/12-quote-label.yaml",
+  "device": {
+    "id": "563907E1-703D-4322-AE5F-FC3B06D03143",
+    "name": "cov3-ios-26",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T00:51:57.083148-07:00",
+  "endTime": "2026-10-13T00:52:03.802154-07:00",
+  "duration": 6718,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T00:51:57.08441-07:00",
+      "endTime": "2026-10-13T00:51:59.10241-07:00",
+      "duration": 2018,
+      "artifacts": {
+        "screenshotBefore": "assets/flow-011/cmd-000-before.png",
+        "screenshotAfter": "assets/flow-011/cmd-000-after.png"
+      }
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Mountains\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:51:59.184585-07:00",
+      "endTime": "2026-10-13T00:52:01.028585-07:00",
+      "duration": 1844,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Mountains"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "8B000000-0000-0000-944E-010000000000",
+        "text": "Mountains",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 16,
+          "y": 430,
+          "width": 370,
+          "height": 53
+        }
+      },
+      "artifacts": {
+        "screenshotBefore": "assets/flow-011/cmd-001-before.png",
+        "screenshotAfter": "assets/flow-011/cmd-001-after.png"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Mount \"Denali\"\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:52:01.101621-07:00",
+      "endTime": "2026-10-13T00:52:02.965621-07:00",
+      "duration": 1864,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Mount \"Denali\""
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "EB000000-0000-0000-944E-010000000000",
+        "text": "Mount \"Denali\"",
+        "class": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 88,
+          "y": 433,
+          "width": 122,
+          "height": 22
+        }
+      },
+      "artifacts": {
+        "screenshotBefore": "assets/flow-011/cmd-002-before.png",
+        "screenshotAfter": "assets/flow-011/cmd-002-after.png"
+      }
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Alaska\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:52:03.071846-07:00",
+      "endTime": "2026-10-13T00:52:03.429846-07:00",
+      "duration": 358,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Alaska"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "03010000-0000-0000-944E-010000000000",
+        "text": "Alaska",
+        "class": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 20,
+          "y": 332,
+          "width": 64,
+          "height": 18
+        }
+      },
+      "artifacts": {
+        "screenshotBefore": "assets/flow-011/cmd-003-before.png",
+        "screenshotAfter": "assets/flow-011/cmd-003-after.png"
+      }
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-13T00:52:03.526625-07:00",
+      "endTime": "2026-10-13T00:52:03.708625-07:00",
+      "duration": 182,
+      "artifacts": {
+        "screenshotBefore": "assets/flow-011/cmd-004-before.png",
+        "screenshotAfter": "assets/flow-011/cmd-004-Quoted Label.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 5,
+    "mean": 1253,
+    "p50": 1844,
+    "p95": 2018,
+    "max": 2018,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,27 @@
+8f2cff67:Tests/GrantivaMCPTests/MCPTransportTests.swift:54:        defer { reader.cancel() }
+8f2cff67:Tests/GrantivaMCPTests/MCPTransportTests.swift:138:        defer { reader.cancel() }
+8f2cff67:Tests/GrantivaMCPTests/MCPTransportTests.swift:158:/// L14: a `tools/call` cancelled with `notifications/cancelled` gets no
+8f2cff67:Tests/GrantivaMCPTests/MCPTransportTests.swift:159:/// response, whether the cancel arrives before the request's task starts or
+8f2cff67:Tests/GrantivaMCPTests/MCPTransportTests.swift:160:/// while the tool runs; a cancel for an unknown id changes nothing.
+8f2cff67:Tests/GrantivaMCPTests/MCPTransportTests.swift:184:        defer { reader.cancel() }
+8f2cff67:Tests/GrantivaMCPTests/MCPTransportTests.swift:200:    private let cancel10 = #"{"jsonrpc":"2.0","method":"notifications/cancelled","params":{"requestId":10,"reason":"test"}}"#
+8f2cff67:Tests/GrantivaMCPTests/MCPTransportTests.swift:204:        let ids = try await replyIDs([(0, call10), (0, cancel10), (0, list11)], expect: 2)
+8f2cff67:Tests/GrantivaMCPTests/MCPTransportTests.swift:209:        let ids = try await replyIDs([(0, call10), (200, cancel10), (0, list11)], expect: 2)
+8f2cff67:Tests/GrantivaMCPTests/MCPTransportTests.swift:213:    /// A tool that fails in milliseconds and never sees the cancellation:
+8f2cff67:Tests/GrantivaMCPTests/MCPTransportTests.swift:214:    /// the SDK handles a batch's request before its cancel, so only the
+8f2cff67:Tests/GrantivaMCPTests/MCPTransportTests.swift:216:    func testTheTransportDropsTheAnswerOfAFastToolCancelledInTheSameBatch() async throws {
+8f2cff67:Tests/GrantivaMCPTests/MCPTransportTests.swift:217:        let batch = "[" + call10 + "," + cancel10 + "]"
+8f2cff67:Tests/GrantivaMCPTests/MCPTransportTests.swift:222:    func testTheTrackerDropsOnlyACancelledPendingRequestsAnswer() {
+8f2cff67:Tests/GrantivaMCPTests/MCPTransportTests.swift:225:        XCTAssertEqual(tracker.incoming(Data(#"{"jsonrpc":"2.0","method":"notifications/cancelled","params":{"requestId":"10"}}"#.utf8)), [])
+8f2cff67:Tests/GrantivaMCPTests/MCPTransportTests.swift:226:        let notes = tracker.incoming(Data(cancel10.utf8))
+8f2cff67:Tests/GrantivaMCPTests/MCPTransportTests.swift:232:        // Answered (dropped) once: a later id 10 is no longer cancelled.
+8f2cff67:Tests/GrantivaMCPTests/MCPTransportTests.swift:237:        let cancel99 = #"{"jsonrpc":"2.0","method":"notifications/cancelled","params":{"requestId":99}}"#
+8f2cff67:Tests/GrantivaMCPTests/MCPTransportTests.swift:238:        let ids = try await replyIDs([(0, cancel99), (0, call10), (0, list11)], expect: 3)
+8f2cff67:Tests/GrantivaCoreTests/SignalRelayTests.swift:40:        defer { source.cancel() }
+8f2cff67:Tests/GrantivaCoreTests/ChildProcessTests.swift:6:/// Covers the spawn behaviour that lets a cancelled run reap everything it
+8f2cff67:Tests/GrantivaCoreTests/ShellQuotingTests.swift:22:            group.cancelAll()
+8f2cff67:Tests/GrantivaCLITests/RecordCommandTests.swift:67:    func testCleanupStopsRecorderWhenDurationSleepIsCancelledAndPreservesCancellation() async throws {
+8f2cff67:Tests/GrantivaCLITests/RecordCommandTests.swift:78:        task.cancel()
+8f2cff67:Tests/GrantivaCLITests/RecordCommandTests.swift:82:            XCTFail("Expected cancellation")
+8f2cff67:Tests/GrantivaCLITests/RecordCommandTests.swift:84:            // Expected: cleanup must not replace the cancellation error.
+8f2cff67:Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:837:    /// Convert process output into a cancellable stream. `availableData` blocks

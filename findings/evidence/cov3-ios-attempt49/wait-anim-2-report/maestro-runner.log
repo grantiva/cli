@@ -1,0 +1,58 @@
+23:50:08.230746 [INFO] === Test execution started ===
+23:50:08.230813 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt49/wait-anim-2-report
+23:50:08.230818 [INFO] Platform: ios
+23:50:08.230822 [INFO] Driver: wda
+23:50:08.231103 [INFO] Validated 1 flow(s)
+23:50:08.361271 [INFO] Single device execution mode
+23:50:08.361293 [INFO] Starting flow execution (parallel: false, devices: [])
+23:50:08.361300 [INFO] Creating driver for single device execution
+23:50:08.361304 [INFO] Using specified iOS device: 563907E1-703D-4322-AE5F-FC3B06D03143
+23:50:08.474454 [INFO] Device 563907E1-703D-4322-AE5F-FC3B06D03143 is a simulator
+23:50:08.474524 [INFO] Building WDA for device 563907E1-703D-4322-AE5F-FC3B06D03143 (team ID: )
+23:50:08.704058 [INFO] WDA build reused from cache
+23:50:08.704077 [INFO] Starting WDA on device 563907E1-703D-4322-AE5F-FC3B06D03143 (port: 8511)
+23:50:08.978731 [INFO] Starting GrantivaAgent (attempt 1/4)
+23:50:10.980341 [INFO] GrantivaAgent started
+23:50:10.980393 [INFO] WDA started successfully on port 8511
+23:50:11.360889 [DEBUG] WDA GET /window/size
+23:50:11.566957 [DEBUG] WDA GET /window/size completed (206ms, status: 200)
+23:50:11.567013 [INFO] Driver created: ios on cov3-ios-26
+23:50:11.568575 [INFO] === Starting flow: wait-anim-crash ===
+23:50:11.568580 [INFO] Flow file: wait-anim-crash.yaml
+23:50:11.568583 [INFO] Total steps: 3
+23:50:11.568711 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+23:50:11.569289 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+23:50:11.569342 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+23:50:13.118628 [DEBUG] WDA POST /session completed (1549ms, status: 200)
+23:50:13.118717 [DEBUG] WDA POST /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+23:50:13.120263 [DEBUG] WDA POST /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/appium/settings completed (1ms, status: 200)
+23:50:13.120421 [DEBUG] WDA POST /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+23:50:13.121226 [DEBUG] WDA POST /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/appium/settings completed (0ms, status: 200)
+23:50:13.121974 [DEBUG] Executing step 0: launchApp
+23:50:13.668330 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[LANDMARKS_CRASH_ON_LAUNCH:1]
+23:50:13.668403 [DEBUG] WDA POST /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+23:50:13.669121 [DEBUG] WDA POST /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/appium/settings completed (0ms, status: 200)
+23:50:13.669196 [DEBUG] WDA POST /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+23:50:13.669781 [DEBUG] WDA POST /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/wda/apps/terminate completed (0ms, status: 200)
+23:50:13.669828 [DEBUG] WDA POST /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks","environment":{"LANDMARKS_CRASH_ON_LAUNCH":"1"}}
+23:50:15.202852 [DEBUG] WDA POST /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/wda/apps/launch completed (1533ms, status: 200)
+23:50:15.202935 [DEBUG] Step 0 completed successfully (2080ms): launchApp
+23:50:15.203856 [DEBUG] Executing step 1: waitForAnimationToEnd
+23:50:15.207687 [DEBUG] WDA GET /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/screenshot
+23:50:15.365699 [DEBUG] WDA GET /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/screenshot completed (158ms, status: 200)
+23:50:15.380861 [DEBUG] WDA GET /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/screenshot
+23:50:15.509690 [DEBUG] WDA GET /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/screenshot completed (128ms, status: 200)
+23:50:15.702327 [DEBUG] WDA POST /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/wda/apps/state body={"bundleId":"com.kylebrowning.Landmarks"}
+23:50:15.703524 [DEBUG] WDA POST /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/wda/apps/state completed (1ms, status: 200)
+23:50:15.703574 [INFO] [wda] com.kylebrowning.Landmarks is not running (app state 1) after a settle — treating it as crashed
+23:50:15.703601 [ERROR] Step 1 failed (499ms): waitForAnimationToEnd - Error: app crashed: com.kylebrowning.Landmarks is not running
+23:50:15.703607 [DEBUG] WDA GET /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/screenshot
+23:50:15.845066 [DEBUG] WDA GET /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/screenshot completed (141ms, status: 200)
+23:50:15.856400 [DEBUG] WDA GET /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/source
+23:50:15.859583 [DEBUG] WDA GET /session/6F5B4797-BD99-41E9-A578-7F66802B36E6/source completed (3ms, status: 400)
+23:50:15.863285 [INFO] === Flow completed: wait-anim-crash (status: failed, duration: 4291ms, passed: 1, failed: 1, skipped: 1) ===
+23:50:15.938834 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+23:50:15.939036 [INFO] Generating reports...
+23:50:15.940920 [INFO] Shutting down devices started by maestro-runner...
+23:50:15.940946 [INFO] Shutting down all tracked emulators
+23:50:15.940952 [INFO] Shutting down all tracked simulators

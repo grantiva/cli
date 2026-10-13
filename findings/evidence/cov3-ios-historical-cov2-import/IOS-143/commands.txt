@@ -1,0 +1,15 @@
+# project $S/p143: stock config without the simulator: line; runner start session on cov2-ios-1 (from IOS-084, started in $APP) live
+# uptime: 11:03  up 4 days,  2:30, 5 users, load averages: 9.64 11.77 18.05
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p143  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ head -3 grantiva.yml; ls /tmp/grantiva-sessions; cat $APP/.grantiva/session.json
+# exit=0 elapsed=.012s -> config.out / config.err
+# uptime: 11:03  up 4 days,  2:30, 5 users, load averages: 9.64 11.77 18.05
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p143  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA diff capture --no-build
+# exit=1 elapsed=.221s -> capture.out / capture.err
+# second try in the session's own directory: $APP/grantiva.yml without its simulator: line (restored after); runner start session (pid 81569) live on cov2-ios-1
+# uptime: 11:03  up 4 days,  2:30, 5 users, load averages: 7.18 11.07 17.66
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA diff capture --no-build
+# exit=0 elapsed=22.399s -> capture-samedir.out / capture-samedir.err
+# grantiva.yml restored

@@ -1,0 +1,132 @@
+22:38:54.051760 [INFO] === Test execution started ===
+22:38:54.051823 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt27/interrupted-report
+22:38:54.051829 [INFO] Platform: ios
+22:38:54.051832 [INFO] Driver: wda
+22:38:54.052156 [INFO] Validated 1 flow(s)
+22:38:54.173644 [INFO] Single device execution mode
+22:38:54.173659 [INFO] Starting flow execution (parallel: false, devices: [])
+22:38:54.173666 [INFO] Creating driver for single device execution
+22:38:54.173670 [INFO] Using specified iOS device: 563907E1-703D-4322-AE5F-FC3B06D03143
+22:38:54.287396 [INFO] Device 563907E1-703D-4322-AE5F-FC3B06D03143 is a simulator
+22:38:54.287480 [INFO] Building WDA for device 563907E1-703D-4322-AE5F-FC3B06D03143 (team ID: )
+22:38:54.525706 [INFO] WDA build reused from cache
+22:38:54.525724 [INFO] Starting WDA on device 563907E1-703D-4322-AE5F-FC3B06D03143 (port: 8511)
+22:38:54.809912 [INFO] Starting GrantivaAgent (attempt 1/4)
+22:38:56.813579 [INFO] GrantivaAgent started
+22:38:56.813618 [INFO] WDA started successfully on port 8511
+22:38:57.194711 [DEBUG] WDA GET /window/size
+22:38:57.281191 [DEBUG] WDA GET /window/size completed (86ms, status: 200)
+22:38:57.281342 [INFO] Driver created: ios on cov3-ios-26
+22:38:57.282669 [INFO] === Starting flow: 18-long-wait ===
+22:38:57.282674 [INFO] Flow file: .maestro/coverage/18-long-wait.yaml
+22:38:57.282677 [INFO] Total steps: 2
+22:38:57.282786 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+22:38:57.283330 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+22:38:57.283414 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+22:38:58.871962 [DEBUG] WDA POST /session completed (1588ms, status: 200)
+22:38:58.872017 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+22:38:58.880648 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/appium/settings completed (8ms, status: 200)
+22:38:58.880729 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+22:38:58.881308 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/appium/settings completed (0ms, status: 200)
+22:38:58.881774 [DEBUG] Executing step 0: launchApp
+22:38:59.388020 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+22:38:59.388113 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+22:38:59.388976 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/appium/settings completed (0ms, status: 200)
+22:38:59.389070 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+22:38:59.389600 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/wda/apps/terminate completed (0ms, status: 200)
+22:38:59.389630 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+22:39:00.941861 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/wda/apps/launch completed (1552ms, status: 200)
+22:39:00.941972 [DEBUG] Step 0 completed successfully (2060ms): launchApp
+22:39:00.942545 [DEBUG] Executing step 1: extendedWaitUntil: visible text="This never appears"
+22:39:00.942860 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/alert/text
+22:39:01.124180 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/alert/text completed (181ms, status: 404)
+22:39:01.124233 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:01.189140 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element completed (64ms, status: 404)
+22:39:01.189273 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:01.918060 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source completed (728ms, status: 200)
+22:39:01.921907 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:01.971977 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element completed (50ms, status: 404)
+22:39:01.972057 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:02.756798 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source completed (784ms, status: 200)
+22:39:02.760501 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:02.813821 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element completed (53ms, status: 404)
+22:39:02.813908 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:03.619125 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source completed (805ms, status: 200)
+22:39:03.622757 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/alert/text
+22:39:03.723906 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/alert/text completed (101ms, status: 404)
+22:39:03.723975 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:03.775051 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element completed (51ms, status: 404)
+22:39:03.775150 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:04.531539 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source completed (756ms, status: 200)
+22:39:04.534836 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:04.586984 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element completed (52ms, status: 404)
+22:39:04.587099 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:05.056078 [INFO] Received signal interrupt, cleaning up...
+22:39:05.126864 [ERROR] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source failed (539ms): Get "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.127204 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:05.127359 [ERROR] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element failed (0ms): Post "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.127368 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:05.127437 [ERROR] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source failed (0ms): Get "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.127451 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:05.127520 [ERROR] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element failed (0ms): Post "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.127531 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:05.127657 [ERROR] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source failed (0ms): Get "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.127687 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:05.127776 [ERROR] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element failed (0ms): Post "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.127817 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:05.127943 [ERROR] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source failed (0ms): Get "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.127957 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:05.128040 [ERROR] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element failed (0ms): Post "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.128114 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:05.128251 [ERROR] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source failed (0ms): Get "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.128267 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:05.128353 [ERROR] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element failed (0ms): Post "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.128360 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:05.128459 [ERROR] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source failed (0ms): Get "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.128473 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:05.128548 [ERROR] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element failed (0ms): Post "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.128556 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:05.128627 [ERROR] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source failed (0ms): Get "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.128638 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:05.128698 [ERROR] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element failed (0ms): Post "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.128705 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:05.128764 [ERROR] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source failed (0ms): Get "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.128773 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:05.128841 [ERROR] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element failed (0ms): Post "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.128848 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:05.128912 [ERROR] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source failed (0ms): Get "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.128924 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:05.128989 [ERROR] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element failed (0ms): Post "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.128995 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:05.129052 [ERROR] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source failed (0ms): Get "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.129064 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:05.129145 [ERROR] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element failed (0ms): Post "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.129153 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:05.129215 [ERROR] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source failed (0ms): Get "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.129226 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:05.129327 [ERROR] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element failed (0ms): Post "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.129333 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:05.129405 [ERROR] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source failed (0ms): Get "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.129420 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:05.129491 [ERROR] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element failed (0ms): Post "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.129497 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:05.129571 [ERROR] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source failed (0ms): Get "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.129600 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:05.129728 [ERROR] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element failed (0ms): Post "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.129736 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:05.129812 [ERROR] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source failed (0ms): Get "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.129823 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:05.129890 [ERROR] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element failed (0ms): Post "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.129898 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:05.129970 [ERROR] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source failed (0ms): Get "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.129989 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:05.130070 [ERROR] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element failed (0ms): Post "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.130078 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:05.130138 [ERROR] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source failed (0ms): Get "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.130149 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:05.130216 [ERROR] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element failed (0ms): Post "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/element": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.130230 [DEBUG] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source
+22:39:05.130296 [ERROR] WDA GET /session/314C5D7A-5587-4139-9465-1000F8E677EC/source failed (0ms): Get "http://127.0.0.1:8511/session/314C5D7A-5587-4139-9465-1000F8E677EC/source": dial tcp 127.0.0.1:8511: connect: connection refused
+22:39:05.130306 [DEBUG] WDA POST /session/314C5D7A-5587-4139-9465-1000F8E677EC/element body={"using":"predicate string","value":"(label ==[c] 'This never appears' OR value ==[c] 'This never ap...
+22:39:05.130326 [INFO] Shutting down all tracked emulators
+22:39:05.130337 [INFO] Shutting down all tracked simulators

@@ -1,0 +1,13 @@
+256-    /// With a configured AVD name, the running emulator with that name is
+257-    /// used, else it is booted. Without one: a single running emulator, else
+258:    /// a single booting emulator (waited on), else the only existing AVD is
+259-    /// booted, else an error lists the AVDs.
+260-    public func selectDevice(configured: String?) async throws -> BootedDevice {
+261-        let devices = try await adb.devices()
+262-        let broken = devices.filter { !$0.isUsable }
+263-        let running = devices.filter { $0.isEmulator && $0.isUsable }
+264-        // Every emulator's AVD name is read, whatever its state: one that is
+265-        // still booting shows as `offline` and must not be booted a second time.
+266-        var names: [String: String] = [:]
+267-        for device in devices where device.isEmulator {
+268-            names[device.serial] = try? await adb.avdName(serial: device.serial)

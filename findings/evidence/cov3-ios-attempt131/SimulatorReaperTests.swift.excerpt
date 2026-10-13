@@ -1,0 +1,111 @@
+            isProcessAlive: { _ in false }
+        )
+    }
+
+    // A named session outlives the CLI process that booted its device, so a
+    // forced reclaim never drops its record while the device is booted.
+    func testForceTeardownRemovesTheDeviceHomeUnderEveryRunnerVersion() async throws {
+        let directory = temporaryDirectory()
+        let fm = FileManager.default
+        let homes = ["v1", "v2"].map { "\(directory)/runner/versions/\($0)/devices/\(udid)" }
+        let other = "\(directory)/runner/versions/v1/devices/OTHER-1"
+        for path in homes + [other] { try fm.createDirectory(atPath: path, withIntermediateDirectories: true) }
+
+        let result = try await forceTeardown(directory: directory)
+
+        XCTAssertEqual(Set(result.deviceHomesRemoved), Set(homes))
+        XCTAssertEqual(result.deviceHomeFailures, [])
+        for path in homes { XCTAssertFalse(fm.fileExists(atPath: path)) }
+        XCTAssertTrue(fm.fileExists(atPath: other))
+    }
+
+    func testForceTeardownKeepsANamedSessionRecordWhateverItsOwnerPID() async throws {
+        let directory = temporaryDirectory()
+        try writeRecords([record(udid, session: "qa-ios")], to: directory)
+
+        let result = try await forceTeardown(directory: directory)
+
+        XCTAssertEqual(result.capacityRecordsCleared, 0)
+        XCTAssertEqual(result.capacityRecordsKept.map(\.sessionId), ["qa-ios"])
+        XCTAssertTrue(result.capacityRecordsKept[0].reason.contains("teardown --session-id qa-ios"), result.capacityRecordsKept[0].reason)
+        let remaining = try SimulatorCapacity(directory: directory).sessions(devices: booted(udid))
+        XCTAssertEqual(remaining.map(\.udid), [udid])
+
+        let object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(result)) as? [String: Any])
+        XCTAssertNotNil(object["capacityRecordsKept"])
+    }
+
+    func testForceTeardownClearsAPendingRecordAndADeadSessionlessOne() async throws {
+        let directory = temporaryDirectory()
+        try writeRecords([record(udid, session: "qa-ios", state: .pending)], to: directory)
+        var result = try await forceTeardown(directory: directory)
+        XCTAssertEqual(result.capacityRecordsCleared, 1)
+        XCTAssertEqual(result.capacityRecordsKept, [])
+
+        try writeRecords([record(udid, session: "simulator:\(udid)")], to: directory)
+        result = try await forceTeardown(directory: directory)
+        XCTAssertEqual(result.capacityRecordsCleared, 1)
+        XCTAssertEqual(result.capacityRecordsKept, [])
+    }
+
+    func testForceTeardownKeepsASessionlessRecordWhoseOwnerIsAlive() async throws {
+        let directory = temporaryDirectory()
+        try writeRecords([record(udid, session: "simulator:\(udid)")], to: directory)
+        let result = try await SimulatorReaper.forceTeardown(
+            udid: udid,
+            capacity: SimulatorCapacity(directory: directory),
+            leaseDirectory: directory,
+            sessions: KeepAliveSessionStore(directory: "\(directory)/sessions", isProcessAlive: { _ in false }),
+            snapshot: { "" },
+            gracePeriod: 0,
+            isProcessAlive: { _ in true }
+        )
+        XCTAssertEqual(result.capacityRecordsCleared, 0)
+        XCTAssertTrue(result.capacityRecordsKept.first?.reason.contains("still running") == true)
+    }
+
+    func testForceTeardownRemovesTheKilledRunnersSessionFiles() async throws {
+        let directory = temporaryDirectory()
+        let sessionDirectory = "\(directory)/grantiva-sessions"
+        let store = KeepAliveSessionStore(directory: sessionDirectory, isProcessAlive: { _ in false })
+        store.recordOwner(udid: udid, runnerPid: 31830)
+        store.recordOwner(udid: "OTHER-UDID", runnerPid: 999)
+        let runnerFile = "\(sessionDirectory)/31830-1791583257475743000.grantiva"
+        let otherRunnerFile = "\(sessionDirectory)/999-1791583257475743000.grantiva"
+        try Data(#"{"sessionId":"s","port":8100,"pid":31830}"#.utf8).write(to: URL(fileURLWithPath: runnerFile))
+        try Data(#"{"sessionId":"t","port":8101,"pid":999}"#.utf8).write(to: URL(fileURLWithPath: otherRunnerFile))
+
+        let result = try await forceTeardown(directory: directory, sessionDirectory: sessionDirectory)
+
+        let left = try FileManager.default.contentsOfDirectory(atPath: sessionDirectory).sorted()
+        XCTAssertEqual(left, ["999-1791583257475743000.grantiva", "999.owner.json"])
+        XCTAssertEqual(result.sessionFilesRemoved.count, 2)
+    }
+
+    /// L12: the keep-alive runner died on its own and grantiva removed its
+    /// sidecar on the way out; the runner's own file is all that is left.
+    func testForceTeardownRemovesADeadRunnersFileWithNoSidecar() async throws {
+        let directory = temporaryDirectory()
+        let sessionDirectory = "\(directory)/grantiva-sessions"
+        try FileManager.default.createDirectory(atPath: sessionDirectory, withIntermediateDirectories: true)
+        let runnerFile = "\(sessionDirectory)/12109-1791747326192132000.grantiva"
+        try Data(#"{"sessionId":"12109-1791747326192132000","port":8987,"pid":12109}"#.utf8).write(to: URL(fileURLWithPath: runnerFile))
+
+        let result = try await forceTeardown(directory: directory, sessionDirectory: sessionDirectory)
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: runnerFile))
+        XCTAssertEqual(result.sessionFilesRemoved, [runnerFile])
+    }
+
+    func testForceTeardownReapsADiagnoseThatAppearsAfterTheFirstKill() async throws {
+        let directory = temporaryDirectory()
+        func sleeper() throws -> Process {
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: "/bin/sleep")
+            process.arguments = ["30"]
+            try process.run()
+            return process
+        }
+        let runner = try sleeper()
+        let late = try sleeper()
+        defer {

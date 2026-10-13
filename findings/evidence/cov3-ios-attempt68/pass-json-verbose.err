@@ -1,0 +1,91 @@
+[debug] 2026-10-13T07:46:57Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T07:46:57Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T07:46:57Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T07:46:57Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T07:46:57Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T07:46:58Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T07:46:58Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T07:46:58Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T07:46:58Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T07:46:58Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T07:46:58Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T07:46:58Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T07:46:58Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T07:46:58Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T07:46:58Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T07:46:58Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T07:46:58Z com.grantiva.cli: $ xcrun simctl get_app_container '563907E1-703D-4322-AE5F-FC3B06D03143' 'com.kylebrowning.Landmarks'
+[debug] 2026-10-13T07:46:58Z com.grantiva.cli: exit 0: xcrun simctl get_app_container '563907E1-703D-4322-AE5F-FC3B06D03143' 'com.kylebrowning.Landmarks'
+[debug] 2026-10-13T07:46:58Z com.grantiva.cli: $ xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T07:46:58Z com.grantiva.cli: exit 0: xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T07:46:59Z com.grantiva.cli: $ /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform ios --device 563907E1-703D-4322-AE5F-FC3B06D03143 --no-ansi --no-app-install test --output /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt68/pass-json-verbose-report --flatten --wait-for-idle-timeout 0 --artifacts failure --fail-fast /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-614DD824-4B00-4B01-A155-D54862121EF2/0/01-browse.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt68/pass-json-verbose-report
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8511
+
+  [1/1] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ assertVisible: text="Landmarks" (551ms)
+    ✓ assertVisible: text="Featured" (281ms)
+    ✓ takeScreenshot (75ms)
+    ✓ tapOn: text="Golden Gate Bridge" (912ms)
+    ✓ assertVisible: text="San Francisco, CA" (468ms)
+    ✓ assertVisible: text="Plan Visit" (336ms)
+    ✓ takeScreenshot (99ms)
+✓ 01-browse 7.3s
+
+  [1/1] 01-browse (.maestro/01-browse.yaml) - Device: cov3-ios-26 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ assertVisible: text="Landmarks" (551ms)
+    ✓ assertVisible: text="Featured" (281ms)
+    ✓ takeScreenshot (75ms)
+    ✓ tapOn: text="Golden Gate Bridge" (912ms)
+    ✓ assertVisible: text="San Francisco, CA" (468ms)
+    ✓ assertVisible: text="Plan Visit" (336ms)
+    ✓ takeScreenshot (99ms)
+✓ 01-browse 7.3s
+
+  8 steps passing (7.3s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  01-browse                      ✓ PASS       8      8      0      0       7.3s  cov3-ios-26 (ios 26.0 Simul...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0       7.3s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt68/pass-json-verbose-report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt68/pass-json-verbose-report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt68/pass-json-verbose-report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt68/pass-json-verbose-report/allure-results
+
+  Built by Grantiva
+
+[debug] 2026-10-13T07:47:09Z com.grantiva.cli: exit 0: /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform ios --device 563907E1-703D-4322-AE5F-FC3B06D03143 --no-ansi --no-app-install test --output /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt68/pass-json-verbose-report --flatten --wait-for-idle-timeout 0 --artifacts failure --fail-fast /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-614DD824-4B00-4B01-A155-D54862121EF2/0/01-browse.yaml
+[debug] 2026-10-13T07:47:09Z com.grantiva.cli: $ xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 clear
+[debug] 2026-10-13T07:47:09Z com.grantiva.cli: exit 0: xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 clear

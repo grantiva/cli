@@ -1,0 +1,22 @@
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:160:              threshold: 0.1
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:161:              perceptual_threshold: 3
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:227:              threshold: 0.02
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:228:              perceptual_threshold: 5
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:397:              threshold: lots
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:402:            XCTAssertTrue(text.contains("grantiva.yml:7: diff.threshold: threshold takes a number; got \"lots\""), text)
+Tests/GrantivaCoreTests/CLILogHandlerTests.swift:154:        // Guards the test above against being satisfied by a lowered threshold.
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:113:        XCTAssertEqual(config.diff.threshold, 0.02)
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:131:          threshold: 0.05
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:132:          perceptual_threshold: 10.0
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:140:        XCTAssertEqual(config.diff.threshold, 0.05)
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:152:        XCTAssertEqual(config.diff.threshold, 0.02)
+README.md:125:  threshold: 0.02
+README.md:126:  perceptual_threshold: 5.0
+README.md:129:`diff.threshold` and `diff.perceptual_threshold` are two separate checks, and a screen passes only when **both** hold:
+README.md:131:- `threshold` is a 0-1 fraction of pixels that differ (`0.02` = 2 %; the messages print percent). `1.0` means any share of changed pixels is fine.
+README.md:132:- `perceptual_threshold` is the mean CIE76 color distance (delta E) over the differing pixels only, not over the whole image. It is 0 when the images are identical and about 2.3 is a just-noticeable difference. A handful of strongly changed pixels therefore fails a screen no matter how high `threshold` is.
+README.md:134:To loosen a flaky screen, raise both. Raising only `threshold` still fails the screen on `perceptual_threshold` (for example `pixel=7.97% perceptual=6.4` against a limit of 5).
+README.md:384:same). `--verbose` prints the numbers behind it (frames, last frame, held span, threshold).
+README.md:509:- `pixel_threshold` → `pixelThreshold` (diff compare)
+README.md:510:- `perceptual_threshold` → `perceptualThreshold` (diff compare)
+README.md:724:failed and its limit, for example `Failed: perceptual=63.6 exceeds perceptual_threshold 5.0 (pixel=0.03%, threshold 2.00%)`.
