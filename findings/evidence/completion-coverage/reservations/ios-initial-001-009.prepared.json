@@ -1,0 +1,82 @@
+{
+  "schema": "grantiva.task9.reservation.v1",
+  "candidateManifestSHA256": "714715a6890ae340395083e195eecfa3d95e28abdc102e69e7c66533dea5c783",
+  "standingDelegations": {
+    "path": "findings/preparation/round4-coverage/task9-standing-delegations.md",
+    "sha256": "f53ff2459cd36dd0e1215ddf4bf419114ce98873e783ccafc565285d40beb254"
+  },
+  "applicationBuildRouting": {
+    "path": "findings/preparation/round4-coverage/task9-application-build-routing.md",
+    "sha256": "eae4bf6bad460db1e8cf31b12e36f8197ee8b02997d8886c66a5707559838dc5"
+  },
+  "applicationBuildAddendum": {
+    "path": "findings/preparation/round4-coverage/task9-application-build-routing-addendum.md",
+    "sha256": "3eda10b3783137c16c674f12e6ce4bc15a394f34260b8eefa5fc63c809aa2018"
+  },
+  "activatedEpoch": null,
+  "returned": false,
+  "userApprovalRequired": false,
+  "reservationId": "cov5-ios-initial-001-009",
+  "actor": "cov5-ios",
+  "sessionId": "cov5-ios",
+  "worktree": "/Users/kyle/Developer/grantiva-cli/.worktrees/cov5-ios",
+  "keys": [
+    "IOS-001",
+    "IOS-002",
+    "IOS-003",
+    "IOS-004",
+    "IOS-005",
+    "IOS-006",
+    "IOS-007",
+    "IOS-008",
+    "IOS-009"
+  ],
+  "devices": [
+    {
+      "name": "cov5-ios-26",
+      "id": "532523A7-30B3-4048-A538-4F3DB2EFB807",
+      "runtime": "iOS26.0",
+      "permission": "IOS006 existing-device reuse only; no delete"
+    },
+    {
+      "name": "cov5-ios-3 iPhone 17",
+      "id": null,
+      "runtime": "Literal name-only defaults latest installed runtime27.0; no extra flag allowed to force26.",
+      "permission": "literal ensure/create/reuse/boot/no-boot/concurrency per assigned row; capture newUUID before furtheruse"
+    },
+    {
+      "name": "cov5-ios-3",
+      "id": null,
+      "runtime": "Exact row-specific explicit runtime or default latest, record actual state before cleanup.",
+      "permission": "only explicit-device-type row variant; same name-slot rules"
+    },
+    {
+      "name": "cov5-ios-4 Pin",
+      "id": null,
+      "runtime": "literal row latest resolves installed27.0 or row-specific negative runtime",
+      "permission": "IOS003 pinnedtype/runtime control, retain forIOS019later"
+    }
+  ],
+  "negativeOnlyNames": [
+    "cov-thing",
+    "cov5-ios-4"
+  ],
+  "allowed": "Every literal transition/repetition within listed rows and reviewed standing table; record actual argv, name/type/runtime/absence/newUUID/ownership in row journal before operation; at most two extra iOS devices coexist",
+  "signals": "Only authenticated row-started waiter/process if literal row requires it",
+  "excluded": "No appbuild, primarydelete, protected/defaultdeviceoperation or arbitrarynewname; no later lifecycle rows until nextwindow",
+  "return": "Report current literal names/UUIDs/states/session ownership and cleanup; preserve dependent reused devices for next reservation",
+  "coordination": "Activate only after root confirms Android initial window returned. No Android live/compiler overlap; device-free CLI allowed.",
+  "status": "PREPARED_AWAITING_ANDROID_RETURN",
+  "runnerHome": "/private/tmp/grantiva-cov5-ios-runner-home",
+  "captureRequirements": [
+    "IOS004 record actual runtime BEFORE delete",
+    "IOS005 record Shutdown BEFORE delete",
+    "IOS008 do not claim PID authentication from CLI logs alone",
+    "CLI handoffs are not included in this initial window"
+  ],
+  "preflight": {
+    "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-coverage/provision/acceptance.json",
+    "sha256": "fd406ae20f18ffd0da079c3255b0bac930b59c322dcff827fd7342c324673732"
+  },
+  "smokeGate": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate4/smoke-gate.json"
+}
