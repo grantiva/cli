@@ -126,15 +126,15 @@ if len(shell.commands) != 0 { t.Fatal("non-ADB swipe invoked shell input") }
 
 Add the same assertion table for direction and selector forms; the `engine: adb` control must still record exactly one `input swipe` shell command.
 
-- [ ] **Step 1: Write failing L51 tests.** Table-test direction, explicit start/end, element and `engine: adb` forms. The first three must emit W3C held pointer actions with requested duration; only the last may invoke `adb shell input swipe`.
-- [ ] **Step 2: Write failing L77 tests.** Exercise bare, scalar and mapping stopApp forms. A zero `am force-stop` exit with the package still running or foreground must return a lifecycle error naming the app; a stopped package clears the crash watch and passes a following not-visible assertion.
-- [ ] **Step 3: Write the L62 isolation test.** Replay reveal → stable-bounds reads → tap against a fake hierarchy whose action moves during animation. Assert the runner waits for two identical app-node bounds before tapping. Add a fixture where the app callback fires but state does not change; that result identifies demo ownership without weakening runner assertions.
-- [ ] **Step 4: Verify red.** Run `go test ./pkg/driver/uiautomator2/... ./pkg/executor/...`.
-- [ ] **Step 5: Implement.** Route non-ADB swipes through the held action builder; add stable target revalidation before the post-swipe action; after force-stop poll exact package/foreground state within a bounded deadline and fail truthfully if it remains.
-- [ ] **Step 6: Verify green and regressions.** Run `go test ./pkg/driver/uiautomator2/... ./pkg/executor/... ./pkg/core/...` and `go vet ./pkg/driver/uiautomator2/... ./pkg/executor/... ./pkg/core/...`.
-- [ ] **Step 7: Device acceptance.** On owned software and GPU AVDs, run the four L51 forms and retain before/after app-only hierarchy frames; run favorite removal 5/5 on each; run bare stopApp 3/3 plus an intentionally ineffective fake-shell unit case. Generate load only with recorded owned PIDs and remove it afterward.
-- [ ] **Step 8: Demo decision.** If the callback/state fixture proves demo ownership, open and merge a separate minimal landmarks-demo PR before the runner PR; otherwise record that no demo edit was required.
-- [ ] **Step 9: Review and merge.** PR `Use deterministic held swipes and verify Android app lifecycle (L51, L62, L77)`, clean review, CI, squash merge.
+- [x] **Step 1: Write failing L51 tests.** Table-test direction, explicit start/end, element and `engine: adb` forms. The first three must emit W3C held pointer actions with requested duration; only the last may invoke `adb shell input swipe`.
+- [x] **Step 2: Write failing L77 tests.** Exercise bare, scalar and mapping stopApp forms. A zero `am force-stop` exit with the package still running or foreground must return a lifecycle error naming the app; a stopped package clears the crash watch and passes a following not-visible assertion.
+- [x] **Step 3: Write the L62 isolation test.** Replay reveal → stable-bounds reads → tap against a fake hierarchy whose action moves during animation. Assert the runner waits for two identical app-node bounds before tapping. Add a fixture where the app callback fires but state does not change; that result identifies demo ownership without weakening runner assertions.
+- [x] **Step 4: Verify red.** Run `go test ./pkg/driver/uiautomator2/... ./pkg/executor/...`.
+- [x] **Step 5: Implement.** Route non-ADB swipes through the held action builder; add stable target revalidation before the post-swipe action; after force-stop poll exact package/foreground state within a bounded deadline and fail truthfully if it remains.
+- [x] **Step 6: Verify green and regressions.** Run `go test ./pkg/driver/uiautomator2/... ./pkg/executor/... ./pkg/core/...` and `go vet ./pkg/driver/uiautomator2/... ./pkg/executor/... ./pkg/core/...`.
+- [x] **Step 7: Device acceptance.** On owned software and GPU AVDs, run the four L51 forms and retain before/after app-only hierarchy frames; run favorite removal 5/5 on each; run bare stopApp 3/3 plus an intentionally ineffective fake-shell unit case. Generate load only with recorded owned PIDs and remove it afterward.
+- [x] **Step 8: Demo decision.** If the callback/state fixture proves demo ownership, open and merge a separate minimal landmarks-demo PR before the runner PR; otherwise record that no demo edit was required.
+- [x] **Step 9: Review and merge.** PR `Use deterministic held swipes and verify Android app lifecycle (L51, L62, L77)`, clean review, CI, squash merge.
 
 ### Task 3: Runner optional status and empty device validation (L53 runner half, L79)
 

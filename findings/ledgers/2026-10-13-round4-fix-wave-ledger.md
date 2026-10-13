@@ -41,10 +41,10 @@ L51: final four-form B3-L51-four-forms-rerun12 and B2-L03-per-step-hierarchy-rer
 
 | Brief | Task | Failing test | Implementation | Device evidence | PR | CI | Merge |
 |---|---|---|---|---|---|---|---|
-| L51 | 2 | pending | pending | pending | pending | pending | pending |
+| L51 | 2 | initialRED qualified; fixroundRED retained | 59184b9 | bothrenderers reviewed + finalcleanup | runner#25 | CI38419342152 passed | 64dd5188 |
 | L53 | 3 + 4 | pending | pending | pending | pending | pending | pending |
 | L61 | 1 | semantic RED retained fix4-1 | cc0c15a6 | fix4-1 stock4–8 + controls + cleanup | runner#24 | Test/Lint/Build passed | e5cba28c |
-| L62 | 2 | pending | pending | pending | pending | pending | pending |
+| L62 | 2 | initialRED qualified; fixroundRED retained | 59184b9 | bothrenderers reviewed + finalcleanup | runner#25 | CI38419342152 passed | 64dd5188 |
 | L64 | 1 | semantic RED retained fix4-1 | cc0c15a6 | fix4-1 stock4–8 + controls + cleanup | runner#24 | Test/Lint/Build passed | e5cba28c |
 | L65 | 5 | semantic RED fix4-5/unit | a485f7b6 (+ demo19c1aad L66) | fix4-5 final iOS/Android + cleanup; reviewed | cli#209; demo#4 | build-and-test passed | 4231a01a; demo1552ae98 |
 | L66 | 5 | semantic RED fix4-5/unit | a485f7b6 (+ demo19c1aad L66) | fix4-5 final iOS/Android + cleanup; reviewed | cli#209; demo#4 | build-and-test passed | 4231a01a; demo1552ae98 |
@@ -58,7 +58,7 @@ L51: final four-form B3-L51-four-forms-rerun12 and B2-L03-per-step-hierarchy-rer
 | L74 | 6 | pending | pending | pending | pending | pending | pending |
 | L75 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
 | L76 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
-| L77 | 2 | pending | pending | pending | pending | pending | pending |
+| L77 | 2 | initialRED qualified; fixroundRED retained | 59184b9 | bothrenderers reviewed + finalcleanup | runner#25 | CI38419342152 passed | 64dd5188 |
 | L78 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
 | L79 | 3 | pending | pending | pending | pending | pending | pending |
 | L80 | 5 | semantic RED fix4-5/unit | a485f7b6 (+ demo19c1aad L66) | fix4-5 final iOS/Android + cleanup; reviewed | cli#209; demo#4 | build-and-test passed | 4231a01a; demo1552ae98 |
@@ -222,3 +222,5 @@ Task2 final59184 software loaded acceptance complete: literalfavorite5/5 and exa
 Task7Step1 source/spec/quality/evidence APPROVED520ddba0a7074ed2f159c499dbc926ba78c9c7e8 (implementationbfbc6df0, artifacts-placementfollowup520ddba0). ProductionsemanticRED and29compatibilitytests pass; newverification-final closes freshhome/APIunset/finalemptyproofgap. Sourceunchanged in placementfollowup; report/rawmovedbyte-identically offproductbranch. All laterTask7gatesremainpending.
 Task6 CI38418703427 FAILED8assertions in twoDoctorTests because hostdefaultsimulatoris17ProonCI but18Prolocally. Originalsource/review/testevidence preserved; originalimplementerfixing deterministicfull-entryfixtures withoutweakeningliteral18USER-DEFAULT/bothorders/negativecontrols. No mergeuntilreview/newCIgreen.
 Task2finalGPUloadedacceptance5/5favorite+3/3literalstop andcleanup reportedcomplete; independentliveverificationfinalpending. CorrectedAPK5891wasdeletedwithtaskdemo worktree; retainedhash/sourceprovepriorruns, butTask8mustrebuildclean1552ae98withnewartifactprovenance, neverfallbackstaleAPKc7e4.
+
+Task 2: complete (basee5cba28c through59184b9; independent source/spec/quality/live/cleanup approved; package/vet andCI38419342152 Test/Lint/Buildpass; PR25 squashmerged64dd5188b0ba981bd71c0ec9ad3e104def2db5d6 at2026-10-13T15:28:45Z). Raw3,273files archivedwithSHAmanifest, originalfailures/REDstreamqualification preserved. NoTask2owneddevice/process remains. Task3 startsfreshfix4-optional-device branchfix4/optional-device from64dd5188.
