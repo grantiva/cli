@@ -1,0 +1,91 @@
+48-        )
+49-        let body = try XCTUnwrap(yaml.components(separatedBy: "\n---\n").last)
+50-        let steps = try XCTUnwrap(Yams.load(yaml: body) as? [Any])
+51-        let launch = try XCTUnwrap((steps.first as? [String: Any])?["launchApp"] as? [String: Any])
+52-        XCTAssertEqual(launch["arguments"] as? [String: String], ["LANDMARKS_NOTE": "a=b c", "LANDMARKS_SEED": "empty"])
+53-        XCTAssertNil(launch["environment"])
+54-    }
+55-
+56:    private let settle = "- waitForAnimationToEnd:\n    timeout: 5000"
+57-
+58:    // C09: `wait: N` sleeps N seconds; waitForAnimationToEnd is only an upper bound.
+59:    func testWaitStepSleepsUnconditionally() throws {
+60:        let screens = [GrantivaConfig.Screen(name: "Waited", path: .steps([.init(wait: 3)]))]
+61-        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+62-
+63-        XCTAssertTrue(
+64-            yaml.contains("""
+65-                - evalScript:
+66-                    script: "${var grantivaWaitUntil = Date.now() + 3000; while (Date.now() < grantivaWaitUntil) {}}"
+67-                    label: "Wait 3s"
+68-                """),
+--
+96-            ])),
+97-            GrantivaConfig.Screen(name: "Waited", path: .steps([.init(wait: 2)])),
+98-        ]
+99-        let expected = """
+100-            appId: "com.example"
+101-            name: "screens"
+102-            ---
+103-            - launchApp
+104:            - waitForAnimationToEnd:
+105-                timeout: 5000
+106-            - takeScreenshot: "Home"
+107-            - tapOn: "Profile"
+108:            - waitForAnimationToEnd:
+109-                timeout: 5000
+110-            - swipe:
+111-                direction: UP
+112:            - waitForAnimationToEnd:
+113-                timeout: 5000
+114-            - inputText: "abc"
+115:            - waitForAnimationToEnd:
+116-                timeout: 5000
+117-            - assertVisible: "Name"
+118-            - assertNotVisible: "Error"
+119-            - runFlow: "flows/extra.yaml"
+120:            - waitForAnimationToEnd:
+121-                timeout: 5000
+122-            - takeScreenshot: "Profile"
+123-            - evalScript:
+124-                script: "${var grantivaWaitUntil = Date.now() + 2000; while (Date.now() < grantivaWaitUntil) {}}"
+125-                label: "Wait 2s"
+126:            - waitForAnimationToEnd:
+127-                timeout: 5000
+128-            - takeScreenshot: "Waited"
+129-
+130-            """
+131-        XCTAssertEqual(FlowGenerator.generate(screens: screens, bundleId: "com.example"), expected)
+132-    }
+133-
+134-    // A04: a settle wait between each interaction and the next screenshot.
+--
+186-    func testEveryScreenshotIsPrecededByOneSettle() {
+187-        let screens = [
+188-            GrantivaConfig.Screen(name: "Home", path: .launch),
+189-            GrantivaConfig.Screen(name: "Fav", path: .steps([.init(tap: "Favorites")])),
+190-        ]
+191-        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+192-
+193-        XCTAssertTrue(yaml.contains("- launchApp\n\(settle)\n- takeScreenshot: \"Home\""), yaml)
+194:        XCTAssertEqual(yaml.components(separatedBy: "waitForAnimationToEnd").count - 1, 2, yaml)
+195-    }
+196-
+197-    // A13: the mapping form emits a selector with `exact: true`.
+198-    func testExactLabelsEmitExactSelectors() throws {
+199-        let screens = [GrantivaConfig.Screen(name: "Tab", path: .steps([
+200-            .init(tap: "Landmarks", assertVisible: "Lakes", assertNotVisible: "Back", tapExact: true,
+201-                  assertVisibleExact: true, assertNotVisibleExact: true),
+202-            .init(tap: "Lakes"),
+--
+208-        XCTAssertTrue(yaml.contains("- assertNotVisible:\n    text: \"Back\"\n    exact: true\n"), yaml)
+209-        XCTAssertTrue(yaml.contains("- tapOn: \"Lakes\"\n"), yaml)
+210-        XCTAssertEqual(try Array(Yams.compose_all(yaml: yaml)).count, 2)
+211-    }
+212-
+213-    func testExplicitSettleReplacesTheGeneratedOne() {
+214-        let screens = [GrantivaConfig.Screen(name: "S", path: .steps([.init(tap: "Go"), .init(settle: 2)]))]
+215-        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+216:        XCTAssertTrue(yaml.hasSuffix("- tapOn: \"Go\"\n- waitForAnimationToEnd:\n    timeout: 2000\n- takeScreenshot: \"S\"\n"), yaml)
+217-    }
+218-}

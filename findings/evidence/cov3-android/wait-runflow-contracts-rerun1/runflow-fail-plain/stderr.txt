@@ -1,0 +1,69 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov3-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/coverage/14-runflow-fail.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 14-runflow-fail (14-runflow-fail.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+      ▸ Run 14-runflow-sub-fail.yaml
+        ✓ tapOn: text="Deep Links" (805ms)
+        ✗ assertVisible: text="Definitely Missing RunFlow Target" (17.1s)
+          ╰─ context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Mountains → Yosemite Valley", "Caching Demo", "Wifi signal full.,No internet"
+    ✗ runFlow: 14-runflow-sub-fail.yaml (18.1s)
+      ╰─ Element not visible: text='Definitely Missing RunFlow Target' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Mountains → Yosemite Valley", "Caching Demo", "Wifi signal full.,No internet")
+✗ 14-runflow-fail 19.6s
+
+  [1/1] 14-runflow-fail (.maestro/coverage/14-runflow-fail.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✗ runFlow: 14-runflow-sub-fail.yaml (18.1s)
+      ╰─ Element not visible: text='Definitely Missing RunFlow Target' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Mountains → Yosemite Valley", "Caching Demo", "Wifi signal full.,No internet")
+      ✓ tapOn: text="Deep Links" (805ms)
+      ✗ assertVisible: text="Definitely Missing RunFlow Target" (17.1s)
+        ╰─ context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Mountains → Yosemite Valley", "Caching Demo", "Wifi signal full.,No internet"
+    - launchApp (skipped)
+    - runFlow: 14-runflow-sub-fail.yaml (skipped)
+✗ 14-runflow-fail 19.6s
+
+  2 steps passing (19.6s)
+  1 steps failing
+  1 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  14-runflow-fail                ✗ FAIL       4      2      1      1      19.6s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       4      2      1      1      19.6s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+Failure screenshot: .grantiva/run-captures/android/failure-1791881311.png
+Error: Runner failed (exit 1): 14-runflow-fail: runFlow: 14-runflow-sub-fail.yaml: Element not visible: text='Definitely Missing RunFlow Target' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Mountains → Yosemite Valley", "Caching Demo", "Wifi signal full.,No internet")
+Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.

@@ -1,0 +1,76 @@
+Resolved: module=app variant=debug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov3-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/14-runflow.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/wait-runflow-contracts-rerun1/configless-header/report
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 14-runflow (14-runflow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+      ▸ Run 14-runflow-sub.yaml
+        ✓ tapOn: text="Deep Links" (943ms)
+        ✓ assertVisible: text="Caching Demo" (619ms)
+    ✓ runFlow: 14-runflow-sub.yaml (1.6s)
+    ✓ launchApp (1.4s)
+      ▸ Run 14-runflow-sub.yaml
+        ✓ tapOn: text="Deep Links" (797ms)
+        ✓ assertVisible: text="Caching Demo" (645ms)
+    ✓ runFlow: 14-runflow-sub.yaml (1.4s)
+✓ 14-runflow 5.7s
+
+  [1/1] 14-runflow (.maestro/14-runflow.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ runFlow: 14-runflow-sub.yaml (1.6s)
+      ✓ tapOn: text="Deep Links" (943ms)
+      ✓ assertVisible: text="Caching Demo" (619ms)
+    ✓ launchApp (1.4s)
+    ✓ runFlow: 14-runflow-sub.yaml (1.4s)
+      ✓ tapOn: text="Deep Links" (797ms)
+      ✓ assertVisible: text="Caching Demo" (645ms)
+✓ 14-runflow 5.7s
+
+  6 steps passing (5.7s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  14-runflow                     ✓ PASS       6      6      0      0       5.7s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       6      6      0      0       5.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/wait-runflow-contracts-rerun1/configless-header/report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/wait-runflow-contracts-rerun1/configless-header/report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/wait-runflow-contracts-rerun1/configless-header/report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/wait-runflow-contracts-rerun1/configless-header/report/allure-results
+
+  Built by Grantiva
+

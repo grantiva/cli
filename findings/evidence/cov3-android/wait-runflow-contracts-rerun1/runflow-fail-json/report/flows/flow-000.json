@@ -1,0 +1,102 @@
+{
+  "id": "flow-000",
+  "name": "14-runflow-fail",
+  "sourceFile": ".maestro/coverage/14-runflow-fail.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T01:48:33.316483-07:00",
+  "endTime": "2026-10-13T01:48:52.909441-07:00",
+  "duration": 19592,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T01:48:33.321699-07:00",
+      "endTime": "2026-10-13T01:48:34.686699-07:00",
+      "duration": 1365,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "runFlow",
+      "yaml": "runFlow: 14-runflow-sub-fail.yaml",
+      "status": "failed",
+      "startTime": "2026-10-13T01:48:34.687194-07:00",
+      "endTime": "2026-10-13T01:48:52.759194-07:00",
+      "duration": 18072,
+      "error": {
+        "type": "assertion",
+        "message": "Element not visible: text='Definitely Missing RunFlow Target' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: \"Mountains → Yosemite Valley\", \"Caching Demo\", \"Wifi signal full.,No internet\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml"
+      },
+      "subCommands": [
+        {
+          "id": "sub-0",
+          "index": 0,
+          "type": "tapOn",
+          "yaml": "tapOn: text=\"Deep Links\"",
+          "status": "passed",
+          "startTime": "2026-10-13T01:48:34.687478-07:00",
+          "endTime": "2026-10-13T01:48:35.499182-07:00",
+          "duration": 811,
+          "artifacts": {}
+        },
+        {
+          "id": "sub-1",
+          "index": 1,
+          "type": "assertVisible",
+          "yaml": "assertVisible: text=\"Definitely Missing RunFlow Target\"",
+          "status": "failed",
+          "startTime": "2026-10-13T01:48:35.499196-07:00",
+          "endTime": "2026-10-13T01:48:52.601106-07:00",
+          "duration": 17101,
+          "error": {
+            "type": "execution",
+            "message": "context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: \"Mountains → Yosemite Valley\", \"Caching Demo\", \"Wifi signal full.,No internet\""
+          },
+          "artifacts": {
+            "screenshotAfter": "assets/flow-000/nested-000-after.png",
+            "viewHierarchy": "assets/flow-000/nested-000-hierarchy.xml"
+          }
+        }
+      ]
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "skipped",
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "runFlow",
+      "yaml": "runFlow: 14-runflow-sub-fail.yaml",
+      "status": "skipped",
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 6425,
+    "p50": 1365,
+    "p95": 17101,
+    "max": 17101,
+    "slowestType": "assertVisible"
+  },
+  "artifacts": {}
+}

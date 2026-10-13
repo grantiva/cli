@@ -1,0 +1,64 @@
+{
+  "id": "flow-000",
+  "name": "park-landmarks",
+  "sourceFile": ".maestro/park-landmarks.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T01:49:12.816508-07:00",
+  "endTime": "2026-10-13T01:49:14.25685-07:00",
+  "duration": 1440,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T01:49:12.822078-07:00",
+      "endTime": "2026-10-13T01:49:14.191078-07:00",
+      "duration": 1369,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Featured\"",
+      "status": "passed",
+      "startTime": "2026-10-13T01:49:14.19159-07:00",
+      "endTime": "2026-10-13T01:49:14.25559-07:00",
+      "duration": 64,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Featured"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-07ed-0000-003900000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 716,
+    "p50": 64,
+    "p95": 1369,
+    "max": 1369,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}
