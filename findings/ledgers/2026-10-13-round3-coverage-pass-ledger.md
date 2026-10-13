@@ -401,3 +401,12 @@ Ruling: B3-L55.1/.2 input requiring a ready file with a running flow is an expec
 
 - Task4 completed at cov3/ios2b36f0a9 after final owned-device cleanup, not merely at the earlier read-only inventory. Exact U1/U2 normal targeted teardowns return0, both UUIDs are absent afterward, capacity sessions is empty, and no process references either UUID. Both owner simulators remain booted and untouched. CLI083/B-C21.1 remain blocked by that required no-owner-touch guard; no no-simulator call is attempted against them.
 - Task3 retained complete384 effective; Task4 coverage478/478 and final cleanup complete. Task3/4 checklist completion now reflects their retained results, including documented environment blocks. Android and Task6 remain active/pending respectively.
+
+
+### Android timing and lifecycle verification continuation
+
+- Quiet stock99 rerun2 records all three crash-to-failure latencies 0.241–0.381s and artifacts 0.514–0.763s; B2-L02/B2-L05/B3-L05 independently pass. Historical slower results lack qualifying load records and remain preserved as transient observations. First missing-selector HTTP responses are 100–150ms; the seven-second optional polling budget is not first-request latency.
+- New independently confirmed AND3-OBS-01 is filed as L79: the runner reports the optional-miss flow passed, but its command stays failed; CLI reconstruction produces a failed summary and exit1. The brief identifies the command-report/CLI aggregation boundary and requires optional-positive and required-negative controls.
+- K27 actual PTY v2, K32 absent-app v2, N02/K54 MCP build/run, and B3-L14.2 real Gradle cancellation pass reviewed contracts. First K27/K32 harness attempts are preserved with invalid-proxy explanations. Finished evidence is committed at Android10d45714; reviewed source trees remain unchanged.
+- Scroll-renderer v1 supplies six successful full-snapshot runs, three per renderer; default legs never execute because Bash3 rejects the empty array under nounset. Corrected default-only v2 is executing. Unique-hint fixture v2 captures successfully but Android aliases empty-field text to its hint, so it cannot isolate hint matching; a nonempty-text fixture is queued. Both are harness gaps, not product failures.
+- Current base Android coverage445/467 plus the separate AND3-OBS-01 failure. Remaining Android verification, final cleanup, Task6 report/triage, and the required Round4 fix wave remain in scope.
