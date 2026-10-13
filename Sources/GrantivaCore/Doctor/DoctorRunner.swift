@@ -91,7 +91,10 @@ public struct DoctorRunner: Sendable {
     /// "No simulator booted" only when simctl answered and listed none
     /// booted. A list that could not be read says so: the same broken
     /// toolchain would make the ensure fix line fail too.
-    func checkBootedSimulator(simulators: SimulatorManager = .live) async -> DoctorCheck {
+    func checkBootedSimulator(
+        simulators: SimulatorManager = .live,
+        defaultName: String = DefaultSimulator.name
+    ) async -> DoctorCheck {
         let devices: [SimulatorDevice]
         do {
             devices = try await simulators.listDevices()
@@ -106,12 +109,14 @@ public struct DoctorRunner: Sendable {
             )
         }
         guard let device = devices.first(where: \.isBooted) else {
-            return Self.noBootedSimulatorCheck(devices: devices, createdByGrantiva: simulators.createdUDIDs())
+            return Self.noBootedSimulatorCheck(
+                name: defaultName, devices: devices, createdByGrantiva: simulators.createdUDIDs()
+            )
         }
         var message = "\(device.name) — \(device.runtimeName)"
         let createdByGrantiva = simulators.createdUDIDs()
         if let userDefault = devices.first(where: {
-            $0.name == DefaultSimulator.name && !createdByGrantiva.contains($0.udid)
+            $0.name == defaultName && !createdByGrantiva.contains($0.udid)
         }) {
             message += " (\"\(userDefault.name)\" (\(userDefault.udid)) was not created by Grantiva, so it is not used as the default)"
         }

@@ -290,7 +290,10 @@ final class DoctorTests: XCTestCase {
 
         for devices in ["\(booted),\(userDefault)", "\(userDefault),\(booted)"] {
             let list = #"{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-26-0":["# + devices + "]}}"
-            let check = await DoctorRunner().checkBootedSimulator(simulators: SimulatorManager(execute: { _ in list }))
+            let check = await DoctorRunner().checkBootedSimulator(
+                simulators: SimulatorManager(execute: { _ in list }),
+                defaultName: "iPhone 18 Pro"
+            )
             XCTAssertEqual(check.status, .ok)
             XCTAssertEqual(check.section, .advisory)
             XCTAssertTrue(check.message.contains("iPhone 17 Pro — iOS 26.0"), check.message)
@@ -305,7 +308,10 @@ final class DoctorTests: XCTestCase {
     func testBootedSimulatorOwnershipNoteHasAbsentAndOwnedNegativeControls() async throws {
         let booted = #"{"name":"iPhone 17 Pro","udid":"BOOTED","state":"Booted","isAvailable":true}"#
         let noDefault = #"{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-26-0":["# + booted + "]}}"
-        let ordinary = await DoctorRunner().checkBootedSimulator(simulators: SimulatorManager(execute: { _ in noDefault }))
+        let ordinary = await DoctorRunner().checkBootedSimulator(
+            simulators: SimulatorManager(execute: { _ in noDefault }),
+            defaultName: "iPhone 18 Pro"
+        )
         XCTAssertEqual(ordinary.message, "iPhone 17 Pro — iOS 26.0")
 
         let provenance = SimulatorProvenance(directory: scratch.appendingPathComponent("provenance").path)
@@ -313,10 +319,25 @@ final class DoctorTests: XCTestCase {
         let ownedDefault = #"{"name":"iPhone 18 Pro","udid":"USER-DEFAULT","state":"Shutdown","isAvailable":true}"#
         let list = #"{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-26-0":["# + booted + "," + ownedDefault + "]}}"
         let owned = await DoctorRunner().checkBootedSimulator(
-            simulators: SimulatorManager(execute: { _ in list }, provenance: provenance)
+            simulators: SimulatorManager(execute: { _ in list }, provenance: provenance),
+            defaultName: "iPhone 18 Pro"
         )
         XCTAssertEqual(owned.status, .ok)
         XCTAssertFalse(owned.message.contains("was not created by Grantiva"), owned.message)
+    }
+
+    func testBootedSimulatorCheckCanExerciseBothSupportedDefaultNamesDeterministically() async {
+        for defaultName in ["iPhone 17 Pro", "iPhone 18 Pro"] {
+            let booted = #"{"name":"Other","udid":"BOOTED","state":"Booted","isAvailable":true}"#
+            let defaultDevice = #"{"name":"\#(defaultName)","udid":"USER-DEFAULT","state":"Shutdown","isAvailable":true}"#
+            let list = #"{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-26-0":["# + booted + "," + defaultDevice + "]}}"
+            let check = await DoctorRunner().checkBootedSimulator(
+                simulators: SimulatorManager(execute: { _ in list }),
+                defaultName: defaultName
+            )
+            XCTAssertEqual(check.status, .ok)
+            XCTAssertTrue(check.message.contains(#""\#(defaultName)" (USER-DEFAULT) was not created by Grantiva"#), check.message)
+        }
     }
 
     // A mono-repo's android/ subproject is inside the work tree; advising
