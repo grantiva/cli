@@ -1,0 +1,15 @@
+# Campaign device retirement review
+
+Verdict: APPROVED for the bounded retirement closeout. No unresolved closeout proof remains in this reviewed scope. This is not coverage acceptance or approval of candidate3.
+
+Reviewed retained records in `findings/evidence/round4-coverage/retirement` against `retirement-checklist.md` and its targeted inventory. No device/process commands, builds, tests, or cleanup were executed by this review.
+
+The four exact UUIDs in the checklist each have an immediate inventory capture, UUID-scoped shutdown and delete with exit 0 and no timeout. Comparing pre-simulators.stdout and post-ios.stdout independently gives exactly those four removals, no additions, and no changes to the remaining devices' runtime, UUID, name, type, availability or state. Protected B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C and FE441EE5-BBFC-4981-B68A-59C0DBCE26D6 remain Booted in their original runtimes. The final created/session ledger raw files each contain an empty array.
+
+Android preflight names cov4-android from emulator-5554 and identifies PID 9321 with the recorded start time Tue Oct 13 15:32:25 2026 and exact cov4-android/port5554 qemu arguments. The exact serial-scoped teardown exits 0 and reports killed:true. Subsequent adb inventory is empty; targeted ps exits 1 with empty output, supporting that recorded PID's absence. The stopped extra has no process signal operation. Both exact-name delete commands with explicit JDK21 exit 0 and return deleted:true. The earlier primary delete exits 1 with the missing-Java-runtime diagnostic and remains preserved separately; it is not counted as success. All 26 command records report no timeout or cleanup failure. All 26 identity records agree on expected versus actual frozen executable, four bundle files and installed runner hashes, with the frozen candidate manifest binding; both runner-home variables and API-key-unset metadata are retained.
+
+Final adb devices and forwards are empty, matching the preexisting empty forwards and the planned removal of the only attached campaign emulator. The later `postflight-path-observations.json`, observed 2026-10-13T23:04:15.972937+00:00, closes the initial absence of a retained filesystem postflight: both owned .ini files and both .avd directories have exists:false and isSymlink:false. Protected Pixel registration and config are present, non-symlinks, with hashes matching the checklist baseline. This is explicitly a later observation, not an assertion about an earlier uncaptured instant.
+
+Binding: acceptance.json SHA-256 `8ae9487e0507994070900bfdb18e8864e0142265853452ca382a1529e1ed8eb7`; postflight-path-observations.json SHA-256 `3f5e3cbe46ab2a242841fd0b5b294142d2bc849d331e25f3bc4cc6e2ba9af809`.
+
+Limits: quiescence is controller-attested in authorization.json; this review does not reconstruct unrelated historical actor activity. The retained targeted commands and postflight establish these named resources' retirement and protected-resource preservation at their observation times, not perpetual host quiescence. Original source-window Swift failure and incomplete campaign coverage remain unchanged.
