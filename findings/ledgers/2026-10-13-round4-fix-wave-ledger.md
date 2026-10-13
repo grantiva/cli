@@ -80,3 +80,11 @@ Ruling: Task 5 may minimally integrate the serialized transport in ValidatingTra
 Task 7 preflight: iOS 26.0 and 27.0 installed; 26.2/26.4 missing. Started additive Xcode runtime download for 26.2. Old copied 26.0 cache directories cannot satisfy the reviewed Round 4 regeneration requirement. No packaging starts with this blocker unresolved.
 
 Ruling: L78 may identify simulator-side log children with a unique per-run UUID predicate tautology plus exact executable/device association — xcrun ancestry is not reliable after reparenting — validate predicate on an owned device and prove unrelated stream survives; termination timeout must remain truthful.
+
+Ruling: Task 1 routes nested failure capture through the same bounded collector, retaining nested attachment names — otherwise runFlow/retry would retain the original serial delay — add a focused nested regression.
+
+## Device reservation (no identity assigned until creation)
+
+Task 1 owns the next Android window: fix4-1-android / session fix4-1, mktemp scratch APFS clone of owner runner home, load1 <15 for measurements. Task 5 owns next iOS window: fix4-5-ios-26 / session fix4-5, independently cloned runner home; Android waits for Task 1 cleanup. Task 4 has no device reservation yet. Frozen QA candidate remains untouched. All agents report actual IDs/PIDs and raw cleanup; owner devices are excluded.
+
+Task 7 runtime prerequisite resolved: Xcode installed iOS 26.2 (23C54) and 26.4 (23E244), exit 0 each. All required 26.0/26.2/26.4/27.0 now available. Post-install owner booted identity/state inventory unchanged; raw logs and summary in findings/evidence/fix4-controller/runtime-downloads/. WDA cache regeneration still awaits merged fix heads.
