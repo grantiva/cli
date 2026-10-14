@@ -1,0 +1,11 @@
+# Candidate 5 source-evidence map
+
+Status: **proposed until the immutable candidate 5 manifest is frozen**. This map assigns no runtime verdict and transfers no candidate 4 public/live result.
+
+The fresh candidate 5 Swift full suite is `findings/evidence/fix6-L87-package/swift-full/`: exit 0 with 2,027 passing tests, isolated runner home, API key unset, stdout SHA-256 `96e0e82c1b8ac6eec5d975c8a465ea46efa9cdee9675fa81476e97ca591ef552`. Mechanical matching against the approved source-window inventory found all 63 references to its 58 unique named tests with explicit passing records. It therefore supplies the current-tree execution half for the same Swift source groups: L53, L67, L74, L75, L81, L82, L84, L85, PC.5 and EJ.3. Commit `5de5f36…` changes only two runner archives, the RunnerManager version constant, and the matching two test expectation strings from functional baseline `73cfa99…`; the full suite includes the updated RunnerManager assertion.
+
+The runner proof is new, not inherited: reviewed `9c18b962…` and squash merge `d98b088…` share tree `060236c…`. `fix6-L87-source/source-proof.json` binds the L87 focused regression, package test, full Go and vet passes; `merge-acceptance.json` binds CI and tree equality. The only runner paths changed from candidate 4 are `pkg/driver/wda/driver.go` and two WDA test files. The old exact focused commands for L53, L83 and PC.9–PC.13 target unchanged packages/files and may be structurally joined with the new full/vet proof after the frozen-manifest disposition; they are not new runtime passes. The old scratch-built runner is not a candidate 5 runtime artifact and cannot satisfy a frozen-binary/public clause.
+
+Unchanged README/docs/demo inspections for L70, L74 and the source half of L85.4 may be rebound only after candidate 5 rehash confirms byte identity. Their runtime or migration-provenance halves remain separate.
+
+Every mixed row remains partial until its literal public/live clause is freshly captured. This includes L53 frozen-binary/live behavior, L67 doctor/run, L74.4 session JSON, L75 public cycles, L81 live doctor, L82 attachments, L84 orphans, L85.4 semantic retention, PC.5 running-to-passed, EJ.3 both platforms, AND-111 compile/shutdown, L87 stock run/diff, and the final L85.5 campaign join. The JSON companion contains the exact proposed row lists and proof paths.
