@@ -4,6 +4,7 @@
 
 ### Fixed
 
+- Concurrent detached runner starts now use independent diagnostic logs instead of sharing a second-based temporary filename.
 - Android emulator selection waits for the operating system to finish booting when ADB already reports the emulator as connected.
 
 ## 2.1.0
