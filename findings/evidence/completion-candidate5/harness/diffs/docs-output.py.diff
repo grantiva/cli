@@ -1,0 +1,19 @@
+--- completion-candidate4/harness/docs-output.py
++++ completion-candidate5/harness/docs-output.py
+@@ -2,13 +2,13 @@
+ from pathlib import Path
+ import argparse,hashlib,json,os,re,subprocess,time,shutil
+ p=argparse.ArgumentParser();p.add_argument('--output',required=True);a=p.parse_args()
+-r=Path('/Users/kyle/Developer/grantiva-cli/.worktrees/regression');e=r/'findings/evidence/completion-candidate4'
++r=Path('/Users/kyle/Developer/grantiva-cli/.worktrees/regression');e=r/'findings/evidence/completion-candidate5'
+ c=json.loads((e/'candidate.json').read_text());state=json.loads((e/'initial-state.json').read_text());s=Path(state['scratch']);src=Path(c['cli']['repoPath']);b=Path(c['cli']['binary']['path']);o=Path(a.output).resolve();o.mkdir(parents=True,exist_ok=False)
+ def save(path,data):path.write_text(json.dumps(data,indent=2)+'\n')
+ assert hashlib.sha256(b.read_bytes()).hexdigest()==c['cli']['binary']['sha256']
+-env=os.environ.copy();env.pop('GRANTIVA_API_KEY',None);env.pop('GRANTIVA_PLATFORM',None);env.update(GRANTIVA_RUNNER_HOME=state['runnerHome'],MAESTRO_RUNNER_HOME=state['runnerHome'],GRANTIVA_SESSION_ID='completion-candidate4')
++env=os.environ.copy();env.pop('GRANTIVA_API_KEY',None);env.pop('GRANTIVA_PLATFORM',None);env.update(GRANTIVA_RUNNER_HOME=state['runnerHome'],MAESTRO_RUNNER_HOME=state['runnerHome'],GRANTIVA_SESSION_ID='completion-candidate5')
+ def run(label,argv,cwd=s,extra=None):
+- d=o/label;d.mkdir(parents=True,exist_ok=False);v={**env,**(extra or {})};m={'argv':list(map(str,argv)),'cwd':str(cwd),'start':time.time(),'apiEnvironmentUnset':True,'runnerHome':v['GRANTIVA_RUNNER_HOME'],'session':'completion-candidate4'};save(d/'start.json',m)
++ d=o/label;d.mkdir(parents=True,exist_ok=False);v={**env,**(extra or {})};m={'argv':list(map(str,argv)),'cwd':str(cwd),'start':time.time(),'apiEnvironmentUnset':True,'runnerHome':v['GRANTIVA_RUNNER_HOME'],'session':'completion-candidate5'};save(d/'start.json',m)
+  with (d/'stdout.log').open('wb') as so,(d/'stderr.log').open('wb') as se:p=subprocess.run(m['argv'],cwd=cwd,env=v,stdout=so,stderr=se,timeout=1200)
+  m.update(exit=p.returncode,end=time.time());save(d/'result.json',m);assert p.returncode==0,(label,p.returncode);return (d/'stdout.log').read_text()
+ helpdir=o/'help';helpdir.mkdir();queue=[[]];seen=set();rows=[]

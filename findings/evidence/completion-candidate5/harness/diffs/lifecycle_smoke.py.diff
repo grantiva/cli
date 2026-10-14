@@ -1,0 +1,22 @@
+--- completion-candidate4/harness/lifecycle_smoke.py
++++ completion-candidate5/harness/lifecycle_smoke.py
+@@ -855,7 +855,7 @@
+     p.add_argument("--ownership-manifest", type=Path, required=True)
+     p.add_argument("--project", type=Path, required=True)
+     p.add_argument("--runner-home", type=Path, required=True)
+-    p.add_argument("--session-id", default="completion-candidate4")
++    p.add_argument("--session-id", default="completion-candidate5")
+     p.add_argument("--ios-udid", required=True)
+     p.add_argument("--android-serial", required=True)
+     p.add_argument("--android-avd", required=True)
+@@ -884,8 +884,8 @@
+         errors.append("protected iOS owner device cannot be a smoke target")
+     if ns.android_avd in PROTECTED_AVDS:
+         errors.append("protected Android owner AVD cannot be a smoke target")
+-    if ns.session_id != "completion-candidate4":
+-        errors.append("Task 8 session must be literal completion-candidate4")
++    if ns.session_id != "completion-candidate5":
++        errors.append("Task 8 session must be literal completion-candidate5")
+     phases = ns.phase or list(PHASES[:-1])
+     if "force-teardown" in phases and (len(phases) != 1 or not ns.allow_force_reclaim_owned_ios):
+         errors.append("force-teardown must run alone with --allow-force-reclaim-owned-ios")

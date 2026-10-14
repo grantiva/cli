@@ -1,0 +1,11 @@
+--- completion-candidate4/run-smoke-phase.py
++++ completion-candidate5/run-smoke-phase.py
+@@ -1,7 +1,7 @@
+ from pathlib import Path
+ import json,subprocess,os,time,sys,hashlib
+ root=Path(__file__).resolve().parent;plans=json.loads((root/'harness/argv-bound.json').read_text());key=sys.argv[1];args=plans['invocations'][key];extra=sys.argv[2:];args=args+extra
+-assert hashlib.sha256((root/'candidate.json').read_bytes()).hexdigest()=='714715a6890ae340395083e195eecfa3d95e28abdc102e69e7c66533dea5c783'
++assert hashlib.sha256((root/'candidate.json').read_bytes()).hexdigest()=='191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c'
+ assert all('PENDING' not in str(a) for a in args)
+ label=key+('-validate' if '--validate-only' in extra else '');d=root/'invocations'/label;d.mkdir(parents=True,exist_ok=False)
+ env=os.environ.copy();env.pop('GRANTIVA_API_KEY',None);env.update({k:v for k,v in plans['environment'].items() if k!='GRANTIVA_API_KEY'});env.update(JAVA_HOME='/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home',ANDROID_HOME='/Users/kyle/Library/Android/sdk',ANDROID_SDK_ROOT='/Users/kyle/Library/Android/sdk');env['PATH']='/Users/kyle/Library/Android/sdk/platform-tools:'+env.get('PATH','')

@@ -1,0 +1,26 @@
+--- completion-candidate4/provision.py
++++ completion-candidate5/provision.py
+@@ -7,16 +7,16 @@
+  with (d/'stdout.raw').open('wb') as so,(d/'stderr.raw').open('wb') as se:p=subprocess.run(args,cwd=s['scratch'],env=env,stdin=subprocess.DEVNULL,stdout=so,stderr=se,timeout=timeout)
+  (d/'result.json').write_text(json.dumps({'exit':p.returncode,'start':start,'end':time.time()},indent=2));assert p.returncode==0,(label,p.returncode)
+  return (d/'stdout.raw').read_text(),start
+-raw,_=run('ios-before',['xcrun','simctl','list','devices','--json']);devices=[d for ds in json.loads(raw)['devices'].values() for d in ds];assert not any(d['name']=='smoke4-c4-ios' for d in devices)
+-raw,_=run('android-before',[sdk/'platform-tools/adb','devices']);assert 'emulator-5580' not in raw
+-name='smoke4-c4-android';assert not (Path('/Users/kyle/.android/avd')/(name+'.ini')).exists()
++raw,_=run('ios-before',['xcrun','simctl','list','devices','--json']);devices=[d for ds in json.loads(raw)['devices'].values() for d in ds];assert not any(d['name']=='smoke5-c5-ios' for d in devices)
++raw,_=run('android-before',[sdk/'platform-tools/adb','devices']);assert 'emulator-5582' not in raw
++name='smoke5-c5-android';assert not (Path('/Users/kyle/.android/avd')/(name+'.ini')).exists()
+ run('forwards-before',[sdk/'platform-tools/adb','forward','--list'])
+ own={'schema':'grantiva.task8.ownership.v1','sessionId':s['session'],'devices':{}}
+-iosargs=['xcrun','simctl','create','smoke4-c4-ios','com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro','com.apple.CoreSimulator.SimRuntime.iOS-26-0'];raw,t=run('ios-create',iosargs);uid=raw.strip();assert uid not in {d['udid'] for d in devices}
+-own['devices']['ios']={'platform':'ios','id':uid,'name':'smoke4-c4-ios','runtime':'com.apple.CoreSimulator.SimRuntime.iOS-26-0','owned':True,'createdEpoch':t,'provision':{'command':iosargs,'exit':0},'ownedPIDs':[]};(OUT/'ownership-pending-ios.json').write_text(json.dumps(own,indent=2))
++iosargs=['xcrun','simctl','create','smoke5-c5-ios','com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro','com.apple.CoreSimulator.SimRuntime.iOS-26-0'];raw,t=run('ios-create',iosargs);uid=raw.strip();assert uid not in {d['udid'] for d in devices}
++own['devices']['ios']={'platform':'ios','id':uid,'name':'smoke5-c5-ios','runtime':'com.apple.CoreSimulator.SimRuntime.iOS-26-0','owned':True,'createdEpoch':t,'provision':{'command':iosargs,'exit':0},'ownedPIDs':[]};(OUT/'ownership-pending-ios.json').write_text(json.dumps(own,indent=2))
+ run('ios-boot',['xcrun','simctl','boot',uid]);run('ios-bootstatus',['xcrun','simctl','bootstatus',uid,'-b'],180);run('ios-install',['xcrun','simctl','install',uid,c['demo']['iosApp']['path']]);run('ios-installed',['xcrun','simctl','get_app_container',uid,'com.kylebrowning.Landmarks','app'])
+ args=[str(sdk/'cmdline-tools/latest/bin/avdmanager'),'create','avd','--name',name,'--package','system-images;android-35;google_apis;arm64-v8a','--device','pixel_8'];raw,t=run('android-create',args)
+-own['devices']['android']={'platform':'android','id':'emulator-5580','name':name,'avd':name,'runtime':'API 35','owned':True,'createdEpoch':t,'provision':{'command':args,'exit':0,'javaHome':env['JAVA_HOME']},'ownedPIDs':[]};(OUT/'ownership-pending-android.json').write_text(json.dumps(own,indent=2))
++own['devices']['android']={'platform':'android','id':'emulator-5582','name':name,'avd':name,'runtime':'API 35','owned':True,'createdEpoch':t,'provision':{'command':args,'exit':0,'javaHome':env['JAVA_HOME']},'ownedPIDs':[]};(OUT/'ownership-pending-android.json').write_text(json.dumps(own,indent=2))
+ run('android-launch',['python3',ROOT/'harness/smoke-emulator-launch.py','launch',OUT/'android-process','--timeout','180'],210)
+ launch=json.loads((OUT/'android-process/ownership.json').read_text());own['devices']['android']['ownedPIDs']=[launch['identity']['pid']];own['devices']['android']['launchIdentity']=launch
+-(OUT/'ownership.json').write_text(json.dumps(own,indent=2)+'\n');print(json.dumps({'ios':uid,'android':'emulator-5580','pid':launch['identity']['pid']}),flush=True)
++(OUT/'ownership.json').write_text(json.dumps(own,indent=2)+'\n');print(json.dumps({'ios':uid,'android':'emulator-5582','pid':launch['identity']['pid']}),flush=True)

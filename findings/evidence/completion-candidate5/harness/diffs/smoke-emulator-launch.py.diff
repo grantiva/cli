@@ -1,0 +1,11 @@
+--- completion-candidate4/harness/smoke-emulator-launch.py
++++ completion-candidate5/harness/smoke-emulator-launch.py
+@@ -4,7 +4,7 @@
+ from pathlib import Path
+ 
+ SDK=Path('/Users/kyle/Library/Android/sdk'); EMULATOR=SDK/'emulator/emulator'; ADB=SDK/'platform-tools/adb'; PS=Path('/bin/ps')
+-AVD='smoke4-c4-android'; PORT=5580; SERIAL=f'emulator-{PORT}'
++AVD='smoke5-c5-android'; PORT=5582; SERIAL=f'emulator-{PORT}'
+ 
+ class ProbeFailure(RuntimeError):
+     def __init__(self, record): super().__init__(record.get('error','probe failed')); self.record=record

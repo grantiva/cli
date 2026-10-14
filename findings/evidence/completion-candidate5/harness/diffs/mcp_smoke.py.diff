@@ -1,0 +1,20 @@
+--- completion-candidate4/harness/mcp_smoke.py
++++ completion-candidate5/harness/mcp_smoke.py
+@@ -21,7 +21,7 @@
+ if (pathlib.Path(a.no_session_project)/'.grantiva/session.json').exists(): raise SystemExit('no-session project contains a session')
+ session=json.loads((pathlib.Path(a.project)/'.grantiva/session.json').read_text())
+ if session.get('platform')!=a.platform or a.device not in (session.get('udid'),session.get('device'),session.get('deviceId')): raise SystemExit('active session does not match explicit platform/device')
+-os.environ.update(GRANTIVA_RUNNER_HOME=str(pathlib.Path(a.runner_home).resolve()),MAESTRO_RUNNER_HOME=str(pathlib.Path(a.runner_home).resolve()),GRANTIVA_SESSION_ID='completion-candidate4')
++os.environ.update(GRANTIVA_RUNNER_HOME=str(pathlib.Path(a.runner_home).resolve()),MAESTRO_RUNNER_HOME=str(pathlib.Path(a.runner_home).resolve()),GRANTIVA_SESSION_ID='completion-candidate5')
+ identity=validate_identity(a.candidate_manifest,a.ownership_manifest,source_root=a.source_root,binary=a.binary,bundle=a.bundle,runner=a.runner,runner_home=a.runner_home,platform=a.platform,device=a.device,android_avd=a.android_avd)
+ (root/'provenance.json').write_text(json.dumps({**identity,'binary':str(pathlib.Path(a.binary).resolve()),'runnerHome':str(pathlib.Path(a.runner_home).resolve()),'platform':a.platform,'device':a.device,'project':str(pathlib.Path(a.project).resolve()),'apiKey':'unset'},indent=2)+'\n')
+ checks=[]
+@@ -43,7 +43,7 @@
+     empty=c.tool('grantiva_script',{'steps':[]}); assert good(empty) and 'Final hierarchy:' in c.text(empty)
+     checks.append({'L65ActiveExact':True,'wrongTypeRetained':True,'emptyRetained':True})
+     if a.platform=='ios':
+-        missing=c.tool('grantiva_tap',{'label':'No Such Selector completion-candidate4'}); assert missing['result'].get('isError') and 'Element not found' in c.text(missing)
++        missing=c.tool('grantiva_tap',{'label':'No Such Selector completion-candidate5'}); assert missing['result'].get('isError') and 'Element not found' in c.text(missing)
+         sequence=[('grantiva_tap',{'label':'Favorites'},'Tapped on "Favorites"'),('grantiva_tap',{'label':'heart'},'Tapped on "heart" (matched by identifier). Updated hierarchy:'),('grantiva_tap',{'label':'Landmarks'},'Tapped on "Landmarks"'),('grantiva_tap',{'label':'heart'},'Tapped on "heart" (matched by identifier). Updated hierarchy:'),('grantiva_script',{'steps':[{'tap':'heart'}]},None),('grantiva_tap',{'label':'Deep Links'},'Tapped on "Deep Links"'),('grantiva_tap',{'label':'Edit Landmark'},'Tapped on "Edit Landmark"'),('grantiva_tap',{'label':'Name'},'Tapped on "Name" (matched by placeholder). Updated hierarchy:'),('grantiva_tap',{'label':'Cancel'},'Tapped on "Cancel"'),('grantiva_tap',{'label':'Landmarks'},'Tapped on "Landmarks"'),('grantiva_tap',{'label':'Mountains'},'Tapped on "Mountains"'),('grantiva_tap',{'label':'Mount "Denali"'},'Tapped on "Mount "Denali""')]
+         selector=[]
+         for name,arguments,prefix in sequence:

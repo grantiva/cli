@@ -1,0 +1,14 @@
+from pathlib import Path
+import json,subprocess,os,time,sys,hashlib
+root=Path(__file__).resolve().parent;plans=json.loads((root/'harness/argv-bound.json').read_text());key=sys.argv[1];args=plans['invocations'][key];extra=sys.argv[2:];args=args+extra
+assert hashlib.sha256((root/'candidate.json').read_bytes()).hexdigest()=='191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c'
+assert all('PENDING' not in str(a) for a in args)
+label=key+('-validate' if '--validate-only' in extra else '');d=root/'invocations'/label;d.mkdir(parents=True,exist_ok=False)
+env=os.environ.copy();env.pop('GRANTIVA_API_KEY',None);env.update({k:v for k,v in plans['environment'].items() if k!='GRANTIVA_API_KEY'});env.update(JAVA_HOME='/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home',ANDROID_HOME='/Users/kyle/Library/Android/sdk',ANDROID_SDK_ROOT='/Users/kyle/Library/Android/sdk');env['PATH']='/Users/kyle/Library/Android/sdk/platform-tools:'+env.get('PATH','')
+start=time.time();(d/'start.json').write_text(json.dumps({'argv':args,'cwd':plans['cwd'],'started':start,'environment':{k:env.get(k) for k in ['GRANTIVA_RUNNER_HOME','MAESTRO_RUNNER_HOME','GRANTIVA_SESSION_ID','GRANTIVA_API_KEY','JAVA_HOME','ANDROID_HOME']},'helperSHA256':hashlib.sha256(Path(args[1]).read_bytes()).hexdigest(),'candidateSHA256':hashlib.sha256((root/'candidate.json').read_bytes()).hexdigest(),'ownershipSHA256':hashlib.sha256((root/'provision/ownership.json').read_bytes()).hexdigest()},indent=2))
+timed=False
+with (d/'stdout.raw').open('wb') as so,(d/'stderr.raw').open('wb') as se:
+ try:p=subprocess.run(args,cwd=plans['cwd'],env=env,stdin=subprocess.DEVNULL,stdout=so,stderr=se,timeout=1800);code=p.returncode
+ except subprocess.TimeoutExpired:timed=True;code=None
+(d/'result.json').write_text(json.dumps({'exit':code,'timedOut':timed,'ended':time.time()},indent=2));assert code==0 and not timed,(key,code,timed)
+print(key,'completed',flush=True)

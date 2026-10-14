@@ -1,0 +1,11 @@
+--- completion-candidate4/harness/candidate_identity.py
++++ completion-candidate5/harness/candidate_identity.py
+@@ -64,7 +64,7 @@
+         require(str(pathlib.Path(apk).resolve())==str(pathlib.Path(demo['androidAPK']['path']).resolve()) and file_sha(apk)==demo['androidAPK']['sha256'],'demo APK mismatch')
+     ios_app=demo['iosApp']; require(pathlib.Path(ios_app['path']).is_dir(),'iOS app missing'); verify_files(ios_app['path'],ios_app,'iOS app')
+     if platform and device:
+-        require(own.get('sessionId')=='completion-candidate4','ownership session mismatch'); entry=own['devices'][platform]; require(entry['platform']==platform and entry['id']==device and entry.get('owned') is True and entry.get('createdEpoch') and entry.get('provision'), 'device not controller-owned'); require(entry.get('name') and entry.get('runtime'),'device identity incomplete')
++        require(own.get('sessionId')=='completion-candidate5','ownership session mismatch'); entry=own['devices'][platform]; require(entry['platform']==platform and entry['id']==device and entry.get('owned') is True and entry.get('createdEpoch') and entry.get('provision'), 'device not controller-owned'); require(entry.get('name') and entry.get('runtime'),'device identity incomplete')
+         if platform=='android': require(entry['avd']==android_avd,'owned Android AVD mismatch')
+     return {'candidateManifest':str(cm_path),'candidateManifestSHA256':file_sha(cm_path),'ownershipManifest':str(own_path),'ownershipManifestSHA256':file_sha(own_path),'sourceHEAD':cli['mergedSHA'],'binarySHA256':cli['binary']['sha256'],'bundleManifestSHA256':cli['bundle']['manifestSHA256'],'runnerSourceSHA':rr['sourceSHA'],'runnerSHA256':packaged['sha256'],'installedRunnerSHA256':rr['installed']['sha256'],'runnerInstallStamp':rr['installed']['installStamp'],'demoSourceSHA':cm['demo']['sourceSHA'],'iosAppManifestSHA256':ios_app['manifestSHA256']}
+ 

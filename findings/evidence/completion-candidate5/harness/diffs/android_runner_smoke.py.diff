@@ -1,0 +1,20 @@
+--- completion-candidate4/harness/android_runner_smoke.py
++++ completion-candidate5/harness/android_runner_smoke.py
+@@ -12,7 +12,7 @@
+ a=ap.parse_args(); root=pathlib.Path(a.evidence).resolve(); inputs=pathlib.Path(a.runner_inputs).resolve(); optional_inputs=pathlib.Path(a.optional_inputs).resolve()
+ for p in (a.binary,a.runner,a.runner_home,a.source_root,a.project,a.apk,a.adb,a.uia2_sampler,a.movement_analyzer,inputs,optional_inputs,a.crash_flow,a.healthy_flow,a.cycle_project,pathlib.Path(a.cycle_project)/a.cycle_flow):
+     if not pathlib.Path(p).exists(): raise SystemExit(f'missing {p}')
+-if a.avd!='smoke4-c4-android': raise SystemExit('expected newly owned smoke4-c4-android AVD')
++if a.avd!='smoke5-c5-android': raise SystemExit('expected newly owned smoke5-c5-android AVD')
+ if sha(a.apk)!=APK_SHA: raise SystemExit('retained Task 3 APK hash mismatch')
+ required=['l51-direction.yaml','l51-element.yaml','l51-coordinates.yaml','l51-engine-adb.yaml','02-favorite.yaml','stop-bare-clearstate.yaml']
+ for name in required:
+@@ -31,7 +31,7 @@
+ if not (sha(installed)==identity['installedRunnerSHA256']==identity['runnerSHA256']==sha(a.runner)): raise SystemExit('installed and packaged runner hash mismatch')
+ if not (installed_home/'drivers/android').is_dir(): raise SystemExit('installed Android drivers missing')
+ adb_parent=str(pathlib.Path(a.adb).resolve().parent)
+-env=os.environ.copy(); env.pop('GRANTIVA_API_KEY',None); env.update(GRANTIVA_RUNNER_HOME=str(runner_home),MAESTRO_RUNNER_HOME=str(installed_home),GRANTIVA_SESSION_ID='completion-candidate4',PATH=adb_parent+os.pathsep+env.get('PATH',os.defpath))
++env=os.environ.copy(); env.pop('GRANTIVA_API_KEY',None); env.update(GRANTIVA_RUNNER_HOME=str(runner_home),MAESTRO_RUNNER_HOME=str(installed_home),GRANTIVA_SESSION_ID='completion-candidate5',PATH=adb_parent+os.pathsep+env.get('PATH',os.defpath))
+ (root/'provenance.json').write_text(json.dumps({**identity,'binary':str(pathlib.Path(a.binary).resolve()),'runner':str(pathlib.Path(a.runner).resolve()),'runnerHome':str(pathlib.Path(a.runner_home).resolve()),'sourceRoot':str(pathlib.Path(a.source_root).resolve()),'project':str(pathlib.Path(a.project).resolve()),'serial':a.serial,'avd':a.avd,'apk':str(pathlib.Path(a.apk).resolve()),'apkSHA256':sha(a.apk),'apiKey':'unset','maestroRunnerHome':str(installed_home),'adbParent':adb_parent},indent=2)+'\n')
+ 
+ def run(label,argv,expected,report=None,timeout=180):
