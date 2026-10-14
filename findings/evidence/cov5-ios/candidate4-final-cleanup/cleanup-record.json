@@ -1,0 +1,91 @@
+{
+  "status": "COMPLETE",
+  "candidateDisposition": "FAILED_INCOMPLETE",
+  "sessionId": "cov5-ios",
+  "authenticatedOwnedPrimaries": [
+    "532523A7-30B3-4048-A538-4F3DB2EFB807",
+    "EED50B5C-119B-4982-A495-4521CAE8494F"
+  ],
+  "commandResults": {
+    "delete-primary27": {
+      "argv": [
+        "xcrun",
+        "simctl",
+        "delete",
+        "EED50B5C-119B-4982-A495-4521CAE8494F"
+      ],
+      "exitStatus": 0,
+      "timedOut": false,
+      "startedAt": "2026-10-14T01:13:40.433941Z",
+      "endedAt": "2026-10-14T01:13:43.626025Z"
+    },
+    "teardown-primary27": {
+      "argv": [
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "simulator",
+        "teardown",
+        "--udid",
+        "EED50B5C-119B-4982-A495-4521CAE8494F",
+        "--force",
+        "--json"
+      ],
+      "exitStatus": 0,
+      "timedOut": false,
+      "startedAt": "2026-10-14T01:13:19.630825Z",
+      "endedAt": "2026-10-14T01:13:19.903968Z"
+    },
+    "teardown-session": {
+      "argv": [
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "simulator",
+        "teardown",
+        "--session-id",
+        "cov5-ios",
+        "--force",
+        "--json"
+      ],
+      "exitStatus": 0,
+      "timedOut": false,
+      "startedAt": "2026-10-14T01:13:36.511577Z",
+      "endedAt": "2026-10-14T01:13:36.869549Z"
+    },
+    "delete-primary26": {
+      "argv": [
+        "xcrun",
+        "simctl",
+        "delete",
+        "532523A7-30B3-4048-A538-4F3DB2EFB807"
+      ],
+      "exitStatus": 0,
+      "timedOut": false,
+      "startedAt": "2026-10-14T01:13:37.082444Z",
+      "endedAt": "2026-10-14T01:13:40.307907Z"
+    },
+    "teardown-primary26": {
+      "argv": [
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "simulator",
+        "teardown",
+        "--udid",
+        "532523A7-30B3-4048-A538-4F3DB2EFB807",
+        "--force",
+        "--json"
+      ],
+      "exitStatus": 0,
+      "timedOut": false,
+      "startedAt": "2026-10-14T01:13:19.020643Z",
+      "endedAt": "2026-10-14T01:13:19.315872Z"
+    }
+  },
+  "postconditions": {
+    "ownedPrimaryUUIDsPhysicallyAbsent": true,
+    "staleUUIDPhysicallyAbsentBeforeLedgerEdit": true,
+    "removedOnlyStaleCreatedRecord": "7833CD8F-7289-465C-9817-EFBFEE58F5AB",
+    "sessionsEmpty": true,
+    "createdLedgerEmpty": true,
+    "ownedWorkersAbsent": true,
+    "protected26Booted": "B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C",
+    "protected27Booted": "FE441EE5-BBFC-4981-B68A-59C0DBCE26D6"
+  },
+  "qualification": "Per-UDID teardown removed device homes but retained session ownership until the scoped session teardown. The session teardown completed 0 and the subsequent exact-UUID simctl deletes completed 0. Final inventories prove physical absence and empty campaign session/created ledgers."
+}
