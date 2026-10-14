@@ -1,0 +1,67 @@
+Resolved: module=app variant=freeDebug device=cov6-android screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov6-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: /private/tmp/grantiva-cov6-android-core.7qf7q6/.maestro/03-edit.yaml
+
+  grantiva-runner 1.1.28-grantiva.16 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 03-edit (03-edit.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Deep Links" (790ms)
+    ✓ tapOn: text="Edit Landmark" (748ms)
+    ✓ assertVisible: text="Edit Landmark" (644ms)
+    ✓ tapOn: text="Name" (156ms)
+    ✓ inputText: " Renamed" (2.0s)
+    ✓ tapOn: text="Done" (255ms)
+    ✓ assertVisible: text="Golden Gate Bridge Renamed" (704ms)
+    ✓ takeScreenshot (125ms)
+✓ 03-edit 6.9s
+
+  [1/1] 03-edit (/private/tmp/grantiva-cov6-android-core.7qf7q6/.maestro/03-edit.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Deep Links" (790ms)
+    ✓ tapOn: text="Edit Landmark" (748ms)
+    ✓ assertVisible: text="Edit Landmark" (644ms)
+    ✓ tapOn: text="Name" (156ms)
+    ✓ inputText: " Renamed" (2.0s)
+    ✓ tapOn: text="Done" (255ms)
+    ✓ assertVisible: text="Golden Gate Bridge Renamed" (704ms)
+    ✓ takeScreenshot (125ms)
+✓ 03-edit 6.9s
+
+  9 steps passing (6.9s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  03-edit                        ✓ PASS       9      9      0      0       6.9s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       9      9      0      0       6.9s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+

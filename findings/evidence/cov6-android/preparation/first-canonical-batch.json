@@ -1,0 +1,121 @@
+{
+  "candidateManifestSHA256": "191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c",
+  "totalAndroidKeys": 522,
+  "firstCanonicalEntries": [
+    {
+      "key": "AND-106",
+      "baseId": "AND-106",
+      "matrixLine": 535,
+      "command": "`run --no-build`",
+      "precondition": "stock set",
+      "expected": "12/12 pass incl. 02-favorite (swipe reveals Remove) and 03-edit (append), exit 0 (brief R01, R02; plan Task 5 Step 1)"
+    },
+    {
+      "key": "AND-107",
+      "baseId": "AND-107",
+      "matrixLine": 536,
+      "command": "`run --flow`",
+      "precondition": "`.maestro/99-crash.yaml`",
+      "expected": "Fails with `app_crash` (`crashed on launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH`) at `launchApp` or at the first step after it; the dead app must not pass any step. Record time to failure (brief R01 criterion 3; B2-L02 requires the first-assert outcome; fix round 1 re-grade, was M25) (corrected round 3)"
+    },
+    {
+      "key": "AND-108",
+      "baseId": "AND-108",
+      "matrixLine": 537,
+      "command": "`diff capture`",
+      "precondition": "five configured screens",
+      "expected": "5/5; Lakes and Detail are the right screens (docs/android.md:68-76)"
+    },
+    {
+      "key": "AND-001",
+      "baseId": "AND-001",
+      "matrixLine": 543,
+      "command": "`emulator ensure`",
+      "precondition": "`--name cov-android` (AVD missing, image installed)",
+      "expected": "Creates (`avdmanager create avd -d pixel_8`), boots, prints only the serial (docs/android.md:166, 173-175)"
+    },
+    {
+      "key": "AND-002",
+      "baseId": "AND-002",
+      "matrixLine": 544,
+      "command": "`emulator ensure`",
+      "precondition": "`--name cov-android-2 --system-image <an image not installed>`",
+      "expected": "Installs it with `sdkmanager`, then creates and boots; `blocked` if no small uninstalled image is available (docs/android.md:173)"
+    },
+    {
+      "key": "AND-003",
+      "baseId": "AND-003",
+      "matrixLine": 545,
+      "command": "`emulator ensure`",
+      "precondition": "same name again",
+      "expected": "Reuses; same serial (help: emulator_ensure.txt)"
+    },
+    {
+      "key": "AND-004",
+      "baseId": "AND-004",
+      "matrixLine": 546,
+      "command": "`emulator ensure`",
+      "precondition": "`--name cov-android-2 --no-boot`",
+      "expected": "Created, not booted; stdout is the AVD name (docs/android.md:167)"
+    },
+    {
+      "key": "AND-005",
+      "baseId": "AND-005",
+      "matrixLine": 547,
+      "command": "`emulator ensure`",
+      "precondition": "`--headless`",
+      "expected": "No window (`-no-window`) (help: emulator_ensure.txt)"
+    },
+    {
+      "key": "AND-006",
+      "baseId": "AND-006",
+      "matrixLine": 548,
+      "command": "`emulator ensure`",
+      "precondition": "no `--name`, config `emulator: cov-android`",
+      "expected": "Uses the configured AVD (help: emulator_ensure.txt)"
+    },
+    {
+      "key": "AND-007",
+      "baseId": "AND-007",
+      "matrixLine": 549,
+      "command": "`emulator ensure`",
+      "precondition": "no `--system-image`, no config value",
+      "expected": "`system-images;android-35;google_apis;arm64-v8a` (docs/android.md:174-175)"
+    },
+    {
+      "key": "AND-008",
+      "baseId": "AND-008",
+      "matrixLine": 550,
+      "command": "`emulator ensure --json`",
+      "precondition": "none",
+      "expected": "Valid JSON record (help: emulator_ensure.txt)"
+    },
+    {
+      "key": "AND-009",
+      "baseId": "AND-009",
+      "matrixLine": 551,
+      "command": "`emulator sessions`",
+      "precondition": "`--json`",
+      "expected": "Lists the emulators Grantiva started (docs/android.md:168)"
+    }
+  ],
+  "executionRouting": {
+    "intro": [
+      "AND-106",
+      "AND-107",
+      "AND-108"
+    ],
+    "initialLifecycle": [
+      "AND-001",
+      "AND-002",
+      "AND-003",
+      "AND-004",
+      "AND-005",
+      "AND-006",
+      "AND-007",
+      "AND-008",
+      "AND-009"
+    ],
+    "note": "Canonical entries 106-108 require an allocated, booted primary with the frozen APK and prepared stock scratch config. AND-001 requires the allocated primary AVD name to be absent. Root must schedule these as separate prerequisite-compatible legs while verdict publication retains canonical key order."
+  }
+}

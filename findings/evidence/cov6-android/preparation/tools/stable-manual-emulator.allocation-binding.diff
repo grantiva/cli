@@ -1,0 +1,11 @@
+--- findings/evidence/cov6-android/preparation/tools/stable-manual-emulator.before-allocation-binding.py	2026-10-13 18:54:34
++++ findings/evidence/cov6-android/preparation/tools/stable-manual-emulator.py	2026-10-13 19:22:42
+@@ -4,7 +4,7 @@
+ from pathlib import Path
+ 
+ SDK=Path('/Users/kyle/Library/Android/sdk'); EMULATOR=SDK/'emulator/emulator'; ADB=SDK/'platform-tools/adb'; PS=Path('/bin/ps')
+-AVD='PENDING_ROOT_ALLOCATED_EXTRA_AVD'; PORT=0; SERIAL=f'emulator-{PORT}'
++AVD='cov6-android-2'; PORT=0; SERIAL=f'emulator-{PORT}'
+ 
+ class ProbeFailure(RuntimeError):
+     def __init__(self, record): super().__init__(record.get('error','probe failed')); self.record=record

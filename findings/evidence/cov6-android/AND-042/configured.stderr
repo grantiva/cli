@@ -1,0 +1,417 @@
+Resolved: module=app variant=freeDebug device=cov6-android screens=5 flows=12
+Preparing runner...
+Runner ready
+Using emulator: cov6-android (emulator-5554)
+Build finished: success=true duration=0.5s
+Installing com.kylebrowning.landmarks...
+Capturing 5 screen(s), then running 12 flow(s)...
+
+  grantiva-runner 1.1.28-grantiva.16 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] screens (grantiva-android.yml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.3s)
+    ✓ extendedWaitUntil: visible text=".+" (115ms)
+    ✓ waitForAnimationToEnd (340ms)
+    ✓ takeScreenshot (121ms)
+    ✓ tapOn: text="Favorites" (195ms)
+    ✓ waitForAnimationToEnd (626ms)
+    ✓ takeScreenshot (118ms)
+    ✓ tapOn: text="Deep Links" (151ms)
+    ✓ waitForAnimationToEnd (362ms)
+    ✓ takeScreenshot (125ms)
+    ✓ tapOn: text="Landmarks" (243ms)
+    ✓ waitForAnimationToEnd (357ms)
+    ✓ tapOn: text="Lakes" (374ms)
+    ✓ waitForAnimationToEnd (640ms)
+    ✓ takeScreenshot (124ms)
+    ✓ tapOn: text="Landmarks" (167ms)
+    ✓ waitForAnimationToEnd (658ms)
+    ✓ tapOn: text="Golden Gate Bridge" (209ms)
+    ✓ waitForAnimationToEnd (359ms)
+    ✓ assertVisible: text="Plan Visit" (53ms)
+    ✓ waitForAnimationToEnd (342ms)
+    ✓ takeScreenshot (123ms)
+✓ screens 7.2s
+
+  [1/1] screens (grantiva-android.yml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.3s)
+    ✓ Wait for the app to draw (115ms)
+    ✓ waitForAnimationToEnd (340ms)
+    ✓ takeScreenshot (121ms)
+    ✓ tapOn: text="Favorites" (195ms)
+    ✓ waitForAnimationToEnd (626ms)
+    ✓ takeScreenshot (118ms)
+    ✓ tapOn: text="Deep Links" (151ms)
+    ✓ waitForAnimationToEnd (362ms)
+    ✓ takeScreenshot (125ms)
+    ✓ tapOn: text="Landmarks" (243ms)
+    ✓ waitForAnimationToEnd (357ms)
+    ✓ tapOn: text="Lakes" (374ms)
+    ✓ waitForAnimationToEnd (640ms)
+    ✓ takeScreenshot (124ms)
+    ✓ tapOn: text="Landmarks" (167ms)
+    ✓ waitForAnimationToEnd (658ms)
+    ✓ tapOn: text="Golden Gate Bridge" (209ms)
+    ✓ waitForAnimationToEnd (359ms)
+    ✓ assertVisible: text="Plan Visit" (53ms)
+    ✓ waitForAnimationToEnd (342ms)
+    ✓ takeScreenshot (123ms)
+✓ screens 7.2s
+
+  22 steps passing (7.2s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  screens                        ✓ PASS      22     22      0      0       7.2s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      22     22      0      0       7.2s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+Running the flows in one UIAutomator2 session: .maestro/01-browse.yaml, .maestro/02-favorite.yaml, .maestro/03-edit.yaml, .maestro/04-discard.yaml, .maestro/05-category.yaml, .maestro/06-visit.yaml, .maestro/07-deeplink.yaml, .maestro/08-caching.yaml, .maestro/09-seed-empty.yaml, .maestro/10-seed-many.yaml, .maestro/11-slow.yaml, .maestro/12-quote-label.yaml
+
+  grantiva-runner 1.1.28-grantiva.16 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 12 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/12] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ assertVisible: text="Landmarks" (84ms)
+    ✓ assertVisible: text="Featured" (572ms)
+    ✓ takeScreenshot (129ms)
+    ✓ tapOn: text="Golden Gate Bridge" (167ms)
+    ✓ assertVisible: text="San Francisco, CA" (644ms)
+    ✓ assertVisible: text="Plan Visit" (26ms)
+    ✓ takeScreenshot (119ms)
+✓ 01-browse 3.2s
+
+  [2/12] 02-favorite (02-favorite.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Lake Tahoe" (805ms)
+    ✓ tapOn: text="Favorite" (1.2s)
+    ✓ assertVisible: text="Unfavorite" (104ms)
+    ✓ tapOn: text="Landmarks" (113ms)
+    ✓ tapOn: text="Favorites" (732ms)
+    ✓ assertVisible: text="Lake Tahoe" (567ms)
+    ✓ takeScreenshot (116ms)
+    ✓ swipe: LEFT from text="Lake Tahoe" (716ms)
+    ✓ tapOn: text="Remove from favorites" (346ms)
+    ✓ assertNotVisible: text="Lake Tahoe" (674ms)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (22ms)
+    ✓ takeScreenshot (120ms)
+✓ 02-favorite 6.9s
+
+  [3/12] 03-edit (03-edit.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Deep Links" (790ms)
+    ✓ tapOn: text="Edit Landmark" (749ms)
+    ✓ assertVisible: text="Edit Landmark" (645ms)
+    ✓ tapOn: text="Name" (123ms)
+    ✓ inputText: " Renamed" (2.5s)
+    ✓ tapOn: text="Done" (239ms)
+    ✓ assertVisible: text="Golden Gate Bridge Renamed" (675ms)
+    ✓ takeScreenshot (124ms)
+✓ 03-edit 7.2s
+
+  [4/12] 04-discard (04-discard.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Deep Links" (783ms)
+    ✓ tapOn: text="Edit Landmark" (750ms)
+    ✓ tapOn: text="Location" (750ms)
+    ✓ inputText: "X" (1.5s)
+    ✓ tapOn: text="Cancel" (254ms)
+    ✓ assertVisible: text="You have unsaved changes that will be lost." (700ms)
+    ✓ takeScreenshot (144ms)
+    ✓ tapOn: text="Keep Editing" (580ms)
+    ✓ assertVisible: text="Edit Landmark" (692ms)
+    ✓ tapOn: text="Cancel" (769ms)
+    ✓ tapOn: text="Discard" (1.4s)
+    ✓ assertVisible: text="Deep Links" (615ms)
+✓ 04-discard 10.4s
+
+  [5/12] 05-category (05-category.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Lakes" (818ms)
+    ✓ assertVisible: text="Lake Tahoe" (611ms)
+    ✓ assertVisible: text="Mono Lake" (27ms)
+    ✓ assertNotVisible: text="Golden Gate Bridge" (104ms)
+    ✓ takeScreenshot (123ms)
+✓ 05-category 3.1s
+
+  [6/12] 06-visit (06-visit.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Half Dome" (791ms)
+    ✓ tapOn: text="Plan Visit" (727ms)
+    ✓ assertVisible: text="Visit Scheduled!" (68ms)
+    ✓ assertVisible: text="You're all set to visit Half Dome." (48ms)
+    ✓ takeScreenshot (122ms)
+    ✓ tapOn: text="Done" (109ms)
+    ✓ assertVisible: text="Half Dome" (83ms)
+✓ 06-visit 3.4s
+
+  [7/12] 07-deeplink (07-deeplink.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Deep Links" (800ms)
+    ✓ tapOn: text="landmarks://category/lakes" (726ms)
+    ✓ assertVisible: text="Mono Lake" (631ms)
+    ✓ takeScreenshot (129ms)
+✓ 07-deeplink 3.7s
+
+  [8/12] 08-caching (08-caching.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Deep Links" (786ms)
+    ✓ tapOn: text="Caching Demo" (749ms)
+    ✓ assertVisible: text="Cache Policy" (645ms)
+    ✓ tapOn: text="Fetch with Policy" (138ms)
+    ✓ takeScreenshot (125ms)
+    ✓ tapOn: text="Clear Cache" (139ms)
+✓ 08-caching 4.0s
+
+  [9/12] 09-seed-empty (09-seed-empty.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.5s)
+    ✓ assertVisible: text="No landmarks yet" (52ms)
+    ✓ takeScreenshot (123ms)
+✓ 09-seed-empty 1.6s
+
+  [10/12] 10-seed-many (10-seed-many.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.3s)
+    ✓ scroll: DOWN (1.6s)
+    ✓ scroll: DOWN (1.1s)
+    ✓ scroll: DOWN (1.1s)
+    ✓ scroll: DOWN (1.0s)
+    ✓ assertVisible: text="Landmark 28" (53ms)
+    ✓ takeScreenshot (124ms)
+✓ 10-seed-many 6.2s
+
+  [11/12] 11-slow (11-slow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Deep Links" (779ms)
+    ✓ tapOn: text="Slow Screen" (731ms)
+    ✓ assertVisible: text="Loading…" (640ms)
+    ✓ extendedWaitUntil: visible text="Loaded after delay" (2.4s)
+    ✓ takeScreenshot (124ms)
+✓ 11-slow 6.1s
+
+  [12/12] 12-quote-label (12-quote-label.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Mountains" (788ms)
+    ✓ tapOn: text="Mount "Denali"" (734ms)
+    ✓ assertVisible: text="Alaska" (71ms)
+    ✓ takeScreenshot (124ms)
+✓ 12-quote-label 3.2s
+
+  [1/12] 01-browse (.maestro/01-browse.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ assertVisible: text="Landmarks" (84ms)
+    ✓ assertVisible: text="Featured" (572ms)
+    ✓ takeScreenshot (129ms)
+    ✓ tapOn: text="Golden Gate Bridge" (167ms)
+    ✓ assertVisible: text="San Francisco, CA" (644ms)
+    ✓ assertVisible: text="Plan Visit" (26ms)
+    ✓ takeScreenshot (119ms)
+✓ 01-browse 3.2s
+
+  [2/12] 02-favorite (.maestro/02-favorite.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Lake Tahoe" (805ms)
+    ✓ tapOn: text="Favorite" (1.2s)
+    ✓ assertVisible: text="Unfavorite" (104ms)
+    ✓ tapOn: text="Landmarks" (113ms)
+    ✓ tapOn: text="Favorites" (732ms)
+    ✓ assertVisible: text="Lake Tahoe" (567ms)
+    ✓ takeScreenshot (116ms)
+    ✓ swipe: LEFT from text="Lake Tahoe" (716ms)
+    ✓ tapOn: text="Remove from favorites" (346ms)
+    ✓ assertNotVisible: text="Lake Tahoe" (674ms)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (22ms)
+    ✓ takeScreenshot (120ms)
+✓ 02-favorite 6.9s
+
+  [3/12] 03-edit (.maestro/03-edit.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Deep Links" (790ms)
+    ✓ tapOn: text="Edit Landmark" (749ms)
+    ✓ assertVisible: text="Edit Landmark" (645ms)
+    ✓ tapOn: text="Name" (123ms)
+    ✓ inputText: " Renamed" (2.5s)
+    ✓ tapOn: text="Done" (239ms)
+    ✓ assertVisible: text="Golden Gate Bridge Renamed" (675ms)
+    ✓ takeScreenshot (124ms)
+✓ 03-edit 7.2s
+
+  [4/12] 04-discard (.maestro/04-discard.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Deep Links" (783ms)
+    ✓ tapOn: text="Edit Landmark" (750ms)
+    ✓ tapOn: text="Location" (750ms)
+    ✓ inputText: "X" (1.5s)
+    ✓ tapOn: text="Cancel" (254ms)
+    ✓ assertVisible: text="You have unsaved changes that will be lost." (700ms)
+    ✓ takeScreenshot (144ms)
+    ✓ tapOn: text="Keep Editing" (580ms)
+    ✓ assertVisible: text="Edit Landmark" (692ms)
+    ✓ tapOn: text="Cancel" (769ms)
+    ✓ tapOn: text="Discard" (1.4s)
+    ✓ assertVisible: text="Deep Links" (615ms)
+✓ 04-discard 10.4s
+
+  [5/12] 05-category (.maestro/05-category.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Lakes" (818ms)
+    ✓ assertVisible: text="Lake Tahoe" (611ms)
+    ✓ assertVisible: text="Mono Lake" (27ms)
+    ✓ assertNotVisible: text="Golden Gate Bridge" (104ms)
+    ✓ takeScreenshot (123ms)
+✓ 05-category 3.1s
+
+  [6/12] 06-visit (.maestro/06-visit.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Half Dome" (791ms)
+    ✓ tapOn: text="Plan Visit" (727ms)
+    ✓ assertVisible: text="Visit Scheduled!" (68ms)
+    ✓ assertVisible: text="You're all set to visit Half Dome." (48ms)
+    ✓ takeScreenshot (122ms)
+    ✓ tapOn: text="Done" (109ms)
+    ✓ assertVisible: text="Half Dome" (83ms)
+✓ 06-visit 3.4s
+
+  [7/12] 07-deeplink (.maestro/07-deeplink.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Deep Links" (800ms)
+    ✓ tapOn: text="landmarks://category/lakes" (726ms)
+    ✓ assertVisible: text="Mono Lake" (631ms)
+    ✓ takeScreenshot (129ms)
+✓ 07-deeplink 3.7s
+
+  [8/12] 08-caching (.maestro/08-caching.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Deep Links" (786ms)
+    ✓ tapOn: text="Caching Demo" (749ms)
+    ✓ assertVisible: text="Cache Policy" (645ms)
+    ✓ tapOn: text="Fetch with Policy" (138ms)
+    ✓ takeScreenshot (125ms)
+    ✓ tapOn: text="Clear Cache" (139ms)
+✓ 08-caching 4.0s
+
+  [9/12] 09-seed-empty (.maestro/09-seed-empty.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.5s)
+    ✓ assertVisible: text="No landmarks yet" (52ms)
+    ✓ takeScreenshot (123ms)
+✓ 09-seed-empty 1.6s
+
+  [10/12] 10-seed-many (.maestro/10-seed-many.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.3s)
+    ✓ scroll: DOWN (1.6s)
+    ✓ scroll: DOWN (1.1s)
+    ✓ scroll: DOWN (1.1s)
+    ✓ scroll: DOWN (1.0s)
+    ✓ assertVisible: text="Landmark 28" (53ms)
+    ✓ takeScreenshot (124ms)
+✓ 10-seed-many 6.2s
+
+  [11/12] 11-slow (.maestro/11-slow.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Deep Links" (779ms)
+    ✓ tapOn: text="Slow Screen" (731ms)
+    ✓ assertVisible: text="Loading…" (640ms)
+    ✓ extendedWaitUntil: visible text="Loaded after delay" (2.4s)
+    ✓ takeScreenshot (124ms)
+✓ 11-slow 6.1s
+
+  [12/12] 12-quote-label (.maestro/12-quote-label.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Mountains" (788ms)
+    ✓ tapOn: text="Mount "Denali"" (734ms)
+    ✓ assertVisible: text="Alaska" (71ms)
+    ✓ takeScreenshot (124ms)
+✓ 12-quote-label 3.2s
+
+  90 steps passing (59.1s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  01-browse                      ✓ PASS       8      8      0      0       3.2s  google sdk_gphone64_arm64 (...
+  02-favorite                    ✓ PASS      13     13      0      0       6.9s  google sdk_gphone64_arm64 (...
+  03-edit                        ✓ PASS       9      9      0      0       7.2s  google sdk_gphone64_arm64 (...
+  04-discard                     ✓ PASS      13     13      0      0      10.4s  google sdk_gphone64_arm64 (...
+  05-category                    ✓ PASS       6      6      0      0       3.1s  google sdk_gphone64_arm64 (...
+  06-visit                       ✓ PASS       8      8      0      0       3.4s  google sdk_gphone64_arm64 (...
+  07-deeplink                    ✓ PASS       5      5      0      0       3.7s  google sdk_gphone64_arm64 (...
+  08-caching                     ✓ PASS       7      7      0      0       4.0s  google sdk_gphone64_arm64 (...
+  09-seed-empty                  ✓ PASS       3      3      0      0       1.6s  google sdk_gphone64_arm64 (...
+  10-seed-many                   ✓ PASS       7      7      0      0       6.2s  google sdk_gphone64_arm64 (...
+  11-slow                        ✓ PASS       6      6      0      0       6.1s  google sdk_gphone64_arm64 (...
+  12-quote-label                 ✓ PASS       5      5      0      0       3.2s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                           12/12      90     90      0      0      59.1s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+

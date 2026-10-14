@@ -1,0 +1,72 @@
+Resolved: module=app variant=freeDebug device=cov6-android screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov6-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/01-browse.yaml
+
+  grantiva-runner 1.1.28-grantiva.16 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/cov6-and040-report
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+    ✗ launchApp (1.2s)
+      ╰─ launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed on launch)
+✗ 01-browse 1.7s
+
+  [1/1] 01-browse (.maestro/01-browse.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✗ launchApp (1.2s)
+      ╰─ launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed on launch)
+    - assertVisible: text="Landmarks" (skipped)
+    - assertVisible: text="Featured" (skipped)
+    - takeScreenshot (skipped)
+    - tapOn: text="Golden Gate Bridge" (skipped)
+    - assertVisible: text="San Francisco, CA" (skipped)
+    - assertVisible: text="Plan Visit" (skipped)
+    - takeScreenshot (skipped)
+✗ 01-browse 1.7s
+
+  1 steps failing
+  7 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  01-browse                      ✗ FAIL       8      0      1      7       1.7s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       8      0      1      7       1.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/cov6-and040-report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/cov6-and040-report/report.json
+    JUnit:  /private/tmp/cov6-and040-report/junit-report.xml
+    Allure: /private/tmp/cov6-and040-report/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /private/tmp/cov6-and040-report/captures/failure-1791946565.png
+Error: Runner failed (exit 1): 01-browse: launchApp: launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed on launch)

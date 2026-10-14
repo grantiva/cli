@@ -1,0 +1,344 @@
+{
+  "status": "PREPARED_NOT_EXECUTED",
+  "candidateManifestSHA256": "191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c",
+  "requiredKeysSHA256": "fb724be2d4d2eb1a6777b9b14b433f7f2ce951f0f758bca38f6cb0f174619749",
+  "canonicalLedgerOrder": [
+    "AND-106",
+    "AND-107",
+    "AND-108",
+    "AND-001",
+    "AND-002",
+    "AND-003",
+    "AND-004",
+    "AND-005",
+    "AND-006",
+    "AND-007",
+    "AND-008",
+    "AND-009",
+    "AND-010",
+    "AND-011",
+    "AND-012",
+    "AND-013",
+    "AND-014",
+    "AND-015",
+    "AND-016",
+    "AND-017",
+    "AND-018",
+    "AND-109",
+    "AND-146",
+    "AND-110",
+    "AND-019"
+  ],
+  "physicalExecutionOrder": [
+    "AND-001",
+    "AND-106",
+    "AND-107",
+    "AND-108",
+    "AND-002",
+    "AND-003",
+    "AND-004",
+    "AND-005",
+    "AND-006",
+    "AND-007",
+    "AND-008",
+    "AND-009",
+    "AND-010",
+    "AND-011",
+    "AND-012",
+    "AND-013",
+    "AND-014",
+    "AND-015",
+    "AND-016",
+    "AND-017",
+    "AND-018",
+    "AND-109",
+    "AND-146",
+    "AND-110",
+    "AND-019"
+  ],
+  "orderingRationale": "AND-001 must physically precede all primary-device work because provisioning reserves cov6-android absent. After AND-001 records the created generation identity, execute/adopt AND-106..108 and continue the listed rows. Publish verdicts in canonicalLedgerOrder, not physical order.",
+  "bindings": {
+    "candidateManifest": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/candidate.json",
+    "candidateManifestSHA256": "191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c",
+    "requiredKeys": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/coverage/required-keys.json",
+    "requiredAndroidKeyCount": 522,
+    "cliPath": "/Users/kyle/.grantiva-qa/bin/grantiva",
+    "cliSHA256": "b0e9eb55baab8bcb15727de658be0c28c9205b4c83b6013e3532996f5ae6843d",
+    "cliSourcePath": "/Users/kyle/Developer/grantiva-cli/.worktrees/release-completion-candidate5",
+    "cliSourceSHA": "dd5d3336296a41014a45070cc5a8c4295a0873ec",
+    "runnerVersion": "1.1.28-grantiva.16",
+    "runnerSourceSHA": "d98b08898f45b94bad607f76e19089bb0e15d5c0",
+    "demoPath": "/Users/kyle/Developer/landmarks-demo/.worktrees/release-round4-candidate2",
+    "demoSHA": "84af7581b75134b0e417b254e4317d565f7b73c6",
+    "androidAPK": "/Users/kyle/Developer/landmarks-demo/.worktrees/release-round4-candidate2/android/app/build/outputs/apk/free/debug/app-free-debug.apk",
+    "androidAPKSHA256": "5891bf3753eade9ce28a391ec5d8d3d289d195af951e967b67bb1928e06d988a",
+    "sessionId": "candidate5-android",
+    "freshHome": "/private/tmp/grantiva-candidate5-coverage-qjr26z3g/android-runner-home",
+    "primaryAVD": "cov6-android",
+    "primarySerial": "emulator-5584",
+    "primaryPID": "PENDING_UNTIL_AND001_CREATION",
+    "extraAVD": "cov6-android-2",
+    "extraPort": "PENDING_ROOT_ALLOCATION",
+    "executionGate": "PENDING_ROOT_ANDROID_LIVE_WINDOW_AFTER_IOS119_AND_001_020",
+    "primaryPort": 5584,
+    "extraSerial": "PENDING_UNTIL_ROW_BOOT",
+    "extraPID": "PENDING_UNTIL_ROW_BOOT",
+    "ownershipEvidence": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/coverage/provision/ownership.json",
+    "reservationEvidence": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/coverage/provision/reservations/android-absent-primary-and-extra-name.json"
+  },
+  "rows": [
+    {
+      "key": "AND-106",
+      "baseId": "AND-106",
+      "matrixLine": 535,
+      "command": "`run --no-build`",
+      "precondition": "stock set",
+      "expected": "12/12 pass incl. 02-favorite (swipe reveals Remove) and 03-edit (append), exit 0 (brief R01, R02; plan Task 5 Step 1)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-107",
+      "baseId": "AND-107",
+      "matrixLine": 536,
+      "command": "`run --flow`",
+      "precondition": "`.maestro/99-crash.yaml`",
+      "expected": "Fails with `app_crash` (`crashed on launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH`) at `launchApp` or at the first step after it; the dead app must not pass any step. Record time to failure (brief R01 criterion 3; B2-L02 requires the first-assert outcome; fix round 1 re-grade, was M25) (corrected round 3)",
+      "executionDisposition": "eligible-for-exact-candidate5-smoke-join; fresh execution optional only if controller requires batch-local setup",
+      "smokeJoin": {
+        "review": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/reviews/campaign-completion/candidate5-android-smoke-review.md",
+        "reviewSHA256": "fbb1f8288ebfcf66e20063c2cb0e8ed55df85edf67ae56dce0d69dc705cbcf59",
+        "commandSHA256": "c65716ba507766cb286d875175e4f1b7f1a786c4a3a22816b2e67d9d560923e9",
+        "resultSHA256": "1a3c5c5353424cb45cc489fa6a4fb9e2efcad9d20ea21b4255c52c5bed7bb76c",
+        "reportSHA256": "ee12532738fc052cfae117830db420b7d3f52c9a834371399a747b0675b04606",
+        "scope": "exact run --platform android --device owned-smoke-serial --no-build --verbose --flow candidate5 crash fixture; app_crash on launch, no dead-app step passes, timing retained"
+      }
+    },
+    {
+      "key": "AND-108",
+      "baseId": "AND-108",
+      "matrixLine": 537,
+      "command": "`diff capture`",
+      "precondition": "five configured screens",
+      "expected": "5/5; Lakes and Detail are the right screens (docs/android.md:68-76)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-001",
+      "baseId": "AND-001",
+      "matrixLine": 543,
+      "command": "`emulator ensure`",
+      "precondition": "`--name cov-android` (AVD missing, image installed)",
+      "expected": "Creates (`avdmanager create avd -d pixel_8`), boots, prints only the serial (docs/android.md:166, 173-175)",
+      "executionDisposition": "fresh-row-execution",
+      "physicalConstraint": "must execute first while cov6-android is genuinely absent; capture actual PID/start/argv/serial before any later primary use"
+    },
+    {
+      "key": "AND-002",
+      "baseId": "AND-002",
+      "matrixLine": 544,
+      "command": "`emulator ensure`",
+      "precondition": "`--name cov-android-2 --system-image <an image not installed>`",
+      "expected": "Installs it with `sdkmanager`, then creates and boots; `blocked` if no small uninstalled image is available (docs/android.md:173)",
+      "executionDisposition": "fresh-row-execution",
+      "knownConstraint": "blocked if no suitable small uninstalled image is locally available under no-download campaign constraint; installed inventory cannot prove remote absence"
+    },
+    {
+      "key": "AND-003",
+      "baseId": "AND-003",
+      "matrixLine": 545,
+      "command": "`emulator ensure`",
+      "precondition": "same name again",
+      "expected": "Reuses; same serial (help: emulator_ensure.txt)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-004",
+      "baseId": "AND-004",
+      "matrixLine": 546,
+      "command": "`emulator ensure`",
+      "precondition": "`--name cov-android-2 --no-boot`",
+      "expected": "Created, not booted; stdout is the AVD name (docs/android.md:167)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-005",
+      "baseId": "AND-005",
+      "matrixLine": 547,
+      "command": "`emulator ensure`",
+      "precondition": "`--headless`",
+      "expected": "No window (`-no-window`) (help: emulator_ensure.txt)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-006",
+      "baseId": "AND-006",
+      "matrixLine": 548,
+      "command": "`emulator ensure`",
+      "precondition": "no `--name`, config `emulator: cov-android`",
+      "expected": "Uses the configured AVD (help: emulator_ensure.txt)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-007",
+      "baseId": "AND-007",
+      "matrixLine": 549,
+      "command": "`emulator ensure`",
+      "precondition": "no `--system-image`, no config value",
+      "expected": "`system-images;android-35;google_apis;arm64-v8a` (docs/android.md:174-175)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-008",
+      "baseId": "AND-008",
+      "matrixLine": 550,
+      "command": "`emulator ensure --json`",
+      "precondition": "none",
+      "expected": "Valid JSON record (help: emulator_ensure.txt)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-009",
+      "baseId": "AND-009",
+      "matrixLine": 551,
+      "command": "`emulator sessions`",
+      "precondition": "`--json`",
+      "expected": "Lists the emulators Grantiva started (docs/android.md:168)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-010",
+      "baseId": "AND-010",
+      "matrixLine": 552,
+      "command": "`emulator teardown`",
+      "precondition": "`--serial <cov-android-2 serial>`",
+      "expected": "Stops UIAutomator2, removes that serial's forwards, kills it (help: emulator_teardown.txt)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-011",
+      "baseId": "AND-011",
+      "matrixLine": 553,
+      "command": "`emulator teardown`",
+      "precondition": "serial of `cov-android-2` booted with `emulator -avd` by hand; then `--force`",
+      "expected": "Refuses without `--force`; kills with it (docs/android.md:169)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-012",
+      "baseId": "AND-012",
+      "matrixLine": 554,
+      "command": "`emulator teardown --all`",
+      "precondition": "none",
+      "expected": "Kills every emulator Grantiva started, leaves others. `blocked`: Global Constraints forbid `teardown --all` (docs/android.md:170)",
+      "executionDisposition": "fresh-row-execution",
+      "knownConstraint": "BLOCKED: global --all teardown prohibited by campaign ownership constraints; never execute"
+    },
+    {
+      "key": "AND-013",
+      "baseId": "AND-013",
+      "matrixLine": 555,
+      "command": "`emulator teardown`",
+      "precondition": "ledger record whose pid is dead or reused",
+      "expected": "Record dropped by `sessions`/`teardown`; teardown refuses that serial without `--force`, whatever AVD runs there (docs/android.md:176-183; brief C02)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-014",
+      "baseId": "AND-014",
+      "matrixLine": 556,
+      "command": "`emulator delete`",
+      "precondition": "`--name cov-android-2` (Grantiva-created, stopped)",
+      "expected": "Deleted (help: emulator_delete.txt)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-015",
+      "baseId": "AND-015",
+      "matrixLine": 557,
+      "command": "`emulator delete`",
+      "precondition": "`--name cov-android-2` created with `avdmanager` by hand",
+      "expected": "Refuses without `--force`; deletes with it (docs/android.md:171)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-016",
+      "baseId": "AND-016",
+      "matrixLine": 558,
+      "command": "`emulator delete`",
+      "precondition": "`--name <running AVD> --force`",
+      "expected": "Refuses: a running AVD is never deleted (help: emulator_delete.txt)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-017",
+      "baseId": "AND-017",
+      "matrixLine": 559,
+      "command": "`emulator ensure`",
+      "precondition": "`GRANTIVA_EMULATOR_BOOT_TIMEOUT_SECONDS=5`, cold boot of cov-android-2",
+      "expected": "Gives up after about 5 s with a clear error (docs/android.md:100)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-018",
+      "baseId": "AND-018",
+      "matrixLine": 560,
+      "command": "`emulator ensure`, `run`",
+      "precondition": "emulator started outside Grantiva",
+      "expected": "Never recorded in `started.json`; never killed by run cleanup (docs/android.md:176-183; brief C02)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-109",
+      "baseId": "AND-109",
+      "matrixLine": 561,
+      "command": "`emulator sessions`, `ensure`, `delete`, `teardown`",
+      "precondition": "`avdmanager delete avd -n cov-android-2` after `ensure` created it",
+      "expected": "`created-avds.json` drops the name on the next call (docs/android.md:184-186)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-146",
+      "baseId": "AND-146",
+      "matrixLine": 562,
+      "command": "`emulator delete --json`",
+      "precondition": "`--name cov-android-2` (Grantiva-created, stopped)",
+      "expected": "Valid JSON naming the deleted AVD; `avdmanager list avd` no longer lists it (help: emulator_delete.txt)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-110",
+      "baseId": "AND-110",
+      "matrixLine": 563,
+      "command": "docs/android.md emulator examples",
+      "precondition": ":166-171 with `cov-android` for `Pixel_8_API_35` and the started serial",
+      "expected": "Each as written behaves as its comment says; `--all` line `blocked` (docs/android.md:164-171)",
+      "executionDisposition": "fresh-row-execution"
+    },
+    {
+      "key": "AND-019",
+      "baseId": "AND-019",
+      "matrixLine": 569,
+      "command": "`build build`",
+      "precondition": "default from config",
+      "expected": "`assembleFreeDebug`; exit 0 (docs/android.md:22)",
+      "executionDisposition": "fresh-row-execution"
+    }
+  ],
+  "smokeReuseSummary": {
+    "fullyEligible": [
+      "AND-107"
+    ],
+    "supplementalOnly": {
+      "AND-106": "smoke healthy control and favorite 5/5 do not prove the literal full stock 12/12 including 03-edit",
+      "AND-108": "smoke retained no five-screen diff capture or Lakes/Detail visual artifacts"
+    },
+    "doNotTransfer": "No other first-batch row is graded from smoke merely because adjacent lifecycle or behavior was exercised."
+  },
+  "preflight": [
+    "rehash candidate manifest, CLI, APK, capture helper, runner home identity",
+    "prove cov6-android and emulator-5584 absent and ports 5584/5585 free immediately before AND-001",
+    "keep primaryPID null until successful ensure creation then record exact PID/start/executable/argv/PGID/session and AVD name",
+    "keep cov6-android-2 port/serial/PID pending until controller allocates its row window",
+    "use real HOME; both runner-home variables exact allocated clone; API unset; JDK21 and SDK PATH explicit"
+  ]
+}

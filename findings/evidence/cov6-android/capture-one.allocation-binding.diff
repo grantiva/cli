@@ -1,0 +1,11 @@
+--- findings/evidence/cov6-android/capture-one.before-allocation-binding.rb	2026-10-13 18:54:34
++++ findings/evidence/cov6-android/capture-one.rb	2026-10-13 19:22:42
+@@ -18,7 +18,7 @@
+ 
+ binary = '/Users/kyle/.grantiva-qa/bin/grantiva'
+ manifest_path = '/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/candidate.json'
+-runner_home = 'PENDING_ROOT_ALLOCATED_CANDIDATE5_ANDROID_RUNNER_HOME'
++runner_home = '/private/tmp/grantiva-candidate5-coverage-qjr26z3g/android-runner-home'
+ expected_manifest = '191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c'
+ manifest_sha = Digest::SHA256.file(manifest_path).hexdigest
+ abort "manifest mismatch #{manifest_sha}" unless manifest_sha == expected_manifest
