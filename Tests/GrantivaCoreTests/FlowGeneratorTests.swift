@@ -63,7 +63,7 @@ final class FlowGeneratorTests: XCTestCase {
         XCTAssertTrue(
             yaml.contains("""
                 - evalScript:
-                    script: "${var grantivaWaitUntil = Date.now() + 3000; while (Date.now() < grantivaWaitUntil) {}}"
+                    script: "${var grantivaWaitUntil = Date.now() + 3001; while (Date.now() < grantivaWaitUntil) {}}"
                     label: "Wait 3s"
                 """),
             yaml
@@ -77,8 +77,26 @@ final class FlowGeneratorTests: XCTestCase {
     }
 
     func testFractionalWaitIsInMilliseconds() {
-        XCTAssertTrue(FlowGenerator.sleepScript(seconds: 1.5).contains("Date.now() + 1500;"))
+        XCTAssertTrue(FlowGenerator.sleepScript(seconds: 1.5).contains("Date.now() + 1501;"))
         XCTAssertEqual(FlowGenerator.waitLabel(seconds: 1.5), "Wait 1.5s")
+    }
+
+    func testWaitDeadlineCannotFinishEarlyAtClockTickBoundary() {
+        // Date.now() returns an integral millisecond. Model the first sample at
+        // several phases within the corresponding monotonic millisecond; the
+        // generated deadline must leave at least the requested elapsed time.
+        for seconds in [3.0, 1.5009, 0.0001] {
+            let requestedMilliseconds = seconds * 1000
+            let deadline = Double(FlowGenerator.sleepDeadlineMilliseconds(seconds: seconds))
+            for firstSamplePhase in [0.0, 0.25, 0.999_999] {
+                let modeledElapsed = deadline - firstSamplePhase
+                XCTAssertGreaterThanOrEqual(
+                    modeledElapsed, requestedMilliseconds,
+                    "\(seconds)s wait ended early at phase \(firstSamplePhase)"
+                )
+            }
+        }
+        XCTAssertEqual(FlowGenerator.sleepDeadlineMilliseconds(seconds: 1.5009), 1502)
     }
 
     // Golden: against the 2.0.1 output for this config, the only differences
@@ -121,7 +139,7 @@ final class FlowGeneratorTests: XCTestCase {
                 timeout: 5000
             - takeScreenshot: "Profile"
             - evalScript:
-                script: "${var grantivaWaitUntil = Date.now() + 2000; while (Date.now() < grantivaWaitUntil) {}}"
+                script: "${var grantivaWaitUntil = Date.now() + 2001; while (Date.now() < grantivaWaitUntil) {}}"
                 label: "Wait 2s"
             - waitForAnimationToEnd:
                 timeout: 5000
