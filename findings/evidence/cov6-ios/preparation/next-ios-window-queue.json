@@ -369,6 +369,38 @@
       "command": "`doctor`",
       "precondition": "no config, not authenticated, no booted simulator Round 3 re-run rule: run only while `xcrun simctl list devices booted` lists no simulator at all; an owner simulator booted \u2192 `blocked owner simulator booted` again (never shut it down); only campaign simulators booted \u2192 handed to the iOS slice, which runs it after its teardown.",
       "expected": "Optional checks advisory; exit code unaffected (README:330)"
+    },
+    {
+      "key": "B4-L75.1",
+      "sourceHandoff": "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/B4-L75-live-handoff.json",
+      "fixture": "copy /private/tmp/grantiva-candidate5-coverage-qjr26z3g/cli-scratch/batch17/l75 into adjacent iOS evidence scratch and retain source/copy hashes",
+      "binding": "candidate5-ios home/session and exact cov6-ios-26 UUID; supersedes any CLI-home binding",
+      "command": "grantiva run --no-build --simulator cov6-ios-26 --flow flows/a.yaml",
+      "expected": "exit 1 under five seconds; exact flows/a.yaml -> shared/b.yaml -> flows/a.yaml -> shared/b.yaml cycle"
+    },
+    {
+      "key": "B4-L75.2",
+      "sourceHandoff": "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/B4-L75-live-handoff.json",
+      "fixture": "root a.yaml<->b.yaml and screens grantiva.yml->a.yaml->b.yaml->a.yaml controls from the copied L75 fixture",
+      "binding": "candidate5-ios home/session and exact cov6-ios-26 UUID",
+      "command": "run the root flow and screens config as separate invocations",
+      "expected": "exact root a.yaml -> b.yaml -> a.yaml -> b.yaml and screens grantiva.yml -> a.yaml -> b.yaml -> a.yaml diagnostics"
+    },
+    {
+      "key": "B4-L75.3",
+      "sourceHandoff": "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/B4-L75-live-handoff.json",
+      "fixture": "same copied nested cycle, supplied through the absolute flows/a.yaml operand",
+      "binding": "candidate5-ios home/session and exact cov6-ios-26 UUID",
+      "command": "grantiva run --no-build --simulator cov6-ios-26 --flow <absolute-path>/flows/a.yaml",
+      "expected": "exit 1; contract-required user absolute operand remains absolute"
+    },
+    {
+      "key": "B4-L75.5",
+      "sourceHandoff": "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/B4-L75-live-handoff.json",
+      "fixture": "hash-identical copied nested cycle reached once through /tmp and once through /private/tmp spelling",
+      "binding": "candidate5-ios home/session and exact cov6-ios-26 UUID",
+      "command": "run the same relative flows/a.yaml operand from each spelling",
+      "expected": "both spellings emit identical containing-file-relative cycle diagnostics"
     }
   ],
   "executionRules": [
@@ -379,6 +411,7 @@
     "At most two owned extras cov6-ios-3/cov6-ios-4 coexist; authenticate each UUID before mutation.",
     "CLI-083 remains BLOCKED while either protected or owned simulator is Booted; never shut down an owner to execute it.",
     "Other CLI handoffs require fresh candidate5 CLI actor fixture bindings before execution; do not reuse candidate4 runtime evidence.",
+    "The four B4-L75 runtime handoffs remain PENDING until their public commands reach cycle parsing on the exact owned iOS target; preserve the earlier protected-device failures.",
     "Return both primaries Booted with frozen apps, extras retired, protected state unchanged, and no owned workers."
   ]
 }
