@@ -1,0 +1,351 @@
+{
+  "schema": "grantiva.task9.reservation.v1",
+  "status": "PREPARED_NOT_ACTIVE",
+  "reservationId": "cov5-android-runtime-051-075",
+  "actor": "cov5-android",
+  "sessionId": "cov5-android",
+  "candidateManifestSHA256": "714715a6890ae340395083e195eecfa3d95e28abdc102e69e7c66533dea5c783",
+  "runnerHome": "/private/tmp/grantiva-cov5-android-runner-home",
+  "keys": [
+    "AND-114",
+    "AND-115",
+    "AND-116",
+    "AND-117",
+    "AND-118",
+    "AND-119",
+    "AND-120",
+    "AND-121",
+    "AND-145",
+    "AND-137",
+    "AND-051",
+    "AND-052",
+    "AND-053",
+    "AND-054",
+    "AND-055",
+    "AND-056",
+    "AND-057",
+    "AND-058",
+    "AND-059",
+    "AND-060",
+    "AND-061",
+    "AND-062",
+    "AND-063",
+    "AND-064",
+    "AND-122",
+    "AND-065",
+    "AND-066",
+    "AND-067",
+    "AND-068",
+    "AND-069",
+    "AND-070",
+    "AND-071",
+    "AND-072",
+    "AND-073",
+    "AND-074",
+    "AND-075",
+    "AND-123"
+  ],
+  "activationCondition": "Root activates only after next iOS core021\u2013050 window returns. Static preparation only while held.",
+  "scope": "Canonical runtime, keepalive, hierarchy, settings and log clauses through075 plus inserted123; preserve exact distinct inputs and outcomes. Join already accepted fresh candidate4 captures only where all literal clauses and preconditions match; source-only joins never satisfy missing runtime clauses.",
+  "targets": "Exact campaign-owned cov5-android primary and at most one authenticated cov5-android-2 secondary. Bind actual current AVD generation, serial and PID before mutations; no protected Pixel_8_API_35, global teardown, owner/default resources or physical-device actions.",
+  "artifactPolicy": "Frozen CLI/runner/demo immutable. Use frozen app for unrelated runtime rows; no CLI/runner/WDA rebuilds. Scratch fixture edits only as literal row requires.",
+  "returnState": "Restore frozen APK on primary, retire secondary unless explicitly retained for next reservation, stop authenticated row workers/forwards/leases; capture owned resources and protected state read-only.",
+  "rows": [
+    {
+      "key": "AND-114",
+      "baseId": "AND-114",
+      "matrixLine": 606,
+      "command": "`run`",
+      "precondition": "no `emulator:` in config, no emulator running",
+      "expected": "Fails and lists the AVDs; boots nothing (docs/android.md:34-36)"
+    },
+    {
+      "key": "AND-115",
+      "baseId": "AND-115",
+      "matrixLine": 607,
+      "command": "`run`",
+      "precondition": "no `emulator:`, cov-android still booting",
+      "expected": "Waits for it and runs (docs/android.md:35)"
+    },
+    {
+      "key": "AND-116",
+      "baseId": "AND-116",
+      "matrixLine": 608,
+      "command": "`run`",
+      "precondition": "`launchApp` with both `arguments:` and `environment:`",
+      "expected": "Merged into the intent extras (docs/android.md:61-64)"
+    },
+    {
+      "key": "AND-117",
+      "baseId": "AND-117",
+      "matrixLine": 609,
+      "command": "`run`",
+      "precondition": "header `env:` + step `environment:`; then `--env`",
+      "expected": "Step wins over header; `--env` wins over both (docs/android.md:65-66)"
+    },
+    {
+      "key": "AND-118",
+      "baseId": "AND-118",
+      "matrixLine": 610,
+      "command": "`run`",
+      "precondition": "narration with no device configured or passed",
+      "expected": "`Resolved: ... device=` and `Booting emulator:` never print an empty serial (obs; #186)"
+    },
+    {
+      "key": "AND-119",
+      "baseId": "AND-119",
+      "matrixLine": 611,
+      "command": "`run` screens",
+      "precondition": "`--continue-on-failure` failing screen; `--timeout 30` slow screen",
+      "expected": "As IOS-134 and IOS-135 (README:99)"
+    },
+    {
+      "key": "AND-120",
+      "baseId": "AND-120",
+      "matrixLine": 612,
+      "command": "`run` screens+flows",
+      "precondition": "`--report-dir out`, `--snapshot full`",
+      "expected": "Screens report under `out/screens/`; snapshot applies (README:95, 99)"
+    },
+    {
+      "key": "AND-121",
+      "baseId": "AND-121",
+      "matrixLine": 613,
+      "command": "`run --flow`",
+      "precondition": "runner-only command `back`",
+      "expected": "Passes through to the runner and executes (README:172 \"not limited to this list\")"
+    },
+    {
+      "key": "AND-145",
+      "baseId": "AND-145",
+      "matrixLine": 614,
+      "command": "`run --allow-device-settings`",
+      "precondition": "`--emulator cov-android --flow .maestro/01-browse.yaml`",
+      "expected": "Accepted; demo mode and animation scales applied during the run and restored afterwards, as without the flag (help: run.txt; docs/android.md:37-38, 78-81)"
+    },
+    {
+      "key": "AND-137",
+      "baseId": "AND-137",
+      "matrixLine": 615,
+      "command": "`run --quiet` / `--verbose`",
+      "precondition": "`run --flow .maestro/01-browse.yaml` plain, `--quiet`, `--verbose`; then `--quiet` with NEW:02-exact-negative",
+      "expected": "Decoded stable result, flow/step status, error identity and report location agree across modes; measured durations/timestamps may differ. Quiet suppresses progress but retains failures; verbose adds diagnostics without changing stable results. (corrected round 4)"
+    },
+    {
+      "key": "AND-051",
+      "baseId": "AND-051",
+      "matrixLine": 621,
+      "command": "`run --keep-alive`",
+      "precondition": "`--flow <flow>`",
+      "expected": "Holds the UIAutomator2 session until Ctrl-C (docs/android.md:104)"
+    },
+    {
+      "key": "AND-052",
+      "baseId": "AND-052",
+      "matrixLine": 622,
+      "command": "`hierarchy`",
+      "precondition": "two sessions (cov-android, cov-android-2), no `--udid`",
+      "expected": "Newest (README:91)"
+    },
+    {
+      "key": "AND-053",
+      "baseId": "AND-053",
+      "matrixLine": 623,
+      "command": "`hierarchy`",
+      "precondition": "default",
+      "expected": "UIAutomator2 page source XML; app untouched (docs/android.md:105)"
+    },
+    {
+      "key": "AND-054",
+      "baseId": "AND-054",
+      "matrixLine": 624,
+      "command": "`hierarchy`",
+      "precondition": "`--format json`",
+      "expected": "Same tree as JSON, frames in dp (docs/android.md:106)"
+    },
+    {
+      "key": "AND-055",
+      "baseId": "AND-055",
+      "matrixLine": 625,
+      "command": "`hierarchy`",
+      "precondition": "`--json`",
+      "expected": "JSON (docs/dump-hierarchy.md:38; brief D01)"
+    },
+    {
+      "key": "AND-056",
+      "baseId": "AND-056",
+      "matrixLine": 626,
+      "command": "`hierarchy`",
+      "precondition": "`--udid <serial>` with two sessions",
+      "expected": "That serial's session (docs/android.md:110-111)"
+    },
+    {
+      "key": "AND-057",
+      "baseId": "AND-057",
+      "matrixLine": 627,
+      "command": "`hierarchy`",
+      "precondition": "`adb forward --list` before/after",
+      "expected": "A local port to 6790 only for the command (docs/android.md:108-110)"
+    },
+    {
+      "key": "AND-058",
+      "baseId": "AND-058",
+      "matrixLine": 628,
+      "command": "`hierarchy`",
+      "precondition": "after `kill -9` of the run",
+      "expected": "Dead session ignored; fails fast (docs/dump-hierarchy.md:21)"
+    },
+    {
+      "key": "AND-059",
+      "baseId": "AND-059",
+      "matrixLine": 629,
+      "command": "`run --keep-alive`, Ctrl-C",
+      "precondition": "passing flow",
+      "expected": "Session, owner sidecar, UIAutomator2 server and forwards cleaned; demo mode and animation scales restored; no `failure-<ts>.png` written (obs; #186)"
+    },
+    {
+      "key": "AND-060",
+      "baseId": "AND-060",
+      "matrixLine": 630,
+      "command": "`run --keep-alive &`, `kill -INT`",
+      "precondition": "`--ready-file r`",
+      "expected": "Same cleanup; `r` says `interrupted`, no flow `running` (README:76, 89; brief A06)"
+    },
+    {
+      "key": "AND-061",
+      "baseId": "AND-061",
+      "matrixLine": 631,
+      "command": "`run --keep-alive --ready-file r`, `hierarchy`",
+      "precondition": "as soon as `r` exists",
+      "expected": "No race (docs/dump-hierarchy.md:23)"
+    },
+    {
+      "key": "AND-062",
+      "baseId": "AND-062",
+      "matrixLine": 632,
+      "command": "`run`",
+      "precondition": "two concurrent runs, cov-android and cov-android-2",
+      "expected": "Both pass without interfering (README:92)"
+    },
+    {
+      "key": "AND-063",
+      "baseId": "AND-063",
+      "matrixLine": 633,
+      "command": "`run`",
+      "precondition": "second run on a serial owned by a live run",
+      "expected": "Fails fast: `Emulator <serial> ...` naming the owner; suggests `grantiva emulator teardown --serial <serial> --force` / `grantiva emulator ensure --name <unique-name>`; no ` exited with code 1`; no failure screenshot (brief A10)"
+    },
+    {
+      "key": "AND-064",
+      "baseId": "AND-064",
+      "matrixLine": 634,
+      "command": "`run`",
+      "precondition": "orphan forwards for another serial",
+      "expected": "Cleanup removes only this serial's forwards (docs/android.md:137)"
+    },
+    {
+      "key": "AND-122",
+      "baseId": "AND-122",
+      "matrixLine": 635,
+      "command": "docs/android.md keep-alive examples",
+      "precondition": ":104-106 as written",
+      "expected": "Each prints as its comment says (docs/android.md:102-111)"
+    },
+    {
+      "key": "AND-065",
+      "baseId": "AND-065",
+      "matrixLine": 641,
+      "command": "`run`, `diff capture`",
+      "precondition": "default",
+      "expected": "Demo mode (09:41, full battery, no notifications), animation scales 0, portrait (docs/android.md:78-79)"
+    },
+    {
+      "key": "AND-066",
+      "baseId": "AND-066",
+      "matrixLine": 642,
+      "command": "`run`",
+      "precondition": "during run",
+      "expected": "Previous values in `.grantiva/android-settings-<serial>.json` (docs/android.md:79-80)"
+    },
+    {
+      "key": "AND-067",
+      "baseId": "AND-067",
+      "matrixLine": 643,
+      "command": "`run`",
+      "precondition": "after normal exit",
+      "expected": "Restored (docs/android.md:80)"
+    },
+    {
+      "key": "AND-068",
+      "baseId": "AND-068",
+      "matrixLine": 644,
+      "command": "`run`",
+      "precondition": "`kill -9` mid-run, then another run",
+      "expected": "Next run restores them first (docs/android.md:80-81)"
+    },
+    {
+      "key": "AND-069",
+      "baseId": "AND-069",
+      "matrixLine": 645,
+      "command": "`run`",
+      "precondition": "`--device <physical serial>`",
+      "expected": "`n/a`: no physical device (spec \u00a7Out of scope) (docs/android.md:37-38)"
+    },
+    {
+      "key": "AND-070",
+      "baseId": "AND-070",
+      "matrixLine": 646,
+      "command": "`run`",
+      "precondition": "`--device <physical serial> --allow-device-settings`",
+      "expected": "`n/a`: no physical device (spec \u00a7Out of scope) (docs/android.md:37-38)"
+    },
+    {
+      "key": "AND-071",
+      "baseId": "AND-071",
+      "matrixLine": 652,
+      "command": "`run --logs`",
+      "precondition": "none",
+      "expected": "`[log]` logcat lines from the app's uid (docs/android.md:85)"
+    },
+    {
+      "key": "AND-072",
+      "baseId": "AND-072",
+      "matrixLine": 653,
+      "command": "`run`",
+      "precondition": "`--logs-tag Landmarks`",
+      "expected": "Implies `--logs`; only that tag (docs/android.md:86)"
+    },
+    {
+      "key": "AND-073",
+      "baseId": "AND-073",
+      "matrixLine": 654,
+      "command": "`run`",
+      "precondition": "`--logs` with no level, `default`, `info`, `debug`",
+      "expected": "logcat `*:I`, `*:I`, `*:I`, `*:D`; default and info give the same set, debug adds D (docs/android.md:87-95; brief A08)"
+    },
+    {
+      "key": "AND-074",
+      "baseId": "AND-074",
+      "matrixLine": 655,
+      "command": "`run`",
+      "precondition": "`--logs-predicate x`",
+      "expected": "Rejected by name (docs/android.md:95)"
+    },
+    {
+      "key": "AND-075",
+      "baseId": "AND-075",
+      "matrixLine": 656,
+      "command": "`run --logs`",
+      "precondition": "exit by success, failure, Ctrl-C (exit 130)",
+      "expected": "No `adb ... logcat` process remains (brief A07)"
+    },
+    {
+      "key": "AND-123",
+      "baseId": "AND-123",
+      "matrixLine": 657,
+      "command": "`run --logs`",
+      "precondition": "lines logged before the run",
+      "expected": "Not shown: starts at the device's current time; buffer not cleared (docs/android.md:85-86; brief A08)"
+    }
+  ]
+}
