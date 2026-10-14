@@ -1,0 +1,57 @@
+{
+  "status": "PREFLIGHT_ONLY_NOT_EXECUTED",
+  "preparedAt": "2026-10-14T00:35:57.244598+00:00",
+  "handoff": "l75-ios-handoff.md",
+  "fixtureHashes": "fixture-files.sha256",
+  "bindings": {
+    "candidateManifestSHA256": "714715a6890ae340395083e195eecfa3d95e28abdc102e69e7c66533dea5c783",
+    "binary": "/Users/kyle/.grantiva-qa/bin/grantiva",
+    "runnerHome": "/private/tmp/grantiva-cov5-ios-runner-home",
+    "sessionId": "cov5-ios",
+    "apiKey": "unset",
+    "targetName": "cov5-ios-26",
+    "targetUUID": "532523A7-30B3-4048-A538-4F3DB2EFB807"
+  },
+  "fixtureMutation": {
+    "required": "change only simulator value from proven-absent UUID to cov5-ios-26",
+    "preserveBeforeHash": true,
+    "captureAfterHashAndDiff": true
+  },
+  "checks": {
+    "L75.1/L75.5": {
+      "cwd": "/private/tmp/grantiva-cov5-cli-gtwQZB/batch17/l75",
+      "entry": "flows/a.yaml",
+      "edges": [
+        "flows/a.yaml -> shared/b.yaml",
+        "shared/b.yaml -> flows/a.yaml"
+      ],
+      "expected": "flows/a.yaml -> shared/b.yaml -> flows/a.yaml -> shared/b.yaml"
+    },
+    "L75.2-explicit": {
+      "cwd": "/private/tmp/grantiva-cov5-cli-gtwQZB/batch17/l75-root",
+      "entry": "a.yaml",
+      "edges": [
+        "a.yaml -> b.yaml",
+        "b.yaml -> a.yaml"
+      ],
+      "expected": "a.yaml -> b.yaml -> a.yaml -> b.yaml"
+    },
+    "L75.2-config": {
+      "cwd": "/private/tmp/grantiva-cov5-cli-gtwQZB/batch17/l75-root",
+      "entry": "grantiva.yml flows[0]=a.yaml",
+      "expected": "grantiva.yml -> a.yaml -> b.yaml -> a.yaml"
+    },
+    "L75.3": {
+      "sourceFixture": "/private/tmp/grantiva-cov5-cli-gtwQZB/batch17/l75",
+      "preparation": "adjacent copy at execution; rewrite only both runFlow operands to copy-local absolute paths; pass absolute a.yaml operand",
+      "expected": "cycle retains exact absolute operands"
+    }
+  },
+  "executionLimits": {
+    "timeoutSeconds": 5,
+    "expectedExit": 1,
+    "noTmpPathLeak": true,
+    "noLiveActionDuringPreflight": true
+  },
+  "note": "The handoff intentionally keeps scheme/bundle/appId X; do not invent overrides. Execute exact handoff first and preserve any earlier target/app validation failure."
+}

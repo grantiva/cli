@@ -1,0 +1,238 @@
+{
+  "schema": "grantiva.cov5-ios-initial-plan.v1",
+  "status": "STATIC_ONLY_AWAITING_ROOT_UUIDS_AND_STANDING_DELEGATION",
+  "candidateManifestSHA256": "714715a6890ae340395083e195eecfa3d95e28abdc102e69e7c66533dea5c783",
+  "binary": "/Users/kyle/.grantiva-qa/bin/grantiva",
+  "runnerHome": "/private/tmp/grantiva-cov5-ios-runner-home",
+  "session": "cov5-ios",
+  "environment": {
+    "GRANTIVA_RUNNER_HOME": "/private/tmp/grantiva-cov5-ios-runner-home",
+    "MAESTRO_RUNNER_HOME": "/private/tmp/grantiva-cov5-ios-runner-home",
+    "GRANTIVA_SESSION_ID": "cov5-ios",
+    "GRANTIVA_API_KEY": "<unset>"
+  },
+  "unresolved": {
+    "primary26UUID": "532523A7-30B3-4048-A538-4F3DB2EFB807",
+    "primary27UUID": "EED50B5C-119B-4982-A495-4521CAE8494F",
+    "extra3UUIDByGeneration": "<CAPTURE_FROM_FRESH_CREATE_BEFORE_USE>",
+    "extra4UUIDByGeneration": "<CAPTURE_FROM_FRESH_CREATE_BEFORE_USE>"
+  },
+  "rows": [
+    {
+      "key": "IOS-001",
+      "commands": [
+        [
+          "/Users/kyle/.grantiva-qa/bin/grantiva",
+          "simulator",
+          "ensure",
+          "--name",
+          "cov5-ios-3 iPhone 17"
+        ]
+      ],
+      "captures": [
+        "full inventory before",
+        "raw stdout/stderr/exit",
+        "inventory immediately after returned UUID"
+      ],
+      "guard": "Name-only literal: add neither --device-type nor --runtime. Bind returned UUID to the observed newest installed runtime, expected iOS 27.0."
+    },
+    {
+      "key": "IOS-002",
+      "commands": [
+        [
+          "/Users/kyle/.grantiva-qa/bin/grantiva",
+          "simulator",
+          "ensure",
+          "--name",
+          "cov5-ios-3 iPhone 17"
+        ]
+      ],
+      "captures": [
+        "raw stdout/stderr/exit",
+        "same-UUID comparison",
+        "inventory before exact delegated retirement"
+      ],
+      "guard": "Retirement after reuse requires the standing delegation and exact captured UUID."
+    },
+    {
+      "key": "IOS-003",
+      "commands": [
+        [
+          "/Users/kyle/.grantiva-qa/bin/grantiva",
+          "simulator",
+          "ensure",
+          "--name",
+          "cov5-ios-4 Pin",
+          "--device-type",
+          "iPhone 17",
+          "--runtime",
+          "latest"
+        ]
+      ],
+      "captures": [
+        "absence inventory",
+        "raw stdout/stderr/exit",
+        "returned-UUID runtime/type/state inventory"
+      ],
+      "guard": "Retain or retire this generation only as the root reservation specifies."
+    },
+    {
+      "key": "IOS-004",
+      "commands": [
+        [
+          "/Users/kyle/.grantiva-qa/bin/grantiva",
+          "simulator",
+          "ensure",
+          "--name",
+          "cov5-ios-3 iPhone 17",
+          "--runtime",
+          "26.0"
+        ],
+        [
+          "/Users/kyle/.grantiva-qa/bin/grantiva",
+          "simulator",
+          "ensure",
+          "--name",
+          "cov5-ios-4",
+          "--device-type",
+          "iPhone 17",
+          "--runtime",
+          "99.9"
+        ]
+      ],
+      "captures": [
+        "absence inventory",
+        "positive raw streams/exit",
+        "inventory immediately after positive creation and before deletion",
+        "negative raw streams/exit",
+        "post-negative absence inventory",
+        "exact-UUID delegated deletion outcome"
+      ],
+      "guard": "The intermediate inventory must bind the positive returned UUID to iOS 26.0. The invalid target must remain absent."
+    },
+    {
+      "key": "IOS-005",
+      "commands": [
+        [
+          "/Users/kyle/.grantiva-qa/bin/grantiva",
+          "simulator",
+          "ensure",
+          "--name",
+          "cov5-ios-3",
+          "--device-type",
+          "iPhone 17",
+          "--runtime",
+          "26.0",
+          "--no-boot"
+        ]
+      ],
+      "captures": [
+        "absence inventory",
+        "raw stdout/stderr/exit",
+        "inventory immediately after creation and before deletion",
+        "exact-UUID delegated deletion outcome"
+      ],
+      "guard": "The intermediate inventory, independently of the product diagnostic, must bind the returned UUID to Shutdown."
+    },
+    {
+      "key": "IOS-006",
+      "commands": [
+        [
+          "/Users/kyle/.grantiva-qa/bin/grantiva",
+          "simulator",
+          "ensure",
+          "--name",
+          "cov5-ios-3",
+          "--device-type",
+          "iPhone 17",
+          "--runtime",
+          "26.0",
+          "--json"
+        ],
+        [
+          "/Users/kyle/.grantiva-qa/bin/grantiva",
+          "simulator",
+          "ensure",
+          "--name",
+          "cov5-ios-26",
+          "--json"
+        ]
+      ],
+      "captures": [
+        "new-device JSON",
+        "bare-name primary reuse JSON",
+        "inventory binding both UUIDs",
+        "exact extra cleanup"
+      ],
+      "guard": "Primary reuse must match the unresolved root allocation before invocation; primary physical deletion is forbidden."
+    },
+    {
+      "key": "IOS-007",
+      "commands": [
+        [
+          "/Users/kyle/.grantiva-qa/bin/grantiva",
+          "simulator",
+          "ensure",
+          "--name",
+          "cov-thing"
+        ]
+      ],
+      "captures": [
+        "absence before",
+        "raw refusal streams/exit",
+        "absence after"
+      ],
+      "guard": "Negative only. Do not add a type or create this name."
+    },
+    {
+      "key": "IOS-008",
+      "concurrentCommands": [
+        [
+          "/Users/kyle/.grantiva-qa/bin/grantiva",
+          "simulator",
+          "ensure",
+          "--name",
+          "cov5-ios-3",
+          "--device-type",
+          "iPhone 17",
+          "--runtime",
+          "26.0"
+        ],
+        [
+          "/Users/kyle/.grantiva-qa/bin/grantiva",
+          "simulator",
+          "ensure",
+          "--name",
+          "cov5-ios-3",
+          "--device-type",
+          "iPhone 17",
+          "--runtime",
+          "26.0"
+        ]
+      ],
+      "captures": [
+        "absence before",
+        "both recorder command JSON files with actual spawned argv/PID/start/end",
+        "both raw streams/exits/returned UUIDs",
+        "single-name inventory after"
+      ],
+      "guard": "A PID printed by product output is descriptive only. Make no independent PID-authentication or signal-authority claim without separate start/argv evidence."
+    },
+    {
+      "key": "IOS-009",
+      "commands": [
+        [
+          "/bin/cat",
+          "/private/tmp/grantiva-cov5-ios-runner-home/simulator-capacity/created.json"
+        ]
+      ],
+      "captures": [
+        "raw ledger",
+        "ledger hash",
+        "current exact-name/UUID inventory"
+      ],
+      "guard": "Read the isolated cov5 iOS home only and join the fresh IOS-008 generation by exact UUID."
+    }
+  ],
+  "allocationEvidence": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-coverage/provision"
+}

@@ -1,0 +1,76 @@
+{
+  "schema": "grantiva.cov5-ios-readiness.v1",
+  "status": "SMOKE_GATE_APPROVED_PRIMARIES_ALLOCATED_LIVE_HELD_FOR_ANDROID_QUIET_WINDOW",
+  "smokeGate": {
+    "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate4/smoke-gate.json",
+    "passed": true,
+    "cleanupComplete": true
+  },
+  "bindings": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/preparation/campaign-completion/final-coverage-bindings.md",
+  "candidate": {
+    "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate4/candidate.json",
+    "sha256": "714715a6890ae340395083e195eecfa3d95e28abdc102e69e7c66533dea5c783",
+    "binary": "/Users/kyle/.grantiva-qa/bin/grantiva",
+    "binarySHA256": "2a4e90e655b2a43234b4c1c5cac403042df17aa43e3e6bd0d011743e38fb9fb5",
+    "runnerHome": "/private/tmp/grantiva-cov5-ios-runner-home",
+    "session": "cov5-ios"
+  },
+  "recorder": {
+    "path": "findings/tools/cov5-ios/capture-one.rb",
+    "sha256": "4e3ea27576abda8516339aa510b58026c67c4d6117ffeeb1ecfc3fab198e1136",
+    "approvedSource": "/Users/kyle/Developer/grantiva-cli/.worktrees/cov4-cli/findings/evidence/cov4-cli/capture-one.rb",
+    "approvedSourceSHA256": "f7a4e1503511d9b70f0cbd2f7ad2678b0a4810edbf4ba8b7d36048d5adc42c8b",
+    "review": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/reviews/fix4-task9-cli-capture-fix3-review.md",
+    "rebindDiff": "findings/evidence/cov5-ios/preparation/capture-one-rebind.diff",
+    "rebindOnly": [
+      "candidate manifest path",
+      "candidate manifest SHA-256",
+      "runner home",
+      "GRANTIVA_SESSION_ID"
+    ],
+    "syntax": "ruby -c: Syntax OK"
+  },
+  "executionManifest": {
+    "path": "findings/evidence/cov5-ios/preparation/execution-manifest.json",
+    "sha256": "24ac586eabb5531624f673b081df1011214b048d311df56b28e984f059c227e8",
+    "effectiveKeys": 536,
+    "supplementalKeys": 39,
+    "cliHandoffs": 6,
+    "duplicateEffectiveKeys": 0
+  },
+  "initialIOS001Through009Plan": {
+    "path": "findings/evidence/cov5-ios/preparation/initial-ios001-009-plan.json",
+    "sha256": "d3143c9d8244bc719f1ab6721b6e330a6adf0a1ecc25dff2a0d8483c61b14663",
+    "status": "static commands prepared; live execution held"
+  },
+  "captureCorrections": {
+    "IOS-001": "name-only latest behavior retained; runtime must come from returned-UUID inventory",
+    "IOS-004": "intermediate successful-26 inventory precedes deletion; invalid-99.9 absence captured separately",
+    "IOS-005": "intermediate inventory binds returned UUID to Shutdown before deletion",
+    "IOS-008": "both launched argv/PIDs/exits/streams/UUIDs retained; product-log PID receives no authentication claim"
+  },
+  "unresolvedUntilRootReservation": {
+    "extraDeviceNamesAndUUIDs": "<PER_BATCH_STANDING_DELEGATION>",
+    "protectedInventory": "<CAPTURE_AT_ACTIVATION_WITHOUT_MUTATION>"
+  },
+  "executionPerformed": false,
+  "deviceInventoryQueried": false,
+  "buildPerformed": false,
+  "historicalPassesTransferred": false,
+  "candidateArtifactIdentityReadiness": "pass: CLI, four bundle files, and installed runner match candidate4 manifest",
+  "allocations": {
+    "primary26": {
+      "name": "cov5-ios-26",
+      "uuid": "532523A7-30B3-4048-A538-4F3DB2EFB807",
+      "runtime": "iOS 26.0",
+      "state": "Booted"
+    },
+    "primary27": {
+      "name": "cov5-ios-27",
+      "uuid": "EED50B5C-119B-4982-A495-4521CAE8494F",
+      "runtime": "iOS 27.0",
+      "state": "Booted"
+    },
+    "provisionEvidence": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-coverage/provision"
+  }
+}

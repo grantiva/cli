@@ -1,0 +1,54 @@
+/private/tmp/grantiva-cov5-ios-cli-handoffs/CLI-066/grantiva.yml
+appId: com.kylebrowning.Landmarks
+---
+- launchApp
+- scroll
+- scroll: {direction: up}
+- takeScreenshot: Scroll
+/private/tmp/grantiva-cov5-ios-cli-handoffs/CLI-061/grantiva.yml
+appId: com.kylebrowning.Landmarks
+---
+- launchApp
+- tapOn: "Mount \"Denali\" 🏔️"
+- takeScreenshot: QuoteEmoji
+/private/tmp/grantiva-cov5-ios-cli-handoffs/CLI-048-missing/grantiva.yml
+bundle_id: com.kylebrowning.Landmarks
+simulator: cov5-ios-26
+screens:
+  - name: Missing
+    path:
+      - run_flow: "sub/missing.yaml"
+/private/tmp/grantiva-cov5-ios-cli-handoffs/CLI-064/grantiva.yml
+appId: com.kylebrowning.Landmarks
+---
+- launchApp
+- tapOn: {text: "Favorites"}
+- tapOn: {id: "heart"}
+- takeScreenshot: IdSelector
+/private/tmp/grantiva-cov5-ios-cli-handoffs/CLI-048-relative/sub/flow.yaml
+appId: com.kylebrowning.Landmarks
+---
+- launchApp
+- takeScreenshot: RelativeSubflow
+/private/tmp/grantiva-cov5-ios-cli-handoffs/CLI-048-relative/grantiva.yml
+bundle_id: com.kylebrowning.Landmarks
+simulator: cov5-ios-26
+screens:
+  - name: Relative
+    path:
+      - run_flow: "sub/flow.yaml"
+/private/tmp/grantiva-cov5-ios-cli-handoffs/CLI-049/a.yaml
+appId: com.kylebrowning.Landmarks
+---
+- runFlow: b.yaml
+/private/tmp/grantiva-cov5-ios-cli-handoffs/CLI-049/grantiva.yml
+bundle_id: com.kylebrowning.Landmarks
+simulator: cov5-ios-26
+screens:
+  - name: Cycle
+    path:
+      - run_flow: "a.yaml"
+/private/tmp/grantiva-cov5-ios-cli-handoffs/CLI-049/b.yaml
+appId: com.kylebrowning.Landmarks
+---
+- runFlow: a.yaml
