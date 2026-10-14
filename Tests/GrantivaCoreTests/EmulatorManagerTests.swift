@@ -302,18 +302,73 @@ final class EmulatorManagerTests: XCTestCase {
             .success("List of devices attached\nemulator-5554 device\nemulator-5556 device"),
             .success("Pixel_7_API_34\nOK"),
             .success("Pixel_8_API_35\nOK"),
+            .success("1"),
+            .success("package:/system/framework/framework-res.apk"),
+            .success(""),
         ])
         let device = try await manager(shell).selectDevice(configured: "Pixel_8_API_35")
         XCTAssertEqual(device, BootedDevice(udid: "emulator-5556", name: "Pixel_8_API_35"))
+        XCTAssertEqual(shell.commands.filter { $0.contains("boot_completed") }.count, 1)
+        XCTAssertEqual(shell.commands.filter { $0.contains("pm path android") }.count, 1)
     }
 
     func testSelectDeviceWithoutConfigUsesTheOnlyRunningEmulator() async throws {
         let shell = ScriptedShell([
             .success("List of devices attached\nemulator-5554 device\nR58M1234ABC device"),
             .success("Pixel_8_API_35\nOK"),
+            .success("1"),
+            .success("package:/system/framework/framework-res.apk"),
+            .success(""),
         ])
         let device = try await manager(shell).selectDevice(configured: nil)
         XCTAssertEqual(device.udid, "emulator-5554", "physical devices are never picked by default")
+        XCTAssertEqual(shell.commands.filter { $0.contains("boot_completed") }.count, 1)
+        XCTAssertEqual(shell.commands.filter { $0.contains("pm path android") }.count, 1)
+    }
+
+    func testConfiguredADBDeviceWaitsForAndroidReadinessWithoutSpawningAnotherEmulator() async throws {
+        let spawn = SpawnRecorder()
+        let shell = ScriptedShell([
+            .success("List of devices attached\nemulator-5554 device"),
+            .success("Pixel_8_API_35\nOK"),
+            .success(""),
+            .success("1"),
+            .success("package:/system/framework/framework-res.apk"),
+            .success(""),
+        ])
+
+        let device = try await manager(shell, spawn: spawn).selectDevice(configured: "Pixel_8_API_35")
+
+        XCTAssertEqual(device, BootedDevice(udid: "emulator-5554", name: "Pixel_8_API_35"))
+        XCTAssertTrue(spawn.calls.isEmpty, "an adb-attached emulator must be waited on, not started twice")
+        let bootProbes = shell.commands.indices.filter { shell.commands[$0].contains("boot_completed") }
+        let packageProbes = shell.commands.indices.filter { shell.commands[$0].contains("pm path android") }
+        XCTAssertEqual(bootProbes.count, 2, "empty boot_completed must be polled until it becomes 1")
+        XCTAssertEqual(packageProbes.count, 1)
+        XCTAssertGreaterThan(packageProbes[0], bootProbes[1], "Android services are checked only after boot_completed=1")
+    }
+
+    func testDefaultADBDeviceWaitsForAndroidReadinessWithoutSelectingThePhysicalDevice() async throws {
+        let spawn = SpawnRecorder()
+        let shell = ScriptedShell([
+            .success("List of devices attached\nemulator-5554 device\nR58M1234ABC device"),
+            .success("Pixel_8_API_35\nOK"),
+            .success(""),
+            .success("1"),
+            .success("package:/system/framework/framework-res.apk"),
+            .success(""),
+        ])
+
+        let device = try await manager(shell, spawn: spawn).selectDevice(configured: nil)
+
+        XCTAssertEqual(device, BootedDevice(udid: "emulator-5554", name: "Pixel_8_API_35"))
+        XCTAssertTrue(spawn.calls.isEmpty)
+        let bootProbes = shell.commands.indices.filter { shell.commands[$0].contains("boot_completed") }
+        let packageProbes = shell.commands.indices.filter { shell.commands[$0].contains("pm path android") }
+        XCTAssertEqual(bootProbes.count, 2, "empty boot_completed must be polled until it becomes 1")
+        XCTAssertEqual(packageProbes.count, 1)
+        XCTAssertGreaterThan(packageProbes[0], bootProbes[1], "Android services are checked only after boot_completed=1")
+        XCTAssertFalse(shell.commands.contains { $0.contains("R58M1234ABC") && $0.contains("getprop") })
     }
 
     func testSelectDeviceWithTwoRunningAndNoConfigAsksForAChoice() async throws {
