@@ -1,0 +1,148 @@
+{
+  "id": "flow-004",
+  "name": "05-category",
+  "sourceFile": ".maestro/05-category.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T19:41:52.386816-07:00",
+  "endTime": "2026-10-13T19:41:55.579852-07:00",
+  "duration": 3193,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T19:41:52.389441-07:00",
+      "endTime": "2026-10-13T19:41:53.840441-07:00",
+      "duration": 1451,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Lakes\"",
+      "status": "passed",
+      "startTime": "2026-10-13T19:41:53.840944-07:00",
+      "endTime": "2026-10-13T19:41:54.681944-07:00",
+      "duration": 841,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Lakes"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Lakes",
+        "bounds": {
+          "x": 0,
+          "y": 1059,
+          "width": 1080,
+          "height": 147
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Lake Tahoe\"",
+      "status": "passed",
+      "startTime": "2026-10-13T19:41:54.683294-07:00",
+      "endTime": "2026-10-13T19:41:55.308294-07:00",
+      "duration": 625,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Lake Tahoe"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0022-0000-00b000000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Mono Lake\"",
+      "status": "passed",
+      "startTime": "2026-10-13T19:41:55.309506-07:00",
+      "endTime": "2026-10-13T19:41:55.336506-07:00",
+      "duration": 27,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Mono Lake"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0022-0000-00ba00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "assertNotVisible",
+      "yaml": "assertNotVisible: text=\"Golden Gate Bridge\"",
+      "status": "passed",
+      "startTime": "2026-10-13T19:41:55.33785-07:00",
+      "endTime": "2026-10-13T19:41:55.45085-07:00",
+      "duration": 113,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate Bridge"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-13T19:41:55.452238-07:00",
+      "endTime": "2026-10-13T19:41:55.579238-07:00",
+      "duration": 127,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-004/cmd-005-Lakes.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 6,
+    "mean": 530,
+    "p50": 127,
+    "p95": 1451,
+    "max": 1451,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

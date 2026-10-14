@@ -1,0 +1,133 @@
+{
+  "id": "flow-009",
+  "name": "10-seed-many",
+  "sourceFile": ".maestro/10-seed-many.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T19:42:09.128244-07:00",
+  "endTime": "2026-10-13T19:42:15.54458-07:00",
+  "duration": 6416,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T19:42:09.130578-07:00",
+      "endTime": "2026-10-13T19:42:10.591578-07:00",
+      "duration": 1461,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "scroll",
+      "yaml": "scroll: DOWN",
+      "status": "passed",
+      "startTime": "2026-10-13T19:42:10.592637-07:00",
+      "endTime": "2026-10-13T19:42:12.208637-07:00",
+      "duration": 1616,
+      "params": {
+        "direction": "DOWN"
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "scroll",
+      "yaml": "scroll: DOWN",
+      "status": "passed",
+      "startTime": "2026-10-13T19:42:12.209263-07:00",
+      "endTime": "2026-10-13T19:42:13.273263-07:00",
+      "duration": 1064,
+      "params": {
+        "direction": "DOWN"
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "scroll",
+      "yaml": "scroll: DOWN",
+      "status": "passed",
+      "startTime": "2026-10-13T19:42:13.274046-07:00",
+      "endTime": "2026-10-13T19:42:14.312046-07:00",
+      "duration": 1038,
+      "params": {
+        "direction": "DOWN"
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "scroll",
+      "yaml": "scroll: DOWN",
+      "status": "passed",
+      "startTime": "2026-10-13T19:42:14.312446-07:00",
+      "endTime": "2026-10-13T19:42:15.356446-07:00",
+      "duration": 1044,
+      "params": {
+        "direction": "DOWN"
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmark 28\"",
+      "status": "passed",
+      "startTime": "2026-10-13T19:42:15.357347-07:00",
+      "endTime": "2026-10-13T19:42:15.415347-07:00",
+      "duration": 58,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmark 28"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-002c-0000-016e00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-006",
+      "index": 6,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-13T19:42:15.415985-07:00",
+      "endTime": "2026-10-13T19:42:15.543985-07:00",
+      "duration": 128,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-009/cmd-006-Scrolled.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 7,
+    "mean": 915,
+    "p50": 1044,
+    "p95": 1616,
+    "max": 1616,
+    "slowestType": "scroll"
+  },
+  "artifacts": {}
+}

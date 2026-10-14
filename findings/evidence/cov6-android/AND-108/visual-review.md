@@ -1,0 +1,1 @@
+The retained `Lakes.png` visibly shows the Lakes list with Lake Tahoe, Mono Lake, and Crater Lake. The retained `Detail.png` visibly shows Golden Gate Bridge, San Francisco, CA, its description, and the Plan Visit button. These are the configured Lakes and Detail destinations.

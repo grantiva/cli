@@ -1,0 +1,32 @@
+{
+  "cwd": "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-android",
+  "argv": [
+    "/usr/bin/python3",
+    "-c",
+    "import subprocess,time,sys; d=time.time()+20\nwhile time.time()<d:\n s=subprocess.run([\"/Users/kyle/Library/Android/sdk/platform-tools/adb\",\"devices\"],capture_output=True,text=True).stdout\n if \"emulator-5556\" not in s: print(s,end=\"\"); sys.exit(0)\n time.sleep(.2)\nsys.exit(1)"
+  ],
+  "environment": {
+    "GRANTIVA_RUNNER_HOME": "/private/tmp/grantiva-candidate5-coverage-qjr26z3g/android-runner-home",
+    "MAESTRO_RUNNER_HOME": "/private/tmp/grantiva-candidate5-coverage-qjr26z3g/android-runner-home",
+    "GRANTIVA_SESSION_ID": "candidate5-android",
+    "GRANTIVA_API_KEY": "<unset>"
+  },
+  "startedAt": "2026-10-14T02:45:54.938457Z",
+  "endedAt": "2026-10-14T02:45:55.004662Z",
+  "timeoutSeconds": 30.0,
+  "timedOut": false,
+  "pid": 83589,
+  "processGroupId": 83589,
+  "termSentAt": null,
+  "killSentAt": null,
+  "exited": true,
+  "exitStatus": 0,
+  "signaled": false,
+  "terminationSignal": null,
+  "processGroupAliveAfterWait": false,
+  "cleanupFailed": false,
+  "stdout": "findings/evidence/cov6-android/AND-013/absence.stdout",
+  "stderr": "findings/evidence/cov6-android/AND-013/absence.stderr",
+  "bootObservation": false,
+  "identityEvidence": "findings/evidence/cov6-android/AND-013/absence.identity.json"
+}
