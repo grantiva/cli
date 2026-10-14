@@ -1,0 +1,48 @@
+base 73cfa99d94a00bbc0fd6fce13a7d72b9d9c29226
+worktree_head 73cfa99d94a00bbc0fd6fce13a7d72b9d9c29226
+
+M	Sources/GrantivaCore/Resources/grantiva-runner-amd64.tar.gz
+M	Sources/GrantivaCore/Resources/grantiva-runner-arm64.tar.gz
+M	Sources/GrantivaCore/Runner/RunnerManager.swift
+M	Tests/GrantivaCoreTests/RunnerManagerTests.swift
+
+ .../Resources/grantiva-runner-amd64.tar.gz         | Bin 25199293 -> 25197543 bytes
+ .../Resources/grantiva-runner-arm64.tar.gz         | Bin 24082301 -> 24083514 bytes
+ Sources/GrantivaCore/Runner/RunnerManager.swift    |   2 +-
+ Tests/GrantivaCoreTests/RunnerManagerTests.swift   |   4 ++--
+ 4 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/Sources/GrantivaCore/Runner/RunnerManager.swift b/Sources/GrantivaCore/Runner/RunnerManager.swift
+index 153e9721..b8f2c30f 100644
+--- a/Sources/GrantivaCore/Runner/RunnerManager.swift
++++ b/Sources/GrantivaCore/Runner/RunnerManager.swift
+@@ -36,7 +36,7 @@ public struct RunnerManager: Sendable, Decodable {
+ }
+ 
+ extension RunnerManager {
+-    public static let runnerVersion = "1.1.28-grantiva.15"
++    public static let runnerVersion = "1.1.28-grantiva.16"
+ 
+     /// What the version file holds. Bump the suffix whenever the tarball
+     /// layout changes without a runner rebuild, so `installIfNeeded` sees a
+diff --git a/Tests/GrantivaCoreTests/RunnerManagerTests.swift b/Tests/GrantivaCoreTests/RunnerManagerTests.swift
+index a6ff28c9..1fd190d6 100644
+--- a/Tests/GrantivaCoreTests/RunnerManagerTests.swift
++++ b/Tests/GrantivaCoreTests/RunnerManagerTests.swift
+@@ -504,8 +504,8 @@ final class RunnerManagerTests: XCTestCase {
+     }
+ 
+     func testInstallStampChangesWhenDriversMoveButRunnerVersionDoesNot() {
+-        XCTAssertEqual(RunnerManager.runnerVersion, "1.1.28-grantiva.15")
+-        XCTAssertEqual(RunnerManager.installStamp, "1.1.28-grantiva.15+android-drivers-2")
++        XCTAssertEqual(RunnerManager.runnerVersion, "1.1.28-grantiva.16")
++        XCTAssertEqual(RunnerManager.installStamp, "1.1.28-grantiva.16+android-drivers-2")
+     }
+ 
+     func testLiveExtractionLaysOutBothTarballs() throws {
+
+9b20219924504b5b30a85182708caa693caa8b15d3c4f5988cc563be877ba580  Sources/GrantivaCore/Resources/grantiva-runner-arm64.tar.gz
+cb8cf912c80da1183591becb5d701953984f35beaccf506e7b570920d9813805  Sources/GrantivaCore/Resources/grantiva-runner-amd64.tar.gz
+59cbbf5725cfe682e857b8e1e3ec1a063a265c537aeee1fb57c5d4b8a5c1fb2c  Sources/GrantivaCore/Resources/android-drivers.tar.gz
+e5bba6ee1b9b8cfad77985ef0412829cf30d06f30e904094ae1982268a5b0495  Sources/GrantivaCore/Runner/RunnerManager.swift
+ca6d96ba3cf323c4c8cab5973707dc3fde76e0255ba5951a1687e54c70e98987  Tests/GrantivaCoreTests/RunnerManagerTests.swift
