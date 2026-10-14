@@ -1,0 +1,3 @@
+Candidate5 cleanup preparation: APPROVED by controller for execution only after all seven named phase acceptances pass.
+
+Reviewed exact helper SHA 907dfe82632283dbe0f870396bc2ee453f008472389376d9ee956e04c16ffcd8. Manifest, ownership, process ownership and baseline hashes pin the current candidate and targets. Android PID/PGID/session/start/executable/argv are compared before signaling; iOS UUID/name/runtime/ownership are checked before shutdown/delete. Protected simulator state and Pixel configuration are compared before and after. Existing outputs are refused; first failures persist. Current lifecycle retry acceptance path is 03-lifecycle-fix1/helper/acceptance.json. No cleanup has been executed at this review.

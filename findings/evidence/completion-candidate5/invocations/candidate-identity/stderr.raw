@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/harness/candidate_identity.py", line 73, in <module>
+    print(json.dumps(validate(a.candidate_manifest,a.ownership_manifest,source_root=a.source_root,binary=a.binary,bundle=a.bundle,runner=a.runner,runner_home=a.runner_home,platform=a.platform,device=a.device,android_avd=a.android_avd,apk=a.apk),indent=2))
+                     ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/harness/candidate_identity.py", line 59, in validate
+    verify_runner_proof(rr); packaged=rr['packaged']; require(str(runner)==str(pathlib.Path(packaged['path']).resolve()) and file_sha(runner)==packaged['sha256'],'packaged runner mismatch'); require(command([str(runner),'--version'])==packaged['version'],'packaged runner version mismatch')
+    ~~~~~~~~~~~~~~~~~~~^^^^
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/harness/candidate_identity.py", line 20, in verify_runner_proof
+    require(rr.get('sourceSHA')==EXPECTED_RUNNER_SHA,'runner source SHA is not the frozen Task 8 runner')
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/harness/candidate_identity.py", line 49, in require
+    if not value: raise ValueError(message)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: runner source SHA is not the frozen Task 8 runner

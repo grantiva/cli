@@ -1,10 +1,10 @@
 # Candidate 5 full-coverage readiness
 
-Status: prepared queue only. Candidate 5 is not frozen, so no coverage command is executable yet. No candidate 4 runtime verdict or raw capture is transferred.
+Status: candidate 5 frozen; early iOS26/27 gate passed and IOS-117/118/120 accepted. Broad smoke remains active; full-coverage homes/device allocations stay pending until smoke cleanup and review. No candidate 4 runtime verdict or raw capture is transferred.
 
 ## Canonical inventory and freeze binding
 
-The key inventory remains `findings/evidence/completion-coverage/required-keys.json` (1,489 effective keys: CLI 431, iOS 536, Android 522) in the order of `docs/superpowers/plans/2026-10-13-round4-coverage-matrix.md` (SHA-256 `09c054ed467cac27d2c9e0ddababc95868d766a5e61bf110bfb47278f38dc166`). Its current candidate-manifest field is candidate 4 provenance and must be regenerated or copied with an explicit candidate 5 manifest path and SHA after freeze; the key arrays and matrix binding do not change. The six CLI handoffs remain CLI-048, CLI-049, CLI-061, CLI-064, CLI-066 and CLI-083 and are joined once from the fresh iOS slice.
+The key inventory remains `findings/evidence/completion-coverage/required-keys.json` (1,489 effective keys: CLI 431, iOS 536, Android 522) in the order of `docs/superpowers/plans/2026-10-13-round4-coverage-matrix.md` (SHA-256 `09c054ed467cac27d2c9e0ddababc95868d766a5e61bf110bfb47278f38dc166`). The candidate5 copy at `findings/evidence/completion-candidate5/coverage/required-keys.json` binds manifest `191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c`; key arrays and matrix binding remain unchanged. The six CLI handoffs remain CLI-048, CLI-049, CLI-061, CLI-064, CLI-066 and CLI-083 and are joined once from the fresh iOS slice.
 
 Before launch, bind every helper to the immutable candidate 5 manifest, its QA binary/bundle/installed-runner hashes, and fresh actor homes. Refuse `PENDING`, candidate 4 manifest hashes, existing evidence destinations, or a nonempty result root.
 

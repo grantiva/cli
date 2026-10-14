@@ -13,7 +13,7 @@ import time
 
 import lifecycle_smoke as base
 
-APPROVED_BASE_SHA = '5aceb568822e167004f516aa4d99fbb12c47eb80ebabc637bbecab2ba34d0625'
+APPROVED_BASE_SHA = 'c9a98c1d354893fe9a6dfdced4cdd53e17c7e192e9bfc1cde656de7b61a19737'
 PHASE = 'force-teardown'
 
 

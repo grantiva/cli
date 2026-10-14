@@ -1,0 +1,63 @@
+{
+  "status": "PREPARED_NOT_EXECUTED_ROOT_REVIEW_REQUIRED",
+  "runOnlyAfterAllPhasesAccepted": true,
+  "candidateManifestSHA256": "191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c",
+  "ownershipSHA256": "dd9533729cfe0ffba7f01a29418be29d50f0987b893cae74be56c8f453f18e82",
+  "processOwnershipSHA256": "6e421a2bee5231ebfd667a377b91cea6c3deb2dc8456b7b7ccfe32c53a4453b3",
+  "iosBaselineSHA256": "a86325a2199ee2eae0434dd6a91f74dd5354c2d47c87c88fdd5859f8fde1dfad",
+  "pixelConfigSHA256": "3caad1a0f9164280a264968a81249241e183fe4981462fbabf9181e4c18eae27",
+  "owned": {
+    "ios": "0CA840ED-E98A-4A66-8548-6661C3C831BE",
+    "iosName": "smoke5-c5-ios",
+    "androidAVD": "smoke5-c5-android",
+    "serial": "emulator-5582",
+    "pid": 40513,
+    "port": 5582
+  },
+  "acceptancePathsDerivedFrom": "current candidate5 phase outputs; lifecycle retry path supplied by root",
+  "acceptancePaths": [
+    "02-runner-android/helper/acceptance.json",
+    "03-lifecycle-fix1/helper/acceptance.json",
+    "03b-joint-forward/helper/acceptance.json",
+    "04-mcp-ios/helper/acceptance.json",
+    "05-mcp-android/helper/acceptance.json",
+    "06-docs-output/helper/acceptance.json",
+    "07-final-force-teardown/helper/acceptance.json"
+  ],
+  "helperSHA256": "907dfe82632283dbe0f870396bc2ee453f008472389376d9ee956e04c16ffcd8",
+  "diffSHA256": "147548a51cd4e3d1d7cc5c0b011e213349c3349f2e5f5490d75cfb93a91c0fea",
+  "astParse": "PASS",
+  "runnerHome": "/private/tmp/grantiva-completion-candidate5-y6myz3jd/runner-home",
+  "activeDiffSHA256": "55f03732ac29d4c867c80cb66335cc41ac05f623e52b5efcb5e3562897f31c00",
+  "preservedHelper": {
+    "path": "final-cleanup.before-lifecycle-fix1-binding.py",
+    "sha256": "740e6869daf65204a5721e3846e0d5a0b189b23e688322e9a54248410eebd8f3"
+  },
+  "failClosed": {
+    "androidStableIdentity": [
+      "pid",
+      "pgid",
+      "sessionId",
+      "start",
+      "executable",
+      "command"
+    ],
+    "iosOwnership": [
+      "udid",
+      "name",
+      "runtime",
+      "owned"
+    ],
+    "androidOwnership": [
+      "serial",
+      "avd",
+      "ownedPID",
+      "owned"
+    ],
+    "protectedBaselineBeforeAndAfter": true,
+    "allAcceptanceFilesMustExistAndPass": true,
+    "passWrittenOnlyAfterOwnedResourcesAbsentAndProtectedResourcesUnchanged": true
+  },
+  "orderingNote": "07-final-force-teardown reclaims owned iOS runtime resources before final cleanup; cleanup still authenticates the owned simulator and permits only its recorded Booted or Shutdown state before deleting it.",
+  "executed": false
+}

@@ -1,0 +1,56 @@
+{
+  "status": "READY_FOR_INDEPENDENT_REVIEW_NOT_LIVE_EXECUTED",
+  "scope": "candidate5 lifecycle retained-report collector DirEntry ENOENT normalization",
+  "firstFailure": {
+    "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/invocations/lifecycle/stderr.raw",
+    "sha256": "54bc39ae846c73a6536c20f01a92e7da3bbf15d7d417a8eec5908f21abaed84b"
+  },
+  "diagnosis": "shutil.Error supplied an os.DirEntry source; the collector authenticated only str/Path and raised instead of classifying the source disappearance as transient.",
+  "behavior": {
+    "acceptedTransient": "ENOENT only when both tuple source and encoded OSError filename authenticate beneath the report source; os.PathLike is normalized with os.fspath",
+    "rejected": "destination ENOENT, mixed errors, non-ENOENT errors",
+    "snapshot": "staging remains exclusive; only complete validated bytes are published; existing complete target is preserved"
+  },
+  "active": {
+    "lifecycle": {
+      "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/harness/lifecycle_smoke.py",
+      "sha256": "c9a98c1d354893fe9a6dfdced4cdd53e17c7e192e9bfc1cde656de7b61a19737"
+    },
+    "foreground": {
+      "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/harness/foreground_force.py",
+      "sha256": "06cc0d04200c57453ad7c2448aab3f007d29fb3d40d01ad3f54c0d4301a3d24a"
+    }
+  },
+  "preserved": {
+    "lifecycle": {
+      "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/harness/lifecycle_smoke.before-direntry-race-fix.py",
+      "sha256": "5aceb568822e167004f516aa4d99fbb12c47eb80ebabc637bbecab2ba34d0625"
+    },
+    "foreground": {
+      "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/harness/foreground_force.before-direntry-race-fix.py",
+      "sha256": "c0b110031c779f78232c1da4af09df301c6bb0cc8f894fe6ed636dddd1c5ee97"
+    }
+  },
+  "diffs": [
+    {
+      "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/harness/diffs/lifecycle_smoke.direntry-race-fix.diff",
+      "sha256": "2d326af6da2a44012162e03417766c7b5c8bb6cd4f945e39542e8eaccdd61b60"
+    },
+    {
+      "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/harness/diffs/foreground_force.direntry-race-fix.diff",
+      "sha256": "c967d49c7d2e8d6c95c77e22e200e6d8fb99710ce1243876585021dd043a28f2"
+    }
+  ],
+  "focusedTest": {
+    "command": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/harness/lifecycle-direntry-race-test/command.json",
+    "stdout": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/harness/lifecycle-direntry-race-test/stdout.raw",
+    "stderr": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/harness/lifecycle-direntry-race-test/stderr.raw",
+    "exitCode": 0,
+    "tests": 8
+  },
+  "constraints": {
+    "liveExecuted": false,
+    "deviceCommands": false,
+    "productCommands": false
+  }
+}

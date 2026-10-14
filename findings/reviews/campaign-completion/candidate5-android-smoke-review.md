@@ -1,0 +1,34 @@
+# Candidate 5 Android runner smoke review
+
+**Review scope:** read-only review of `completion-candidate5/02-runner-android/helper/{acceptance.json,provenance.json}`, the recorded helper invocation, the accepted helper, and the raw artifacts referenced by its checks. No command was rerun.
+
+**Spec verdict: APPROVED.** The helper completed once with exit 0 and its `passed: true` result follows from the checks implemented by the accepted helper. **Evidence-quality verdict: APPROVED WITH TWO JOIN LIMITATIONS.** The raw evidence supports the smoke acceptance claims. The cycle check is intentionally weaker than the canonical L20/L75 spelling contract, and the live engine-ADB leg proves behavior/routing but does not observe the external `adb` argv. Those limitations do not invalidate the smoke PASS, but they prevent those stronger full-coverage clauses from being graded from this smoke alone.
+
+## Identity and invocation binding
+
+- Candidate manifest: `191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c`.
+- Acceptance: `7892093130ed51de610b2bc52e6a2560a34eed63df3445a750f7340c04f8568d`; provenance: `80b55c93f3c989e8a298f374a622f6de1734722ac1f2c4364dad16963e7043dd`.
+- Accepted helper: `5202177d9fb2cd73df9f50d3796731dab766bf25723622da483d5bac0f45544e`.
+- Invocation start/result: `b39d7e79eba07a12b3c210bb2285634067e78cf70d33d9d46426bdb41ad4b9fb` / `46c87015be7c0a29c78c7f844b8c5e05b37cc9174657700edaaa86786c020adc`; exit 0, no timeout. Empty outer stdout/stderr are expected because the helper writes case-local raw streams.
+- The invocation pins the candidate and ownership hashes, API-key absence, both runner homes, JDK 21, Android SDK, `completion-candidate5` session, exact APK, and `emulator-5582` / `smoke5-c5-android`. The identity command returned exactly that AVD (`stdout` hash `fb90c93979b07f478af17976bd7d460d9182b6a97bd2be28b662c7bb65b9223f`, result hash `8176997c16934c9e37dbcd6011e63700f183b2334a1739d6792cd8d3b60bf833`).
+- Provenance binds CLI source `dd5d3336296a41014a45070cc5a8c4295a0873ec`, runner source `d98b08898f45b94bad607f76e19089bb0e15d5c0`, identical packaged/installed runner hash `26b155ca9cca9b1bb7bbb77dcf7c54943afc8f4212fa7660cb6fb7adb46f62ab`, stamp `1.1.28-grantiva.16+android-drivers-2`, demo source `84af7581b75134b0e417b254e4317d565f7b73c6`, and APK `5891bf3753eade9ce28a391ec5d8d3d289d195af951e967b67bb1928e06d988a`.
+
+## Acceptance support
+
+- Healthy control passed (`healthy/result.json` `9d19f8f1e4d095a131c353d0f0068a8cf4a2173f2edee65f301caf4b4c7d99ba`; report `83b2e1f80d787d3a02803583802e128cec00ab9a7fc65e0bdd4a3c3b02e68338`).
+- All five real crash runs exited 1. Each report marks the first `launchApp` command `app_crash`; each logcat contains one matching fatal PID and a same-PID launch record; no launch command passed. Clock probes bound fatal-to-decision to 0.175–0.411 seconds across all runs, below two seconds. Result hashes are `1a3c5c…`, `a7354834…`, `03a4edf5…`, `59f320f0…`, and `10ccbef3…`; report hashes are `ee125327…`, `ced29ca7…`, `568bfb06…`, `e42b4396…`, and `0c0ddf2e…`.
+- Direction, coordinate, element, and engine-ADB flows each exited 0. App-only before/after hierarchy analysis (`c80bd1e13e5d7d9560fedf9a5da8863105f44020cf0a0eebd040c016b02d6607`) measures median upward movement of 939, 958, 1167, and 1288 pixels respectively. Client logs prove W3C `/actions` for the first three and its absence for engine-ADB. The helper explicitly records `externalAdbArgvObservedLive: false`; its referenced unit proof is therefore a separate source/test join.
+- Favorite removal passed 5/5 with each report showing 13/13 commands and no warning or failure.
+- The literal clear-state/bare-stop flow passed 4/4 (`23b51d28c607da8f12b76fa8f4acd4b083c932eafac333e84c10bda1e4fc06d9`; report `fd3f40bf2008b288d69a0ffcb8dd3a8a367edb82d7638512047a62fc458a0a7e`). Subsequent `pidof` was absent, Settings remained foreground and present in hierarchy, the target package was absent from hierarchy, and the stop command had no crash error.
+- Optional missing-selector runs passed three times in text and three times in JSON. Each flow has statuses `passed, warned, passed`, useful `element_not_found` detail, zero JUnit failures, a passed ready file, and consistent report/CLI surfaces. Both required controls exited 1 with `passed, failed, skipped`; representative optional report hashes are `d9d19d3ba44e3b11554b9212246f5fff4122a6dcf120d2e2cc875bc57625e718` and `62af3ddf9e47bae3901084457a8e8c3b00e37386b3aa529279379e09b671b060`; required report hashes are `06e1b32bae2666d3d77a2c166e3f8c43103ad6dac0b577abe4b804a514be7a9e` and `bd8751c867422207861329f8888eb0759d17a79c9ff4cc30fd7fecf095b2ef83`.
+- The subdirectory-cycle command exited 1 in under one second (`result` `2abc7d7196f4a67d6a1057127c400bfd47d62779a1643ea0d59848a6d5a3fddd`; stderr `8aa31e7cc8f6994d8e4aea1fee3dfc10d69a2396387b8cb7a0af085b7e6fc7f0`) and named a circular dependency. Its diagnostic is `subdirectory/a.yaml -> subdirectory/b.yaml -> a.yaml -> b.yaml`; that satisfies the smoke helper's stated check, but does not satisfy the canonical exact-hop requirement.
+
+## Same-candidate full-coverage joins
+
+These are evidence eligibility findings, not row grades.
+
+- Directly eligible: `B3-L51` (four forms, transport distinction, measured movement and terminal success); `B3-L62` (five-run observed outcome); `B4-L64.4` (five matching-fatal runs and bounded timing); `B4-L77.1`, `B4-L77.2`, and `B4-L77.5` (literal flow plus observable stopped/non-crash state); `B4-L79.1` through `B4-L79.4`; and `B4-PC.2`.
+- Eligible as partial joins only: `B4-L51.E` (live behavior supports the four-form distinction, while the common timing/distance source semantics require their accepted source proof); `B4-L51.P2`, `B4-L62.E`, and `B4-L62.P2` (one AVD and one bare-stop run do not establish both software/GPU or slow/fast AVDs and 3/3 stop); `B4-L61.E`/`B4-L61.P2` (fatal decision timing is strong, but this helper does not separately calculate every artifact-completion interval, prove collector-child absence, or run the post-return-crash control); `B4-L64.3` (healthy half only); `B4-L77.3`/`.4` (bare inherited-ID live path only; explicit/mapping and ineffective-force-stop assertions need source/test joins); and `B4-L79.5`/`.6` (runtime surfaces/budget behavior support them, but the required exact production-writer test and first-request/budget source proof remain separate).
+- Not eligible from this smoke: `B3-L20 [android]`, the `B4-L75.*` family, `B4-EJ.1 [android]`, and `B4-EJ.3 [android]`. The recorded cycle spelling does not preserve every canonical containing-directory-relative hop, root/screens/absolute controls were not run, and the helper's assertion only checked exit 1, the phrase, and the starting filename.
+
+No product failure was found. The two limitations are evidence-scope boundaries rather than smoke regressions.

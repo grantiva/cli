@@ -1,0 +1,462 @@
+{
+  "status": "READ_ONLY_CURRENT_CANDIDATE_INSPECTION",
+  "candidateManifestSHA256": "191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c",
+  "cliSourceSHA": "dd5d3336296a41014a45070cc5a8c4295a0873ec",
+  "demoSourceSHA": "84af7581b75134b0e417b254e4317d565f7b73c6",
+  "files": [
+    {
+      "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/release-completion-candidate5/README.md",
+      "sha256": "740f44373d5006b51bfd7429decaf2004b9b7265f9b30e075fe1e1b2bd249ab1",
+      "excerpts": [
+        {
+          "line": 496,
+          "text": "Date-valued JSON fields use ISO 8601 UTC strings (for example,"
+        },
+        {
+          "line": 497,
+          "text": "`1970-01-01T00:00:00Z`). Scripts should parse this representation rather than"
+        },
+        {
+          "line": 498,
+          "text": "numeric Unix or Apple-reference timestamps. The complete public date-field"
+        },
+        {
+          "line": 736,
+          "text": "Local baselines are stored in `.grantiva/baselines/`. Capture, baseline, and"
+        },
+        {
+          "line": 737,
+          "text": "diff filenames now keep ordinary characters such as spaces literal and encode"
+        },
+        {
+          "line": 738,
+          "text": "only path-unsafe characters. Grantiva still performs legacy baseline lookup"
+        },
+        {
+          "line": 739,
+          "text": "for the older percent-encoded filename (for example, `Deep%20Links.png` for"
+        },
+        {
+          "line": 740,
+          "text": "`Deep Links`) and performs migration on approval to `Deep Links.png`; working"
+        },
+        {
+          "line": 741,
+          "text": "legacy baselines do not need to be renamed by hand. Encoding literal `%` as"
+        },
+        {
+          "line": 742,
+          "text": "`%25` also removes the ambiguous `%` filenames that the legacy scheme could"
+        },
+        {
+          "line": 743,
+          "text": "produce."
+        }
+      ]
+    },
+    {
+      "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/release-completion-candidate5/docs/mcp.md",
+      "sha256": "0464d5dbec9e1aad0dc52535c11063c4277df4875cef75533b9caa0bb69dc0dd",
+      "excerpts": [
+        {
+          "line": 181,
+          "text": "Date-valued JSON fields use ISO 8601 UTC strings, such as"
+        },
+        {
+          "line": 182,
+          "text": "`1970-01-01T00:00:00Z`. This is the representation scripts should consume;"
+        },
+        {
+          "line": 183,
+          "text": "numeric Unix and Apple-reference timestamps are not output alternatives. The"
+        },
+        {
+          "line": 184,
+          "text": "fields are `timestamp` on screen captures, `detectedAt` on detected projects,"
+        },
+        {
+          "line": 185,
+          "text": "`startedAt` on runner sessions, simulator or emulator leases and provenance,"
+        }
+      ]
+    },
+    {
+      "path": "/Users/kyle/Developer/landmarks-demo/.worktrees/release-round4-candidate2/ios/Landmarks/PersistentTabContainer.swift",
+      "sha256": "42a57d629918c00a8abc06ef61e6efe31457317436ea08c5ceed2b3b1f8b593b",
+      "excerpts": [
+        {
+          "line": 15,
+          "text": "    func makeUIViewController(context: Context) -> UITabBarController {"
+        },
+        {
+          "line": 16,
+          "text": "        let coordinator = context.coordinator"
+        },
+        {
+          "line": 17,
+          "text": "        let landmarksHost = UIHostingController(rootView: HostedTab(content: landmarks, environment: context.environment))"
+        },
+        {
+          "line": 18,
+          "text": "        let favoritesHost = UIHostingController(rootView: HostedTab(content: favorites, environment: context.environment))"
+        },
+        {
+          "line": 19,
+          "text": "        let deepLinksHost = UIHostingController(rootView: HostedTab(content: deepLinks, environment: context.environment))"
+        },
+        {
+          "line": 20,
+          "text": "        coordinator.landmarks = landmarksHost"
+        },
+        {
+          "line": 21,
+          "text": "        coordinator.favorites = favoritesHost"
+        },
+        {
+          "line": 22,
+          "text": "        coordinator.deepLinks = deepLinksHost"
+        },
+        {
+          "line": 23,
+          "text": ""
+        },
+        {
+          "line": 24,
+          "text": "        let landmarksTab = UITab(title: \"Landmarks\", image: UIImage(systemName: \"map\"), identifier: Navigator.Tab.landmarks.rawValue) { _ in landmarksHost }"
+        },
+        {
+          "line": 25,
+          "text": "        let favoritesTab = UITab(title: \"Favorites\", image: UIImage(systemName: \"heart\"), identifier: Navigator.Tab.favorites.rawValue) { _ in favoritesHost }"
+        },
+        {
+          "line": 26,
+          "text": "        let deepLinksTab = UITab(title: \"Deep Links\", image: UIImage(systemName: \"link\"), identifier: Navigator.Tab.deepLinks.rawValue) { _ in deepLinksHost }"
+        },
+        {
+          "line": 27,
+          "text": "        favoritesTab.accessibilityIdentifier = \"heart\""
+        },
+        {
+          "line": 28,
+          "text": ""
+        },
+        {
+          "line": 29,
+          "text": "        let controller = UITabBarController(tabs: [landmarksTab, favoritesTab, deepLinksTab])"
+        },
+        {
+          "line": 30,
+          "text": "        controller.delegate = coordinator"
+        },
+        {
+          "line": 31,
+          "text": "        controller.selectedTab = controller.tabs.first { $0.identifier == selection.rawValue }"
+        },
+        {
+          "line": 32,
+          "text": "        return controller"
+        },
+        {
+          "line": 33,
+          "text": "    }"
+        },
+        {
+          "line": 34,
+          "text": ""
+        },
+        {
+          "line": 35,
+          "text": "    func updateUIViewController(_ controller: UITabBarController, context: Context) {"
+        },
+        {
+          "line": 36,
+          "text": "        let coordinator = context.coordinator"
+        },
+        {
+          "line": 37,
+          "text": "        coordinator.selection = $selection"
+        },
+        {
+          "line": 38,
+          "text": "        // Update the environment and inputs without replacing hosts, tabs, or stack identity."
+        },
+        {
+          "line": 39,
+          "text": "        coordinator.landmarks?.rootView = HostedTab(content: landmarks, environment: context.environment)"
+        },
+        {
+          "line": 40,
+          "text": "        coordinator.favorites?.rootView = HostedTab(content: favorites, environment: context.environment)"
+        },
+        {
+          "line": 41,
+          "text": "        coordinator.deepLinks?.rootView = HostedTab(content: deepLinks, environment: context.environment)"
+        },
+        {
+          "line": 42,
+          "text": "        if controller.selectedTab?.identifier != selection.rawValue {"
+        },
+        {
+          "line": 43,
+          "text": "            controller.selectedTab = controller.tabs.first { $0.identifier == selection.rawValue }"
+        },
+        {
+          "line": 57,
+          "text": "        func tabBarController(_ tabBarController: UITabBarController, didSelectTab selectedTab: UITab, previousTab: UITab?) {"
+        },
+        {
+          "line": 58,
+          "text": "            if let tab = Navigator.Tab(rawValue: selectedTab.identifier), selection.wrappedValue != tab {"
+        },
+        {
+          "line": 59,
+          "text": "                selection.wrappedValue = tab"
+        }
+      ]
+    },
+    {
+      "path": "/Users/kyle/Developer/landmarks-demo/.worktrees/release-round4-candidate2/ios/Landmarks/ContentView.swift",
+      "sha256": "3df186effd86eb7dd9e279ffc50e1813878e67e56d4871ff52cbe1a75fb59427",
+      "excerpts": [
+        {
+          "line": 12,
+          "text": "        @Bindable var navigator = navigator"
+        },
+        {
+          "line": 13,
+          "text": ""
+        },
+        {
+          "line": 14,
+          "text": "        PersistentTabContainer(selection: $navigator.selectedTab) {"
+        },
+        {
+          "line": 15,
+          "text": "            NavigationStack(path: $navigator.landmarksPath) {"
+        },
+        {
+          "line": 16,
+          "text": "                LandmarkListView()"
+        },
+        {
+          "line": 17,
+          "text": "                    .screenDestination(path: $navigator.landmarksPath)"
+        },
+        {
+          "line": 18,
+          "text": "            }"
+        },
+        {
+          "line": 19,
+          "text": "        } favorites: {"
+        },
+        {
+          "line": 20,
+          "text": "            NavigationStack(path: $navigator.favoritesPath) {"
+        },
+        {
+          "line": 21,
+          "text": "                FavoritesView()"
+        },
+        {
+          "line": 22,
+          "text": "                    .screenDestination(path: $navigator.favoritesPath)"
+        },
+        {
+          "line": 23,
+          "text": "            }"
+        },
+        {
+          "line": 24,
+          "text": "        } deepLinks: {"
+        },
+        {
+          "line": 25,
+          "text": "            NavigationStack(path: $navigator.deepLinksPath) {"
+        },
+        {
+          "line": 26,
+          "text": "                DeepLinksView()"
+        },
+        {
+          "line": 27,
+          "text": "                    .screenDestination(path: $navigator.deepLinksPath)"
+        },
+        {
+          "line": 28,
+          "text": "            }"
+        },
+        {
+          "line": 29,
+          "text": "        }"
+        },
+        {
+          "line": 30,
+          "text": "        .ignoresSafeArea(.container)"
+        }
+      ]
+    },
+    {
+      "path": "/Users/kyle/Developer/landmarks-demo/.worktrees/release-round4-candidate2/ios/Landmarks/Navigation/Navigator.swift",
+      "sha256": "65f81e6cedc3b28de0ff91efd3df40f5863433f56d329d58b916b9c4725f0e55",
+      "excerpts": [
+        {
+          "line": 9,
+          "text": "@Observable"
+        },
+        {
+          "line": 10,
+          "text": "final class Navigator {"
+        },
+        {
+          "line": 11,
+          "text": "    var selectedTab: Tab = .landmarks"
+        },
+        {
+          "line": 12,
+          "text": "    var landmarksPath: [Screen] = []"
+        },
+        {
+          "line": 13,
+          "text": "    var favoritesPath: [Screen] = []"
+        },
+        {
+          "line": 14,
+          "text": "    var deepLinksPath: [Screen] = []"
+        },
+        {
+          "line": 15,
+          "text": ""
+        },
+        {
+          "line": 16,
+          "text": "    enum Tab: String, Hashable, Codable {"
+        },
+        {
+          "line": 17,
+          "text": "        case landmarks"
+        },
+        {
+          "line": 103,
+          "text": "    /// The state that can be persisted and restored."
+        },
+        {
+          "line": 104,
+          "text": "    struct RestorationState: Codable {"
+        },
+        {
+          "line": 105,
+          "text": "        let selectedTab: Tab"
+        },
+        {
+          "line": 106,
+          "text": "        let landmarksPath: [Screen]"
+        },
+        {
+          "line": 107,
+          "text": "        let favoritesPath: [Screen]"
+        },
+        {
+          "line": 108,
+          "text": "        let deepLinksPath: [Screen]"
+        },
+        {
+          "line": 109,
+          "text": "    }"
+        },
+        {
+          "line": 110,
+          "text": ""
+        },
+        {
+          "line": 111,
+          "text": "    /// Capture the current navigation state for persistence."
+        },
+        {
+          "line": 112,
+          "text": "    func captureState() -> RestorationState {"
+        },
+        {
+          "line": 113,
+          "text": "        RestorationState("
+        },
+        {
+          "line": 114,
+          "text": "            selectedTab: selectedTab,"
+        },
+        {
+          "line": 115,
+          "text": "            landmarksPath: landmarksPath,"
+        },
+        {
+          "line": 116,
+          "text": "            favoritesPath: favoritesPath,"
+        },
+        {
+          "line": 117,
+          "text": "            deepLinksPath: deepLinksPath"
+        },
+        {
+          "line": 118,
+          "text": "        )"
+        },
+        {
+          "line": 119,
+          "text": "    }"
+        },
+        {
+          "line": 120,
+          "text": ""
+        },
+        {
+          "line": 121,
+          "text": "    /// Restore navigation state from a previously captured state."
+        },
+        {
+          "line": 122,
+          "text": "    func restore(from state: RestorationState) {"
+        },
+        {
+          "line": 123,
+          "text": "        selectedTab = state.selectedTab"
+        },
+        {
+          "line": 124,
+          "text": "        landmarksPath = state.landmarksPath"
+        },
+        {
+          "line": 125,
+          "text": "        favoritesPath = state.favoritesPath"
+        }
+      ]
+    }
+  ],
+  "docsInspection": {
+    "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/06-docs-output/helper/docs-inspection.json",
+    "sha256": "a994eb4ed00a389f05f82d5826e9e1e8a6bd8dc3e5622e4168d83c2d6c3e03ce"
+  },
+  "clauseSupport": {
+    "B4-L70.1": [
+      "README literal filenames and legacy percent-encoded compatibility/migration-on-approval note"
+    ],
+    "B4-L70.2": [
+      "README says working legacy baselines do not need manual rename"
+    ],
+    "B4-L70.3": [
+      "README note agrees with literal/legacy lookup and approval migration contract"
+    ],
+    "B4-L74.1": [
+      "README and docs/mcp state ISO 8601 UTC and give 1970-01-01T00:00:00Z"
+    ],
+    "B4-L74.2": [
+      "README directs scripts to string representation and rejects numeric alternatives"
+    ],
+    "B4-L85.4-source-half": [
+      "UITab labels/order/symbols, literal heart accessibility identifier, three separate NavigationStack paths, navigator state persists selected tab and paths"
+    ]
+  },
+  "limits": [
+    "Source inspection does not prove rendered geometry or switch-away/switch-back live retention; B4-L85.4 stays mixed/runtime incomplete.",
+    "This record does not assume the docs-output phase is complete."
+  ]
+}

@@ -1,0 +1,13 @@
+# Candidate5 smoke identity adapter review
+
+Decision: **APPROVED.** Adapter `findings/evidence/completion-candidate5/harness/candidate_identity.py` at SHA-256 `ab5417cad00cec9426d65ad8a61a7d6c79ff4253841a255a94cba6f61f41c8bf` correctly replaces the obsolete candidate4 runner proof contract with the frozen candidate5 proof schema. No actionable defect was found in this scoped review. I performed no test, build, product, or device execution.
+
+The author preserved the prior verifier adjacent and supplied diff SHA-256 `16b1e2b340b52aa07e643c2cfdc4befc15fe21fc10c97c002f599c511c832d7b`. The change is confined to `verify_runner_proof` and the runner identity constants. Binary, bundle, installed-runner, demo, and ownership validation remains intact.
+
+The adapter fails closed on candidate identity. It requires merged runner `d98b08898f45b94bad607f76e19089bb0e15d5c0`, reviewed source `9c18b962a0d85bcbb76fb8141fdd4aae97d28389`, and manifest-declared plus freshly resolved reviewed/merged trees equal to `060236c478bceba52bb7e54081dd06a44d6aa299`. It also requires the merged runner checkout to be clean.
+
+The current nested focused/full/vet proof shape is exact rather than permissive. Every declared proof file is required to exist and rehash to the frozen manifest value. Focused proof must bind the reviewed commit, the uncached targeted WDA command, successful package execution, empty stderr, and exit 0. Full proof must bind the reviewed commit and clean tracked status, API-key absence, equal fresh runner homes, distinct fresh Go cache/temp paths, literal `go test ./... -count=1`, expected package execution including WDA, empty stderr, and exit 0. Vet must reuse the isolated environment, execute `go vet ./...`, and retain empty streams and exit 0. Timing files are also rehashed as declared; the adapter does not invent metadata absent from the approved proof.
+
+Read-only validation supports the implementation: `adapter-validation/positive.json` passes the frozen manifest; `corrupt-proof-hash-rejection.json` rejects a modified focused proof hash with the precise mismatch; and `old-runner-sha-rejection.json` rejects the candidate4 runner SHA. Their SHA-256 values are respectively `67d52973f4eaaece8ee81b23efba4ad0bc156b479f1da7f35f07a079662d04c3`, `7786a0975a96ba27bc540063dc89b5887240119fe28df4099368a1114c74e826`, and `d2a947265adf17ac876c459fff6e90dc0fc35ced9bee4a91be8cd8b329b1d327`; validation summary `f22555e58320b4e921db3c56e68d182068e3e97056b2c19a36f926c6112ed4a9` records all three outcomes.
+
+This approval covers the identity adapter only. It does not convert the preserved first preflight failure into a product result and does not approve the remaining smoke phases.

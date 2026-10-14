@@ -94,7 +94,11 @@ def copy_report_snapshot(source: Path, target: Path) -> bool:
         return {name for name in names if name.endswith(".tmp")}
 
     def source_path(path: object) -> bool:
-        return isinstance(path, (str, Path)) and Path(path).is_relative_to(source)
+        try:
+            normalized = Path(os.fspath(path))
+        except (TypeError, ValueError):
+            return False
+        return normalized.is_relative_to(source)
 
     def source_error(entry: object) -> bool:
         if not isinstance(entry, (list, tuple)) or len(entry) != 3 or not source_path(entry[0]):

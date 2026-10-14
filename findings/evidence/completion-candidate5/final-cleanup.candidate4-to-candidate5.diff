@@ -1,0 +1,63 @@
+--- findings/evidence/completion-candidate5/final-cleanup.candidate4-base.py	2026-10-13 19:10:35
++++ findings/evidence/completion-candidate5/final-cleanup.py	2026-10-13 19:10:35
+@@ -1,22 +1,22 @@
+ #!/usr/bin/env python3
+-"""Candidate4 exact-owned final cleanup. Root inspection and execution only."""
++"""Candidate5 exact-owned final cleanup. Root inspection and execution only."""
+ import hashlib, json, os, subprocess, sys, time
+ from pathlib import Path
+ 
+-ROOT=Path('/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate4')
++ROOT=Path('/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5')
+ OUT=ROOT/'08-final-cleanup'
+-CANDIDATE=ROOT/'candidate.json'; CANDIDATE_SHA='714715a6890ae340395083e195eecfa3d95e28abdc102e69e7c66533dea5c783'
+-OWNERSHIP=ROOT/'provision/ownership.json'; OWNERSHIP_SHA='cbcf532932b9054fe39769976b4a790c814c77d80efb056d90f10b52c0290c30'
+-PROCESS_OWNERSHIP=ROOT/'provision/android-process/ownership.json'; PROCESS_OWNERSHIP_SHA='66011eae58ad483441efd572efa88c4237fe852c5443fc82f73fd839094e82a5'
+-IOS_BASELINE=ROOT/'provision/ios-before/stdout.raw'; IOS_BASELINE_SHA='f18f4c97e17febf897906c4c32b77386b9993022f05fcc840f1db19d819d0dd9'
+-IOS_ID='8BE033F1-0455-4BE3-A083-3132222D63C6'; IOS_NAME='smoke4-c4-ios'; IOS_RUNTIME='com.apple.CoreSimulator.SimRuntime.iOS-26-0'
+-AVD='smoke4-c4-android'; SERIAL='emulator-5580'; PID=39152
++CANDIDATE=ROOT/'candidate.json'; CANDIDATE_SHA='191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c'
++OWNERSHIP=ROOT/'provision/ownership.json'; OWNERSHIP_SHA='dd9533729cfe0ffba7f01a29418be29d50f0987b893cae74be56c8f453f18e82'
++PROCESS_OWNERSHIP=ROOT/'provision/android-process/ownership.json'; PROCESS_OWNERSHIP_SHA='6e421a2bee5231ebfd667a377b91cea6c3deb2dc8456b7b7ccfe32c53a4453b3'
++IOS_BASELINE=ROOT/'provision/ios-before/stdout.raw'; IOS_BASELINE_SHA='a86325a2199ee2eae0434dd6a91f74dd5354c2d47c87c88fdd5859f8fde1dfad'
++IOS_ID='0CA840ED-E98A-4A66-8548-6661C3C831BE'; IOS_NAME='smoke5-c5-ios'; IOS_RUNTIME='com.apple.CoreSimulator.SimRuntime.iOS-26-0'
++AVD='smoke5-c5-android'; SERIAL='emulator-5582'; PID=40513
+ ADB='/Users/kyle/Library/Android/sdk/platform-tools/adb'; EMULATOR='/Users/kyle/Library/Android/sdk/emulator/emulator'; AVDMANAGER='/Users/kyle/Library/Android/sdk/cmdline-tools/latest/bin/avdmanager'
+ JAVA_HOME='/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home'
+ PIXEL=Path('/Users/kyle/.android/avd/Pixel_8_API_35.avd/config.ini'); PIXEL_SHA='3caad1a0f9164280a264968a81249241e183fe4981462fbabf9181e4c18eae27'
+ PROTECTED=('B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C','FE441EE5-BBFC-4981-B68A-59C0DBCE26D6')
+ ACCEPTANCES=(
+- '02-runner-android/helper/acceptance.json','03-lifecycle-recorder-fix1/helper/acceptance.json','03b-joint-forward/helper/acceptance.json',
++ '02-runner-android/helper/acceptance.json','03-lifecycle/helper/acceptance.json','03b-joint-forward/helper/acceptance.json',
+  '04-mcp-ios/helper/acceptance.json','05-mcp-android/helper/acceptance.json','06-docs-output/helper/acceptance.json','07-final-force-teardown/helper/acceptance.json')
+ PROJECTS=('android-smoke-project','cycle-project','lifecycle-project','mcp-android-project','mcp-ios-project','ready-forward-project')
+ STABLE_KEYS=('pid','pgid','sessionId','start','executable','command')
+@@ -57,16 +57,16 @@
+ def owned_state_absent(label):
+     sessions=[]
+     for project in PROJECTS:
+-        path=Path('/private/tmp/grantiva-completion-candidate4-x_i_t3pq')/project/'.grantiva/session.json'
++        path=Path('/private/tmp/grantiva-completion-candidate5-y6myz3jd')/project/'.grantiva/session.json'
+         if path.exists(): sessions.append(str(path))
+     global_dir=Path('/tmp/grantiva-sessions')
+     if global_dir.exists():
+         for path in global_dir.iterdir():
+             if path.is_file():
+                 text=path.read_text(errors='replace')
+-                if IOS_ID in text or SERIAL in text or 'completion-candidate4' in text: sessions.append(str(path))
++                if IOS_ID in text or SERIAL in text or 'completion-candidate5' in text: sessions.append(str(path))
+     locks=[]
+-    lock_root=Path('/private/tmp/grantiva-completion-candidate4-x_i_t3pq/runner-home/locks')
++    lock_root=Path('/private/tmp/grantiva-completion-candidate5-y6myz3jd/runner-home/locks')
+     for name in (f'{IOS_ID}.lock',f'{SERIAL}.lock'):
+         if (lock_root/name).exists(): locks.append(str(lock_root/name))
+     forwards=run(f'{label}-owned-forwards-check',[ADB,'forward','--list']).stdout.decode().splitlines()
+@@ -96,7 +96,7 @@
+         if process_owner['serial']!=SERIAL or process_owner['avd']!=AVD: raise RuntimeError('process ownership target mismatch')
+         current=process_identity()
+         if {k:current[k] for k in STABLE_KEYS}!={k:stable[k] for k in STABLE_KEYS}: raise RuntimeError('Android stable identity mismatch')
+-        if f'-avd {AVD}' not in current['command'] or '-port 5580' not in current['command']: raise RuntimeError('Android argv target mismatch')
++        if f'-avd {AVD}' not in current['command'] or '-port 5582' not in current['command']: raise RuntimeError('Android argv target mismatch')
+         sims_before=json.loads(run('simulators-before',['xcrun','simctl','list','devices','--json']).stdout)
+         runtime,owned_sim=find_sim(sims_before,IOS_ID)
+         if runtime!=IOS_RUNTIME or owned_sim['name']!=IOS_NAME: raise RuntimeError('current iOS name/runtime mismatch')
