@@ -139,7 +139,7 @@ final class FlowGeneratorTests: XCTestCase {
                 timeout: 5000
             - takeScreenshot: "Profile"
             - evalScript:
-                script: "${var grantivaWaitUntil = Date.now() + 2000; while (Date.now() < grantivaWaitUntil) {}}"
+                script: "${var grantivaWaitUntil = Date.now() + 2001; while (Date.now() < grantivaWaitUntil) {}}"
                 label: "Wait 2s"
             - waitForAnimationToEnd:
                 timeout: 5000
