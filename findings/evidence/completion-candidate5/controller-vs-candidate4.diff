@@ -1,5 +1,5 @@
 --- /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate4/prepare-candidate.py	2026-10-13 16:12:07
-+++ /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/prepare-candidate.py	2026-10-13 18:16:53
++++ /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/prepare-candidate.py	2026-10-13 18:28:08
 @@ -1,11 +1,11 @@
  #!/usr/bin/env python3
 -"""Build, promote, upgrade, and freeze completion candidate4. Prepared only; not executed."""
@@ -15,7 +15,7 @@
  QA = Path.home() / '.grantiva-qa/bin'
  
  def sha(path): return hashlib.sha256(Path(path).read_bytes()).hexdigest()
-@@ -32,61 +32,90 @@
+@@ -32,61 +32,91 @@
      path=Path(entry['path']); assert path.is_file() and sha(path)==entry['sha256'], path
  
  parser=argparse.ArgumentParser()
@@ -47,6 +47,7 @@
 +    'Sources/GrantivaCore/Resources/grantiva-runner-amd64.tar.gz',
 +    'Sources/GrantivaCore/Resources/grantiva-runner-arm64.tar.gz',
 +    'Sources/GrantivaCore/Runner/RunnerManager.swift',
++    'Tests/GrantivaCoreTests/RunnerManagerTests.swift',
 +])
  previous_path=Path(state['previousManifest']); previous=json.loads(previous_path.read_text())
 -assert previous_path==ROOT/'findings/evidence/round4-coverage/candidate.json'
@@ -125,7 +126,7 @@
  preserved_cache_entries=0
  for row in before:
      if not row['path'].startswith('cache/'):
-@@ -98,29 +127,19 @@
+@@ -98,29 +128,19 @@
  upgrade_dir=OUT/'upgrade'; upgrade_dir.mkdir(exist_ok=False)
  save_exclusive(upgrade_dir/'acceptance.json',{
      'passed':True,

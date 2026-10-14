@@ -37,3 +37,7 @@ A new runner cannot be embedded while literally retaining CLI source HEAD `73cfa
 ## Candidate controller adjustments
 
 Reuse the candidate4 controller controls: exclusive output labels, exact command capture, clean-source checks before/after the single release build, QA backup, bundle manifest, APFS-cloned runner home with pre-install equivalence, cache-only immutability after install, packaged/installed equality, and immutable candidate manifest. Change only the new evidence/scratch/home/session bindings and the runner/CLI identities. Unlike candidate4's unchanged-runner path, the replacement manifest must bind fresh runner test evidence and must not label it “unchanged-dependency provenance.”
+
+## Packaging expectation correction
+
+First .16 focused run exposed two literal .15 expectations in `Tests/GrantivaCoreTests/RunnerManagerTests.swift`. Root authorized updating only those two expected version/install-stamp strings. Final bounded scope is four paths: two archives, RunnerManager.swift, and that test file. Preserve the failed run; verify the corrected test and full Swift suite. Earlier three-path wording is superseded by this concrete test maintenance requirement.

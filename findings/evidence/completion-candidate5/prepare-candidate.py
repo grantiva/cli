@@ -54,6 +54,7 @@ assert sorted(packaging_paths)==sorted([
     'Sources/GrantivaCore/Resources/grantiva-runner-amd64.tar.gz',
     'Sources/GrantivaCore/Resources/grantiva-runner-arm64.tar.gz',
     'Sources/GrantivaCore/Runner/RunnerManager.swift',
+    'Tests/GrantivaCoreTests/RunnerManagerTests.swift',
 ])
 previous_path=Path(state['previousManifest']); previous=json.loads(previous_path.read_text())
 assert previous_path==ROOT/'findings/evidence/completion-candidate4/candidate.json'

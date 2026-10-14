@@ -7,3 +7,5 @@ Reviewed bounded candidate4 adaptation plus two corrections: exact reviewed/merg
 This is preparation approval, not a build/freeze/smoke result. Actual merged identities, fresh proof hashes and scratch/home bindings remain required. Early iOS26 stock run and diff capture must pass before broad smoke and coverage.
 
 Owner-clone preparation correction APPROVED: design requires a fresh APFS clone of `/Users/kyle/.grantiva/runner`; prior preparation wording incorrectly named candidate4's installed home. Documentation/template now name the read-only owner source and current dynamic equivalence manifests. Candidate4 remains QA backup/previous-manifest identity. Controller algorithm already consumes dynamic manifests and needs no code change. Precise correction diffs and originals retained.
+
+Four-path guard correction APPROVED: exact one-line allowed-path addition for RunnerManagerTests.swift; controller SHA f33038058d4ade6832f32dad402dbde6c7fd1cf0d240c8d8970cefb653536b74. Product archives/version remain the only product changes; test delta is independently reviewed two-string maintenance. All previous preflight/order/provenance controls retained.
