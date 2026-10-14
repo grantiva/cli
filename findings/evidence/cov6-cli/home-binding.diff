@@ -1,0 +1,33 @@
+--- findings/evidence/cov6-cli/capture-one.rb.before-home-binding	2026-10-13 18:54:22
++++ findings/evidence/cov6-cli/capture-one.rb	2026-10-13 19:20:06
+@@ -18,7 +18,7 @@
+ 
+ binary = '/Users/kyle/.grantiva-qa/bin/grantiva'
+ manifest_path = '/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/candidate.json'
+-runner_home = 'PENDING_CANDIDATE5_CLI_RUNNER_HOME'
++runner_home = '/private/tmp/grantiva-candidate5-coverage-qjr26z3g/cli-runner-home'
+ expected_manifest = '191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c'
+ manifest_sha = Digest::SHA256.file(manifest_path).hexdigest
+ abort "manifest mismatch #{manifest_sha}" unless manifest_sha == expected_manifest
+--- findings/evidence/cov6-cli/direct-row-batches.json.before-home-binding	2026-10-13 18:54:22
++++ findings/evidence/cov6-cli/direct-row-batches.json	2026-10-13 19:20:06
+@@ -9,7 +9,7 @@
+   "matrixSHA256": "09c054ed467cac27d2c9e0ddababc95868d766a5e61bf110bfb47278f38dc166",
+   "ordering": "canonical matrix order",
+   "session": "candidate5-cli",
+-  "runnerHome": "PENDING_CANDIDATE5_CLI_RUNNER_HOME",
++  "runnerHome": "/private/tmp/grantiva-candidate5-coverage-qjr26z3g/cli-runner-home",
+   "totalCliEffectiveKeys": 431,
+   "directCount": 425,
+   "handoffCount": 6,
+--- findings/evidence/cov6-cli/first-batch-recipes.json.before-home-binding	2026-10-13 18:54:22
++++ findings/evidence/cov6-cli/first-batch-recipes.json	2026-10-13 19:20:06
+@@ -3,7 +3,7 @@
+   "status": "COMMAND_RECIPES_ONLY_NOT_EXECUTED",
+   "candidateManifestSHA256": "191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c",
+   "session": "candidate5-cli",
+-  "runnerHome": "PENDING_CANDIDATE5_CLI_RUNNER_HOME",
++  "runnerHome": "/private/tmp/grantiva-candidate5-coverage-qjr26z3g/cli-runner-home",
+   "collector": "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+   "rows": [
+     {

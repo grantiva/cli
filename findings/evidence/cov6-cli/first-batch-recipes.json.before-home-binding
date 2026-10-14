@@ -1,0 +1,510 @@
+{
+  "schema": "grantiva.candidate5.cov6-cli.first-batch.v1",
+  "status": "COMMAND_RECIPES_ONLY_NOT_EXECUTED",
+  "candidateManifestSHA256": "191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c",
+  "session": "candidate5-cli",
+  "runnerHome": "PENDING_CANDIDATE5_CLI_RUNNER_HOME",
+  "collector": "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+  "rows": [
+    {
+      "directOrdinal": 1,
+      "key": "CLI-001",
+      "matrixLine": 114,
+      "literalCommandRequirement": "`grantiva --help`, `--version`",
+      "fixtureOrPrecondition": "none",
+      "expectedClauses": "Exit 0; `--version` prints `2.1.0`; OVERVIEW \"The Grantiva CLI for iOS and Android developers.\"; lists build, run, record, simulator, emulator, hierarchy, ci, diff, auth, console, doctor, runner, init, mcp (help: grantiva.txt)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-001",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 2,
+      "key": "CLI-002",
+      "matrixLine": 115,
+      "literalCommandRequirement": "`grantiva help <subcommand>`",
+      "fixtureOrPrecondition": "`grantiva help run`, `grantiva help runner start`, `grantiva help console flags`",
+      "expectedClauses": "Same text as `<subcommand> --help`, exit 0 (help: grantiva.txt \"See 'grantiva help <subcommand>'\")",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-002",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 3,
+      "key": "CLI-003",
+      "matrixLine": 116,
+      "literalCommandRequirement": "every command and subcommand `--help`",
+      "fixtureOrPrecondition": "regenerate all 172 pages into a scratch dir",
+      "expectedClauses": "Each exits 0 with OVERVIEW, USAGE, OPTIONS; byte-identical to the canonical corpus regenerated from the exact candidate. The accepted L63 delta is the added simulator-teardown process-reaping sentence; refresh that one canonical page before comparison. (help: all 172) (corrected round 4)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-003",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 4,
+      "key": "CLI-004",
+      "matrixLine": 117,
+      "literalCommandRequirement": "`run --help`",
+      "fixtureOrPrecondition": "none",
+      "expectedClauses": "Flags exactly as help: run.txt; every flag README:76-99 and docs/android.md:54-55 name is present; no `--auto-accept-alerts`, `--no-auto-accept-alerts`, `--wait-for-idle-timeout`; `run --wait-for-idle-timeout 5` is a usage error, exit 64 (help: run.txt; README:76-99)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-004",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 5,
+      "key": "CLI-005",
+      "matrixLine": 118,
+      "literalCommandRequirement": "`build build --help`, `build install --help`",
+      "fixtureOrPrecondition": "none",
+      "expectedClauses": "`build install` adds `--app-file`, `--no-build`, `--no-launch`; `build build` has none; `build` alone is `build build` (\"build (default)\") (help: build.txt, build_build.txt, build_install.txt)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-005",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 6,
+      "key": "CLI-006",
+      "matrixLine": 119,
+      "literalCommandRequirement": "`diff capture/compare/approve --help`",
+      "fixtureOrPrecondition": "none",
+      "expectedClauses": "`compare` adds `--capture` (\"runs full lifecycle\"); `approve` takes `[<screen-names> ...]` and `--platform` only (help: diff_*.txt)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-006",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 7,
+      "key": "CLI-007",
+      "matrixLine": 120,
+      "literalCommandRequirement": "`simulator <sub> --help`, `emulator <sub> --help`",
+      "fixtureOrPrecondition": "ensure, delete, sessions, teardown, cleanup",
+      "expectedClauses": "Each exits 0; `simulator ensure` shows `--boot/--no-boot (default: --boot)`; `emulator teardown` shows `--serial`, `--all`, `--force`; `emulator delete` `--name`, `--force` (help: simulator_*.txt, emulator_*.txt)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-007",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 8,
+      "key": "CLI-008",
+      "matrixLine": 121,
+      "literalCommandRequirement": "`runner <sub> --help`, `hierarchy --help`, `record --help`",
+      "fixtureOrPrecondition": "install, version, start, stop, dump-hierarchy",
+      "expectedClauses": "Each exits 0; `dump-hierarchy` shows `-p/--port`, `-f/--format` (tree, json, xml; default tree), `--udid`; `record` marks `--duration` required (help: runner_*.txt, hierarchy.txt, record.txt)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-008",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 9,
+      "key": "CLI-009",
+      "matrixLine": 122,
+      "literalCommandRequirement": "`console --help` tree",
+      "fixtureOrPrecondition": "all 17 groups",
+      "expectedClauses": "Lists flags (alias `featureflags`), envs, analytics, devices, apps, claims, vrt, releases, feedback, support, webhooks, alerts, keys, team, audit, org, open; `console featureflags --help` equals `console flags --help` (help: console.txt)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-009",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 10,
+      "key": "CLI-010",
+      "matrixLine": 123,
+      "literalCommandRequirement": "any command",
+      "fixtureOrPrecondition": "`run --bogus`, `doctor --bogus`",
+      "expectedClauses": "Usage error on stderr, exit 64, stdout empty (README:373-376)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-010",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 11,
+      "key": "CLI-123",
+      "matrixLine": 124,
+      "literalCommandRequirement": "`runner start --help` vs README",
+      "fixtureOrPrecondition": "none",
+      "expectedClauses": "Abstract names the Android driver too, as README:333 does (\"with WDA (UIAutomator2 on Android)\"); today help says \"with WDA\" only, which is N07 (help: runner_start.txt; README:333; plan N07)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-123",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 12,
+      "key": "CLI-124",
+      "matrixLine": 125,
+      "literalCommandRequirement": "`mcp --help`",
+      "fixtureOrPrecondition": "none",
+      "expectedClauses": "DISCUSSION says the server starts without a session or config; device tools listed need a session; `--project-dir`, `--platform` (help: mcp.txt; docs/mcp.md:14-22)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-124",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 13,
+      "key": "CLI-125",
+      "matrixLine": 126,
+      "literalCommandRequirement": "`hierarchy --help`",
+      "fixtureOrPrecondition": "none",
+      "expectedClauses": "Discussion describes `/tmp/grantiva-sessions`, newest session, `--udid` UDID or adb serial; `--timeout` default 60; `--format` xml or json, `--json` same as `--format json` (help: hierarchy.txt; docs/dump-hierarchy.md:36-39)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-125",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 14,
+      "key": "CLI-011",
+      "matrixLine": 132,
+      "literalCommandRequirement": "`doctor --json`",
+      "fixtureOrPrecondition": "none",
+      "expectedClauses": "stdout valid JSON array of checks with `status` (ok, warning or error); `doctor --json \\| jq '.[] \\| select(.status == \"error\")'` works and, with `DEVELOPER_DIR=/nonexistent`, selects the failing Xcode checks; no narration on stdout (README:439 at c65fc17; K62) (corrected round 3)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-011",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 15,
+      "key": "CLI-012",
+      "matrixLine": 133,
+      "literalCommandRequirement": "`doctor --json --quiet`",
+      "fixtureOrPrecondition": "none",
+      "expectedClauses": "stdout still valid JSON (README:391-393)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-012",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 16,
+      "key": "CLI-013",
+      "matrixLine": 134,
+      "literalCommandRequirement": "`doctor --json --verbose`",
+      "fixtureOrPrecondition": "none",
+      "expectedClauses": "stdout valid JSON; stderr gains timestamps, labels and every subprocess with its exit status (README:390)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-013",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 17,
+      "key": "CLI-014",
+      "matrixLine": 135,
+      "literalCommandRequirement": "`doctor`",
+      "fixtureOrPrecondition": "`> out.txt`; `NO_COLOR=1` on a TTY (`script -q`)",
+      "expectedClauses": "No ANSI escapes in redirected stdout; `NO_COLOR` suppresses colour (README:373-376)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-014",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 18,
+      "key": "CLI-015",
+      "matrixLine": 136,
+      "literalCommandRequirement": "`simulator sessions --json`",
+      "fixtureOrPrecondition": "plain, `--quiet`, `--verbose`",
+      "expectedClauses": "stdout valid JSON in all three; diagnostics only on stderr (README:373-376; help: simulator_sessions.txt)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-015",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 19,
+      "key": "CLI-016",
+      "matrixLine": 137,
+      "literalCommandRequirement": "`emulator sessions --json`",
+      "fixtureOrPrecondition": "plain, `--quiet`, `--verbose`",
+      "expectedClauses": "stdout valid JSON in all three (help: emulator_sessions.txt)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-016",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 20,
+      "key": "CLI-017",
+      "matrixLine": 138,
+      "literalCommandRequirement": "`runner version`",
+      "fixtureOrPrecondition": "with and without `--json`",
+      "expectedClauses": "Prints the embedded runner version; `--json` valid JSON (help: runner_version.txt; README:365-369)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-017",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 21,
+      "key": "CLI-019",
+      "matrixLine": 139,
+      "literalCommandRequirement": "leaf commands with `--json` and a forced failure",
+      "fixtureOrPrecondition": "`doctor --json` with `DEVELOPER_DIR=/nonexistent`; `simulator teardown --json`; `diff compare --json` with no captures; `run --json` in an empty dir",
+      "expectedClauses": "`Error:` on stderr, exit non-zero; stdout empty except `run --json`, which prints `{\"allPassed\": false, \"screens\": [], \"error\": \"...\"}` (README:383-386), and `doctor --json`, which exits 1 with the full check array on stdout and nothing on stderr so README:380's jq pipeline works (corrected round 2)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-019",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 22,
+      "key": "CLI-020",
+      "matrixLine": 140,
+      "literalCommandRequirement": "any command",
+      "fixtureOrPrecondition": "`--quiet`",
+      "expectedClauses": "Narration silenced; `Warning:` and `Error:` still on stderr; stdout unchanged (README:391-393)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-020",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 23,
+      "key": "CLI-021",
+      "matrixLine": 141,
+      "literalCommandRequirement": "any command",
+      "fixtureOrPrecondition": "`--verbose`",
+      "expectedClauses": "Debug detail with timestamps and labels on stderr; stdout unchanged (README:390)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-021",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 24,
+      "key": "CLI-126",
+      "matrixLine": 142,
+      "literalCommandRequirement": "`runner install`, `runner stop`",
+      "fixtureOrPrecondition": "`--json`",
+      "expectedClauses": "`runner install --json` and `runner stop --json` print a JSON result (README:367-369)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-126",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    },
+    {
+      "directOrdinal": 25,
+      "key": "CLI-023",
+      "matrixLine": 148,
+      "literalCommandRequirement": "`doctor`, `init`",
+      "fixtureOrPrecondition": "dir with only an `.xcodeproj`",
+      "expectedClauses": "Resolves to iOS (docs/android.md:15-16)",
+      "captureTemplate": [
+        "ruby",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/capture-one.rb",
+        "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-cli/findings/evidence/cov6-cli/CLI-023",
+        "LABEL",
+        "EXACT_FIXTURE_CWD",
+        "--timeout",
+        "ROW_TIMEOUT",
+        "--",
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "LITERAL_ARGUMENTS_FROM_REQUIREMENT"
+      ]
+    }
+  ]
+}
