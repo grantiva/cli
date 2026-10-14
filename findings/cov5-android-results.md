@@ -83,3 +83,21 @@ The authorized AND-010 supplemental capture is complete and upgrades that qualif
 | AND-050 | pass | `findings/evidence/cov5-android/AND-050/` | Passing and failing stdout are JSON-only documents. |
 
 Core window total: **43 pass, 1 blocked, 0 fail, 0 n/a**. Initial fixture mistakes and unsupported-option attempts remain adjacent to the grading reruns and are excluded explicitly in the row verdicts.
+
+## Accepted candidate-4 evidence joins
+
+These rows were graded read-only from accepted candidate-4 smoke packages and approved unchanged-source test results. Each row directory contains exact path and SHA-256 bindings; no candidate-3 verdict was transferred.
+
+| ID | Result | Evidence | Note |
+|---|---|---|---|
+| B4-L64.1 | pass | `findings/evidence/cov5-android/B4-L64.1/` | Deterministic final-status-read fatal regression and uncached runner package pass. |
+| B4-L65.1 [android] | pass | `findings/evidence/cov5-android/B4-L65.1-android/` | Live Android session returns the agreed exact missing-steps error. |
+| B4-L65.2 [android] | pass | `findings/evidence/cov5-android/B4-L65.2-android/` | Exact product test pins the complete envelope and no-session precedence. |
+| B4-L65.3 [android] | pass | `findings/evidence/cov5-android/B4-L65.3-android/` | Live wrong-type and empty-array semantics are distinct and retained. |
+| B4-L77.5 | pass | `findings/evidence/cov5-android/B4-L77.5/` | Successful stop plus not-visible wait remains intentional absence. |
+| B4-L82.3 | pass | `findings/evidence/cov5-android/B4-L82.3/` | SIGINT exit 130 removes exact owned attachment, sessions, and PID. |
+| B4-L82.4 | pass | `findings/evidence/cov5-android/B4-L82.4/` | Normal-stop and absent-app controls preserve the unrelated forward. |
+| B4-L83.3 | pass | `findings/evidence/cov5-android/B4-L83.3/` | tcp6790→tcp16790 survives all named endings while owned state disappears. |
+| B4-L84.3 | pass | `findings/evidence/cov5-android/B4-L84.3/` | Allocated tcp16791 control survives all five named cases. |
+
+Join-adoption total: **9 pass, 0 blocked, 0 fail, 0 n/a**.
