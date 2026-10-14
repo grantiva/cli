@@ -1,0 +1,48 @@
+[
+  {
+    "argv": [
+      "adb",
+      "forward",
+      "--list"
+    ],
+    "exitCode": 0,
+    "stdout": "emulator-5582 localfilesystem:/tmp/uia2-emulator-5582.sock tcp:6790\n\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "adb",
+      "-s",
+      "emulator-5582",
+      "forward",
+      "tcp:0",
+      "tcp:6790"
+    ],
+    "exitCode": 0,
+    "stdout": "64607\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "adb",
+      "-s",
+      "emulator-5582",
+      "forward",
+      "--remove",
+      "tcp:64607"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "adb",
+      "forward",
+      "--list"
+    ],
+    "exitCode": 0,
+    "stdout": "emulator-5582 localfilesystem:/tmp/uia2-emulator-5582.sock tcp:6790\n\n",
+    "stderr": ""
+  }
+]

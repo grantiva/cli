@@ -1,0 +1,66 @@
+Resolved: module=app variant=debug device=emulator-5582 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: smoke5-c5-android (emulator-5582)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/inputs/optional-inputs/optional-miss.yaml
+
+  grantiva-runner 1.1.28-grantiva.16 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/02-runner-android/helper/optional-text-3-report
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5582...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5582.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] optional-miss (optional-miss.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ⚠ tapOn: text="No Such Element fix4-3" (7.1s, slow)
+      ╰─ warning: Element not found: text='No Such Element fix4-3' (cause: context deadline exceeded: element not found; closest on-screen texts: "Wifi signal full.,No internet", "Phone signal full.", "Battery 100 percent.")
+    ✓ assertVisible: text="Landmarks" (53ms)
+✓ optional-miss 8.8s
+
+  [1/1] optional-miss (/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/inputs/optional-inputs/optional-miss.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✗ tapOn: text="No Such Element fix4-3" (7.1s)
+      ╰─ Element not found: text='No Such Element fix4-3' (cause: context deadline exceeded: element not found; closest on-screen texts: "Wifi signal full.,No internet", "Phone signal full.", "Battery 100 percent.")
+    ✓ assertVisible: text="Landmarks" (53ms)
+✓ optional-miss 8.8s
+
+  3 steps passing (8.8s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  optional-miss                  ✓ PASS       3      3      0      0       8.8s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       3      3      0      0       8.8s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/02-runner-android/helper/optional-text-3-report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/02-runner-android/helper/optional-text-3-report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/02-runner-android/helper/optional-text-3-report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/02-runner-android/helper/optional-text-3-report/allure-results
+
+  Built by Grantiva
+

@@ -1,0 +1,98 @@
+{
+  "status": "PREPARED_NOT_EXECUTED_SESSION_BINDING_CORRECTED",
+  "scope": "candidate5 cov6 Task 9 primary provisioning bindings only",
+  "source": {
+    "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/preparation/campaign-completion/prep/cov6-provision/cov5_primary_provision.base.py",
+    "sha256": "f09ced79b5422605951a8f5e6f0a79d109ec10354e726ce59e0931a67cb3169d",
+    "acceptedSourcePath": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/preparation/campaign-completion/cov5-provision/cov5_primary_provision.py"
+  },
+  "active": {
+    "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/preparation/campaign-completion/prep/cov6-provision/cov6_primary_provision.py",
+    "sha256": "eea193eb1f63a8d85a1b1f712dfa3783e7697fbbaac98fb86c6803654c225b2b"
+  },
+  "diff": {
+    "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/preparation/campaign-completion/prep/cov6-provision/cov5-to-cov6.diff",
+    "sha256": "0f3e84c4964fd0a5888b0185438e058822d0edd252ec9f1c30436480c3626c78"
+  },
+  "candidate": {
+    "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/candidate.json",
+    "sha256": "191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c"
+  },
+  "executionGate": {
+    "state": "PENDING_ROOT_BINDING",
+    "requirements": [
+      "candidate5 smoke gate passed",
+      "gate candidateManifestSHA256 equals supplied candidate bytes",
+      "gate review path exists and hash matches",
+      "gate cleanup path exists and hash matches",
+      "cleanup JSON passed is true",
+      "cleanupComplete is true"
+    ]
+  },
+  "bindings": {
+    "controllerSession": "candidate5-controller",
+    "iosActorSession": "candidate5-ios",
+    "androidActorSession": "candidate5-android",
+    "iosPrimaries": [
+      {
+        "name": "cov6-ios-26",
+        "runtime": "iOS-26-0"
+      },
+      {
+        "name": "cov6-ios-27",
+        "runtime": "iOS-27-0"
+      }
+    ],
+    "androidPrimary": {
+      "name": "cov6-android",
+      "state": "absent-reserved-for-literal-AND-001"
+    },
+    "reservedExtras": [
+      "cov6-ios-3",
+      "cov6-ios-4",
+      "cov6-android-2"
+    ]
+  },
+  "parameterized": [
+    "candidate manifest",
+    "smoke gate evidence",
+    "iOS runner-home destination",
+    "Android runner-home destination",
+    "Android serial/port pair"
+  ],
+  "preservedGuards": [
+    "protected iOS UDIDs exact baseline and post-check",
+    "protected Pixel_8_API_35 config hash baseline and post-check",
+    "task names absent before mutation",
+    "selected Android serial absent and ports free",
+    "no Android AVD creation",
+    "no extra device creation",
+    "only two expected iOS additions",
+    "ADB forwards unchanged"
+  ],
+  "runnerHomeCloneNote": "cp -cR clones the candidate runnerHome as it exists after smoke. A fresh destination can therefore contain smoke-created cache/lock residue from the source; the candidate5 smoke cleanup and review bindings are required before execution. This preparation does not redesign or sanitize the accepted clone operation.",
+  "staticValidation": {
+    "command": [
+      "python3",
+      "-m",
+      "py_compile",
+      "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/preparation/campaign-completion/prep/cov6-provision/cov6_primary_provision.py"
+    ],
+    "exit": 0
+  },
+  "liveExecuted": false,
+  "deviceCommandsExecuted": false,
+  "productCommandsExecuted": false,
+  "buildCommandsExecuted": false,
+  "sessionBindingCorrection": {
+    "preservedBefore": {
+      "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/preparation/campaign-completion/prep/cov6-provision/cov6_primary_provision.before-session-binding-fix.py",
+      "sha256": "b3dc54b31661bddf0c7baea9f17da732ccf609cea0ccd3178fb461b6acc36bc9"
+    },
+    "diff": {
+      "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/preparation/campaign-completion/prep/cov6-provision/session-binding-fix.diff",
+      "sha256": "e39e9f850f8bae2b3568fa3e1deb5fbd649cd012eaa2ffc8f3fe4654716c5bfc"
+    },
+    "scope": "metadata only: candidate5 controller/iOS/Android session IDs; cov6 resource names unchanged"
+  }
+}

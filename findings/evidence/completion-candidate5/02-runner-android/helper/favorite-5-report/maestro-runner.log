@@ -1,0 +1,75 @@
+19:06:33.975247 [INFO] === Test execution started ===
+19:06:33.975303 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/02-runner-android/helper/favorite-5-report
+19:06:33.975307 [INFO] Platform: android
+19:06:33.975310 [INFO] Driver: uiautomator2
+19:06:33.975586 [INFO] Validated 1 flow(s)
+19:06:33.975610 [INFO] Single device execution mode
+19:06:33.975613 [INFO] Starting flow execution (parallel: false, devices: [])
+19:06:33.975617 [INFO] Creating driver for single device execution
+19:06:33.975624 [INFO] Connecting to Android device: emulator-5582
+19:06:34.058835 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5582, Emulator: true
+19:06:34.080508 [INFO] Starting UIAutomator2 server on device emulator-5582
+19:06:34.488427 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5582.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5582.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5582.sock' not found
+19:06:35.571031 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+19:06:35.581093 [INFO] Session created successfully: 0776923d-8bf4-4de7-ad29-e7877bd86c56
+19:06:35.638417 [INFO] Driver created: android on google sdk_gphone64_arm64
+19:06:35.640698 [INFO] === Starting flow: 02-favorite ===
+19:06:35.640706 [INFO] Flow file: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/inputs/runner-inputs/02-favorite.yaml
+19:06:35.640710 [INFO] Total steps: 13
+19:06:35.645636 [DEBUG] Executing step 0: launchApp
+19:06:35.970516 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+19:06:35.970570 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 35ms
+19:06:37.158170 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.14s after launch, pids [9750], drawn=true crashed=false (read 28ms)
+19:06:37.177272 [DEBUG] Step 0 completed successfully (1531ms): launchApp
+19:06:37.308342 [DEBUG] Executing step 1: tapOn: text="Lake Tahoe"
+19:06:37.433749 [DEBUG] Flutter: parallel search (text="Lake Tahoe", id="")
+19:06:37.457618 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+19:06:37.465863 [DEBUG] Flutter: com.kylebrowning.landmarks has no libflutter.so; not searching the Flutter VM
+19:06:37.465900 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+19:06:37.740276 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 32ms)
+19:06:37.740341 [DEBUG] crash check during a lookup in flight for 283ms: crashed=false (took 32ms)
+19:06:37.997225 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 38ms)
+19:06:37.997280 [DEBUG] crash check during a lookup in flight for 540ms: crashed=false (took 38ms)
+19:06:38.269179 [DEBUG] Step 1 completed successfully (960ms): tapOn: text="Lake Tahoe"
+19:06:38.429177 [DEBUG] Executing step 2: tapOn: text="Favorite"
+19:06:38.687904 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 30ms)
+19:06:38.970551 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 30ms)
+19:06:38.970599 [DEBUG] crash check during a lookup in flight for 283ms: crashed=false (took 30ms)
+19:06:39.540003 [DEBUG] Step 2 completed successfully (1110ms): tapOn: text="Favorite"
+19:06:39.679319 [DEBUG] Executing step 3: assertVisible: text="Unfavorite"
+19:06:39.825983 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+19:06:39.873098 [DEBUG] Step 3 completed successfully (193ms): assertVisible: text="Unfavorite"
+19:06:40.000979 [DEBUG] Executing step 4: tapOn: text="Landmarks"
+19:06:40.152828 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+19:06:40.285975 [DEBUG] Step 4 completed successfully (284ms): tapOn: text="Landmarks"
+19:06:40.441794 [DEBUG] Executing step 5: tapOn: text="Favorites"
+19:06:40.657631 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 33ms)
+19:06:41.069104 [DEBUG] Step 5 completed successfully (627ms): tapOn: text="Favorites"
+19:06:41.236038 [DEBUG] Executing step 6: assertVisible: text="Lake Tahoe"
+19:06:41.387247 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+19:06:41.583459 [DEBUG] Step 6 completed successfully (347ms): assertVisible: text="Lake Tahoe"
+19:06:41.710034 [DEBUG] Executing step 7: takeScreenshot
+19:06:41.958796 [DEBUG] Step 7 completed successfully (248ms): takeScreenshot
+19:06:42.082420 [DEBUG] Executing step 8: swipe: LEFT from text="Lake Tahoe"
+19:06:42.230279 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 22ms)
+19:06:42.268217 [INFO] swipe left: held drag (246,384) -> (0,384) over 300 ms
+19:06:42.955690 [DEBUG] Step 8 completed successfully (873ms): swipe: LEFT from text="Lake Tahoe"
+19:06:43.131869 [DEBUG] Executing step 9: tapOn: text="Remove from favorites"
+19:06:43.319603 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 27ms)
+19:06:43.619016 [DEBUG] Step 9 completed successfully (487ms): tapOn: text="Remove from favorites"
+19:06:43.747300 [DEBUG] Executing step 10: assertNotVisible: text="Lake Tahoe"
+19:06:43.892816 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 22ms)
+19:06:44.158812 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 37ms)
+19:06:44.286719 [DEBUG] Step 10 completed successfully (539ms): assertNotVisible: text="Lake Tahoe"
+19:06:44.410694 [DEBUG] Executing step 11: assertVisible: text="Landmarks you favorite will appear here."
+19:06:44.561363 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+19:06:44.585615 [DEBUG] Step 11 completed successfully (174ms): assertVisible: text="Landmarks you favorite will appear here."
+19:06:44.710124 [DEBUG] Executing step 12: takeScreenshot
+19:06:44.967514 [DEBUG] Step 12 completed successfully (257ms): takeScreenshot
+19:06:45.094496 [INFO] === Flow completed: 02-favorite (status: passed, duration: 9449ms, passed: 13, failed: 0, skipped: 0) ===
+19:06:45.490883 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5582.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5582.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5582.sock' not found
+19:06:45.490992 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+19:06:45.491377 [INFO] Generating reports...
+19:06:45.495356 [INFO] Shutting down devices started by maestro-runner...
+19:06:45.495377 [INFO] Shutting down all tracked emulators
+19:06:45.495390 [INFO] Shutting down all tracked simulators

@@ -1,0 +1,27 @@
+--- findings/preparation/campaign-completion/prep/cov6-provision/cov6_primary_provision.before-session-binding-fix.py	2026-10-13 19:15:18
++++ findings/preparation/campaign-completion/prep/cov6-provision/cov6_primary_provision.py	2026-10-13 19:17:13
+@@ -71,11 +71,11 @@
+ home=ios_home
+ 
+ sdk=Path.home()/"Library/Android/sdk"; adb=sdk/"platform-tools/adb"; emulator=sdk/"emulator/emulator"; avdmanager=sdk/"cmdline-tools/latest/bin/avdmanager"
+-env=os.environ.copy(); env.pop("GRANTIVA_API_KEY",None); env.update(JAVA_HOME=JAVA21,ANDROID_HOME=str(sdk),ANDROID_SDK_ROOT=str(sdk),GRANTIVA_RUNNER_HOME=str(home),MAESTRO_RUNNER_HOME=str(home),GRANTIVA_SESSION_ID="cov6-controller")
+-ownership={"schema":"grantiva.task9.primary-ownership.v1","sessionId":"cov6-controller","candidateManifest":str(candidate_path),"candidateManifestSHA256":candidate_sha,"gateEvidence":str(gate_path),"runnerHomes":{"ios":str(ios_home),"android":str(android_home)},"devices":{},"reservations":{"iosExtraNames":list(EXTRA_IOS),"androidPrimaryAbsentName":AVD,"androidExtraName":EXTRA_ANDROID,"androidSerialChoice":SERIAL}}
++env=os.environ.copy(); env.pop("GRANTIVA_API_KEY",None); env.update(JAVA_HOME=JAVA21,ANDROID_HOME=str(sdk),ANDROID_SDK_ROOT=str(sdk),GRANTIVA_RUNNER_HOME=str(home),MAESTRO_RUNNER_HOME=str(home),GRANTIVA_SESSION_ID="candidate5-controller")
++ownership={"schema":"grantiva.task9.primary-ownership.v1","sessionId":"candidate5-controller","candidateManifest":str(candidate_path),"candidateManifestSHA256":candidate_sha,"gateEvidence":str(gate_path),"runnerHomes":{"ios":str(ios_home),"android":str(android_home)},"devices":{},"reservations":{"iosExtraNames":list(EXTRA_IOS),"androidPrimaryAbsentName":AVD,"androidExtraName":EXTRA_ANDROID,"androidSerialChoice":SERIAL}}
+ save(output/"ownership.json",ownership)
+ def run(label, argv, input_bytes=None, timeout=240):
+-    argv=list(map(str,argv)); start=time.time(); meta={"argv":argv,"cwd":str(output),"startedEpoch":start,"sessionId":"cov6-controller","runnerHome":str(home),"javaHome":JAVA21,"apiKey":"unset"}; save(output/(label+"-start.json"),meta)
++    argv=list(map(str,argv)); start=time.time(); meta={"argv":argv,"cwd":str(output),"startedEpoch":start,"sessionId":"candidate5-controller","runnerHome":str(home),"javaHome":JAVA21,"apiKey":"unset"}; save(output/(label+"-start.json"),meta)
+     try: p=subprocess.run(argv,cwd=output,env=env,input=input_bytes,capture_output=True,timeout=timeout)
+     except subprocess.TimeoutExpired as exc:
+         stdout=exc.stdout or b""; stderr=exc.stderr or b""; stdout=stdout.encode() if isinstance(stdout,str) else stdout; stderr=stderr.encode() if isinstance(stderr,str) else stderr
+@@ -124,7 +124,7 @@
+ save(output/"post-provision-comparison.json",comparisons)
+ require(comparisons["protectedSimulatorsUnchanged"],"protected simulator metadata changed"); require(comparisons["protectedPixelConfigUnchanged"],"protected Pixel config changed"); require(comparisons["onlyExpectedAdditions"],"post-provision device additions/removals differ from exact ownership"); require(comparisons["forwardsUnchanged"],"adb forward table changed during provisioning")
+ reservations=output/"reservations"; reservations.mkdir()
+-save(reservations/"ios-primary-and-extra-names.json",{"actor":"ios","sessionId":"cov6-ios","candidateManifestSHA256":candidate_sha,"runnerHome":str(ios_home),"primaryDevices":[ownership["devices"]["ios26"],ownership["devices"]["ios27"]],"reservedExtraNames":list(EXTRA_IOS),"extraDevicesCreated":False,"protectedSimulatorInventory":str(output/"simulators-before.stdout")})
+-save(reservations/"android-absent-primary-and-extra-name.json",{"actor":"android","sessionId":"cov6-android","candidateManifestSHA256":candidate_sha,"runnerHome":str(android_home),"primaryName":AVD,"primaryState":"absent-reserved-for-literal-AND-001","serialChoice":SERIAL,"extraName":EXTRA_ANDROID,"devicesCreated":False,"protectedAndroidInventory":str(output/"avds-before.stdout"),"protectedPixelConfig":json.loads((output/"baseline.json").read_text())["protectedPixelConfig"]})
++save(reservations/"ios-primary-and-extra-names.json",{"actor":"ios","sessionId":"candidate5-ios","candidateManifestSHA256":candidate_sha,"runnerHome":str(ios_home),"primaryDevices":[ownership["devices"]["ios26"],ownership["devices"]["ios27"]],"reservedExtraNames":list(EXTRA_IOS),"extraDevicesCreated":False,"protectedSimulatorInventory":str(output/"simulators-before.stdout")})
++save(reservations/"android-absent-primary-and-extra-name.json",{"actor":"android","sessionId":"candidate5-android","candidateManifestSHA256":candidate_sha,"runnerHome":str(android_home),"primaryName":AVD,"primaryState":"absent-reserved-for-literal-AND-001","serialChoice":SERIAL,"extraName":EXTRA_ANDROID,"devicesCreated":False,"protectedAndroidInventory":str(output/"avds-before.stdout"),"protectedPixelConfig":json.loads((output/"baseline.json").read_text())["protectedPixelConfig"]})
+ save(output/"acceptance.json",{"schema":"grantiva.task9.primary-provision.v1","passed":True,"candidateManifestSHA256":candidate_sha,"gateEvidenceSHA256":sha(gate_path),"ownership":ownership,"protectedBaseline":str(output/"baseline.json"),"postProvisionComparison":str(output/"post-provision-comparison.json")})
+ print(json.dumps(ownership,indent=2))

@@ -1,3 +1,13 @@
+# Latest checkpoint: candidate5 smoke execution passed; final review pending
+
+All seven smoke phases and owned physical cleanup passed. Frozen artifact postflight passed. Original lifecycle collector failure remains with adjacent reviewed fix1 full PASS. Candidate5 manifest191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c unchanged. Fullcoverage allocation: findings/evidence/completion-candidate5/coverage/allocation.json (paths only until smoke review). Root then executes reviewed cov6 provisioning, clones CLI home, activates CLI plus one live slice. Do not stop at this milestone. Broad process snapshots must remain local; CLI actor preparing publication manifest/safe derivatives.
+
+## Current checkpoint — candidate5 broad smoke (2026-10-14 02:05 UTC)
+
+Candidate5 frozen manifest `191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c` at findings/evidence/completion-candidate5/candidate.json. CLI dd5d333, runnerd98b088/.16, bothmergedafterCI. Early26/27stock+diffPASS andownedcleanupcomplete;3canonicaliOSkeysaccepted in coverage/early-ios-accepted-joins.json. No fullmatrix campaign launched yet.
+
+Broadsmokeprovisioned: iOS `0CA840ED-E98A-4A66-8548-6661C3C831BE` / smoke5-c5-ios; Android `emulator-5582` / smoke5-c5-android / PID40513 authenticated in provision/ownership.json. Mainhome `/private/tmp/grantiva-completion-candidate5-y6myz3jd/runner-home`, sessioncompletion-candidate5. Exact frozenAPKinstalled. First identitypreflight failedstaleoldproofschema; preserved; reviewed adapterab5417ca nowvalidatescurrentproof. Adjacent identityretryPASS. Androidrunner smoke currentlyACTIVE through run-smoke-phase.py. Remainingfullcorrected lifecycle→joint-forward→MCPios/android→docs-output→force→finalcleanup. Neverexecuteoldcleanupbindings; finalcleanupmustbindnewownedIDs. Freshcov6sliceWTs/templatesreadybuthomes/devicesPENDING.
+
 ## Current checkpoint — candidate5 packaging CI (2026-10-14 01:33 UTC)
 
 Runner PR28 merged `d98b08898f45b94bad607f76e19089bb0e15d5c0`, exact reviewed tree after successful CI. Package commit `5de5f36bd7132d981676830716ec1d946d5477e1` reviewed APPROVED; full 2,027 Swift tests pass. Exact four-path scope includes two version expectation updates; first failed stale-constant run preserved. CLI PR217 CI38496369854 is running. After CI, squash merge exact head, verify tree858d699c6edcf817e36893327ce07c2489dfb182, create clean release-completion-candidate5 CLI worktree, bind prepared controller and execute once.

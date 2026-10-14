@@ -1,0 +1,26 @@
+OVERVIEW: Add a targeting rule to a flag (appended at lowest priority).
+
+USAGE: grantiva console flags rules add [--json] [--verbose] [--quiet] <key> --name <name> --value <value> [--when <when> ...] [--conditions-json <conditions-json>] [--rollout <rollout>] [--inactive]
+
+ARGUMENTS:
+  <key>                   Flag key (or UUID).
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --name <name>           Rule name.
+  --value <value>         Value the flag resolves to when this rule matches.
+  --when <when>           Condition as <attribute>:<operator>:<value>
+                          (repeatable).
+  --conditions-json <conditions-json>
+                          Conditions as a JSON array of {attribute, operator,
+                          value}.
+  --rollout <rollout>     Rollout percentage 0-100 (default: 100).
+  --inactive              Create the rule inactive.
+  --version               Show the version.
+  -h, --help              Show help information.
+

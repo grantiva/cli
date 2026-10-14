@@ -1,0 +1,21 @@
+OVERVIEW: Change a feature request's status. The org admin is emailed if that
+notification is on.
+
+USAGE: grantiva console feedback set-status [--json] [--verbose] [--quiet] <request> <status>
+
+ARGUMENTS:
+  <request>               Feature request ID.
+  <status>                New status: pending, open, planned, in_progress,
+                          shipped, declined, duplicate. (values: pending, open,
+                          planned, in_progress, shipped, declined, duplicate)
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --version               Show the version.
+  -h, --help              Show help information.
+

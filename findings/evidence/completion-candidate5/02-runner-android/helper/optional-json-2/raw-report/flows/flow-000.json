@@ -1,0 +1,90 @@
+{
+  "id": "flow-000",
+  "name": "optional-miss",
+  "sourceFile": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/inputs/optional-inputs/optional-miss.yaml",
+  "device": {
+    "id": "emulator-5582",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T19:08:00.240902-07:00",
+  "endTime": "2026-10-13T19:08:09.00392-07:00",
+  "duration": 8762,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T19:08:00.246338-07:00",
+      "endTime": "2026-10-13T19:08:01.702338-07:00",
+      "duration": 1456,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"No Such Element fix4-3\"",
+      "status": "warned",
+      "startTime": "2026-10-13T19:08:01.703059-07:00",
+      "endTime": "2026-10-13T19:08:08.804059-07:00",
+      "duration": 7101,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "No Such Element fix4-3",
+          "optional": true
+        }
+      },
+      "error": {
+        "type": "element_not_found",
+        "message": "Element not found: text='No Such Element fix4-3' (cause: context deadline exceeded: element not found; closest on-screen texts: \"Wifi signal full.,No internet\", \"Phone signal full.\", \"Battery 100 percent.\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml",
+        "logTail": "assets/flow-000/cmd-001-log-tail.txt"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "passed",
+      "startTime": "2026-10-13T19:08:08.940428-07:00",
+      "endTime": "2026-10-13T19:08:09.002428-07:00",
+      "duration": 62,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-011c-0000-002f00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 2873,
+    "p50": 1456,
+    "p95": 7101,
+    "max": 7101,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}
