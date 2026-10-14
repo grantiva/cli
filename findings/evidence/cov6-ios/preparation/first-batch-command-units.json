@@ -1,0 +1,25 @@
+{
+  "status": "PREPARED_NOT_EXECUTED",
+  "units": [
+    {
+      "keys": ["IOS-001", "IOS-002", "IOS-003", "IOS-004", "IOS-005", "IOS-006", "IOS-007", "IOS-008", "IOS-009"],
+      "template": "findings/evidence/cov6-ios/preparation/execute-ios001-009.template.sh",
+      "requires": ["runnerHome", "primary26.name"],
+      "note": "Preserve IOS-003 Pin generation for IOS-019. Inspect every capture before grading."
+    },
+    {
+      "keys": ["IOS-010", "IOS-019", "IOS-011", "IOS-012", "IOS-013", "IOS-014", "IOS-015", "IOS-016", "IOS-017", "IOS-018", "IOS-020"],
+      "requires": ["runnerHome", "primary26", "primary27", "retained IOS-003 Pin UUID", "root lifecycle/capacity/build/WDA reservation"],
+      "note": "Commands are generated only after IOS-001–009 returns actual UUIDs and root allocates the bounded lifecycle window. Order is fixed to consume the retained Pin before capacity rows. IOS-018 receives its own isolated home."
+    },
+    {
+      "keys": ["IOS-119"],
+      "requires": ["runnerHome", "primary26.udid"],
+      "cwd": "/Users/kyle/Developer/landmarks-demo/.worktrees/release-round4-candidate2/ios",
+      "argvTemplate": ["/Users/kyle/.grantiva-qa/bin/grantiva", "run", "--no-build", "--simulator", "PENDING_PRIMARY26_UUID", "--bundle-id", "com.kylebrowning.Landmarks", "--flow", ".maestro/99-crash.yaml"],
+      "timeoutSeconds": 180,
+      "expectedExit": 1,
+      "requiredEvidence": ["first assertion app-crashed/not-running cause", "failure screenshot", "exact candidate identity", "before/after boot inventory"]
+    }
+  ]
+}

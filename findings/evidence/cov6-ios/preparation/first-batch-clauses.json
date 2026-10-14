@@ -1,0 +1,175 @@
+{
+  "status": "CANONICAL_CLAUSES_NOT_EXECUTED",
+  "source": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/coverage/required-keys.json",
+  "sourceCandidateManifestSHA256": "191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c",
+  "keys": [
+    {
+      "key": "IOS-001",
+      "baseId": "IOS-001",
+      "matrixLine": 349,
+      "command": "`simulator ensure`",
+      "precondition": "`--name \"cov-ios-3 iPhone 17\"` (new)",
+      "expected": "Creates, boots, prints only the UDID on stdout; human line on stderr (README:410-420)"
+    },
+    {
+      "key": "IOS-002",
+      "baseId": "IOS-002",
+      "matrixLine": 350,
+      "command": "`simulator ensure`",
+      "precondition": "same `--name` again",
+      "expected": "Same UDID; stderr `Reused iPhone 17 (\u2026) \u2014 Booted` style line (README:418)"
+    },
+    {
+      "key": "IOS-003",
+      "baseId": "IOS-003",
+      "matrixLine": 351,
+      "command": "`simulator ensure`",
+      "precondition": "`--name \"cov-ios-4 Pin\" --device-type \"iPhone 17\" --runtime latest`",
+      "expected": "Created with that type on the newest runtime (help: simulator_ensure.txt)"
+    },
+    {
+      "key": "IOS-004",
+      "baseId": "IOS-004",
+      "matrixLine": 352,
+      "command": "`simulator ensure`",
+      "precondition": "`--runtime 26.0`; then `--runtime 99.9`",
+      "expected": "Uses 26.0; uninstalled runtime is a clear error, nothing created (help: simulator_ensure.txt)"
+    },
+    {
+      "key": "IOS-005",
+      "baseId": "IOS-005",
+      "matrixLine": 353,
+      "command": "`simulator ensure`",
+      "precondition": "`--no-boot`",
+      "expected": "Created and left Shutdown; stdout is the UDID (README:427)"
+    },
+    {
+      "key": "IOS-006",
+      "baseId": "IOS-006",
+      "matrixLine": 354,
+      "command": "`simulator ensure --json`",
+      "precondition": "new device; then bare `--name cov-ios-1 --json` reuse",
+      "expected": "Valid JSON with UDID and display geometry; the reuse reports the device's own type and `runtime: iOS 26.0` (README:419-428; brief I10)"
+    },
+    {
+      "key": "IOS-007",
+      "baseId": "IOS-007",
+      "matrixLine": 355,
+      "command": "`simulator ensure`",
+      "precondition": "`--name \"cov-thing\"` (no model, no `--device-type`, not existing)",
+      "expected": "Rejected: `Could not infer a device type from the name ... Include a device model ... or pass --device-type.`; nothing created (help: simulator_ensure.txt)"
+    },
+    {
+      "key": "IOS-008",
+      "baseId": "IOS-008",
+      "matrixLine": 356,
+      "command": "`simulator ensure`",
+      "precondition": "two concurrent calls, same new name",
+      "expected": "Exactly one device (`Created` + `Reused`) (SIMULATOR-LIFECYCLE.md:19)"
+    },
+    {
+      "key": "IOS-009",
+      "baseId": "IOS-009",
+      "matrixLine": 357,
+      "command": "`simulator ensure`",
+      "precondition": "after creating",
+      "expected": "Recorded in `~/.grantiva/simulator-capacity/created.json` (SIMULATOR-LIFECYCLE.md:18, 45)"
+    },
+    {
+      "key": "IOS-010",
+      "baseId": "IOS-010",
+      "matrixLine": 358,
+      "command": "`simulator sessions`",
+      "precondition": "plain and `--json`",
+      "expected": "Lists only Grantiva-booted slots and owners; `acquiredAt` etc. ISO 8601 strings; a manually booted device (iPhone 17 Pro) is not listed (help: simulator_sessions.txt; brief C22, I08)"
+    },
+    {
+      "key": "IOS-011",
+      "baseId": "IOS-011",
+      "matrixLine": 359,
+      "command": "`simulator ensure` at capacity",
+      "precondition": "`GRANTIVA_MAX_SIMULATORS=3`, cov-ios-1..3 Grantiva-booted, then ensure cov-ios-4",
+      "expected": "Waits and logs `Warning: Waiting for simulator capacity (3/3): \u2026` naming only Grantiva-booted occupants (README:398-399, 449-450)"
+    },
+    {
+      "key": "IOS-012",
+      "baseId": "IOS-012",
+      "matrixLine": 360,
+      "command": "`simulator ensure`",
+      "precondition": "`GRANTIVA_MAX_SIMULATORS=1` with one slot used",
+      "expected": "Second boot waits (README:449-450)"
+    },
+    {
+      "key": "IOS-013",
+      "baseId": "IOS-013",
+      "matrixLine": 361,
+      "command": "`simulator ensure`",
+      "precondition": "`GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS=5` at capacity, new name",
+      "expected": "Gives up after about 5 s, non-zero; the device it created is deleted (brief I14; README:449-450)"
+    },
+    {
+      "key": "IOS-014",
+      "baseId": "IOS-014",
+      "matrixLine": 362,
+      "command": "`simulator ensure`, `build install`",
+      "precondition": "`GRANTIVA_SESSION_ID=cov-ios` across commands",
+      "expected": "One durable owner; `sessions` shows one owner (README:399-408)"
+    },
+    {
+      "key": "IOS-015",
+      "baseId": "IOS-015",
+      "matrixLine": 363,
+      "command": "`simulator teardown`",
+      "precondition": "`--session-id cov-ios-tmp --json` (a session made inside the row)",
+      "expected": "Deletes Grantiva-created sims, shuts down pre-existing ones it booted; `deleted` per session (README:404-407)"
+    },
+    {
+      "key": "IOS-016",
+      "baseId": "IOS-016",
+      "matrixLine": 364,
+      "command": "`simulator teardown`",
+      "precondition": "`--udid <UDID> --force --json` after `kill -9` of a keep-alive run",
+      "expected": "After the row kills the keep-alive parent, targeted force teardown reaps orphaned WDA xcodebuild and `simctl diagnose`, reports reclaimed true, preserves named live capacity records as applicable, removes owned device homes/staging/session state, and exits 0. It need not kill the already-dead parent. (K68; corrected round 4)"
+    },
+    {
+      "key": "IOS-017",
+      "baseId": "IOS-017",
+      "matrixLine": 365,
+      "command": "`simulator teardown`",
+      "precondition": "`--udid <free UDID> --force --json`",
+      "expected": "Exit 0, `reclaimed: false` (README:430-447)"
+    },
+    {
+      "key": "IOS-018",
+      "baseId": "IOS-018",
+      "matrixLine": 366,
+      "command": "`simulator cleanup`",
+      "precondition": "one shut-down Grantiva-created sim, one in an active session, the user's devices Round 3 re-run rule: `GRANTIVA_RUNNER_HOME=<scratch>/ios018-home` for every command of the row, so cleanup reads only `<scratch>/ios018-home/simulator-capacity/` (per-home ledger, L08); before `simulator cleanup` that ledger lists only `cov3-ios-3` (shut down) and `cov3-ios-4` (in an active session under that home), else `blocked`; checksums of `~/.grantiva-qa/runner/simulator-capacity/created.json` and `~/.grantiva/simulator-capacity/created.json` (read only) equal before and after.",
+      "expected": "Deletes only the first; prunes missing devices from the ledger. Run only if `created.json` lists no device outside `cov-ios-*`; otherwise `blocked` (help: simulator_cleanup.txt) Round 2 guard: run only while `cov2-ios-2` is booted, or after the 27.0 pass, so cleanup cannot delete the slice's own shut-down simulator."
+    },
+    {
+      "key": "IOS-019",
+      "baseId": "IOS-019",
+      "matrixLine": 367,
+      "command": "`simulator delete`",
+      "precondition": "`--name \"cov-ios-4 Pin\"`; then a missing name",
+      "expected": "Deletes; second is a clear error, non-zero (help: simulator_delete.txt)"
+    },
+    {
+      "key": "IOS-020",
+      "baseId": "IOS-020",
+      "matrixLine": 368,
+      "command": "`simulator teardown`, `sessions`",
+      "precondition": "`cov-ios-3` booted with `xcrun simctl boot`, then a run on it, then `teardown --session-id`",
+      "expected": "Takes no slot; never shut down by teardown (README:450-453; brief I08)"
+    },
+    {
+      "key": "IOS-119",
+      "baseId": "IOS-119",
+      "matrixLine": 342,
+      "command": "`run --flow`",
+      "precondition": "`.maestro/99-crash.yaml`",
+      "expected": "Fails fast at the first wait with the app-not-running / crashed reason, exit 1, failure screenshot (brief A01 criterion 1; plan N14)"
+    }
+  ]
+}

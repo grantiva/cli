@@ -1,0 +1,25 @@
+{
+  "status": "PREPARED_NOT_EXECUTED",
+  "candidateManifestSHA256": "191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c",
+  "sessionId": "candidate5-ios",
+  "runnerHome": "/private/tmp/grantiva-candidate5-coverage-qjr26z3g/ios-runner-home",
+  "primary26": {"name": "cov6-ios-26", "udid": "1E436AED-5626-4520-9E43-1CC741510637"},
+  "primary27": {"name": "cov6-ios-27", "udid": "9C1D624E-C6F2-4930-9581-B1A257C0DBD7"},
+  "extraNames": ["cov6-ios-3", "cov6-ios-4"],
+  "sourceCwd": "/Users/kyle/Developer/landmarks-demo/.worktrees/release-round4-candidate2/ios",
+  "frozenApp": "/private/tmp/grantiva-round4-candidate3-demo.9jkg9hna/Build/Products/UITesting-iphonesimulator/Landmarks.app",
+  "protectedUUIDs": ["B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C", "FE441EE5-BBFC-4981-B68A-59C0DBCE26D6"],
+  "order": [
+    "IOS-001", "IOS-002", "IOS-003", "IOS-004", "IOS-005", "IOS-006", "IOS-007", "IOS-008", "IOS-009",
+    "IOS-010", "IOS-019", "IOS-011", "IOS-012", "IOS-013", "IOS-014", "IOS-015", "IOS-016", "IOS-017", "IOS-018", "IOS-020", "IOS-119"
+  ],
+  "fixtureRules": [
+    "Literal name-only IOS-001 resolves latest iOS runtime.",
+    "IOS-004 captures runtime inventory before deletion; IOS-005 captures Shutdown before deletion.",
+    "Retain IOS-003 Pin generation for IOS-019, and execute IOS-019 before capacity rows that need both extra-name slots.",
+    "At most two campaign extras coexist; bind every created UUID/generation before mutation.",
+    "IOS-018 uses an isolated runner home and never global teardown, cleanup, or pattern kill.",
+    "IOS-119 is a fresh exact crash flow on the allocated primary; expected nonzero behavior requires first-wait app-crashed/not-running cause and a retained failure screenshot.",
+    "Never delete primaries or protected UUIDs. No command may execute until runnerHome and both primary bindings are resolved by root."
+  ]
+}

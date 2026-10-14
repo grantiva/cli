@@ -1,0 +1,12 @@
+{
+  "row": "IOS-018",
+  "verdict": "PASS",
+  "candidateManifestSHA256": "191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c",
+  "evidenceDirectory": "/Users/kyle/Developer/grantiva-cli/.worktrees/cov6-ios/findings/evidence/cov6-ios/IOS-018",
+  "proofNotes": [
+    "Every lifecycle command uses the isolated IOS018 runner home.",
+    "Its ledger initially contains shutdown extra3 and active-session extra4; cleanup deletes only extra3 and prunes it while retaining extra4.",
+    "Coverage-home and default-home ledger hashes are unchanged; scoped active-session teardown then retires extra4."
+  ],
+  "firstVerdict": true
+}

@@ -1,0 +1,20 @@
+--- /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/early-ios/capture-one.rb	2026-10-13 18:47:24
++++ findings/tools/cov6-ios/capture-one.rb	2026-10-13 18:59:07
+@@ -18,7 +18,7 @@
+ 
+ binary = '/Users/kyle/.grantiva-qa/bin/grantiva'
+ manifest_path = '/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/candidate.json'
+-runner_home = '/private/tmp/grantiva-completion-candidate5-y6myz3jd/runner-home'
++runner_home = '/PENDING_CANDIDATE5_IOS_RUNNER_HOME'
+ expected_manifest = '191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c'
+ manifest_sha = Digest::SHA256.file(manifest_path).hexdigest
+ abort "manifest mismatch #{manifest_sha}" unless manifest_sha == expected_manifest
+@@ -42,7 +42,7 @@
+ boot_observe(prefix, 'before') if boot_observation
+ 
+ stdout_path = "#{prefix}.stdout"; stderr_path = "#{prefix}.stderr"
+-env = {'GRANTIVA_RUNNER_HOME'=>runner_home, 'MAESTRO_RUNNER_HOME'=>runner_home, 'GRANTIVA_SESSION_ID'=>'candidate5-early-ios', 'GRANTIVA_API_KEY'=>nil}
++env = {'GRANTIVA_RUNNER_HOME'=>runner_home, 'MAESTRO_RUNNER_HOME'=>runner_home, 'GRANTIVA_SESSION_ID'=>'candidate5-ios', 'GRANTIVA_API_KEY'=>nil}
+ started = Time.now.utc
+ pid = Process.spawn(env, *command, chdir: cwd, pgroup: true, out: [stdout_path, 'wx'], err: [stderr_path, 'wx'])
+ pgid = Process.getpgid(pid); timed_out = false; term_at = kill_at = status = nil
