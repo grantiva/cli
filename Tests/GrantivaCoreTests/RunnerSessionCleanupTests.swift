@@ -67,6 +67,17 @@ final class RunnerSessionCleanupTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: "\(reportDir)/report.json"))
     }
 
+    func testSuppliedReportDirectorySurvivesScreensRun() async throws {
+        let scratch = try FakeRunnerScratch()
+        defer { scratch.remove() }
+        let reportDir = scratch.root.appendingPathComponent("screens-report").path
+
+        _ = try await scratch.runScreens(reportDir: reportDir)
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: reportDir))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: "\(reportDir)/report.json"))
+    }
+
     // MARK: - Interrupt (A06)
 
     /// The session's own interrupted branch: the runner dies because the relay
@@ -297,6 +308,56 @@ struct FakeRunnerScratch {
         flowCount: Int = 1,
         failureReport: RunnerFailureReport? = nil
     ) async throws -> [ScreenCapture] {
+        let runner = try makeRunner(
+            reportJSON: reportJSON, flowFiles: flowFiles,
+            exitStatus: exitStatus, sleepSeconds: sleepSeconds
+        )
+
+        let manager = RunnerManager(
+            ensureAvailable: {}, runnerPath: { runner }, runnerDir: { root.path },
+            leaseDirectory: root.appendingPathComponent("locks").path
+        )
+        let flow = root.appendingPathComponent("smoke.yaml").path
+        return try await RunnerSession.runFlowFiles(
+            at: Array(repeating: flow, count: flowCount),
+            bundleId: "com.fake",
+            udid: "FAKE-\(UUID().uuidString)",
+            platform: RecordingPlatform(calls: LockedCalls(), restoreDelay: 0),
+            runner: manager,
+            outputDir: root.appendingPathComponent("captures").path,
+            reportDir: reportDir,
+            timeoutSeconds: 30,
+            readyFile: readyFile,
+            failureReport: failureReport
+        )
+    }
+
+    func runScreens(reportDir: String?) async throws -> [ScreenCapture] {
+        let runner = try makeRunner(
+            reportJSON: #"{"status":"passed","flows":[{"index":0,"id":"flow-000","name":"screens","sourceFile":"@FLOW@","assetsDir":"assets/flow-000","status":"passed"}]}"#
+        )
+        let manager = RunnerManager(
+            ensureAvailable: {}, runnerPath: { runner }, runnerDir: { root.path },
+            leaseDirectory: root.appendingPathComponent("locks").path
+        )
+        return try await RunnerSession.run(
+            screens: [.init(name: "Home", path: .launch)],
+            bundleId: "com.fake",
+            udid: "FAKE-\(UUID().uuidString)",
+            platform: RecordingPlatform(calls: LockedCalls(), restoreDelay: 0),
+            runner: manager,
+            outputDir: root.appendingPathComponent("captures").path,
+            reportDir: reportDir,
+            timeoutSeconds: 30
+        )
+    }
+
+    private func makeRunner(
+        reportJSON: String,
+        flowFiles: [String: String] = [:],
+        exitStatus: Int32 = 0,
+        sleepSeconds: Int = 0
+    ) throws -> String {
         var script = """
         #!/bin/sh
         while [ $# -gt 0 ]; do
@@ -304,7 +365,9 @@ struct FakeRunnerScratch {
           flow="$1"
           shift
         done
-        mkdir -p "$out/flows"
+        mkdir -p "$out/flows" "$out/assets/flow-000"
+        : > "$out/maestro-runner.log"
+        printf '%s\n' '<testsuite/>' > "$out/junit-report.xml"
         cat > "$out/report.json" <<'GRANTIVA_EOF'
         \(reportJSON)
         GRANTIVA_EOF
@@ -324,23 +387,6 @@ struct FakeRunnerScratch {
         let runner = root.appendingPathComponent("fake-runner").path
         try script.write(toFile: runner, atomically: true, encoding: .utf8)
         chmod(runner, 0o755)
-
-        let manager = RunnerManager(
-            ensureAvailable: {}, runnerPath: { runner }, runnerDir: { root.path },
-            leaseDirectory: root.appendingPathComponent("locks").path
-        )
-        let flow = root.appendingPathComponent("smoke.yaml").path
-        return try await RunnerSession.runFlowFiles(
-            at: Array(repeating: flow, count: flowCount),
-            bundleId: "com.fake",
-            udid: "FAKE-\(UUID().uuidString)",
-            platform: RecordingPlatform(calls: LockedCalls(), restoreDelay: 0),
-            runner: manager,
-            outputDir: root.appendingPathComponent("captures").path,
-            reportDir: reportDir,
-            timeoutSeconds: 30,
-            readyFile: readyFile,
-            failureReport: failureReport
-        )
+        return runner
     }
 }
