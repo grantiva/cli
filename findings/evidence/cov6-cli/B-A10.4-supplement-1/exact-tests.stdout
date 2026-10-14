@@ -1,0 +1,168 @@
+Tests/GrantivaCLITests/InstallCommandTests.swift-108-        )
+Tests/GrantivaCLITests/InstallCommandTests.swift-109-    }
+Tests/GrantivaCLITests/InstallCommandTests.swift-110-
+Tests/GrantivaCLITests/InstallCommandTests.swift-111-    /// A10: Android names the application ID and the adb serial.
+Tests/GrantivaCLITests/InstallCommandTests.swift-112-    func testAndroidInstallResultJSONUsesAndroidKeys() throws {
+Tests/GrantivaCLITests/InstallCommandTests.swift-113-        let result = AndroidInstallResult(
+Tests/GrantivaCLITests/InstallCommandTests.swift-114-            status: .installed,
+Tests/GrantivaCLITests/InstallCommandTests.swift-115-            applicationId: "com.kylebrowning.landmarks",
+Tests/GrantivaCLITests/InstallCommandTests.swift-116-            device: .init(name: "Pixel_8_API_35", serial: "emulator-5554"),
+Tests/GrantivaCLITests/InstallCommandTests.swift-117-            appPath: "/tmp/app-free-debug.apk"
+Tests/GrantivaCLITests/InstallCommandTests.swift-118-        )
+Tests/GrantivaCLITests/InstallCommandTests.swift-119-        let json = try XCTUnwrap(
+Tests/GrantivaCLITests/InstallCommandTests.swift-120-            JSONSerialization.jsonObject(with: Data(JSONOutput.string(result).utf8)) as? [String: Any]
+Tests/GrantivaCLITests/InstallCommandTests.swift-121-        )
+Tests/GrantivaCLITests/InstallCommandTests.swift:122:        XCTAssertEqual(Set(json.keys), ["status", "applicationId", "device", "appPath"])
+Tests/GrantivaCLITests/InstallCommandTests.swift-123-        XCTAssertEqual(json["applicationId"] as? String, "com.kylebrowning.landmarks")
+Tests/GrantivaCLITests/InstallCommandTests.swift-124-        let device = try XCTUnwrap(json["device"] as? [String: Any])
+Tests/GrantivaCLITests/InstallCommandTests.swift-125-        XCTAssertEqual(device["name"] as? String, "Pixel_8_API_35")
+Tests/GrantivaCLITests/InstallCommandTests.swift-126-        XCTAssertEqual(device["serial"] as? String, "emulator-5554")
+Tests/GrantivaCLITests/InstallCommandTests.swift-127-        XCTAssertNil(json["bundleId"])
+Tests/GrantivaCLITests/InstallCommandTests.swift-128-        XCTAssertNil(json["simulator"])
+Tests/GrantivaCLITests/InstallCommandTests.swift-129-    }
+Tests/GrantivaCLITests/InstallCommandTests.swift-130-
+Tests/GrantivaCLITests/InstallCommandTests.swift-131-    /// L39: every document carries `appPath`, null when nothing was installed.
+Tests/GrantivaCLITests/InstallCommandTests.swift-132-    func testASkippedInstallReportsANullAppPath() throws {
+Tests/GrantivaCLITests/InstallCommandTests.swift-133-        let android = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(JSONOutput.string(AndroidInstallResult(
+Tests/GrantivaCLITests/InstallCommandTests.swift-134-            status: .skipped, applicationId: "com.kylebrowning.landmarks",
+Tests/GrantivaCLITests/InstallCommandTests.swift-135-            device: .init(name: "fix3-6-android", serial: "emulator-5554"), appPath: nil
+Tests/GrantivaCLITests/InstallCommandTests.swift-136-        )).utf8)) as? [String: Any])
+Tests/GrantivaCLITests/InstallCommandTests.swift:137:        XCTAssertEqual(Set(android.keys), ["status", "applicationId", "device", "appPath"])
+Tests/GrantivaCLITests/InstallCommandTests.swift-138-        XCTAssertTrue(android["appPath"] is NSNull)
+Tests/GrantivaCLITests/InstallCommandTests.swift-139-
+Tests/GrantivaCLITests/InstallCommandTests.swift-140-        let ios = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(JSONOutput.string(InstallResult(
+Tests/GrantivaCLITests/InstallCommandTests.swift-141-            status: .skipped, scheme: nil, bundleId: "com.kylebrowning.Landmarks",
+Tests/GrantivaCLITests/InstallCommandTests.swift-142-            simulator: .init(name: "fix3-6-ios", udid: "U"), appPath: nil, dataContainerPath: nil
+Tests/GrantivaCLITests/InstallCommandTests.swift-143-        )).utf8)) as? [String: Any])
+Tests/GrantivaCLITests/InstallCommandTests.swift-144-        XCTAssertEqual(Set(ios.keys), ["status", "scheme", "bundleId", "simulator", "appPath", "dataContainerPath"])
+Tests/GrantivaCLITests/InstallCommandTests.swift-145-        XCTAssertTrue(ios["appPath"] is NSNull)
+Tests/GrantivaCLITests/InstallCommandTests.swift-146-    }
+Tests/GrantivaCLITests/InstallCommandTests.swift-147-
+Tests/GrantivaCLITests/InstallCommandTests.swift-148-    func testHumanCompletionIncludesDataContainerPath() {
+Tests/GrantivaCLITests/InstallCommandTests.swift-149-        let message = InstallCommand.completionMessage(
+Tests/GrantivaCLITests/InstallCommandTests.swift-150-            status: .launched,
+Tests/GrantivaCLITests/InstallCommandTests.swift-151-            bundleId: "com.example.app",
+--
+Tests/GrantivaCoreTests/TableFormatterTests.swift-49-        ))
+Tests/GrantivaCoreTests/TableFormatterTests.swift-50-        XCTAssertTrue(failed.hasPrefix("✗ Visual diff failed"), failed)
+Tests/GrantivaCoreTests/TableFormatterTests.swift-51-        let passed = TableFormatter().formatCompare(CompareResult(screens: [screen("A", .passed)], passed: true, duration: 0))
+Tests/GrantivaCoreTests/TableFormatterTests.swift-52-        XCTAssertTrue(passed.hasPrefix("✓ Visual diff passed"), passed)
+Tests/GrantivaCoreTests/TableFormatterTests.swift-53-    }
+Tests/GrantivaCoreTests/TableFormatterTests.swift-54-
+Tests/GrantivaCoreTests/TableFormatterTests.swift-55-    func testAndroidBuildPrintsTheAPKPathInPlaceOfTheScheme() {
+Tests/GrantivaCoreTests/TableFormatterTests.swift-56-        let output = TableFormatter().formatBuild(BuildResult(
+Tests/GrantivaCoreTests/TableFormatterTests.swift-57-            success: true, duration: 1, warnings: [], errors: [],
+Tests/GrantivaCoreTests/TableFormatterTests.swift-58-            productPath: "/b/app-debug.apk", applicationId: "com.x"
+Tests/GrantivaCoreTests/TableFormatterTests.swift-59-        ))
+Tests/GrantivaCoreTests/TableFormatterTests.swift-60-        let lines = output.split(separator: "\n").map(String.init)
+Tests/GrantivaCoreTests/TableFormatterTests.swift-61-
+Tests/GrantivaCoreTests/TableFormatterTests.swift-62-        XCTAssertTrue(lines.contains("  APK: /b/app-debug.apk"), output)
+Tests/GrantivaCoreTests/TableFormatterTests.swift:63:        XCTAssertFalse(output.contains("Scheme:"), output)
+Tests/GrantivaCoreTests/TableFormatterTests.swift-64-    }
+Tests/GrantivaCoreTests/TableFormatterTests.swift-65-
+Tests/GrantivaCoreTests/TableFormatterTests.swift-66-    /// A10: a failed Android build has no scheme and no APK; print neither.
+Tests/GrantivaCoreTests/TableFormatterTests.swift-67-    func testFailedAndroidBuildPrintsNoSchemeLine() {
+Tests/GrantivaCoreTests/TableFormatterTests.swift-68-        let output = TableFormatter().formatBuild(BuildResult(
+Tests/GrantivaCoreTests/TableFormatterTests.swift-69-            success: false, duration: 1, warnings: [], errors: ["Task 'assembleNoSuchVariant' not found"],
+Tests/GrantivaCoreTests/TableFormatterTests.swift-70-            productPath: nil
+Tests/GrantivaCoreTests/TableFormatterTests.swift-71-        ))
+Tests/GrantivaCoreTests/TableFormatterTests.swift-72-        XCTAssertTrue(output.hasPrefix("✗ Build failed"), output)
+Tests/GrantivaCoreTests/TableFormatterTests.swift:73:        XCTAssertFalse(output.contains("Scheme:"), output)
+Tests/GrantivaCoreTests/TableFormatterTests.swift-74-        XCTAssertFalse(output.contains("APK:"), output)
+Tests/GrantivaCoreTests/TableFormatterTests.swift-75-    }
+Tests/GrantivaCoreTests/TableFormatterTests.swift-76-
+Tests/GrantivaCoreTests/TableFormatterTests.swift-77-    func testIOSBuildStillPrintsTheScheme() {
+Tests/GrantivaCoreTests/TableFormatterTests.swift-78-        let output = TableFormatter().formatBuild(BuildResult(
+Tests/GrantivaCoreTests/TableFormatterTests.swift-79-            success: true, scheme: "Demo", duration: 1, warnings: [], errors: [],
+Tests/GrantivaCoreTests/TableFormatterTests.swift-80-            productPath: "/b/Demo.app"
+Tests/GrantivaCoreTests/TableFormatterTests.swift-81-        ))
+Tests/GrantivaCoreTests/TableFormatterTests.swift-82-
+Tests/GrantivaCoreTests/TableFormatterTests.swift:83:        XCTAssertTrue(output.split(separator: "\n").map(String.init).contains("  Scheme: Demo"), output)
+Tests/GrantivaCoreTests/TableFormatterTests.swift-84-        XCTAssertFalse(output.contains("APK:"), output)
+Tests/GrantivaCoreTests/TableFormatterTests.swift-85-    }
+Tests/GrantivaCoreTests/TableFormatterTests.swift-86-
+Tests/GrantivaCoreTests/TableFormatterTests.swift-87-    func testDeviceValuesCannotInjectAdditionalRowsOrTerminalControls() {
+Tests/GrantivaCoreTests/TableFormatterTests.swift-88-        let output = TableFormatter().formatDevices([
+Tests/GrantivaCoreTests/TableFormatterTests.swift-89-            device(name: "Phone\nforged\u{001B}[31m", runtime: "iOS\t27"),
+Tests/GrantivaCoreTests/TableFormatterTests.swift-90-        ])
+Tests/GrantivaCoreTests/TableFormatterTests.swift-91-        let lines = output.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
+Tests/GrantivaCoreTests/TableFormatterTests.swift-92-
+Tests/GrantivaCoreTests/TableFormatterTests.swift-93-        XCTAssertEqual(lines.count, 3)
+Tests/GrantivaCoreTests/TableFormatterTests.swift-94-        XCTAssertTrue(lines[2].contains("Phone forged�[31m"), output)
+Tests/GrantivaCoreTests/TableFormatterTests.swift-95-        XCTAssertTrue(lines[2].contains("iOS 27"), output)
+Tests/GrantivaCoreTests/TableFormatterTests.swift-96-        XCTAssertFalse(output.contains("\u{001B}"), output)
+Tests/GrantivaCoreTests/TableFormatterTests.swift-97-    }
+--
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-96-        first.recordRunner(pid: 99, keepAlive: true)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-97-        defer { first.release() }
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-98-
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-99-        XCTAssertThrowsError(
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-100-            try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-101-        ) { error in
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-102-            let message = String(describing: error)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-103-            XCTAssertTrue(message.contains("already owned"), message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-104-            XCTAssertTrue(message.contains("pid \(getpid())"), message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-105-            XCTAssertTrue(message.contains("grantiva-runner pid 99"), message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-106-            XCTAssertTrue(message.contains("teardown --udid SIM-1 --force"), message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-107-        }
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-108-    }
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-109-
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:110:    /// A10: on Android the refusal names the emulator and `grantiva emulator`.
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-111-    func testAndroidOwnershipErrorNamesTheEmulatorCommands() throws {
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-112-        let first = try SimulatorLease.acquire(udid: "emulator-5554", platform: .android, directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-113-        defer { first.release() }
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-114-
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-115-        XCTAssertThrowsError(
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-116-            try SimulatorLease.acquire(udid: "emulator-5554", platform: .android, directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-117-        ) { error in
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-118-            let message = error.localizedDescription
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-119-            XCTAssertTrue(message.hasPrefix("Emulator emulator-5554 is already owned"), message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:120:            XCTAssertTrue(message.contains("`grantiva emulator teardown --serial emulator-5554 --force`"), message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:121:            XCTAssertTrue(message.contains("`grantiva emulator ensure --name <unique-name>`"), message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-122-            XCTAssertFalse(message.contains("simulator"), message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-123-            XCTAssertFalse(message.contains("exited with code"), message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-124-            XCTAssertTrue(SimulatorLease.isOwnershipRefusal(error))
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-125-        }
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-126-        XCTAssertFalse(SimulatorLease.isOwnershipRefusal(GrantivaError.commandFailed("Runner failed (exit 1)", 1)))
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-127-    }
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-128-}
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-129-
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-130-extension SimulatorLeaseTests {
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-131-    func testHandedOffLeaseStaysHeldWhileTheRunnerLives() throws {
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-132-        let lease = try SimulatorLease.acquire(udid: "SIM-HANDOFF", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-133-        // Stand in for the runner with a process that is certainly alive and
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-134-        // is not us: our parent.
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-135-        lease.handOff(to: getppid())
+--
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-236-            runnerPID: 52144, keepAlive: true, handedOff: true, projectDirectory: "/tmp/project"
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-237-        )
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-238-        let message = SimulatorLease.ownershipMessage(udid: "SIM-1", holder: claim)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-239-        XCTAssertTrue(message.hasPrefix("Simulator SIM-1 is held by a `grantiva runner start` session"), message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-240-        XCTAssertTrue(message.contains("grantiva-runner pid 52144"), message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-241-        XCTAssertTrue(message.contains("`grantiva runner stop`"), message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-242-        XCTAssertTrue(message.contains("/tmp/project"), message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-243-        XCTAssertFalse(message.contains("--keep-alive"), message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-244-        XCTAssertFalse(message.contains("--force"), message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-245-        XCTAssertTrue(SimulatorLease.isOwnershipRefusal(GrantivaError.commandFailed(message, 1)))
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-246-
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-247-        let android = SimulatorLease.ownershipMessage(udid: "emulator-5554", holder: claim, platform: .android)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-248-        XCTAssertTrue(android.hasPrefix("Emulator emulator-5554 is held by a `grantiva runner start` session"), android)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-249-        XCTAssertTrue(android.contains("`grantiva runner stop`"), android)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:250:        XCTAssertTrue(android.contains("`grantiva emulator ensure --name <unique-name>`"), android)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-251-    }
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-252-
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-253-    func testOwnershipMessageForAKeepAliveRunIsUnchanged() {
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-254-        let claim = SimulatorLeaseClaim(pid: 100, udid: "SIM-1", startedAt: Date(), runnerPID: 101, keepAlive: true)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-255-        let message = SimulatorLease.ownershipMessage(udid: "SIM-1", holder: claim)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-256-        XCTAssertTrue(message.hasPrefix("Simulator SIM-1 is already owned by another Grantiva run (pid 100"), message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-257-        XCTAssertTrue(message.contains("grantiva-runner pid 101, --keep-alive)"), message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-258-        XCTAssertTrue(message.contains("`grantiva simulator teardown --udid SIM-1 --force`"), message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-259-    }
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-260-
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-261-    func testHandOffRecordsTheSessionKindAndProjectDirectory() throws {
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-262-        let lease = try SimulatorLease.acquire(udid: "SIM-KIND", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-263-        lease.handOff(to: getppid())
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift-264-        let claim = try XCTUnwrap(SimulatorLease.claim(udid: "SIM-KIND", directory: leaseDirectory))
+b6bfc7bebfb5c13cb87d1ca4c41a8c05ab0f8169dc1ca02744f44b0edeff6bfd  Tests/GrantivaCoreTests/SimulatorLeaseTests.swift
+3d44ca473eb9c317dab0bd9a546b14662400b13ea4bc7b61cfbeb1f2ebd4f67a  Tests/GrantivaCLITests/InstallCommandTests.swift
+d308cf01d7fd01321b965cfb73acd45a165540adefeeb226ac5976855eb27098  Tests/GrantivaCoreTests/TableFormatterTests.swift

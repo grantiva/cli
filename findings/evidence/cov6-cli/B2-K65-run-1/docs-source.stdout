@@ -1,0 +1,95 @@
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:36:        let output = "\(home)/cache/wda-builds/sim-ios26.0-iphone-wda16.12.8-r1/devices/\(udid)/run-\(runnerPid)-1791790261185038000/attempt-1.xcresult/Staging/1_Test/Diagnostics/simctl_diagnostics"
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:51:        try FileManager.default.createDirectory(atPath: "\(home)/cache/wda-builds", withIntermediateDirectories: true)
+docs/superpowers/plans/2026-10-07-android-support-1-foundation.md:232:Expected: PASS, including the two new tests. Then, without deleting anything, run `swift run grantiva runner install` and confirm it re-extracts (the version file previously held `1.1.18-grantiva.7`, which no longer matches the stamp) and `ls ~/.grantiva/runner/drivers/android` lists both APKs. Confirm `cat ~/.grantiva/runner/version` prints `1.1.18-grantiva.7+android-drivers` and `ls ~/.grantiva/runner/cache/wda-builds` still lists the prebuilt WDA builds.
+docs/superpowers/plans/2026-10-07-android-support-1-foundation.md:285:curl -s "http://127.0.0.1:P/source" | head -c 600; echo
+docs/superpowers/plans/2026-10-07-android-support-1-foundation.md:286:curl -s "http://127.0.0.1:P/source?format=json" | head -c 600; echo
+docs/superpowers/plans/2026-10-07-android-support-1-foundation.md:287:curl -s "http://127.0.0.1:P/status" | head -c 300; echo
+docs/superpowers/plans/2026-10-07-android-support-1-foundation.md:296:curl -s http://127.0.0.1:6790/wd/hub/status | head -c 300; echo
+docs/superpowers/plans/2026-10-08-android-plan3-acceptance.md:244:requested `http://127.0.0.1:0/source`. 8f5bbe7 records the sidecar right after the runner is
+docs/superpowers/plans/2026-10-08-android-plan3-acceptance.md:397:$ curl -s http://127.0.0.1:57371/status
+docs/superpowers/plans/2026-10-08-android-plan3-acceptance.md:399:$ curl -s http://127.0.0.1:57371/sessions
+docs/superpowers/plans/2026-10-08-android-plan3-acceptance.md:601:WebDriverAgent does not build under this host's Xcode 27.0, as Plan 1 recorded. The runner's WDA
+docs/superpowers/plans/2026-10-08-android-plan3-acceptance.md:602:build log (`~/.grantiva/runner/cache/wda-builds/sim-ios26.0-iphone/logs/build.log`) fails with:
+docs/dump-hierarchy.md:55:`runner start` holds the session with the runner's `--keep-alive` until `runner stop`. The first start on an iOS runtime the runner tarball has no prebuilt GrantivaAgent for (it ships 26.0, 26.2, 26.4, and 27.0) builds the agent from source, which takes several minutes; `runner start` waits up to ten minutes for that build and reports "WebDriverAgent failed to build" with the log path if it fails. Later starts on that runtime reuse the cached build.
+docs/superpowers/plans/2026-10-07-android-spike-result.md:6:GET /source: no response; curl to `127.0.0.1:0` fails to connect (HTTP 000, curl exit 7).
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:195:        CompileC /Users/k/.grantiva/runner/cache/wda-builds/sim-ios26.0-iphone/DerivedData/Build/Intermediates.noindex/WebDriverAgent.build/Debug-iphonesimulator/WebDriverAgentRunner.build/Objects-normal/arm64/UITestingUITests.o @/tmp/e6072d4f65d7061329687fe24e3d63a7-common-args.resp
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:196:        -target arm64-apple-ios15.0-simulator -isysroot /Applications/Xcode-27.0.0.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.0.sdk
+docs/mcp.md:132:| `grantiva_sim_list` | iOS | no | List iOS simulators (other platforms' devices are left out) as `Name \| UDID \| State \| Runtime \| Available`: state as `simctl` reports it (`Booted`, `Shutdown`, `Booting`, ...), runtime as `iOS 26.0`, and `no` under Available when the simulator's runtime is not installed. `filter`: `all` (default), `booted`, or `shutdown`. |
+docs/mcp.md:133:| `grantiva_sim_boot` | iOS | no | Boot an iOS simulator by name or UDID. Without `name`, the default simulator, only when Grantiva created it (see Default simulator). Returns `Simulator booted: <name> (<udid>)` and `Runtime: iOS 26.0`. |
+Sources/GrantivaCLI/HierarchyCommand.swift:93:        guard let url = URL(string: "http://127.0.0.1:\(session.port)\(path)") else {
+docs/superpowers/plans/2026-10-08-android-support-3-hierarchy-mcp-emulator.md:728:        XCTAssertEqual(endpoint.baseURL, "http://127.0.0.1:61211/wd/hub")
+docs/superpowers/plans/2026-10-08-android-support-3-hierarchy-mcp-emulator.md:918:    public var baseURL: String { "http://127.0.0.1:\(localPort)/wd/hub" }
+docs/superpowers/plans/2026-10-08-android-support-3-hierarchy-mcp-emulator.md:964:        var request = URLRequest(url: URL(string: "http://127.0.0.1:\(localPort)/wd/hub/sessions")!, timeoutInterval: 10)
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:67:            ("doctor", try JSONOutput.string([DoctorCheck(name: "Xcode", status: .ok, message: "26.0", fix: nil)])),
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:84:                name: "fix2-4-ios", udid: session.udid, deviceType: "iPhone 17", runtime: "iOS 26.0", created: true,
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:77:            deviceType: "iPhone 17", runtime: "iOS 27.0", created: true, state: "Booted",
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:95:            deviceType: "iPhone 17", runtime: "iOS 27.0", created: false, state: "Shutdown",
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:150:        try fm.createDirectory(atPath: "\(paths.cache)/wda-builds/sim-a", withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:151:        try "mine".write(toFile: "\(paths.cache)/wda-builds/sim-a/build", atomically: true, encoding: .utf8)
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:155:                try fm.createDirectory(atPath: "\(destination)/cache/wda-builds/\(config)", withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:156:                try "prebuilt".write(toFile: "\(destination)/cache/wda-builds/\(config)/build", atomically: true, encoding: .utf8)
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:160:        XCTAssertEqual(try String(contentsOfFile: "\(paths.cache)/wda-builds/sim-a/build", encoding: .utf8), "mine")
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:161:        XCTAssertEqual(try String(contentsOfFile: "\(paths.cache)/wda-builds/sim-b/build", encoding: .utf8), "prebuilt")
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:479:        let configs = ["26.0", "26.2", "26.4", "27.0"].map { "sim-ios\($0)-iphone-wda16.12.8-r1" }
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:485:                    listing.contains { $0.hasPrefix("./cache/wda-builds/\(config)/DerivedData/Build/Products/") && $0.hasSuffix(".xctestrun") },
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:491:                return parts.count > 3 && parts[1] == "cache" && parts[2] == "wda-builds" ? String(parts[3]) : nil
+Tests/GrantivaCLITests/HierarchyCommandTests.swift:109:    /// into the iOS path and request http://127.0.0.1:0/source.
+Tests/GrantivaCLITests/HierarchyCommandTests.swift:223:        address.sin_addr.s_addr = inet_addr("127.0.0.1")
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:94:        XCTAssertEqual(SimulatorDevice.runtimeDisplayName("iOS-26-0"), "iOS 26.0")
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:97:        XCTAssertTrue(table.contains("iOS 26.0"), table)
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:105:            _ = try await manager.ensure(name: "qa-x", runtime: "27.0", boot: false)
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:110:                "Invalid argument: Simulator \"qa-x\" exists with incompatible configuration (device type: iPhone 17, runtime: iOS 26.0); requested iOS 27.0"
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:469:        let line = " 4806  4806 /Library/Developer/PrivateFrameworks/CoreSimulator.framework/Versions/A/Resources/bin/simctl diagnose -l -b --timeout=600 --log-option=--last --log-option=2m --output=/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/fix3-cli/runner-home/versions/1.1.28-grantiva.10+android-drivers-2/devices/\(udid)/cache/wda-builds/sim-ios26.0-iphone-wda16.12.8-r1/devices/\(udid)/run-4685-1791728323714722000/attempt-1.xcresult/Staging/1_Test/Diagnostics/simctl_diagnostics --no-archive --udid=\(udid)"
+Sources/GrantivaCore/Simulator/SimulatorDevice.swift:100:    /// `iOS 26.0`. The one spelling every runtime Grantiva shows uses.
+Sources/GrantivaMCP/Tools/SimTools.swift:14:            description: "List iOS simulators with their name, UDID, state (as simctl reports it), runtime (e.g. iOS 26.0), and availability (no when the simulator's runtime is not installed).",
+Sources/GrantivaMCP/Tools/SimTools.swift:97:    /// `iOS-26-0` becomes `iOS 26.0`.
+Tests/GrantivaCoreTests/TableFormatterTests.swift:11:            device(name: "Phone", runtime: "iOS 27.0 (24A123)"),
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:13:        let parsed = try FlowEnvironment.parse(["PORT=8080", "HOST=127.0.0.1"])
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:14:        XCTAssertEqual(parsed, ["PORT": "8080", "HOST": "127.0.0.1"])
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:90:          {"name":"iPhone 18 Pro","identifier":"t.18p","minRuntimeVersionString":"27.0.0","productFamily":"iPhone"},
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:91:          {"name":"iPad Pro","identifier":"t.ipad","minRuntimeVersionString":"26.0.0","productFamily":"iPad"},
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:92:          {"name":"iPhone 17 Pro","identifier":"t.17p","minRuntimeVersionString":"26.0.0","productFamily":"iPhone"},
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:96:          {"name":"iOS 26.2","identifier":"com.apple.CoreSimulator.SimRuntime.iOS-26-2","version":"26.2","isAvailable":true,"platform":"iOS"},
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:97:          {"name":"iOS 27.0","identifier":"com.apple.CoreSimulator.SimRuntime.iOS-27-0","version":"27.0","isAvailable":false,"platform":"iOS"}
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:104:        let json = #"{"devicetypes":[{"name":"iPhone 17","identifier":"t","minRuntimeVersionString":"26.0.0","productFamily":"iPhone"}],"runtimes":[]}"#
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:191:            _ = try await manager.ensure(name: "qa-ios-2", deviceType: "iPhone 17", runtime: "26.0", boot: true)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:322:        XCTAssertEqual(result.runtime, "iOS 26.0")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:333:        XCTAssertEqual(result.runtime, "iOS 26.0")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:345:        XCTAssertEqual(result.runtime, "iOS 26.0")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:355:            _ = try await manager.ensure(name: "qa-x", runtime: "27.0", boot: false)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:391:            _ = try await manager.ensure(name: "qa-ios-2", deviceType: "iPhone 17", runtime: "26.0", boot: true)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:415:            _ = try await manager.ensure(name: "qa-ios-2", deviceType: "iPhone 17", runtime: "26.0", boot: true)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:436:            _ = try await manager.ensure(name: "qa-ios-2", deviceType: "iPhone 17", runtime: "26.0", boot: true)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:454:            _ = try await manager.ensure(name: "qa-ios-2", deviceType: "iPhone 17", runtime: "26.0", boot: true)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:723:      {"name": "iOS 26.0", "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-0", "version": "26.0", "isAvailable": true},
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:724:      {"name": "iOS 27.0", "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-27-0", "version": "27.0", "isAvailable": true}
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:27:    public var baseURL: String { "http://127.0.0.1:\(localPort)/wd/hub" }
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:73:        var request = URLRequest(url: URL(string: "http://127.0.0.1:\(localPort)/wd/hub/sessions")!, timeoutInterval: 10)
+Tests/GrantivaMCPTests/SimToolsTests.swift:20:        XCTAssertEqual(SimTools.runtimeName("iOS-26-0"), "iOS 26.0")
+Tests/GrantivaMCPTests/SimToolsTests.swift:22:        XCTAssertEqual(SimTools.runtimeName("iOS 26.0"), "iOS 26.0")
+Tests/GrantivaMCPTests/SimToolsTests.swift:28:            fix2-10-ios | A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF | Booted | iOS 26.0 | yes
+Tests/GrantivaMCPTests/SimToolsTests.swift:30:            starting | D3E7E498-2E80-469C-A465-4757C8995ACC | Booting | iOS 27.0 | yes
+Tests/GrantivaMCPTests/SimToolsTests.swift:37:            fix2-10-ios | A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF | Booted | iOS 26.0 | yes
+Tests/GrantivaMCPTests/SimToolsTests.swift:48:        XCTAssertTrue(section.contains("runtime: iOS 26.0"), section)
+Tests/GrantivaCoreTests/DoctorTests.swift:283:        XCTAssertEqual(check.message, "Mine — iOS 26.0")
+Tests/GrantivaCoreTests/DoctorTests.swift:299:            XCTAssertTrue(check.message.contains("iPhone 17 Pro — iOS 26.0"), check.message)
+Tests/GrantivaCoreTests/DoctorTests.swift:315:        XCTAssertEqual(ordinary.message, "iPhone 17 Pro — iOS 26.0")
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:138:        address.sin_addr.s_addr = inet_addr("127.0.0.1")
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:9:      {"name":"iPhone 18 Pro","identifier":"t.18p","minRuntimeVersionString":"27.0.0","productFamily":"iPhone"},
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:10:      {"name":"iPhone 17 Pro","identifier":"t.17p","minRuntimeVersionString":"26.0.0","productFamily":"iPhone"},
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:13:      {"name":"iOS 26.0","identifier":"com.apple.CoreSimulator.SimRuntime.iOS-26-0","version":"26.0","isAvailable":true,"platform":"iOS"}
+Sources/GrantivaCore/Android/EmulatorManager.swift:173:    /// True when something already listens on `127.0.0.1:port`. adb can
+Sources/GrantivaCore/Android/EmulatorManager.swift:184:        address.sin_addr.s_addr = inet_addr("127.0.0.1")
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:8:    private let config = "sim-ios26.0-iphone"
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:20:        "\(root)/cache/wda-builds/\(config)/DerivedData/Build/Products"
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:78:        let build = "\(home!)/cache/wda-builds/\(config)/DerivedData/Build"
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:87:        try fm.removeItem(atPath: "\(home!)/cache/wda-builds/\(config)")
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:89:        XCTAssertFalse(fm.fileExists(atPath: "\(home1)/cache/wda-builds/\(config)"), "stale device copy kept")
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:155:        let builds = "\(home!)/cache/wda-builds"
+Tests/GrantivaCoreTests/RunnerHelperReaperTests.swift:19:            + "--output=\(base ?? self.base)/versions/1.1.28/devices/\(udid)/cache/wda-builds/sim-ios26.0-iphone-wda16.12.8-r1/devices/\(udid)/run-\(runPid)-1791728323714722000/attempt-1.xcresult/Staging/1_Test/Diagnostics/simctl_diagnostics --no-archive --udid=\(udid)"
+Sources/GrantivaCore/Runner/RunnerManager.swift:617:    /// `depth` levels into directories both sides have (`cache/wda-builds/<config>`),
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:6:/// The runner keeps one WDA build per runtime (`cache/wda-builds/<config>`)
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:24:    static let buildsDirectory = "cache/wda-builds"
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:59:    /// deleted from `cache/wda-builds` stays deleted.
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:202:    /// Runs `body` holding an exclusive `flock` on `cache/wda-builds/.lock`,
+Tests/GrantivaCoreTests/UIAutomator2ClientTests.swift:36:        XCTAssertEqual(endpoint.baseURL, "http://127.0.0.1:61211/wd/hub")

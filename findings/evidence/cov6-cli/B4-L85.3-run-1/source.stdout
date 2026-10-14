@@ -1,0 +1,124 @@
+Tests/GrantivaCLITests/AndroidCommandTests.swift:20:        try "appId: com.placeholder\n---\n- launchApp\n".write(to: dir.appendingPathComponent("smoke.yaml"), atomically: true, encoding: .utf8)
+Tests/GrantivaCLITests/DocsContractTests.swift:197:        XCTAssertTrue(mcpDocs.contains("label → identifier → placeholder"))
+Tests/GrantivaCLITests/InitIOSTests.swift:7:    private let placeholderScheme = "No Xcode project found; scheme \"MyApp\" is a placeholder. Edit grantiva.yml or pass --scheme."
+Tests/GrantivaCLITests/InitIOSTests.swift:11:        XCTAssertEqual(warnings, [placeholderScheme])
+Tests/GrantivaCLITests/InitIOSTests.swift:25:        XCTAssertTrue(warnings[0].contains("simulator \"\(DefaultSimulator.fallback)\" is a placeholder"), warnings[0])
+Sources/GrantivaCLI/InitCommand.swift:141:            warnings.append("No Xcode project found; scheme \"MyApp\" is a placeholder. Edit grantiva.yml or pass --scheme.")
+Sources/GrantivaCLI/InitCommand.swift:148:            warnings.append("No installed iPhone simulator type found; simulator \"\(simulator)\" is a placeholder. Edit grantiva.yml.")
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:154:    // satisfied the "pass one selector" check, matched no process, released no
+Tests/GrantivaCLITests/RunSessionContractTests.swift:247:            "smoke.yaml": "appId: com.placeholder\n---\n- launchApp\n- takeScreenshot: Home\n",
+Tests/GrantivaCLITests/RunCommandTests.swift:258:        try "appId: com.placeholder\n---\n- launchApp\n"
+Sources/GrantivaMCP/Tools/SessionCapture.swift:185:            let selector = Selector(pattern: label, byId: step.tapById, exact: step.tapExact, rules: rules)
+Sources/GrantivaMCP/Tools/SessionCapture.swift:186:            guard let element = try await waitForElement(selector, driver: driver, pause: pause) else {
+Sources/GrantivaMCP/Tools/SessionCapture.swift:210:            let selector = Selector(pattern: label, byId: step.assertVisibleById, exact: step.assertVisibleExact, rules: rules)
+Sources/GrantivaMCP/Tools/SessionCapture.swift:211:            guard try await waitForElement(selector, driver: driver, pause: pause) != nil else {
+Sources/GrantivaMCP/Tools/SessionCapture.swift:216:            let selector = Selector(pattern: label, byId: step.assertNotVisibleById, exact: step.assertNotVisibleExact, rules: rules)
+Sources/GrantivaMCP/Tools/SessionCapture.swift:217:            guard try await waitForAbsence(selector, driver: driver, pause: pause) else {
+Sources/GrantivaMCP/Tools/SessionCapture.swift:223:    /// Which element attributes a selector reads on this device, as the
+Sources/GrantivaMCP/Tools/SessionCapture.swift:253:                    reason: "could not read the page source to match id: selectors: \(describe(error))"
+Sources/GrantivaMCP/Tools/SessionCapture.swift:259:                    "WebDriverAgent does not report accessibility identifiers; id: selectors match WDA's name, which is the label when an element has no identifier."
+Sources/GrantivaMCP/Tools/SessionCapture.swift:266:    /// A step's element selector, matched per platform as grantiva-runner
+Sources/GrantivaMCP/Tools/SessionCapture.swift:267:    /// matches it. iOS: text reads label, value and placeholder; `id:` reads the
+Sources/GrantivaMCP/Tools/SessionCapture.swift:293:            case .ios: keys = ["label", "value", "placeholderValue"]
+Sources/GrantivaMCP/Tools/SessionCapture.swift:303:    /// The first visible element `selector` matches, waiting
+Sources/GrantivaMCP/Tools/SessionCapture.swift:305:    /// the selector's own case wins.
+Sources/GrantivaMCP/Tools/SessionCapture.swift:307:        _ selector: Selector, driver: DriverClient, pause: @escaping @Sendable (Double) async -> Void
+Sources/GrantivaMCP/Tools/SessionCapture.swift:311:            let found = visibleMatches(selector, in: try await driver.hierarchy())
+Sources/GrantivaMCP/Tools/SessionCapture.swift:313:                ["label", "name", "value"].contains { element[$0] as? String == selector.pattern }
+Sources/GrantivaMCP/Tools/SessionCapture.swift:321:    /// Whether no visible element matches `selector`, waiting up to
+Sources/GrantivaMCP/Tools/SessionCapture.swift:324:        _ selector: Selector, driver: DriverClient, pause: @escaping @Sendable (Double) async -> Void
+Sources/GrantivaMCP/Tools/SessionCapture.swift:328:            if visibleMatches(selector, in: try await driver.hierarchy()).isEmpty { return true }
+Sources/GrantivaMCP/Tools/SessionCapture.swift:336:    static func visibleMatches(_ selector: Selector, in element: [String: Any]) -> [[String: Any]] {
+Sources/GrantivaMCP/Tools/SessionCapture.swift:339:        if !isApplication, element["visible"] as? Bool != false, selector.matches(element) {
+Sources/GrantivaMCP/Tools/SessionCapture.swift:343:            found += visibleMatches(selector, in: child)
+Sources/GrantivaMCP/Tools/SessionCapture.swift:387:/// grantiva-runner's selector rules (1.1.28-grantiva.15), so a capture
+Sources/GrantivaMCP/Tools/SessionCapture.swift:390:    /// A text selector, on both platforms: a regex that must match the whole
+Tests/GrantivaCoreTests/ShellQuotingTests.swift:63:        let hostile = "Home; echo INJECTED $(whoami) `id` 'quoted'"
+Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:43:        try Data().write(to: root.appendingPathComponent("placeholder"))
+Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:45:        try makeZip(at: ipa, from: root, entries: ["placeholder"])
+Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:53:        try Data().write(to: payload.appendingPathComponent("placeholder"))
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:27:                assertVisible: "Value: \\quoted\"",
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:197:    // A13: the mapping form emits a selector with `exact: true`.
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:232:        XCTAssertEqual(swipes[0]["selector"] as? String, "Lake Tahoe")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:234:        XCTAssertEqual((swipes[1]["selector"] as? [String: Any])?["id"] as? String, "row")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:284:        XCTAssertEqual(swipe["selector"] as? String, "Lake Tahoe")
+Tests/GrantivaCoreTests/FlowReferenceResolverTests.swift:6:    func testResolvesQuotedUnquotedAndSpacedScalarPaths() throws {
+Tests/GrantivaCoreTests/UIAutomator2HierarchyParserTests.swift:52:    /// Text selectors read the hint and the error text, so the tree carries them.
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:217:        try "appId: placeholder\n---\n- launchApp\n".write(to: url, atomically: true, encoding: .utf8)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:129:            XCTAssertTrue(message.contains(failure.action), "failure line carries the selector: \(message)")
+Tests/GrantivaCoreTests/WDAClientTests.swift:59:    /// Text selectors read the placeholder, so the tree carries it.
+Tests/GrantivaCoreTests/WDAClientTests.swift:61:        let xml = #"<XCUIElementTypeApplication><XCUIElementTypeTextField placeholderValue="Search"/><XCUIElementTypeTextField placeholderValue=""/></XCUIElementTypeApplication>"#
+Tests/GrantivaCoreTests/WDAClientTests.swift:63:        XCTAssertEqual(children[0]["placeholderValue"] as? String, "Search")
+Tests/GrantivaCoreTests/WDAClientTests.swift:64:        XCTAssertNil(children[1]["placeholderValue"])
+Tests/GrantivaCoreTests/WDAClientTests.swift:174:    // MARK: - K78: label first, then identifier, then placeholder; the match is reported
+Tests/GrantivaCoreTests/WDAClientTests.swift:196:            ["ELEMENT": "navigation-back", "type": "XCUIElementTypeButton", "label": "Landmarks", "identifier": "BackButton"],
+Tests/GrantivaCoreTests/WDAClientTests.swift:202:        XCTAssertEqual(fixture.clickedIDs, ["navigation-back"])
+Tests/GrantivaCoreTests/WDAClientTests.swift:238:    /// placeholder, not its label; the flow's `tapOn: "Name"` reaches it, so
+Tests/GrantivaCoreTests/WDAClientTests.swift:244:        XCTAssertEqual(match, .placeholder)
+Tests/GrantivaCoreTests/WDAClientTests.swift:249:            #"placeholderValue == "Name" AND type != "XCUIElementTypeApplication""#,
+Tests/GrantivaCoreTests/WDAClientTests.swift:257:        let quoted = #"Say "hi" \o/"#
+Tests/GrantivaCoreTests/WDAClientTests.swift:261:            ("Name", "placeholderValue", .placeholder),
+Tests/GrantivaCoreTests/WDAClientTests.swift:262:            (quoted, "identifier", .identifier),
+Tests/GrantivaCoreTests/WDAClientTests.swift:267:                ["ELEMENT": "later", "type": "XCUIElementTypeTextField", "placeholderValue": text],
+Tests/GrantivaCoreTests/WDAClientTests.swift:273:            let attributes = ["label", "identifier", "placeholderValue"]
+Sources/GrantivaMCP/Tools/UITools.swift:32:            description: "Tap on a UI element by accessibility label or by coordinates. A label is matched against the accessibility label first; on iOS, a same-labelled navigation back button is preferred, then matching falls back to the accessibility identifier (WDA's identifier) and a text field's placeholder, and the result says which matched. After tapping, returns the updated accessibility tree so you can see what changed.",
+Sources/GrantivaMCP/Tools/UITools.swift:38:                        "description": .string("Accessibility label of the element to tap (iOS falls back to the identifier, then a text field's placeholder)"),
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:5:/// The bundled grantiva-runner's selector rules (1.1.28-grantiva.15), as a
+Tests/GrantivaCoreTests/UIAutomator2ClientTests.swift:111:        XCTAssertEqual(body, ["strategy": "xpath", "selector": "//*[@content-desc=\"Details\" or @text=\"Details\"]"])
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:460:        XCTAssertEqual(byName.isError, true, "an iOS text selector does not read name")
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:533:        let hierarchy = #"{"type":"XCUIElementTypeApplication","children":[{"type":"XCUIElementTypeTextField","placeholderValue":"Search landmarks","frame":{"x":0,"y":10,"width":10,"height":10},"children":[]}]}"#
+Tests/GrantivaMCPTests/UIToolsTests.swift:432:        driver.tapByLabelMatch = { _ in .placeholder }
+Tests/GrantivaMCPTests/UIToolsTests.swift:434:        XCTAssertTrue(try textContent(of: result).hasPrefix(#"Tapped on "Name" (matched by placeholder). Updated hierarchy:"#))
+Sources/GrantivaCore/WDA/WDAClient.swift:63:/// text field's placeholder.
+Sources/GrantivaCore/WDA/WDAClient.swift:67:    case placeholder
+Sources/GrantivaCore/WDA/WDAClient.swift:240:    /// an SF Symbol name), then the placeholder: a SwiftUI `TextField("Name",
+Sources/GrantivaCore/WDA/WDAClient.swift:241:    /// ...)` has no label and shows "Name" as its placeholder, which is what
+Sources/GrantivaCore/WDA/WDAClient.swift:244:    /// same-named back button. Within the label stage, a real navigation back
+Sources/GrantivaCore/WDA/WDAClient.swift:247:        ("label", .label), ("identifier", .identifier), ("placeholderValue", .placeholder),
+Sources/GrantivaCore/WDA/WDAClient.swift:339:    /// An NSPredicate string literal: double-quoted, with `\\` and `"` escaped.
+Sources/GrantivaCore/WDA/WDAClient.swift:460:        if let placeholder = attributes["placeholderValue"], !placeholder.isEmpty {
+Sources/GrantivaCore/WDA/WDAClient.swift:461:            node["placeholderValue"] = placeholder
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:348:            if let (label, byId) = selector(val) {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:355:            if let (label, byId) = selector(val) {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:372:                    guard let (label, byId) = selector(val["from"]) else { return .unsupported("swipe") }
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:418:            if let (label, byId) = selector(val["element"]) ?? selector(val) {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:452:            if let (label, byId) = selector(val) {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:496:    /// Parse a Maestro tap selector (string, or object with text/id).
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:498:        if let (label, byId) = selector(val) {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:504:    /// A Maestro element selector: a bare string or `{text: X}` matches text,
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:506:    private static func selector(_ val: Any?) -> (label: String, byId: Bool)? {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:514:    /// `selector` plus `exact: true` on the mapping form.
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:516:        guard let (label, byId) = selector(val) else { return nil }
+Sources/GrantivaCore/Android/ADB.swift:30:    /// is quoted; fixed adb words are not, so the lines read like a terminal.
+Sources/GrantivaCore/Android/ADB.swift:64:    /// Runs one shell command on the device, passed as a single quoted argument.
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:84:    /// An XPath 1.0 string literal for `value`: double-quoted when it has no
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:85:    /// double quote, single-quoted when it has no single quote, else a
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:86:    /// `concat()` of double-quoted pieces joined by `'"'`.
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:162:                    ["strategy": "xpath", "selector": UIAutomator2.labelXPath(label)],
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:310:            "\(indent)\(key): \(quoted(environment[key] ?? ""))"
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:314:    static func quoted(_ value: String) -> String {
+Sources/GrantivaCore/Runner/FlowGenerator.swift:46:        lines.append("appId: \(FlowEnvironment.quoted(bundleId))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:47:        lines.append("name: \(FlowEnvironment.quoted(screensFlowName))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:59:                lines.append("      \(key): \(FlowEnvironment.quoted(environment[key] ?? ""))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:78:                            lines.append("    start: \(FlowEnvironment.quoted(start))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:79:                            lines.append("    end: \(FlowEnvironment.quoted(end))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:89:                                lines.append("      id: \(FlowEnvironment.quoted(from))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:91:                                lines.append("    from: \(FlowEnvironment.quoted(from))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:97:                        lines.append("- inputText: \(FlowEnvironment.quoted(text))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:102:                        lines.append("    script: \(FlowEnvironment.quoted(sleepScript(seconds: seconds)))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:103:                        lines.append("    label: \(FlowEnvironment.quoted(waitLabel(seconds: seconds)))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:132:                        lines.append("- runFlow: \(FlowEnvironment.quoted(path))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:138:            lines.append("- takeScreenshot: \(FlowEnvironment.quoted(screen.name))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:252:            lines.append("    id: \(FlowEnvironment.quoted(label))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:255:            lines.append("    text: \(FlowEnvironment.quoted(label))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:258:            lines.append("- \(command): \(FlowEnvironment.quoted(label))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:289:            lines.append("      id: \(FlowEnvironment.quoted(label))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:292:            lines.append("      text: \(FlowEnvironment.quoted(label))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:295:            lines.append("    \(key): \(FlowEnvironment.quoted(label))")
+Sources/GrantivaCore/Runner/FlowNormalizer.swift:8:/// - `swipe: {from: X}` becomes `swipe: {selector: X}` (the runner drops `from`
+Sources/GrantivaCore/Runner/FlowNormalizer.swift:27:            if swipe["selector"] == nil {
+Sources/GrantivaCore/Runner/FlowNormalizer.swift:28:                swipe["selector"] = from
+Sources/GrantivaCore/Runner/SubprocessLog.swift:66:            words.append(quoted(word))
+Sources/GrantivaCore/Runner/SubprocessLog.swift:68:        return ([quoted(executable)] + words).joined(separator: " ")
+Sources/GrantivaCore/Runner/SubprocessLog.swift:85:    static func quoted(_ word: String) -> String {
+Sources/GrantivaCore/Runner/RunnerSession.swift:931:        lines.insert("name: \(FlowEnvironment.quoted(name))", at: separator)

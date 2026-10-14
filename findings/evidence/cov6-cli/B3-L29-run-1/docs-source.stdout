@@ -1,0 +1,33 @@
+docs/android.md:56:unless `--allow-device-settings` is given. `--headless` boots without a window, and so do
+docs/android.md:62:`grantiva build build` only compiles: it never resolves or boots a device, so `emulator:` does
+docs/android.md:63:not apply to it, and its help does not list `--emulator`, `--headless` or
+docs/android.md:64:`--allow-device-settings` (they are still accepted, hidden, and change nothing). Where the variant has ABI split APKs, the one reported is for `--device`'s
+docs/android.md:83:`--allow-device-settings`, `--headless`, `--logs-tag`. iOS flags such as `--scheme` are
+Tests/GrantivaCLITests/AndroidCommandTests.swift:90:    /// `build build` compiles only: the config's `emulator:` is irrelevant
+Tests/GrantivaCLITests/BuildCommandTests.swift:72:    /// L29: `build build` never boots or picks a device to run on, so its
+Tests/GrantivaCLITests/BuildCommandTests.swift:76:        for flag in ["--headless", "--emulator", "--allow-device-settings"] {
+Tests/GrantivaCLITests/BuildCommandTests.swift:81:        XCTAssertTrue(InstallCommand.helpMessage().contains("--headless"))
+Tests/GrantivaCLITests/BuildCommandTests.swift:84:        let command = try BuildOnlyCommand.parse(["--headless", "--emulator", "Pixel", "--allow-device-settings"])
+Tests/GrantivaCLITests/BuildCommandTests.swift:85:        XCTAssertTrue(command.target.headless)
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:8:        let command = try EmulatorCommand.Ensure.parse(["--name", "Pixel_8_API_35", "--system-image", "system-images;android-35;google_apis;arm64-v8a", "--no-boot", "--headless", "--json"])
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:12:        XCTAssertTrue(command.headless)
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:443:    // MARK: - K27 headless rule in help and docs
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:446:        let variable = EmulatorManager.headlessVariable
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:42:            ("build build", BuildOnlyCommand.configuration.abstract),
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:31:        _ shell: ScriptedShell, spawn: SpawnRecorder = SpawnRecorder(), headless: Bool = true, sdkRoot: String = "/sdk",
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:40:            headless: headless,
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:100:            headless: true, bootTimeout: 1, pollInterval: 0.01, environment: [:], killTimeout: 2,
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:166:            headless: true, bootTimeout: 1, pollInterval: 0.01, environment: [:], killTimeout: 1,
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:194:            headless: true, bootTimeout: 1, pollInterval: 0.01, environment: [:], killTimeout: 1,
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:287:            EmulatorManager.bootArguments(avd: "Pixel_8_API_35", port: 5556, headless: false),
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:290:        XCTAssertEqual(EmulatorManager.bootArguments(avd: "P", port: 5554, headless: true).last, "-no-window")
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:935:    // MARK: - K27 headless rule
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:937:    /// Windowless only for --headless or GRANTIVA_EMULATOR_HEADLESS; a non-TTY
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:941:        let key = EmulatorManager.headlessVariable
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:951:    /// CI services set `CI`; any value but empty, 0 or false implies headless.
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:960:        XCTAssertTrue(EmulatorManager.isHeadless(flag: false, environment: ["CI": "false", EmulatorManager.headlessVariable: "1"]))
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:972:            headless: false, bootTimeout: 1, pollInterval: 0.01, environment: ["CI": "true"], killTimeout: 1,
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:986:        _ = try await manager(shell, spawn: spawn, headless: false).boot(avd: "Pixel_8_API_35")
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:230:    /// `build build` passes no device: the APK is chosen for the host's
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:256:    /// `build build --device <serial>` never boots: an unattached serial
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:132:    /// K71: `build build` has no --app-file, so its advice does not offer it.

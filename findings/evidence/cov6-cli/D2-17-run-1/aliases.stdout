@@ -1,0 +1,62 @@
+README.md:494:Every `--json` document, and the `--ready-file` file, uses camelCase keys.
+README.md:501:Some documents used snake_case keys before. For one deprecation period they
+README.md:502:write each of those values twice, under the camelCase key and under the old
+README.md:503:snake_case key beside it; read the camelCase key, as the snake_case one will be
+Sources/GrantivaAPI/OrgEndpoints.swift:9:// MARK: - Org App Endpoints (§9b — snake_case wire)
+Sources/GrantivaAPI/OrgEndpoints.swift:48:// MARK: - Org Claim Endpoints (§9c — snake_case wire)
+Sources/GrantivaAPI/OrgEndpoints.swift:87:// MARK: - Org Device Endpoints (§9a — snake_case wire)
+Sources/GrantivaAPI/FeedbackClient.swift:4:// MARK: - Staff feedback + support wire formats (§10 — snake_case)
+Sources/GrantivaAPI/AnalyticsEndpoints.swift:3:// MARK: - Analytics Endpoints (existing server API — camelCase wire)
+Sources/GrantivaAPI/ConsoleEndpoints.swift:9:// MARK: - Org Flag Endpoints (console contract §7a — snake_case wire)
+Sources/GrantivaAPI/ConsoleEndpoints.swift:87:// MARK: - Org Flag Environment Endpoints (console contract §7a — snake_case wire)
+Sources/GrantivaAPI/ConsoleEndpoints.swift:113:// MARK: - Flag Rule Endpoints (existing SDK API — camelCase wire, UUID flag ids)
+Sources/GrantivaAPI/ConsoleEndpoints.swift:146:// MARK: - Flag Evaluation Endpoints (existing SDK API — camelCase wire)
+Sources/GrantivaAPI/VRTReviewClient.swift:4:// MARK: - Run Review Endpoints (key-auth VRT API — snake_case wire)
+Sources/GrantivaAPI/OrgAdminClient.swift:4:// MARK: - Org administration wire formats (§11 — camelCase, the dashboard's own)
+Sources/GrantivaAPI/AnalyticsModels.swift:6:// endpoints and speak Vapor's default camelCase, so property names here match
+Sources/GrantivaAPI/AnalyticsModels.swift:13:// its snake_case column names.
+Sources/GrantivaAPI/AnalyticsModels.swift:316:/// snake_case object on the analytics surface: it is a raw database model
+Sources/GrantivaAPI/OrgModels.swift:6:// endpoints speak snake_case at the top level (console parity plan §9).
+Sources/GrantivaAPI/OrgModels.swift:7:// Claim rule and configuration objects nest in their stored camelCase
+Sources/GrantivaAPI/ReleaseNotesClient.swift:6:// `/api/v1/org/release-notes` is the one org surface that speaks camelCase:
+Sources/GrantivaAPI/ConsoleModels.swift:8://   speak snake_case, per the Phase 1 contract (§7a of the console parity plan).
+Sources/GrantivaAPI/ConsoleModels.swift:10://   `/api/v1/flags/:flagId/evaluate`) speak Vapor's default camelCase and are
+Sources/GrantivaAPI/ConsoleModels.swift:17:// MARK: - Flags (org endpoints, snake_case)
+Sources/GrantivaAPI/ConsoleModels.swift:300:// MARK: - Flag History (org endpoint, snake_case — a bare array on the wire)
+Sources/GrantivaAPI/ConsoleModels.swift:336:// MARK: - Recorded Flag Evaluations (org endpoint, snake_case)
+Sources/GrantivaAPI/ConsoleModels.swift:365:// MARK: - Flag Overrides (org endpoints, snake_case — list is a bare array)
+Sources/GrantivaAPI/ConsoleModels.swift:419:// MARK: - Flag Environments (org endpoints, snake_case)
+Sources/GrantivaAPI/ConsoleModels.swift:523:// MARK: - Flag Rules (existing SDK endpoints, camelCase)
+Sources/GrantivaAPI/ConsoleModels.swift:601:// MARK: - Flag Evaluation (existing SDK endpoint, camelCase)
+Sources/GrantivaCLI/RunnerLifecycleDocument.swift:44:        var container = encoder.container(keyedBy: LegacyJSONKeys.self)
+Sources/GrantivaCLI/RunnerLifecycleDocument.swift:63:                // it for one release (LegacyJSONKeys.platformTwins).
+Sources/GrantivaCore/Simulator/SimulatorDevice.swift:81:    /// camelCase keys, plus the snake_case aliases listed in
+Sources/GrantivaCore/Simulator/SimulatorDevice.swift:82:    /// `LegacyJSONKeys.renamed` for existing consumers. Decoding still reads
+Sources/GrantivaCore/Simulator/SimulatorDevice.swift:83:    /// the snake_case keys.
+Sources/GrantivaCore/Simulator/SimulatorDevice.swift:85:        var c = encoder.container(keyedBy: LegacyJSONKeys.self)
+Sources/GrantivaCore/Diff/DiffResult.swift:94:    /// camelCase keys like every other `--json` document, plus the original
+Sources/GrantivaCore/Diff/DiffResult.swift:95:    /// snake_case keys, kept for existing consumers (see `LegacyJSONKeys`).
+Sources/GrantivaCore/Diff/DiffResult.swift:97:        var c = encoder.container(keyedBy: LegacyJSONKeys.self)
+Sources/GrantivaCore/Diff/DiffResult.swift:162:        var c = encoder.container(keyedBy: LegacyJSONKeys.self)
+Sources/GrantivaCore/Diff/DiffResult.swift:230:        var c = encoder.container(keyedBy: LegacyJSONKeys.self)
+Sources/GrantivaCore/Diff/DiffResult.swift:316:        var c = encoder.container(keyedBy: LegacyJSONKeys.self)
+Sources/GrantivaCore/Runner/RunnerSessionInfo.swift:9:/// the new keys for one release (`LegacyJSONKeys.sessionFileTwins`) and are
+Sources/GrantivaCore/Runner/RunnerSessionInfo.swift:68:        var container = encoder.container(keyedBy: LegacyJSONKeys.self)
+Sources/GrantivaCore/Runner/RunnerSessionInfo.swift:85:        let container = try decoder.container(keyedBy: LegacyJSONKeys.self)
+Sources/GrantivaCore/Runner/RunnerSessionInfo.swift:93:            throw DecodingError.keyNotFound(LegacyJSONKeys(stringValue: "udid"), .init(codingPath: [], debugDescription: "No udid or serial"))
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:5:/// Every `--json` document uses camelCase keys. A few documents used
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:6:/// snake_case before that rule; for one deprecation period they write each of
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:7:/// those values under the camelCase key and, beside it, under the old
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:8:/// snake_case key. `renamed` is the single table: the encoders look the alias
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:11:public struct LegacyJSONKeys: CodingKey, ExpressibleByStringLiteral {
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:18:    /// camelCase key → the snake_case key still written beside it, with the
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:39:    /// Aliases whose camelCase twin depends on the platform: on Android
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:41:    public static let platformTwins: [String: [String]] = ["bundle_id": ["applicationId"]]
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:53:    /// snake_case alias → its camelCase key.
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:56:    /// camelCase key → its snake_case alias.
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:60:extension KeyedEncodingContainer where K == LegacyJSONKeys {
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:61:    /// Writes `value` under `key` and, when `LegacyJSONKeys.renamed` lists
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:62:    /// one, under its snake_case alias too.
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:64:        try encode(value, forKey: LegacyJSONKeys(stringValue: key))
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:65:        if let alias = LegacyJSONKeys.aliasOf[key] {
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:66:            try encode(value, forKey: LegacyJSONKeys(stringValue: alias))

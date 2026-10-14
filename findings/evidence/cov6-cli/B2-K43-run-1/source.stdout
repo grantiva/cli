@@ -1,0 +1,16 @@
+Sources/GrantivaCLI/RecordCommand.swift:111:            if emulator != nil { throw TargetOptions.otherPlatformFlagError("--emulator", platform: .ios) }
+Sources/GrantivaCLI/RecordCommand.swift:112:            if device != nil { throw TargetOptions.otherPlatformFlagError("--device", platform: .ios) }
+Sources/GrantivaCLI/RecordCommand.swift:118:            if simulator != nil { throw TargetOptions.otherPlatformFlagError("--simulator", platform: .android) }
+Sources/GrantivaCLI/DriverCommand.swift:179:            if emulator != nil { throw TargetOptions.otherPlatformFlagError("--emulator", platform: .ios) }
+Sources/GrantivaCLI/DriverCommand.swift:180:            if device != nil { throw TargetOptions.otherPlatformFlagError("--device", platform: .ios) }
+Sources/GrantivaCLI/DriverCommand.swift:181:            if headless { throw TargetOptions.otherPlatformFlagError("--headless", platform: .ios) }
+Sources/GrantivaCLI/DriverCommand.swift:184:            throw TargetOptions.otherPlatformFlagError("--simulator", platform: .android)
+Sources/GrantivaCLI/DriverCommand.swift:255:            if applicationId != nil { throw TargetOptions.otherPlatformFlagError("--application-id", platform: .ios) }
+Sources/GrantivaCLI/DriverCommand.swift:261:            if bundleId != nil { throw TargetOptions.otherPlatformFlagError("--bundle-id", platform: .android) }
+Sources/GrantivaCLI/InitCommand.swift:221:            throw TargetOptions.otherPlatformFlagError(offending, platform: platform)
+Tests/GrantivaCLITests/InitAndroidTests.swift:81:        await assertInitFails(["--platform", "android", "--scheme", "X"], mentioning: "--scheme is an iOS option, but this is an Android project")
+Tests/GrantivaCLITests/InitAndroidTests.swift:90:        await assertInitFails(["--platform", "ios", "--application-id", "a.b"], mentioning: "--application-id is an Android option, but this is an iOS project")
+Tests/GrantivaCLITests/PlatformOptionTests.swift:93:        let iosAppID = TargetOptions.otherPlatformFlagError("--application-id", platform: .ios).errorDescription
+Tests/GrantivaCLITests/PlatformOptionTests.swift:97:        let androidSim = TargetOptions.otherPlatformFlagError("--simulator", platform: .android).errorDescription
+Sources/GrantivaCLI/TargetOptions.swift:89:            throw Self.otherPlatformFlagError(offending, platform: platform)
+Sources/GrantivaCLI/TargetOptions.swift:96:    static func otherPlatformFlagError(_ flag: String, platform: Platform) -> GrantivaError {

@@ -1,0 +1,32 @@
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:77:        assertToolError(result, contains: "Element not found: \"No Such Label QA\". Run grantiva hierarchy")
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:124:        device.bootFailure = GrantivaError.invalidArgument(#"Simulator not found: "no-such-sim""#)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:131:            ("grantiva_build", ["simulator": .string("no-such-sim")]),
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:337:        device.bootFailure = GrantivaError.invalidArgument(#"Simulator not found: "x""#)
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:7:/// L08: a sessionless `grantiva_build {scheme}` with no simulator argument and
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:71:        let result = try await registry.call(name: "grantiva_build", arguments: ["scheme": .string("Demo")], notify: { _ in })
+Tests/GrantivaMCPTests/VRTToolsTests.swift:94:        XCTAssertEqual(VRTTools.failure("grantiva.yml not found at /x/grantiva.yml. Create one with grantiva init.").content.count, 1)
+Tests/GrantivaMCPTests/ToolRegistrationTests.swift:23:        "grantiva_build",
+Tests/GrantivaMCPTests/MCPServerTests.swift:423:            let result = try await client.callTool(name: "grantiva_build", arguments: [:])
+Tests/GrantivaMCPTests/MCPServerTests.swift:426:            XCTAssertTrue(text.contains("grantiva.yml not found at \(resolved)/grantiva.yml"), text)
+Tests/GrantivaMCPTests/MCPServerTests.swift:432:            XCTAssertTrue(captureText.contains("grantiva.yml not found at \(resolved)/grantiva.yml"), captureText)
+Tests/GrantivaMCPTests/BuildToolsTests.swift:39:        device.buildResult = BuildResult(success: false, duration: 0, warnings: [], errors: ["Task 'assembleNoSuchVariant' not found"], productPath: nil)
+Tests/GrantivaMCPTests/BuildToolsTests.swift:159:    // MARK: - K54: grantiva_build on Android compiles only
+Tests/GrantivaMCPTests/BuildToolsTests.swift:210:            missingConfig: "grantiva.yml not found at /x/grantiva.yml. Create one with grantiva init.",
+Tests/GrantivaMCPTests/ContextToolTests.swift:100:        XCTAssertEqual(config, "\n  grantiva.yml not found at /x/empty/grantiva.yml. Create one with grantiva init.")
+Tests/GrantivaMCPTests/MCPTransportTests.swift:457:    private let call10 = #"{"jsonrpc":"2.0","id":10,"method":"tools/call","params":{"name":"grantiva_build","arguments":{}}}"#
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:86:        XCTAssertTrue(try textContent(of: result).contains("Android SDK not found"))
+Tests/GrantivaMCPTests/ToolAnnotationsTests.swift:38:            "grantiva_build", "grantiva_run", "grantiva_test",
+Tests/GrantivaMCPTests/ToolSchemaTests.swift:32:            ("grantiva_build", "simulator"), ("grantiva_run", "simulator"), ("grantiva_test", "simulator"),
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:175:    // MARK: - R04: missing config file
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:195:        let expected = "grantiva.yml not found at \(directory.appendingPathComponent("grantiva.yml").path)"
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:196:        for name in ["grantiva_build", "grantiva_run", "grantiva_test"] {
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:210:        let result = try await registry.call(name: "grantiva_build", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:213:        XCTAssertTrue(text.contains("grantiva-android.yml not found at \(directory.path)/grantiva-android.yml"), text)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:224:            name: "grantiva_build", arguments: ["scheme": .string("Demo")], server: MCPTestSupport.disconnectedServer()
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:237:        let result = try await registry.call(name: "grantiva_build", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:353:        XCTAssertTrue(text.contains("Element not found: \"Nowhere\""), text)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:415:        XCTAssertTrue(try textContent(of: byText).contains("Element not found: \"login\""))
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:602:        XCTAssertTrue(text.contains("grantiva.yml not found at \(directory.path)/grantiva.yml"), text)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:613:        XCTAssertTrue(try textContent(of: result).contains("grantiva.yml not found at \(directory.path)/grantiva.yml"))
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:106:            ("grantiva_build", [:]),
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:194:        XCTAssertTrue(try textContent(of: outcome.result).hasPrefix(#"Error: Step 1 (tap "Nope") failed: Element not found: "Nope"."#))

@@ -1,0 +1,241 @@
+README.md:196:| `GRANTIVA_RUNNER_HOME` | Runner directory, default `~/.grantiva/runner`. It holds simulator `locks/`, the WebDriverAgent build `cache/`, and one runner install per version under `versions/<stamp>/`; a home other than the default also holds its own `simulator-capacity/` (see Simulators Grantiva created). When an install is needed (no install of this version yet), grantiva first checks the `grantiva_GrantivaCore.bundle` beside the binary: a bundle from another release fails the install, names the bundle and either both runner versions or the tarball it lacks, leaves any existing install untouched, and leaves no empty `versions/<stamp>/` directory. An existing install of the current version is used as it is, without reading the bundle; `grantiva runner install` then warns when the bundle does not carry that runner, and every command that uses the runner warns (once) when no bundle is beside the binary at all, since the next fresh install would fail. A relative path is resolved against the current directory, and the home is always printed in its resolved form (`/private/tmp/…`, not `/tmp/…`), whether or not it exists yet. |
+.github/workflows/ci.yml:42:      - name: Test (fresh empty runner home)
+.github/workflows/ci.yml:43:        run: scripts/test-fresh-home.sh
+docs/superpowers/plans/2026-10-08-android-support-2-run-and-vrt.md:1680:  - `func runnerEnvironment(runnerHome: String) -> [String: String]` (iOS: `[:]`).
+docs/superpowers/plans/2026-10-08-android-support-2-run-and-vrt.md:1683:- `RunnerSession.run` and `runFlowFiles`: `platform:` loses its default; both call `platform.runnerEnvironment(runnerHome: runnerDir)` and, after the runner exits, `await platform.cleanupOrphans(deviceID:)` inside `runWithStatusBarCleanup`.
+docs/superpowers/plans/2026-10-08-android-support-2-run-and-vrt.md:1712:        XCTAssertEqual(IOSPlatform().runnerEnvironment(runnerHome: "/r"), [:])
+docs/superpowers/plans/2026-10-08-android-support-2-run-and-vrt.md:1746:            func runnerEnvironment(runnerHome: String) -> [String: String] { ["MAESTRO_RUNNER_HOME": runnerHome] }
+docs/superpowers/plans/2026-10-08-android-support-2-run-and-vrt.md:1804:    func runnerEnvironment(runnerHome: String) -> [String: String]
+docs/superpowers/plans/2026-10-08-android-support-2-run-and-vrt.md:1838:    public func runnerEnvironment(runnerHome: String) -> [String: String] { [:] }
+docs/superpowers/plans/2026-10-08-android-support-2-run-and-vrt.md:1866:        platform.runnerEnvironment(runnerHome: runnerDir)
+docs/superpowers/plans/2026-10-08-android-support-2-run-and-vrt.md:1920:- `runnerEnvironment`: `["MAESTRO_RUNNER_HOME": runnerHome, "ANDROID_HOME": sdk.root, "PATH": "<sdk>/platform-tools:<sdk>/emulator:" + existing PATH]`.
+docs/superpowers/plans/2026-10-08-android-support-2-run-and-vrt.md:1964:        let env = p.runnerEnvironment(runnerHome: "/home/.grantiva/runner")
+docs/superpowers/plans/2026-10-08-android-support-2-run-and-vrt.md:2313:    public func runnerEnvironment(runnerHome: String) -> [String: String] {
+docs/superpowers/plans/2026-10-08-android-support-2-run-and-vrt.md:2316:            "MAESTRO_RUNNER_HOME": runnerHome,
+docs/superpowers/plans/2026-10-08-android-support-2-run-and-vrt.md:2425:    func runnerEnvironment(runnerHome: String) -> [String: String] { [:] }
+Tests/GrantivaCLITests/AndroidCommandTests.swift:35:            leaseDirectory: dir.appendingPathComponent("locks").path
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:44:            leaseDirectory: dir.appendingPathComponent("locks").path
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:66:            leaseDirectory: dir.appendingPathComponent("locks").path
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:109:            provenance: provenance, runnerHome: "\(directory)/runner"
+docs/superpowers/plans/2026-10-08-android-support-3-hierarchy-mcp-emulator.md:2215:        let environment = platformDevice.runnerEnvironment(runnerHome: runnerDir)
+docs/superpowers/plans/2026-10-08-android-support-3-hierarchy-mcp-emulator.md:3095:    func runnerEnvironment(runnerHome: String) -> [String: String] { [:] }
+Sources/GrantivaCLI/DriverCommand.swift:231:        let environment = platformDevice.runnerEnvironment(runnerHome: runnerDir, deviceID: booted.udid)
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:245:            leaseDirectory: directory,
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:51:            flushTimeout: 0.2, leaseDirectory: dir.appendingPathComponent("locks").path
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:82:    func runnerEnvironment(runnerHome: String, deviceID: String) -> [String: String] { [:] }
+Tests/GrantivaCLITests/RunSessionContractTests.swift:118:                leaseDirectory: FileManager.default.temporaryDirectory.appendingPathComponent("locks-\(UUID().uuidString)").path
+Tests/GrantivaCLITests/RunSessionContractTests.swift:296:            leaseDirectory: dir.appendingPathComponent("locks").path
+Tests/GrantivaCLITests/RunCommandTests.swift:280:            leaseDirectory: dir.appendingPathComponent("locks").path
+Tests/GrantivaCLITests/RunCommandTests.swift:1012:            leaseDirectory: scratch.appendingPathComponent("locks").path
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:16:        let manager = SimulatorManager(execute: simctl.execute, capacity: capacity, provenance: provenance, runnerHome: "\(directory)/runner")
+Tests/GrantivaMCPTests/MCPTestSupport.swift:172:    func runnerEnvironment(runnerHome: String, deviceID: String) -> [String: String] { [:] }
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:42:        let env = p.runnerEnvironment(runnerHome: "/home/.grantiva/runner", deviceID: "emulator-5554")
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:52:            execute: host.execute, capacity: capacity, provenance: provenance, runnerHome: "\(directory)/runner"
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:212:    private var leaseDirectory: String { scratch.appendingPathComponent("locks").path }
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:257:        return RunnerManager(ensureAvailable: {}, runnerPath: { script.path }, runnerDir: { dir }, leaseDirectory: leaseDirectory)
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:300:    func runnerEnvironment(runnerHome: String, deviceID: String) -> [String: String] { [:] }
+Sources/GrantivaCore/Android/AndroidPlatform.swift:265:    public func runnerEnvironment(runnerHome: String, deviceID: String) -> [String: String] {
+Sources/GrantivaCore/Android/AndroidPlatform.swift:268:            "MAESTRO_RUNNER_HOME": runnerHome,
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:123:            runnerHome: "\(directory)/runner"
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:129:        let home = WDADeviceHome.path(runnerHome: "\(capacity.directory)/runner", deviceID: udid)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:490:            runnerHome: "\(directory)/runner"
+Sources/GrantivaCore/Platform/IOSPlatform.swift:10:    var leaseDirectory: String?
+Sources/GrantivaCore/Platform/IOSPlatform.swift:161:    public func runnerEnvironment(runnerHome: String, deviceID: String) -> [String: String] {
+Sources/GrantivaCore/Platform/IOSPlatform.swift:163:        if let xcconfig = WDABuildConfig.install(in: runnerHome) {
+Sources/GrantivaCore/Platform/IOSPlatform.swift:166:        if let deviceHome = WDADeviceHome.prepare(runnerHome: runnerHome, deviceID: deviceID, leaseDirectory: leaseDirectory) {
+Sources/GrantivaCore/Platform/IOSPlatform.swift:177:    public func runnerFinished(runnerHome: String, deviceID: String) {
+Sources/GrantivaCore/Platform/IOSPlatform.swift:178:        WDADeviceHome.promote(runnerHome: runnerHome, deviceID: deviceID)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:11:    private var leaseDirectory: String!
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:17:        leaseDirectory = scratch.appendingPathComponent("locks").path
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:63:        let lease = try SimulatorLease.acquire(udid: udid, directory: leaseDirectory)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:120:        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:147:        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:155:        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:167:        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:171:        let claim = try XCTUnwrap(SimulatorLease.claim(udid: "SIM-1", directory: leaseDirectory))
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:176:        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:187:        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:217:        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:251:        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:286:        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:317:        let lease = try SimulatorLease.acquire(udid: udid, directory: leaseDirectory)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:382:        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:407:        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:434:            let lease = try SimulatorLease.acquire(udid: "SIM-\(name)", directory: leaseDirectory)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:462:        let lease = try SimulatorLease.acquire(udid: "SIM-crash", directory: leaseDirectory)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:499:        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:96:        let env = IOSPlatform().runnerEnvironment(runnerHome: home, deviceID: "SIM-1")
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:104:        XCTAssertEqual(IOSPlatform().runnerEnvironment(runnerHome: "/nonexistent-grantiva-\(UUID().uuidString)", deviceID: "SIM-1"), [:])
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:254:    func runnerEnvironment(runnerHome: String, deviceID: String) -> [String: String] { [:] }
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:330:            leaseDirectory: root.appendingPathComponent("locks").path
+Tests/GrantivaCoreTests/RunnerSessionAppIdTests.swift:129:            func runnerEnvironment(runnerHome: String, deviceID: String) -> [String: String] { ["MAESTRO_RUNNER_HOME": runnerHome] }
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:6:    private var leaseDirectory: String!
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:9:        leaseDirectory = FileManager.default.temporaryDirectory
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:15:        if let leaseDirectory {
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:16:            try? FileManager.default.removeItem(atPath: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:21:        let first = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:25:            try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:32:        let first = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:34:        let second = try SimulatorLease.acquire(udid: "SIM-2", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:41:        let first = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:44:        let second = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:51:        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:61:        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:64:        let claim = try XCTUnwrap(SimulatorLease.claim(udid: "SIM-1", directory: leaseDirectory))
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:70:        let updated = try XCTUnwrap(SimulatorLease.claim(udid: "SIM-1", directory: leaseDirectory))
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:76:        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:77:        XCTAssertNotNil(SimulatorLease.claim(udid: "SIM-1", directory: leaseDirectory))
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:79:        XCTAssertNil(SimulatorLease.claim(udid: "SIM-1", directory: leaseDirectory))
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:83:        let stuck = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:84:        XCTAssertThrowsError(try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory))
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:87:        XCTAssertTrue(SimulatorLease.forceRelease(udid: "SIM-1", directory: leaseDirectory))
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:89:        let reclaimed = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:95:        let first = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:100:            try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:112:        let first = try SimulatorLease.acquire(udid: "emulator-5554", platform: .android, directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:116:            try SimulatorLease.acquire(udid: "emulator-5554", platform: .android, directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:132:        let lease = try SimulatorLease.acquire(udid: "SIM-HANDOFF", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:138:            try SimulatorLease.acquire(udid: "SIM-HANDOFF", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:148:        let lease = try SimulatorLease.acquire(udid: "SIM-STALE", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:155:        let reclaimed = try SimulatorLease.acquire(udid: "SIM-STALE", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:160:        let lease = try SimulatorLease.acquire(udid: "SIM-FORCE", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:162:        XCTAssertTrue(SimulatorLease.forceRelease(udid: "SIM-FORCE", directory: leaseDirectory))
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:164:        let reclaimed = try SimulatorLease.acquire(udid: "SIM-FORCE", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:175:        try FileManager.default.createDirectory(atPath: leaseDirectory, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:178:        child.arguments = ["-k", SimulatorLease.leasePath(udid: udid, directory: leaseDirectory), "/bin/sleep", "30"]
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:186:            if SimulatorLease.isHeld(udid: udid, directory: leaseDirectory) { return child }
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:195:        try FileManager.default.createDirectory(atPath: leaseDirectory, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:196:        let path = SimulatorLease.leasePath(udid: "SIM-FREE", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:199:        XCTAssertFalse(SimulatorLease.forceRelease(udid: "SIM-FREE", directory: leaseDirectory))
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:204:        let lease = try SimulatorLease.acquire(udid: "SIM-DEAD", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:211:        XCTAssertFalse(SimulatorLease.forceRelease(udid: "SIM-DEAD", directory: leaseDirectory))
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:217:        XCTAssertTrue(SimulatorLease.forceRelease(udid: "SIM-HELD", directory: leaseDirectory))
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:218:        let next = try SimulatorLease.acquire(udid: "SIM-HELD", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:224:        let lease = try SimulatorLease.acquire(udid: "SIM-LIVE", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:227:        XCTAssertTrue(SimulatorLease.forceRelease(udid: "SIM-LIVE", directory: leaseDirectory))
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:228:        let next = try SimulatorLease.acquire(udid: "SIM-LIVE", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:262:        let lease = try SimulatorLease.acquire(udid: "SIM-KIND", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:264:        let claim = try XCTUnwrap(SimulatorLease.claim(udid: "SIM-KIND", directory: leaseDirectory))
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:267:        _ = SimulatorLease.forceRelease(udid: "SIM-KIND", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:272:        let lease = try SimulatorLease.acquire(udid: "SIM-TMP", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:277:        let claim = try XCTUnwrap(SimulatorLease.claim(udid: "SIM-TMP", directory: leaseDirectory))
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:290:        let lease = try SimulatorLease.acquire(udid: "SIM-GONE", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:297:        let lease = try SimulatorLease.acquire(udid: "SIM-KEEP", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:300:        _ = SimulatorLease.forceRelease(udid: "SIM-KEEP", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:310:        let lease = try SimulatorLease.acquire(udid: "SIM-RACE", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:315:        XCTAssertEqual(SimulatorLease.claim(udid: "SIM-RACE", directory: leaseDirectory)?.pid, getpid())
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:316:        XCTAssertThrowsError(try SimulatorLease.acquire(udid: "SIM-RACE", directory: leaseDirectory))
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:321:            let holder = try SimulatorLease.acquire(udid: "SIM-CONC", directory: leaseDirectory)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:326:                DispatchQueue.global().async { [leaseDirectory] in
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:330:                    } else if let lease = try? SimulatorLease.acquire(udid: "SIM-CONC", directory: leaseDirectory) {
+Sources/GrantivaCore/Platform/DevicePlatform.swift:136:    func runnerEnvironment(runnerHome: String, deviceID: String) -> [String: String]
+Sources/GrantivaCore/Platform/DevicePlatform.swift:138:    func runnerFinished(runnerHome: String, deviceID: String)
+Sources/GrantivaCore/Platform/DevicePlatform.swift:193:    func runnerFinished(runnerHome: String, deviceID: String) {}
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:578:            leaseDirectory: scratch.appendingPathComponent("locks").path
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:609:    func runnerEnvironment(runnerHome: String, deviceID: String) -> [String: String] { [:] }
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:35:        platform.leaseDirectory = leaseDirectory
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:36:        let env1 = platform.runnerEnvironment(runnerHome: home, deviceID: "AAAA-1111")
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:37:        let env2 = platform.runnerEnvironment(runnerHome: home, deviceID: "BBBB-2222")
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:47:        let deviceHome = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "AAAA-1111", existingDeviceIDs: { nil }))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:55:        let home1 = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "AAAA-1111", existingDeviceIDs: { nil }))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:56:        let home2 = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "BBBB-2222", existingDeviceIDs: { nil }))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:65:        let deviceHome = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "AAAA-1111", existingDeviceIDs: { nil }))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:67:        _ = WDADeviceHome.prepare(runnerHome: home, deviceID: "AAAA-1111", existingDeviceIDs: { nil })
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:72:        let home1 = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "AAAA-1111", existingDeviceIDs: { nil }))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:74:        IOSPlatform().runnerFinished(runnerHome: home, deviceID: "AAAA-1111")
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:76:        let home2 = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "BBBB-2222", existingDeviceIDs: { nil }))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:84:        let home1 = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "AAAA-1111", existingDeviceIDs: { nil }))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:85:        _ = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "BBBB-2222", existingDeviceIDs: { nil }))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:88:        _ = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "AAAA-1111", existingDeviceIDs: { nil }))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:91:        IOSPlatform().runnerFinished(runnerHome: home, deviceID: "AAAA-1111")
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:92:        _ = WDADeviceHome.prepare(runnerHome: home, deviceID: "BBBB-2222", existingDeviceIDs: { nil })
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:93:        IOSPlatform().runnerFinished(runnerHome: home, deviceID: "BBBB-2222")
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:98:        _ = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "AAAA-1111", existingDeviceIDs: { nil }))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:99:        _ = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "BBBB-2222", existingDeviceIDs: { nil }))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:100:        _ = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "CCCC-3333", existingDeviceIDs: { nil }))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:102:        _ = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "CCCC-3333", existingDeviceIDs: { ["BBBB-2222"] }, leaseDirectory: leaseDirectory))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:103:        XCTAssertFalse(fm.fileExists(atPath: WDADeviceHome.path(runnerHome: home, deviceID: "AAAA-1111")))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:104:        XCTAssertTrue(fm.fileExists(atPath: WDADeviceHome.path(runnerHome: home, deviceID: "BBBB-2222")))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:105:        XCTAssertTrue(fm.fileExists(atPath: WDADeviceHome.path(runnerHome: home, deviceID: "CCCC-3333")))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:108:    private var leaseDirectory: String { "\(home!)/locks" }
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:113:        _ = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "AAAA-1111", existingDeviceIDs: { nil }))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:115:            runnerHome: home, deviceID: "BBBB-2222", existingDeviceIDs: { ["BBBB-2222"] }, leaseDirectory: leaseDirectory
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:117:        XCTAssertFalse(fm.fileExists(atPath: WDADeviceHome.path(runnerHome: home, deviceID: "AAAA-1111")))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:118:        XCTAssertFalse(fm.fileExists(atPath: SimulatorLease.leasePath(udid: "AAAA-1111", directory: leaseDirectory)))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:122:        _ = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "AAAA-1111", existingDeviceIDs: { nil }))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:125:            runnerHome: home, deviceID: "BBBB-2222", existingDeviceIDs: { [] }, leaseDirectory: leaseDirectory
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:127:        XCTAssertTrue(fm.fileExists(atPath: WDADeviceHome.path(runnerHome: home, deviceID: "AAAA-1111")))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:131:        _ = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "AAAA-1111", existingDeviceIDs: { nil }))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:132:        let lease = try SimulatorLease.acquire(udid: "AAAA-1111", directory: leaseDirectory)
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:135:            runnerHome: home, deviceID: "BBBB-2222", existingDeviceIDs: { ["BBBB-2222"] }, leaseDirectory: leaseDirectory
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:137:        XCTAssertTrue(fm.fileExists(atPath: WDADeviceHome.path(runnerHome: home, deviceID: "AAAA-1111")))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:141:        _ = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "AAAA-1111", existingDeviceIDs: { nil }))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:142:        _ = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "BBBB-2222", existingDeviceIDs: { nil }))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:143:        XCTAssertTrue(fm.fileExists(atPath: WDADeviceHome.path(runnerHome: home, deviceID: "AAAA-1111")))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:147:        let deviceHome = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "AAAA-1111", existingDeviceIDs: { nil }))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:181:        XCTAssertNil(WDADeviceHome.prepare(runnerHome: home, deviceID: "../x"))
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:182:        XCTAssertNil(WDADeviceHome.prepare(runnerHome: home, deviceID: ""))
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:103:            leaseDirectory: directory,
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:124:            leaseDirectory: directory,
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:148:            leaseDirectory: directory,
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:187:            leaseDirectory: directory,
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:250:            leaseDirectory: directory,
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:322:                + "\n  \(freshPID)  \(freshPID) /opt/homebrew/bin/grantiva run --simulator \(udid)",
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:328:            leaseDirectory: directory,
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:381:            leaseDirectory: directory,
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:32:        boundPorts: Set<Int> = [], portOwners: [Int32]? = nil, leaseDirectory: String? = nil
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:48:            leaseDirectory: leaseDirectory ?? scratch.appendingPathComponent("locks").path
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:102:            flushTimeout: 0.2, leaseDirectory: scratch.appendingPathComponent("locks").path
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:1119:        let outcome = try await manager(shell, leaseDirectory: leases).teardown(serial: "emulator-5554", force: true)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:1136:        let outcome = try await manager(shell, leaseDirectory: leases).teardown(serial: "emulator-5554", force: true)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:1175:            environment: [:], killTimeout: 2, flushTimeout: 0.2, leaseDirectory: scratch.appendingPathComponent("locks").path
+Sources/GrantivaCore/Android/EmulatorManager.swift:101:    private let leaseDirectory: String?
+Sources/GrantivaCore/Android/EmulatorManager.swift:154:        leaseDirectory: String? = nil
+Sources/GrantivaCore/Android/EmulatorManager.swift:170:        self.leaseDirectory = leaseDirectory
+Sources/GrantivaCore/Android/EmulatorManager.swift:669:        if let claim = SimulatorLease.claim(udid: serial, directory: leaseDirectory), !claim.isLive {
+Sources/GrantivaCore/Android/EmulatorManager.swift:671:            SimulatorLease.removeLeaseFile(udid: serial, directory: leaseDirectory)
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:96:        let runnerHome = RunnerManager.resolveBaseDir(environment: environment)
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:97:        guard runnerHome != RunnerManager.resolveBaseDir(environment: [:]) else {
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:101:        return "\(runnerHome)/simulator-capacity"
+Sources/GrantivaCore/Runner/RunnerManager.swift:13:    public var leaseDirectory: String?
+Sources/GrantivaCore/Runner/RunnerManager.swift:24:        leaseDirectory: String? = nil,
+Sources/GrantivaCore/Runner/RunnerManager.swift:30:        self.leaseDirectory = leaseDirectory
+Sources/GrantivaCore/Runner/RunnerManager.swift:187:                + "The installed runner (\(installDir)) was left as it is, but a fresh install (a new runner home or another grantiva version) would fail. "
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:170:        leaseDirectory: String? = nil,
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:185:        let leaseHeld = SimulatorLease.isHeld(udid: udid, directory: leaseDirectory)
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:186:        let claim = SimulatorLease.claim(udid: udid, directory: leaseDirectory)
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:219:        SimulatorLease.removeLeaseFile(udid: udid, directory: leaseDirectory)
+Sources/GrantivaCore/Runner/WDABuildConfig.swift:21:    /// Writes the xcconfig into `runnerHome` when it is missing or stale and
+Sources/GrantivaCore/Runner/WDABuildConfig.swift:24:    public static func install(in runnerHome: String, fileManager: FileManager = .default) -> String? {
+Sources/GrantivaCore/Runner/WDABuildConfig.swift:25:        let path = (runnerHome as NSString).appendingPathComponent(fileName)
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:28:    /// The runner home for `deviceID` under `runnerHome`.
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:29:    public static func path(runnerHome: String, deviceID: String) -> String {
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:30:        "\(runnerHome)/\(devicesDirectory)/\(deviceID)"
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:53:    /// Creates or refreshes the device's runner home and returns its path.
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:61:        runnerHome: String,
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:64:        leaseDirectory: String? = nil,
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:68:        let home = path(runnerHome: runnerHome, deviceID: deviceID)
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:69:        let sharedBuilds = "\(runnerHome)/\(buildsDirectory)"
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:77:                try fm.createSymbolicLink(atPath: drivers, withDestinationPath: "\(runnerHome)/drivers")
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:88:            let devices = "\(runnerHome)/\(devicesDirectory)"
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:91:                guard let lease = try? SimulatorLease.acquire(udid: other, directory: leaseDirectory) else { continue }
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:129:    public static func promote(runnerHome: String, deviceID: String, fileManager fm: FileManager = .default) {
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:131:        let deviceBuilds = "\(path(runnerHome: runnerHome, deviceID: deviceID))/\(buildsDirectory)"
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:132:        let sharedBuilds = "\(runnerHome)/\(buildsDirectory)"
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:177:            let home = path(runnerHome: install, deviceID: deviceID)
+Sources/GrantivaCore/Runner/RunnerSession.swift:92:        let simulatorLease = try SimulatorLease.acquire(udid: udid, platform: platform.platform, directory: runner.leaseDirectory)
+Sources/GrantivaCore/Runner/RunnerSession.swift:204:                platform.runnerFinished(runnerHome: runnerDir, deviceID: id)
+Sources/GrantivaCore/Runner/RunnerSession.swift:392:        let simulatorLease = try SimulatorLease.acquire(udid: udid, platform: platform.platform, directory: runner.leaseDirectory)
+Sources/GrantivaCore/Runner/RunnerSession.swift:553:                platform.runnerFinished(runnerHome: runnerDir, deviceID: id)
+Sources/GrantivaCore/Runner/RunnerSession.swift:691:        platform.runnerEnvironment(runnerHome: runnerDir, deviceID: deviceID)
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:11:    /// live at `<runnerHome>/versions/<runner version>/devices/<udid>`.
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:12:    private let runnerHome: String
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:23:        runnerHome: String = RunnerManager.baseDir
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:28:        self.runnerHome = runnerHome
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:330:    private var leaseDirectory: String { "\(runnerHome)/locks" }
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:335:        (try? SimulatorLease.acquire(udid: udid, directory: leaseDirectory))?.release()
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:341:        for failure in WDADeviceHome.removeAll(runnerBase: runnerHome, deviceID: udid).failures {
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:377:            lease = try SimulatorLease.acquire(udid: udid, directory: leaseDirectory)
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:380:                udid: udid, holder: SimulatorLease.claim(udid: udid, directory: leaseDirectory)
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:384:        let homes = WDADeviceHome.removeAll(runnerBase: runnerHome, deviceID: udid)
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:411:            let homes = WDADeviceHome.removeAll(runnerBase: runnerHome, deviceID: record.udid)

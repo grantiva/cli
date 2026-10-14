@@ -1,0 +1,9 @@
+README.md:488:grantiva doctor --json | jq '.[] | select(.status == "error")'
+README.md:491:Each doctor check's `status` is `ok`, `warning` or `error`. Only `error` makes `grantiva doctor` exit non-zero;
+Tests/GrantivaCLITests/DocsContractTests.swift:36:        XCTAssertTrue(readme.contains(#"grantiva doctor --json | jq '.[] | select(.status == "error")'"#))
+Tests/GrantivaCLITests/DocsContractTests.swift:37:        XCTAssertTrue(readme.contains("`ok`, `warning` or `error`"), "README names doctor's three status values")
+Tests/GrantivaCLITests/DocsContractTests.swift:38:        XCTAssertTrue(try text("Sources/GrantivaCore/Output/Output.swift").contains(#"select(.status == "error")"#))
+Tests/GrantivaCLITests/DocsContractTests.swift:40:            XCTAssertFalse(try text(path).contains(#"status == "fail""#), "\(path) filters doctor on a status it never emits")
+Tests/GrantivaCoreTests/DoctorTests.swift:446:    /// README documents `select(.status == "error")` and names these three
+Tests/GrantivaCoreTests/DoctorTests.swift:449:        XCTAssertEqual(DoctorCheck.Status.allCases.map(\.rawValue), ["ok", "warning", "error"])
+Sources/GrantivaCore/Output/Output.swift:11:///     grantiva doctor --json | jq '.[] | select(.status == "error")'

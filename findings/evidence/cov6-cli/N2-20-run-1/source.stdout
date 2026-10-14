@@ -1,0 +1,49 @@
+Tests/GrantivaCoreTests/AuthStoreSecurityTests.swift:24:        let root = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-auth-malformed-\(UUID().uuidString)")
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:406:    // MARK: - L42-b: a malformed step is a plain config error
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:7:final class MP4LastFrameHoldTests: XCTestCase {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:10:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 2)?.data)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:23:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 2)?.data)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:34:        XCTAssertNil(MP4LastFrameHold.hold(file.data, toSeconds: 2))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:35:        XCTAssertNil(MP4LastFrameHold.hold(file.data, toSeconds: 1.5))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:40:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 2))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:54:        XCTAssertEqual(try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 2)).recordedSeconds, 0.1, accuracy: 0.0001)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:57:    /// Review fix: a header box too short to hold its duration is malformed,
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:63:                XCTAssertNil(MP4LastFrameHold.hold(file.data, toSeconds: 2), "\(box) v\(version1 ? 1 : 0)")
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:73:        let timing = try MP4LastFrameHold.timing(of: file.data).get()
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:77:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 2))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:84:        let timing = try MP4LastFrameHold.timing(of: file.data).get()
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:98:        guard case .trimmed(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 2) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:115:        guard case .trimmed(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 4) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:133:        guard case .unchanged = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 4) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:145:        guard case .unchanged(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 4) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:161:        guard case .held(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 3) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:176:        let reread = try MP4LastFrameHold.timing(of: held).get()
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:179:        guard case .unchanged = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 3) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:194:        guard case .trimmed(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 3, dropFramesPastEnd: true) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:207:        guard case .unchanged = try MP4LastFrameHold.holdFile(atPath: kept.path, toSeconds: 3) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:221:        XCTAssertEqual(try MP4LastFrameHold.timing(of: file.data).get().lastFrameSeconds, 38.0 / 600, accuracy: 0.0001)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:224:        guard case .unchanged = try MP4LastFrameHold.holdFile(atPath: kept.path, toSeconds: 35.0 / 600) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:231:        guard case .trimmed = try MP4LastFrameHold.holdFile(atPath: cut.path, toSeconds: 35.0 / 600, dropFramesPastEnd: true) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:248:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 3))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:258:    // MARK: - L25: a malformed extra track does not stop the hold
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:262:            for kind in [MP4Fixture.ExtraTrak.Kind.noMdia, .mdiaWithoutHdlr] {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:269:                guard case .held(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 4) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:283:        XCTAssertEqual(MP4LastFrameHold.timing(of: file.data), .failure(.init("the movie has no video track")))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:293:        guard case .held(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 2) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:305:        guard case .unreadable(let reason) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 2) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:308:        XCTAssertEqual(reason, "the file's box sizes are malformed")
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:311:        XCTAssertEqual(MP4LastFrameHold.timing(of: ftypOnly), .failure(.init("the file has no moov box (not an MP4, or not finalized)")))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:312:        XCTAssertThrowsError(try MP4LastFrameHold.timing(of: Data()).get())
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:314:        switch MP4LastFrameHold.timing(of: truncated.data) {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:326:        XCTAssertEqual(try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: .infinity), .outOfRange(.infinity))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:327:        XCTAssertEqual(try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 0), .outOfRange(0))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:337:            XCTAssertEqual(try MP4LastFrameHold.holdFile(atPath: path.path, toSeconds: 2), .unreadable(reason), box)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:348:        XCTAssertNil(MP4LastFrameHold.hold(Data(), toSeconds: 2))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:349:        XCTAssertNil(MP4LastFrameHold.hold(Data("not a movie".utf8), toSeconds: 2))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:353:/// ftyp, moov(mvhd, trak(tkhd, edts(elst), mdia(mdhd, hdlr vide, minf(stbl(stts, stco))))), mdat.
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:365:        enum Kind { case noMdia, mdiaWithoutHdlr }
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:388:            case .mdiaWithoutHdlr:
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:389:                return box("trak", tkhd + box("mdia", full("mdhd", time(0) + time(0) + be(1_000) + time(1_234) + be(0))))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:397:            let hdlr = box("hdlr", [0, 0, 0, 0] + be(0) + Array("vide".utf8) + [UInt8](repeating: 0, count: 13))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:408:            let trak = omitVideo ? [] : box("trak", tkhd + box("edts", elst) + box("mdia", mdhd + hdlr + box("minf", stbl)))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:458:                case "moov", "trak", "edts", "mdia", "minf", "stbl": walk(b, p, o + size)

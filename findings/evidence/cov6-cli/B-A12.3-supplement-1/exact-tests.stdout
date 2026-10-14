@@ -1,0 +1,57 @@
+326-        XCTAssertFalse(owned.message.contains("was not created by Grantiva"), owned.message)
+327-    }
+328-
+329-    func testBootedSimulatorCheckCanExerciseBothSupportedDefaultNamesDeterministically() async {
+330-        for defaultName in ["iPhone 17 Pro", "iPhone 18 Pro"] {
+331-            let booted = #"{"name":"Other","udid":"BOOTED","state":"Booted","isAvailable":true}"#
+332-            let defaultDevice = #"{"name":"\#(defaultName)","udid":"USER-DEFAULT","state":"Shutdown","isAvailable":true}"#
+333-            let list = #"{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-26-0":["# + booted + "," + defaultDevice + "]}}"
+334-            let check = await DoctorRunner().checkBootedSimulator(
+335-                simulators: SimulatorManager(execute: { _ in list }),
+336-                defaultName: defaultName
+337-            )
+338-            XCTAssertEqual(check.status, .ok)
+339-            XCTAssertTrue(check.message.contains(#""\#(defaultName)" (USER-DEFAULT) was not created by Grantiva"#), check.message)
+340-        }
+341-    }
+342-
+343-    // A mono-repo's android/ subproject is inside the work tree; advising
+344:    // `git init` there would create a nested repository.
+345-    func testGitCheckPassesInASubdirectoryOfAWorkTree() throws {
+346-        let root = scratch.appendingPathComponent("root")
+347:        try FileManager.default.createDirectory(at: root.appendingPathComponent(".git"), withIntermediateDirectories: true)
+348-        try FileManager.default.createDirectory(at: root.appendingPathComponent("android/app"), withIntermediateDirectories: true)
+349-        let check = DoctorRunner().checkGitRepository(directory: root.appendingPathComponent("android/app").path)
+350-        XCTAssertEqual(check.status, .ok)
+351-        XCTAssertEqual(check.message, "Detected")
+352-    }
+353-
+354-    func testGitCheckAcceptsAGitFileForWorktreesAndSubmodules() throws {
+355:        try "gitdir: /elsewhere\n".write(to: scratch.appendingPathComponent(".git"), atomically: true, encoding: .utf8)
+356-        XCTAssertEqual(DoctorRunner().checkGitRepository(directory: scratch.path).status, .ok)
+357-    }
+358-
+359-    func testGitCheckWarnsWithNoAncestorGitEntry() {
+360-        // The temp directory lives outside any work tree.
+361-        let check = DoctorRunner().checkGitRepository(directory: scratch.path)
+362-        XCTAssertEqual(check.status, .warning)
+363:        XCTAssertEqual(check.fix, "Run: git init")
+364-    }
+365-
+366-    func testConfigCheckWarnsAboutUnknownKeys() throws {
+367-        try "schem: Landmarks\nbundle_id: com.example\n".write(
+368-            to: scratch.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8
+369-        )
+370-        let check = DoctorRunner().checkConfig(for: .ios, directory: scratch.path)
+371-        XCTAssertEqual(check.status, .warning)
+372-        XCTAssertEqual(check.section, .project)
+373-        XCTAssertTrue(check.message.contains(#"grantiva.yml:1: unknown key "schem" (did you mean "scheme"?)"#), check.message)
+374-    }
+375-
+376-    func testRunAllChecksWithBothPlatformsOptionalNeverFails() async {
+377-        let checks = await DoctorRunner().runAllChecks(platforms: [.ios, .android], required: false)
+378-        XCTAssertTrue(checks.contains { $0.name == "Android SDK" })
+379-        XCTAssertTrue(checks.contains { $0.name == "Xcode" })
+380-        XCTAssertFalse(DoctorRunner.hasFailures(checks.filter { $0.name.hasPrefix("Android") || $0.name == "adb" || $0.name == "JDK" }))
+381-    }
+f5408dd044a343cd528a806030ca369ef1f3b8de5441ed3820bdb2292616b8ce  Tests/GrantivaCoreTests/DoctorTests.swift

@@ -1,0 +1,15 @@
+Tests/GrantivaCLITests/InitIOSTests.swift:10:        let (yaml, warnings) = InitCommand.iosTemplate(scheme: nil, detected: nil, bundleId: nil, newestIPhone: "iPhone 17")
+Tests/GrantivaCLITests/InitIOSTests.swift:17:        XCTAssertEqual(InitCommand.iosTemplate(scheme: "X", detected: nil, bundleId: nil, newestIPhone: "iPhone 17").warnings, [])
+Tests/GrantivaCLITests/InitIOSTests.swift:18:        XCTAssertEqual(InitCommand.iosTemplate(scheme: nil, detected: .init(container: "Landmarks", schemes: ["Landmarks"]), bundleId: nil, newestIPhone: "iPhone 17").warnings, [])
+Tests/GrantivaCLITests/InitIOSTests.swift:22:        let (yaml, warnings) = InitCommand.iosTemplate(scheme: "X", detected: nil, bundleId: nil, newestIPhone: nil)
+Tests/GrantivaCLITests/InitIOSTests.swift:30:        let (yaml, _) = InitCommand.iosTemplate(scheme: "X", detected: nil, bundleId: nil)
+Tests/GrantivaCLITests/InitIOSTests.swift:54:        let (yaml, _) = InitCommand.iosTemplate(scheme: "Demo", detected: nil, bundleId: "com.example.demo", newestIPhone: "iPhone 17")
+Tests/GrantivaCLITests/InitIOSTests.swift:65:        let (yaml, warnings) = InitCommand.iosTemplate(scheme: nil, detected: detected, bundleId: nil, newestIPhone: "iPhone 17")
+Tests/GrantivaCLITests/InitIOSTests.swift:66:        XCTAssertEqual(warnings, ["Several schemes found: Landmarks, Landmarks (UI Testing). Set scheme in grantiva.yml or pass --scheme."])
+Tests/GrantivaCLITests/InitIOSTests.swift:78:        let (yaml, warnings) = InitCommand.iosTemplate(scheme: "Landmarks (UI Testing)", detected: detected, bundleId: nil, newestIPhone: "iPhone 17")
+Tests/GrantivaCLITests/InitIOSTests.swift:85:        let (yaml, warnings) = InitCommand.iosTemplate(scheme: nil, detected: detected, bundleId: nil, newestIPhone: "iPhone 17")
+Sources/GrantivaCLI/InitCommand.swift:67:            let (yaml, templateWarnings) = Self.iosTemplate(
+Sources/GrantivaCLI/InitCommand.swift:108:    /// What scheme detection found in the directory: the Xcode container's
+Sources/GrantivaCLI/InitCommand.swift:116:    static func iosTemplate(
+Sources/GrantivaCLI/InitCommand.swift:133:            warnings.append("Several schemes found: \(found). Set scheme in grantiva.yml or pass --scheme.")
+Sources/GrantivaCore/Config/ProjectDetector.swift:59:    /// `xcodebuild -list` reports for it. The one scheme detection both

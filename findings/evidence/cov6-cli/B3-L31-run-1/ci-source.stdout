@@ -1,0 +1,19 @@
+scripts/test-fresh-home.sh:2:# scripts/test-fresh-home.sh — run `swift test` with GRANTIVA_RUNNER_HOME set
+scripts/test-fresh-home.sh:6:# `scripts/test-fresh-home.sh --filter DocsContractTests`.
+scripts/test-fresh-home.sh:11:home=$(mktemp -d "${base%/}/grantiva-runner-home.XXXXXX") || exit 1
+scripts/test-fresh-home.sh:13:echo "GRANTIVA_RUNNER_HOME=$home"
+scripts/test-fresh-home.sh:15:GRANTIVA_RUNNER_HOME="$home" "${SWIFT:-swift}" test "$@"
+scripts/test-fresh-home.sh:23:        echo "::error::swift test wrote into GRANTIVA_RUNNER_HOME; see the paths listed above"
+Tests/GrantivaCLITests/Support/LeaseDirectoryGuard.swift:62:    func testTheDefaultLockDirectoryWasNotCreatedByTests() {
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:185:        XCTAssertEqual(RunnerManager.resolveBaseDir(environment: ["GRANTIVA_RUNNER_HOME": "rh/../runner"]), "\(cwd)/runner")
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:186:        XCTAssertEqual(RunnerManager.resolveBaseDir(environment: ["GRANTIVA_RUNNER_HOME": "/tmp/x/"]), "/private/tmp/x")
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:196:        let before = RunnerManager.resolveBaseDir(environment: ["GRANTIVA_RUNNER_HOME": home])
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:198:        let after = RunnerManager.resolveBaseDir(environment: ["GRANTIVA_RUNNER_HOME": home])
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:207:        let before = RunnerManager.resolveBaseDir(environment: ["GRANTIVA_RUNNER_HOME": "rh"], currentDirectory: root)
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:209:        let after = RunnerManager.resolveBaseDir(environment: ["GRANTIVA_RUNNER_HOME": "rh"], currentDirectory: root)
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:60:    // MARK: - The ledgers follow GRANTIVA_RUNNER_HOME
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:66:            SimulatorCapacity.defaultDirectory(environment: ["GRANTIVA_RUNNER_HOME": "\(home)/.grantiva/runner"]),
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:69:        XCTAssertEqual(SimulatorCapacity.defaultDirectory(environment: ["GRANTIVA_RUNNER_HOME": "/tmp/qa/runner/"]), "/private/tmp/qa/runner/simulator-capacity",
+Tests/GrantivaMCPTests/Support/LeaseDirectoryGuard.swift:62:    func testTheDefaultLockDirectoryWasNotCreatedByTests() {
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:322:                + "\n  \(freshPID)  \(freshPID) /opt/homebrew/bin/grantiva run --simulator \(udid)",
+Tests/GrantivaCoreTests/Support/LeaseDirectoryGuard.swift:62:    func testTheDefaultLockDirectoryWasNotCreatedByTests() {

@@ -1,0 +1,1245 @@
+pkg/flow/step.go:193:// LongPressOnStep long presses on an element (alias for tapOn with longPress=true).
+pkg/flow/step.go:230:	// the item only after a long press, so the default is a full second.
+pkg/flow/step.go:1086:// Describe returns a human-readable description of the long press step.
+pkg/flow/selector.go:293:// set, in a stable order. A selector that sets both `text` and `id` renders
+pkg/flow/launcharguments.go:70:// Keys returns the argument keys in a stable (sorted) order so the argv a flow
+pkg/flow/launcharguments.go:113:// Argv renders the arguments as argv tokens, in stable key order.
+pkg/emulator/android.go:204:	deadline := time.Now().Add(timeout)
+pkg/emulator/android.go:208:	for time.Now().Before(deadline) {
+pkg/emulator/android.go:237:	deadline := time.Now().Add(timeout)
+pkg/emulator/android.go:241:	for time.Now().Before(deadline) {
+pkg/emulator/android.go:356:	deadline := time.Now().Add(timeout)
+pkg/emulator/android.go:367:	for time.Now().Before(deadline) {
+pkg/executor/wait_test.go:39:	ctx, cancel := context.WithCancel(context.Background())
+pkg/executor/wait_test.go:46:		cancel()
+pkg/executor/wait_test.go:54:		t.Error("expected failure when the run is cancelled mid-wait")
+pkg/executor/wait_test.go:57:		t.Errorf("cancelled wait took %v, expected to stop promptly", elapsed)
+pkg/executor/tap_options.go:122:	deadline := time.Now().Add(time.Duration(timeoutMs) * time.Millisecond)
+pkg/executor/tap_options.go:123:	for time.Now().Before(deadline) {
+pkg/executor/tap_options.go:196:				Message: "Tap cancelled",
+pkg/executor/runshell.go:42:	ctx, cancel := context.WithTimeout(fr.ctx, timeout)
+pkg/executor/runshell.go:43:	defer cancel()
+pkg/executor/screenshot_settle_test.go:19:	img := image.NewRGBA(image.Rect(0, 0, 20, 20))
+pkg/maestro/client_test.go:153:	client.ctx, client.cancel = context.WithCancel(context.Background())
+pkg/executor/duration_consistency_test.go:173:// The blocked collector acknowledges cancellation before captureArtifacts ends.
+pkg/executor/duration_consistency_test.go:238:					t.Fatal("blocked collector did not acknowledge cancellation")
+pkg/executor/duration_consistency_test.go:255:				if !strings.Contains(notes[blocked], "deadline") {
+pkg/executor/duration_consistency_test.go:305:	if !strings.Contains(artifacts.ViewHierarchy, "nested-000-hierarchy") || !strings.Contains(artifacts.LogTail, "nested-000-log-tail") || !strings.Contains(artifacts.Notes["screenshot"], "deadline") {
+pkg/executor/duration_consistency_test.go:323:	if artifacts.ScreenshotAfter == "" || artifacts.LogTail == "" || !strings.Contains(artifacts.Notes["hierarchy"], "deadline") {
+pkg/executor/runner.go:191:				// Context cancelled, skip remaining
+pkg/executor/runner.go:192:				results[i] = skipFlow(indexWriter, &flowDetails[i], "run cancelled")
+pkg/executor/tap_options_test.go:110:			return []byte(`<hierarchy>stable</hierarchy>`), nil
+pkg/executor/tap_options_test.go:115:	if string(result) != `<hierarchy>stable</hierarchy>` {
+pkg/executor/tap_options_test.go:129:			// Third call onwards returns stable value
+pkg/executor/tap_options_test.go:130:			return []byte("stable"), nil
+pkg/executor/tap_options_test.go:135:	if string(result) != "stable" {
+pkg/executor/tap_options_test.go:136:		t.Errorf("expected 'stable', got %q", result)
+pkg/executor/tap_options_test.go:306:			return []byte("stable"), nil
+pkg/executor/tap_options_test.go:323:	ctx, cancel := context.WithCancel(context.Background())
+pkg/executor/tap_options_test.go:324:	cancel() // cancel immediately
+pkg/executor/tap_options_test.go:332:		t.Error("expected failure due to context cancellation")
+pkg/executor/tap_options_test.go:357:			return []byte("stable"), nil
+pkg/executor/runner_test.go:57:	return &core.StateSnapshot{AppState: "foreground"}
+pkg/executor/runner_test.go:355:	ctx, cancel := context.WithTimeout(context.Background(), 150*time.Millisecond)
+pkg/executor/runner_test.go:356:	defer cancel()
+pkg/executor/runner_test.go:363:	// Should have been cancelled/skipped
+pkg/executor/runner_test.go:1560:	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+pkg/executor/runner_test.go:1561:	defer cancel()
+pkg/executor/runner_test.go:1568:	// Should be failed or skipped due to cancellation
+pkg/executor/runner_test.go:1570:		t.Errorf("Status should not be passed after cancellation")
+pkg/executor/runner_test.go:1854:	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+pkg/executor/runner_test.go:1855:	defer cancel()
+pkg/executor/runner_test.go:1862:	// Should be failed due to cancellation
+pkg/executor/runner_test.go:1864:		t.Errorf("Status should not be passed after cancellation")
+pkg/executor/runner_test.go:2285:	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+pkg/executor/runner_test.go:2286:	defer cancel()
+pkg/executor/runner_test.go:2293:	// Should fail due to cancellation
+pkg/executor/runner_test.go:2295:		t.Errorf("Status should not be passed after cancellation")
+pkg/executor/runner_test.go:2865:	img := image.NewRGBA(image.Rect(0, 0, w, h))
+pkg/executor/runner_test.go:2885:	img := image.NewRGBA(image.Rect(0, 0, len(pixels), 1))
+pkg/uiautomator2/request_deadline_test.go:40:func deadlineClient(srv *httptest.Server) *Client {
+pkg/uiautomator2/request_deadline_test.go:54:	c := deadlineClient(slowActionsServer(t, 12*time.Second))
+pkg/uiautomator2/request_deadline_test.go:55:	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+pkg/uiautomator2/request_deadline_test.go:56:	defer cancel()
+pkg/uiautomator2/request_deadline_test.go:64:// L01: a request that is never answered fails at the step's deadline, not at
+pkg/uiautomator2/request_deadline_test.go:71:	c := deadlineClient(slowActionsServer(t, -1))
+pkg/uiautomator2/request_deadline_test.go:72:	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+pkg/uiautomator2/request_deadline_test.go:73:	defer cancel()
+pkg/uiautomator2/request_deadline_test.go:82:		t.Fatalf("failed after %v, want at the 12 s step deadline", elapsed)
+pkg/uiautomator2/request_deadline_test.go:96:// Without a step deadline a request keeps the default per-request timeout.
+pkg/uiautomator2/request_deadline_test.go:98:	c := deadlineClient(slowActionsServer(t, -1))
+pkg/uiautomator2/request_deadline_test.go:109:// A step deadline shorter than the default never cuts a request below the
+pkg/uiautomator2/request_deadline_test.go:110:// default: the step deadline extends a request, it does not shorten it.
+pkg/uiautomator2/request_deadline_test.go:112:	c := deadlineClient(slowActionsServer(t, 400*time.Millisecond))
+pkg/uiautomator2/request_deadline_test.go:114:	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+pkg/uiautomator2/request_deadline_test.go:115:	defer cancel()
+pkg/uiautomator2/request_deadline_test.go:122:// Cancelling the request context (not its deadline) aborts the request now:
+pkg/uiautomator2/request_deadline_test.go:125:	c := deadlineClient(slowActionsServer(t, -1))
+pkg/uiautomator2/request_deadline_test.go:126:	ctx, cancel := context.WithCancel(context.Background())
+pkg/uiautomator2/request_deadline_test.go:127:	time.AfterFunc(100*time.Millisecond, cancel)
+pkg/uiautomator2/request_deadline_test.go:134:		t.Fatalf("cancel took %v to abort the request", elapsed)
+pkg/uiautomator2/request_deadline_test.go:140:	cancelled := make(chan struct{})
+pkg/uiautomator2/request_deadline_test.go:144:		close(cancelled)
+pkg/uiautomator2/request_deadline_test.go:148:	c := deadlineClient(srv)
+pkg/uiautomator2/request_deadline_test.go:150:	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Millisecond)
+pkg/uiautomator2/request_deadline_test.go:151:	defer cancel()
+pkg/uiautomator2/request_deadline_test.go:155:		t.Fatalf("err = %v, want context deadline exceeded", err)
+pkg/uiautomator2/request_deadline_test.go:158:		t.Fatalf("hard deadline returned after %v, want the 60ms operation bound", elapsed)
+pkg/uiautomator2/request_deadline_test.go:166:	case <-cancelled:
+pkg/uiautomator2/request_deadline_test.go:168:		t.Fatal("server did not observe hard request cancellation")
+pkg/executor/flow_runner.go:71:	// Set parent context on driver so element-finding respects cancellation
+pkg/executor/flow_runner.go:284:		// Check context cancellation
+pkg/executor/flow_runner.go:288:			flowError = "execution cancelled"
+pkg/executor/flow_runner.go:630:	// cancellation so Ctrl-C during a long wait stops the run promptly.
+pkg/executor/flow_runner.go:804:	deadline := time.Now().Add(screenshotSettleTimeout)
+pkg/executor/flow_runner.go:815:	for time.Now().Before(deadline) {
+pkg/executor/flow_runner.go:937:			// A cropped baseline is only ever as stable as the element's
+pkg/executor/flow_runner.go:1132:				Message: "Repeat cancelled",
+pkg/executor/flow_runner.go:1241:				Message: "Retry cancelled",
+pkg/executor/flow_runner.go:1286:		ctx, cancel := context.WithTimeout(fr.ctx, timeout)
+pkg/executor/flow_runner.go:1287:		defer cancel()
+pkg/executor/flow_runner.go:1376:		ctx, cancel := context.WithTimeout(fr.ctx, timeout)
+pkg/executor/flow_runner.go:1377:		defer cancel()
+pkg/executor/flow_runner.go:1478:// enrichTimeoutError replaces cryptic "context deadline exceeded" in sub-step errors
+pkg/executor/flow_runner.go:1489:		cleaned := strings.ReplaceAll(orig, "context deadline exceeded", reason)
+pkg/executor/flow_runner.go:1498:		enriched.Message = strings.ReplaceAll(enriched.Message, "context deadline exceeded", reason)
+pkg/executor/flow_runner.go:1848:			msg := "Sub-flow cancelled"
+pkg/executor/flow_runner.go:1850:				msg = fmt.Sprintf("Sub-flow cancelled after: %s", lastStepDesc)
+pkg/executor/flow_runner.go:1901:				Message: "Retry cancelled",
+pkg/executor/flow_runner.go:1929:	// Legacy drivers have no cancellation contract; run synchronously rather
+pkg/executor/flow_runner.go:1958:// stop its underlying request/child and return when its context is cancelled.
+pkg/executor/flow_runner.go:1971:	ctx, cancel := context.WithTimeout(parent, 2*time.Second)
+pkg/executor/flow_runner.go:1972:	defer cancel()
+pkg/executor/flow_runner.go:1996:	// Drain every result, including cancellation acknowledgements. Never return
+pkg/executor/flow_runner.go:2094:// context so a cancelled run (Ctrl-C) stops the wait immediately instead of
+pkg/maestro/adapter.go:78:		uiautomator2.ElementRect{
+pkg/maestro/adapter.go:321:func (a *Adapter) ScrollInArea(area uiautomator2.RectModel, direction string, percent float64, speed int) error {
+pkg/maestro/adapter.go:335:func (a *Adapter) SwipeInArea(area uiautomator2.RectModel, direction string, percent float64, speed int) error {
+pkg/maestro/adapter.go:546:// ForceStop force-stops an app on-device via the driver (no USB roundtrip).
+pkg/maestro/adapter.go:602:// event fires (window is stable). Mirrors Maestro's isWindowUpdating.
+pkg/flutter/vmservice_test.go:128: Rect.fromLTRB(0.0, 0.0, 411.4, 890.3)
+pkg/flutter/vmservice_test.go:261:	ctx, cancel := context.WithCancel(context.Background())
+pkg/flutter/vmservice_test.go:262:	defer cancel()
+pkg/flutter/vmservice_test.go:273:		cancel: cancel,
+pkg/executor/crash_classify_test.go:40:		{fmt.Errorf("context deadline exceeded"), "Element not visible: text='x'", "assertion"},
+pkg/executor/crash_classify_test.go:55:		{"Element not visible: text='Landmarks' (cause: context deadline exceeded: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)", "app_crash"},
+pkg/maestro/client.go:44:	cancel context.CancelFunc
+pkg/maestro/client.go:91:	c.ctx, c.cancel = context.WithCancel(context.Background())
+pkg/maestro/client.go:115:		c.cancel()
+pkg/maestro/client.go:261:	if c.cancel != nil {
+pkg/maestro/client.go:262:		c.cancel()
+pkg/core/driver_test.go:117:		AppState:        "foreground",
+pkg/core/driver_test.go:128:	if state.AppState != "foreground" {
+pkg/core/driver_test.go:129:		t.Errorf("AppState = %s, want foreground", state.AppState)
+pkg/maestro/adapter_test.go:57:	rect, err := elem.Rect()
+pkg/maestro/adapter_test.go:185:	area := uiautomator2.RectModel{Left: 0, Top: 0, Width: 1080, Height: 1920}
+pkg/maestro/adapter_test.go:200:	area := uiautomator2.RectModel{Left: 0, Top: 0, Width: 1080, Height: 1920}
+pkg/core/process.go:13:	deadline := time.Now().Add(timeout)
+pkg/core/process.go:19:		if time.Now().After(deadline) {
+pkg/uiautomator2/gestures_test.go:153:		// NewRect(0, 100, 500, 800) creates Left=0, Top=100, Width=500, Height=800
+pkg/uiautomator2/gestures_test.go:167:	area := NewRect(0, 100, 500, 800)
+pkg/uiautomator2/gestures_test.go:211:		// NewRect(10, 20, 100, 200) creates Left=10, Top=20, Width=100, Height=200
+pkg/uiautomator2/gestures_test.go:222:	area := NewRect(10, 20, 100, 200)
+pkg/flutter/semantics.go:16:	Rect       Rect
+pkg/flutter/semantics.go:26:// Rect represents a rectangle in logical pixels (LTRB format).
+pkg/flutter/semantics.go:27:type Rect struct {
+pkg/flutter/semantics.go:31:// ToBounds converts a logical-pixel Rect to physical-pixel core.Bounds using the pixel ratio.
+pkg/flutter/semantics.go:32:func (r Rect) ToBounds(pixelRatio float64) core.Bounds {
+pkg/flutter/semantics.go:43:	reRect       = regexp.MustCompile(`Rect\.fromLTRB\(\s*([\d.]+),\s*([\d.]+),\s*([\d.]+),\s*([\d.]+)\s*\)`)
+pkg/flutter/semantics.go:129:		rootRect := entries[0].node.Rect
+pkg/flutter/semantics.go:130:		childRect := entries[1].node.Rect
+pkg/flutter/semantics.go:131:		if rootRect.Left == 0 && rootRect.Top == 0 && rootRect.Right > 0 &&
+pkg/flutter/semantics.go:132:			childRect.Left == 0 && childRect.Top == 0 && childRect.Right > 0 {
+pkg/flutter/semantics.go:133:			computed := rootRect.Right / childRect.Right
+pkg/flutter/semantics.go:146:	if m := reRect.FindStringSubmatch(block); m != nil {
+pkg/flutter/semantics.go:147:		node.Rect.Left, _ = strconv.ParseFloat(m[1], 64)
+pkg/flutter/semantics.go:148:		node.Rect.Top, _ = strconv.ParseFloat(m[2], 64)
+pkg/flutter/semantics.go:149:		node.Rect.Right, _ = strconv.ParseFloat(m[3], 64)
+pkg/flutter/semantics.go:150:		node.Rect.Bottom, _ = strconv.ParseFloat(m[4], 64)
+pkg/uiautomator2/types.go:59:// ElementRect represents element bounds from /element/{id}/rect API.
+pkg/uiautomator2/types.go:61:type ElementRect struct {
+pkg/uiautomator2/types.go:68:// RectModel represents a rectangle for scroll/swipe area operations.
+pkg/uiautomator2/types.go:70:type RectModel struct {
+pkg/uiautomator2/types.go:77:// NewRect creates a RectModel from x, y, width, height values.
+pkg/uiautomator2/types.go:78:func NewRect(x, y, width, height int) RectModel {
+pkg/uiautomator2/types.go:79:	return RectModel{
+pkg/uiautomator2/types.go:93:// LongClickRequest for long press gestures.
+pkg/uiautomator2/types.go:103:	Area      *RectModel    `json:"area,omitempty"`
+pkg/uiautomator2/types.go:112:	Area      *RectModel    `json:"area,omitempty"`
+pkg/device/devicelab_driver_test.go:118:	// What a force-stopped driver's `am instrument -w` prints — the tail
+pkg/device/devicelab_driver_test.go:157:			// The bug: the previous run's force-stop result, still in the
+pkg/driver/devicelab_ios_legacy/wedged_test.go:61:		{"timeouts that came back fast (the flow's own deadline)", []func(*Driver){
+pkg/uiautomator2/element_stale_text_test.go:11:	e := NewCachedElement("e1", cached, ElementRect{Width: 100, Height: 40})
+pkg/uiautomator2/element_stale_text_test.go:88:			e := NewCachedElement("e1", "before", ElementRect{})
+pkg/uiautomator2/element_stale_text_test.go:106:	e := NewCachedElement("e1", "cached", ElementRect{})
+pkg/uiautomator2/context_requests_test.go:27:	c := deadlineClient(heldServer(t))
+pkg/uiautomator2/context_requests_test.go:28:	ctx, cancel := context.WithCancel(context.Background())
+pkg/uiautomator2/context_requests_test.go:29:	time.AfterFunc(200*time.Millisecond, cancel)
+pkg/uiautomator2/context_requests_test.go:32:		t.Fatal("a cancelled page-source request succeeded")
+pkg/uiautomator2/context_requests_test.go:35:		t.Fatalf("cancel took %v to abort the request", elapsed)
+pkg/uiautomator2/context_requests_test.go:41:	c := deadlineClient(heldServer(t))
+pkg/uiautomator2/context_requests_test.go:42:	ctx, cancel := context.WithCancel(context.Background())
+pkg/uiautomator2/context_requests_test.go:43:	time.AfterFunc(200*time.Millisecond, cancel)
+pkg/uiautomator2/context_requests_test.go:46:		t.Fatal("a cancelled focused-element lookup succeeded")
+pkg/uiautomator2/context_requests_test.go:49:		t.Fatalf("cancel took %v to abort the request", elapsed)
+pkg/uiautomator2/context_requests_test.go:57:	ctx, cancel := context.WithCancel(context.Background())
+pkg/uiautomator2/context_requests_test.go:58:	defer cancel()
+pkg/uiautomator2/context_requests_test.go:75:	client := deadlineClient(srv)
+pkg/uiautomator2/context_requests_test.go:80:		t.Fatal("client lacks cancellable screenshot")
+pkg/uiautomator2/context_requests_test.go:82:	ctx, cancel := context.WithCancel(context.Background())
+pkg/uiautomator2/context_requests_test.go:83:	defer cancel()
+pkg/uiautomator2/context_requests_test.go:91:	cancel()
+pkg/uiautomator2/context_requests_test.go:95:			t.Fatal("cancelled request succeeded")
+pkg/core/screenshot.go:40:	imgRect := img.Bounds()
+pkg/core/screenshot.go:41:	imgW, imgH := imgRect.Dx(), imgRect.Dy()
+pkg/core/screenshot.go:55:	// stable across sub-pixel drift.
+pkg/core/screenshot.go:82:	cropRect := image.Rect(imgRect.Min.X+x, imgRect.Min.Y+y, imgRect.Min.X+x+w, imgRect.Min.Y+y+h)
+pkg/core/screenshot.go:84:		SubImage(r image.Rectangle) image.Image
+pkg/core/screenshot.go:89:	cropped := subImager.SubImage(cropRect)
+pkg/uiautomator2/element.go:19:	cachedRect *ElementRect
+pkg/uiautomator2/element.go:39:func NewCachedElement(id string, text string, rect ElementRect) *Element {
+pkg/uiautomator2/element.go:43:		cachedRect: &rect,
+pkg/uiautomator2/element.go:83:// cancelling ctx aborts the lookup in flight, as an element wait does when
+pkg/uiautomator2/element.go:132:// context: cancelling ctx aborts the lookup in flight.
+pkg/uiautomator2/element.go:191:// ActiveElementCtx is ActiveElement sent under ctx: cancelling ctx aborts the lookup in flight, so a caller can give
+pkg/uiautomator2/element.go:358:// Rect returns the element's bounds.
+pkg/uiautomator2/element.go:359:func (e *Element) Rect() (ElementRect, error) {
+pkg/uiautomator2/element.go:364:	return e.RectCtx(ctx)
+pkg/uiautomator2/element.go:367:// RectCtx reads element bounds under ctx.
+pkg/uiautomator2/element.go:368:func (e *Element) RectCtx(ctx context.Context) (ElementRect, error) {
+pkg/uiautomator2/element.go:373:		return ElementRect{}, err
+pkg/uiautomator2/element.go:375:	if e.cachedRect != nil {
+pkg/uiautomator2/element.go:376:		return *e.cachedRect, nil
+pkg/uiautomator2/element.go:381:		return ElementRect{}, err
+pkg/uiautomator2/element.go:385:		Value ElementRect `json:"value"`
+pkg/uiautomator2/element.go:388:		return ElementRect{}, err
+pkg/core/screenshot_test.go:14:	img := image.NewRGBA(image.Rect(0, 0, w, h))
+pkg/report/flow_test.go:555:	input := []byte(`{"screenshotAfter":"assets/flow-000/cmd-000-after.png","viewHierarchy":"assets/flow-000/cmd-000-hierarchy.xml","logTail":"assets/flow-000/cmd-000-log-tail.txt","notes":{"screenshot":"context deadline exceeded"}}`)
+pkg/flutter/semantics_test.go:9: │ Rect.fromLTRB(0.0, 0.0, 411.4, 890.3)
+pkg/flutter/semantics_test.go:15: │ │ Rect.fromLTRB(0.0, 0.0, 411.4, 890.3)
+pkg/flutter/semantics_test.go:19: │ │   Rect.fromLTRB(16.0, 100.0, 395.4, 140.0)
+pkg/flutter/semantics_test.go:24: │ │   Rect.fromLTRB(16.0, 160.0, 395.4, 200.0)
+pkg/flutter/semantics_test.go:31: │     Rect.fromLTRB(16.0, 220.0, 395.4, 268.0)
+pkg/flutter/semantics_test.go:38:     Rect.fromLTRB(0.0, 800.0, 411.4, 890.3)
+pkg/flutter/semantics_test.go:137: Rect.fromLTRB(0.0, 0.0, 400.0, 800.0)
+pkg/flutter/semantics_test.go:209:func TestRectToBounds(t *testing.T) {
+pkg/flutter/semantics_test.go:210:	r := Rect{Left: 16.0, Top: 100.0, Right: 395.4, Bottom: 140.0}
+pkg/flutter/semantics_test.go:233: │ Rect.fromLTRB(0.0, 0.0, 1080.0, 2274.0)
+pkg/flutter/semantics_test.go:237:   │ Rect.fromLTRB(16.0, 185.5, 376.7, 397.5)
+pkg/flutter/semantics_test.go:241:     │ Rect.fromLTRB(0.0, 0.0, 360.7, 212.0)
+pkg/flutter/semantics_test.go:250:         Rect.fromLTRB(176.1, 144.0, 265.3, 192.0)
+pkg/flutter/semantics_test.go:292: │ Rect.fromLTRB(0.0, 0.0, 1080.0, 2274.0)
+pkg/flutter/semantics_test.go:295:   │ Rect.fromLTRB(0.0, 0.0, 392.7, 826.9) scaled by 2.8x
+pkg/flutter/semantics_test.go:299:       Rect.fromLTRB(24.0, 193.5, 368.7, 256.0)
+pkg/flutter/semantics_test.go:338:func TestRectToBounds_PixelRatio1(t *testing.T) {
+pkg/flutter/semantics_test.go:339:	r := Rect{Left: 10.0, Top: 20.0, Right: 110.0, Bottom: 70.0}
+pkg/device/devicelab_driver.go:141:			_, _ = d.Shell("am force-stop " + pkg)
+pkg/device/devicelab_driver.go:158:				_, _ = d.Shell("am force-stop " + pkg)
+pkg/device/devicelab_driver.go:187://   - The previous run. Every run ends with a force-stop, whose `am
+pkg/device/devicelab_driver.go:193://     that same result asynchronously after the force-stop, through a
+pkg/device/devicelab_driver.go:254:// is testable without a device.
+pkg/device/devicelab_driver.go:356:	if _, err := d.Shell("am force-stop " + DeviceLabDriverServer); err != nil {
+pkg/device/devicelab_driver.go:357:		logger.Warn("failed to force-stop %s: %v", DeviceLabDriverServer, err)
+pkg/device/devicelab_driver.go:359:	if _, err := d.Shell("am force-stop " + DeviceLabDriverTest); err != nil {
+pkg/device/devicelab_driver.go:360:		logger.Warn("failed to force-stop %s: %v", DeviceLabDriverTest, err)
+pkg/device/devicelab_driver.go:415:	deadline := time.Now().Add(timeout)
+pkg/device/devicelab_driver.go:417:	for time.Now().Before(deadline) {
+pkg/uiautomator2/client.go:34:	// retryDeadline caps retrying at the running step's deadline (zero =
+pkg/uiautomator2/client.go:40:	// is sent under it, so the step's deadline rather than a fixed timeout
+pkg/uiautomator2/client.go:49:// has no deadline, and the least it is given when the step has less time
+pkg/uiautomator2/client.go:50:// left. A step whose deadline is further away lets the request run to it.
+pkg/uiautomator2/client.go:62:		// No client-wide timeout: each request carries its own deadline
+pkg/uiautomator2/client.go:112:// normally the running step's: its deadline, when further away than
+pkg/uiautomator2/client.go:113:// DefaultRequestTimeout, becomes the request's, and cancelling it aborts a
+pkg/uiautomator2/client.go:122:// requests run with no step deadline.
+pkg/uiautomator2/client.go:130:// DefaultRequestTimeout); a step deadline further away still extends it.
+pkg/uiautomator2/element_test.go:34:	expired, cancel := context.WithDeadline(context.Background(), time.Now().Add(-time.Second))
+pkg/uiautomator2/element_test.go:35:	defer cancel()
+pkg/uiautomator2/element_test.go:38:		t.Fatalf("Text() = %q, %v; expired soft deadline must retain the request floor", text, err)
+pkg/uiautomator2/element_test.go:41:		t.Fatalf("Attribute() = %q, %v; expired soft deadline must retain the request floor", clickable, err)
+pkg/uiautomator2/element_test.go:43:	if rect, err := elem.Rect(); err != nil || rect != (ElementRect{X: 1, Y: 2, Width: 3, Height: 4}) {
+pkg/uiautomator2/element_test.go:44:		t.Fatalf("Rect() = %+v, %v; expired soft deadline must retain the request floor", rect, err)
+pkg/uiautomator2/element_test.go:324:func TestElementRect(t *testing.T) {
+pkg/uiautomator2/element_test.go:341:	rect, err := elem.Rect()
+pkg/uiautomator2/element_test.go:528:func TestElementRectUnmarshalError(t *testing.T) {
+pkg/uiautomator2/element_test.go:537:	_, err := elem.Rect()
+pkg/uiautomator2/element_test.go:624:func TestElementRectRequestError(t *testing.T) {
+pkg/uiautomator2/element_test.go:627:	_, err := elem.Rect()
+pkg/uiautomator2/transport.go:58:// DefaultRequestTimeout when that is shorter or there is no step deadline.
+pkg/uiautomator2/transport.go:78:// HardDeadlineContext marks an operation whose own deadline must abort the
+pkg/uiautomator2/transport.go:79:// HTTP request. Ordinary step deadlines are soft: they extend a slow healthy
+pkg/uiautomator2/transport.go:94:// deadline. The named wrapper keeps failure-capture call sites explicit.
+pkg/uiautomator2/transport.go:100:// it is cancelled when parent is cancelled, and times out at parent's
+pkg/uiautomator2/transport.go:101:// deadline or after the client's request timeout, whichever is later. A step
+pkg/uiautomator2/transport.go:102:// deadline therefore extends a request, never cuts it below the default.
+pkg/uiautomator2/transport.go:114:		ctx, cancel := context.WithTimeout(parent, timeout)
+pkg/uiautomator2/transport.go:115:		if deadline, ok := ctx.Deadline(); ok {
+pkg/uiautomator2/transport.go:116:			timeout = max(time.Until(deadline), 0)
+pkg/uiautomator2/transport.go:118:		return ctx, timeout, cancel
+pkg/uiautomator2/transport.go:120:	ctx, cancel := context.WithTimeout(context.WithoutCancel(parent), timeout)
+pkg/uiautomator2/transport.go:123:			cancel()
+pkg/uiautomator2/transport.go:126:	return ctx, timeout, func() { stop(); cancel() }
+pkg/uiautomator2/transport.go:130:// cancelled meanwhile. A parent that only passes its deadline does not cut
+pkg/uiautomator2/transport.go:165:// SetRetryDeadline caps retrying at the current step's deadline, so a step
+pkg/uiautomator2/transport.go:168:func (c *Client) SetRetryDeadline(deadline time.Time) {
+pkg/uiautomator2/transport.go:170:	c.retryDeadline = deadline
+pkg/uiautomator2/transport.go:174:// retryBudgetNow is the retry budget, capped at the step deadline when one is
+pkg/uiautomator2/transport.go:178:	deadline := c.retryDeadline
+pkg/uiautomator2/transport.go:181:	if !deadline.IsZero() {
+pkg/uiautomator2/transport.go:182:		if left := time.Until(deadline); left < budget {
+pkg/uiautomator2/transport.go:251:		ctx, timeout, cancel := c.requestDeadline(parent)
+pkg/uiautomator2/transport.go:254:			cancel()
+pkg/uiautomator2/transport.go:261:		cancel()
+pkg/core/driver.go:40:	// external cancellation (e.g. runFlow timeout) can interrupt them.
+pkg/core/driver.go:196:	AppState        string       `json:"appState,omitempty"`        // foreground, background, not_running
+pkg/core/driver.go:251:// to handle app lifecycle operations (force-stop, clear data) on-device
+pkg/core/rotation.go:28:	deadline := time.Now().Add(timeout)
+pkg/core/rotation.go:42:		if time.Now().After(deadline) {
+pkg/driver/devicelab_ios_legacy/driver.go:76:	// deadline; see noteRunnerTimeout.
+pkg/driver/devicelab_ios_legacy/driver.go:129:// runner that is connected but hung makes a call wait out its whole deadline
+pkg/driver/devicelab_ios_legacy/driver.go:140:// after several steps in a row have each waited out their deadline. Any step
+pkg/device/shell_timeout_test.go:15:// ShellTimeout kills an adb call that runs past its deadline and says so;
+pkg/device/shell_timeout_test.go:44:		t.Fatal("device lacks cancellable shell")
+pkg/device/shell_timeout_test.go:54:	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+pkg/device/shell_timeout_test.go:55:	defer cancel()
+pkg/device/shell_timeout_test.go:59:		t.Fatalf("cancel error: %v", err)
+pkg/device/shell_timeout_test.go:62:		t.Fatal("cancellation did not abort child")
+pkg/flutter/wrapper_test.go:133: Rect.fromLTRB(0.0, 0.0, 411.4, 890.3)
+pkg/flutter/wrapper_test.go:136:   Rect.fromLTRB(100.0, 200.0, 300.0, 250.0)
+pkg/flutter/wrapper_test.go:166:	// Center of Rect(100, 200, 300, 250) with pixelRatio 1.0 = (200, 225)
+pkg/flutter/wrapper_test.go:180: Rect.fromLTRB(0.0, 0.0, 400.0, 800.0)
+pkg/flutter/wrapper_test.go:183:   Rect.fromLTRB(10.0, 20.0, 200.0, 60.0)
+pkg/flutter/wrapper_test.go:228: Rect.fromLTRB(0.0, 0.0, 400.0, 800.0)
+pkg/flutter/wrapper_test.go:231:   Rect.fromLTRB(50.0, 100.0, 150.0, 140.0)
+pkg/flutter/wrapper_test.go:271:				return core.SuccessResult("long pressed", nil)
+pkg/flutter/wrapper_test.go:278: Rect.fromLTRB(0.0, 0.0, 400.0, 800.0)
+pkg/flutter/wrapper_test.go:281:   Rect.fromLTRB(50.0, 100.0, 150.0, 140.0)
+pkg/flutter/wrapper_test.go:327: Rect.fromLTRB(0.0, 0.0, 400.0, 800.0)
+pkg/flutter/wrapper_test.go:330:   Rect.fromLTRB(10.0, 20.0, 110.0, 70.0)
+pkg/flutter/wrapper_test.go:355:	// Verify it tapped at the center of Rect(10, 20, 110, 70) = (60, 45)
+pkg/flutter/wrapper_test.go:398: Rect.fromLTRB(0.0, 0.0, 400.0, 800.0)
+pkg/flutter/wrapper_test.go:401:   Rect.fromLTRB(24.0, 213.5, 368.7, 269.5)
+pkg/flutter/wrapper_test.go:447: Rect.fromLTRB(0.0, 0.0, 400.0, 800.0)
+pkg/flutter/wrapper_test.go:450:   Rect.fromLTRB(0.0, 0.0, 360.7, 212.0)
+pkg/flutter/wrapper_test.go:496: Rect.fromLTRB(0.0, 0.0, 400.0, 800.0)
+pkg/flutter/wrapper_test.go:590:			result: core.ErrorResult(fmt.Errorf("context deadline exceeded: no such element: An element could not be located"), ""),
+pkg/flutter/wrapper_test.go:600:			result: &core.CommandResult{Error: fmt.Errorf("context deadline exceeded"), Message: "Element not visible: timeout"},
+pkg/flutter/wrapper_test.go:681: Rect.fromLTRB(0.0, 0.0, 1080.0, 2340.0)
+pkg/flutter/wrapper_test.go:684:   Rect.fromLTRB(0.0, 0.0, 392.7, 850.9)
+pkg/flutter/wrapper_test.go:686:     Rect.fromLTRB(0.0, 800.0, 392.7, 850.9)
+pkg/driver/devicelab_ios_legacy/assertcount_test.go:40:		Rect:       SnapshotRect{X: 0, Y: 0, Width: 100, Height: 40},
+pkg/driver/devicelab_ios_legacy/assertcount_test.go:120:		{Type: "Cell", Identifier: "c", Rect: SnapshotRect{Width: 10}}, // zero height
+pkg/driver/devicelab_ios_legacy/assertcount_test.go:121:		{Type: "Cell", Identifier: "d", Rect: SnapshotRect{Width: 1, Height: 1}},
+pkg/driver/devicelab_ios_legacy/assertcount_test.go:138:		rect SnapshotRect
+pkg/driver/devicelab_ios_legacy/assertcount_test.go:141:		{"fully on screen", SnapshotRect{X: 10, Y: 10, Width: 100, Height: 40}, true},
+pkg/driver/devicelab_ios_legacy/assertcount_test.go:142:		{"parked off the right edge", SnapshotRect{X: 414, Y: 866, Width: 102, Height: 20}, false},
+pkg/driver/devicelab_ios_legacy/assertcount_test.go:143:		{"below the fold", SnapshotRect{X: 0, Y: 1200, Width: 100, Height: 40}, false},
+pkg/driver/devicelab_ios_legacy/assertcount_test.go:144:		{"20% peeking in", SnapshotRect{X: 0, Y: 792, Width: 100, Height: 40}, true},
+pkg/driver/devicelab_ios_legacy/assertcount_test.go:145:		{"5% peeking in", SnapshotRect{X: 0, Y: 798, Width: 100, Height: 40}, false},
+pkg/driver/devicelab_ios_legacy/assertcount_test.go:146:		{"zero size", SnapshotRect{X: 10, Y: 10}, false},
+pkg/driver/devicelab_ios_legacy/assertcount_test.go:148:		n := &SnapshotNode{Rect: tc.rect}
+pkg/uiautomator2/transport_retry_test.go:104:	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+pkg/uiautomator2/transport_retry_test.go:105:	defer cancel()
+pkg/uiautomator2/transport_retry_test.go:248:		t.Errorf("retried for %v past a 300ms step deadline", elapsed)
+pkg/uiautomator2/transport_retry_test.go:251:	// Clearing the deadline restores the full budget's retries.
+pkg/uiautomator2/transport_retry_test.go:257:		t.Errorf("gave up after %v with no deadline, want about the 400ms budget", elapsed)
+pkg/uiautomator2/transport_retry_test.go:274:		{errors.New("context deadline exceeded"), false},
+pkg/report/junit.go:150:	// so the XML is stable across runs.
+pkg/uiautomator2/gestures.go:32:// LongClick performs a long press at coordinates.
+pkg/uiautomator2/gestures.go:42:// LongClickCtx performs a long press under ctx.
+pkg/uiautomator2/gestures.go:52:// LongClickElement performs a long press on an element.
+pkg/uiautomator2/gestures.go:101:	rect, err := (&Element{id: elementID, client: c}).Rect()
+pkg/uiautomator2/gestures.go:138:func (c *Client) SwipeInArea(area RectModel, direction string, percent float64, speed int) error {
+pkg/uiautomator2/gestures.go:162:func (c *Client) ScrollInArea(area RectModel, direction string, percent float64, speed int) error {
+pkg/uiautomator2/gestures.go:190:// item after a long press. The move is split into small steps because drop
+pkg/core/androidexit.go:146:// with. A force-stop, a clean exit, or the user swiping the app away is the
+pkg/core/keyboard.go:17:// pure, shared, testable timing structure. Returns blocked=false immediately
+pkg/core/keyboard.go:27:	deadline := time.Now().Add(window)
+pkg/core/keyboard.go:50:		if !time.Now().Before(deadline) {
+pkg/uiautomator2/device.go:155:// ScreenshotCtx aborts the screenshot HTTP request when ctx is cancelled.
+pkg/uiautomator2/device.go:180:// SourceCtx is Source sent under ctx: cancelling
+pkg/flutter/vmservice.go:26:	cancel    context.CancelFunc
+pkg/flutter/vmservice.go:53:	ctx, cancel := context.WithCancel(context.Background())
+pkg/flutter/vmservice.go:60:		cancel()
+pkg/flutter/vmservice.go:70:		cancel: cancel,
+pkg/flutter/vmservice.go:76:		cancel()
+pkg/flutter/vmservice.go:86:	ctx, cancel := context.WithCancel(context.Background())
+pkg/flutter/vmservice.go:105:		cancel()
+pkg/flutter/vmservice.go:114:		cancel: cancel,
+pkg/flutter/vmservice.go:119:		cancel()
+pkg/flutter/vmservice.go:131:	c.cancel()
+pkg/flutter/vmservice.go:235:	ctx, cancel := context.WithTimeout(c.ctx, requestTimeout)
+pkg/flutter/vmservice.go:236:	defer cancel()
+pkg/flutter/wrapper.go:168:	deadline := time.Now().Add(time.Duration(effectiveTimeout) * time.Millisecond)
+pkg/flutter/wrapper.go:171:	for time.Now().Before(deadline) {
+pkg/flutter/wrapper.go:172:		// Check if parent context (e.g. runFlow timeout) was cancelled
+pkg/flutter/wrapper.go:209:				remaining := int(time.Until(deadline).Milliseconds())
+pkg/flutter/wrapper.go:253:// element is found, the context is cancelled, or the timeout expires.
+pkg/flutter/wrapper.go:317:	// Flutter's Rect is already in logical pixels, so skip the pixelRatio scaling.
+pkg/flutter/wrapper.go:355:	bounds := node.Rect.ToBounds(pixelRatio)
+pkg/flutter/wrapper.go:508:		rightEdge := int(fr.node.Rect.Right * fr.pixelRatio)
+pkg/driver/devicelab_ios_legacy/client.go:27:	// callTimeout bounds a call whose context carries no deadline (see
+pkg/driver/devicelab_ios_legacy/client.go:71:// DefaultCallTimeout bounds a runner call whose context has no deadline. The
+pkg/driver/devicelab_ios_legacy/client.go:84:// deadline (e.g. an embedder wrapping calls in context.WithoutCancel). A
+pkg/driver/devicelab_ios_legacy/client.go:85:// context deadline, when present, always wins — the driver passes its own
+pkg/driver/devicelab_ios_legacy/client.go:86:// per-command deadlines, some longer than the default. d <= 0 restores
+pkg/driver/devicelab_ios_legacy/client.go:95:// CallTimeout reports the bound applied to deadline-less calls.
+pkg/driver/devicelab_ios_legacy/client.go:101:// caller's own deadline if it has one, else the client's call timeout.
+pkg/driver/devicelab_ios_legacy/client.go:231:// A request aborted by its own context (caller cancelled, or its deadline
+pkg/driver/devicelab_ios_legacy/client.go:295:	reqCtx, cancel := c.requestContext(ctx)
+pkg/driver/devicelab_ios_legacy/client.go:296:	defer cancel()
+pkg/device/uiautomator.go:266:	if _, err := d.Shell("am force-stop " + UIAutomator2Server); err != nil {
+pkg/device/uiautomator.go:267:		logger.Warn("failed to force-stop %s: %v", UIAutomator2Server, err)
+pkg/device/uiautomator.go:269:	if _, err := d.Shell("am force-stop " + UIAutomator2Test); err != nil {
+pkg/device/uiautomator.go:270:		logger.Warn("failed to force-stop %s: %v", UIAutomator2Test, err)
+pkg/device/uiautomator.go:315:	deadline := time.Now().Add(timeout)
+pkg/device/uiautomator.go:317:	for time.Now().Before(deadline) {
+pkg/driver/devicelab/unix_dialer_test.go:13:// past the dial context's deadline (the WebSocket handshake hung 11 minutes);
+pkg/driver/devicelab/unix_dialer_test.go:14:// once cleared, the connection has no deadline.
+pkg/driver/devicelab/unix_dialer_test.go:36:	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+pkg/driver/devicelab/unix_dialer_test.go:37:	defer cancel()
+pkg/driver/devicelab/unix_dialer_test.go:47:		t.Fatalf("read returned %v after %v; want a deadline error within ~200ms", err, time.Since(start))
+pkg/driver/devicelab/find_first_and_click_test.go:29:	return uiautomator2.NewCachedElement("e", "Save", uiautomator2.ElementRect{X: 0, Y: 1000, Width: 200, Height: 100}), true, "", b.hitIndex, nil
+pkg/flutter/widgettree_test.go:140:				Rect:  Rect{Left: 24.0, Top: 213.5, Right: 368.7, Bottom: 269.5},
+pkg/flutter/widgettree_test.go:146:				Rect:  Rect{Left: 24.0, Top: 285.5, Right: 368.7, Bottom: 333.5},
+pkg/flutter/widgettree_test.go:175:				Rect:       Rect{Left: 0.0, Top: 0.0, Right: 360.7, Bottom: 212.0},
+pkg/flutter/widgettree_test.go:203:				Rect:  Rect{Left: 24.0, Top: 193.5, Right: 368.7, Bottom: 256.0},
+pkg/flutter/widgettree_test.go:234:				Rect:  Rect{Left: 0.0, Top: 0.0, Right: 360.7, Bottom: 212.0},
+pkg/driver/devicelab_ios_legacy/embedded.go:84:// so the hash is stable across processes and changes exactly when the
+pkg/driver/devicelab_ios_legacy/types.go:210:	// first, the app is not in the foreground, TimeoutMs was 0, or the
+pkg/driver/devicelab_ios_legacy/types.go:236:	Rect               SnapshotRect `json:"rect"`
+pkg/driver/devicelab_ios_legacy/types.go:247:// SnapshotRect — element bounds in app coordinate space.
+pkg/driver/devicelab_ios_legacy/types.go:248:type SnapshotRect struct {
+pkg/driver/devicelab_ios_legacy/types.go:284:// keep polling; it only becomes the answer once their deadline passes.
+pkg/device/android.go:228:// cancellation. The serial is always carried into the child command.
+pkg/device/android.go:496:// Plain Shell has no deadline, and a launch fallback once blocked a run
+pkg/device/android.go:556:	deadline := time.Now().Add(timeout)
+pkg/device/android.go:557:	for time.Now().Before(deadline) {
+pkg/driver/devicelab/webview.go:47:	// Cached cross-origin iframe execution contexts (stable uniqueContextIds).
+pkg/driver/devicelab/webview.go:205:	collectCtx, cancel := context.WithTimeout(context.Background(), 700*time.Millisecond)
+pkg/driver/devicelab/webview.go:206:	defer cancel()
+pkg/driver/devicelab/webview.go:223:	// This churns the numeric context ids, so eval targets the stable
+pkg/driver/devicelab/webview.go:270:	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+pkg/driver/devicelab/webview.go:271:	defer cancel()
+pkg/driver/devicelab/webview.go:288:	// inherits it — so every eval on the cached page would start "context deadline
+pkg/driver/devicelab/webview.go:292:	// page.Timeout(iframeEvalTimeout) is the only deadline. The connection is torn
+pkg/driver/devicelab/webview.go:572:    function vis(e){var b=e.getBoundingClientRect(); return b.width>0&&b.height>0&&e.offsetParent!==null;}
+pkg/driver/devicelab/webview.go:580:      for(var j=0;j<all.length;j++){var e=all[j]; if(!vis(e)) continue; if(!matches(e)) continue; if(e.querySelector&&e.querySelector('button,[role="button"],a,input')) continue; var b=e.getBoundingClientRect(); var a=b.width*b.height; if(a<bestArea){best=e;bestArea=a;}}
+pkg/driver/devicelab/webview.go:606:// jsFindControlRect finds the control (or, when !controlsOnly, any element)
+pkg/driver/devicelab/webview.go:612:const jsFindControlRect = `(function(re,controlsOnly){
+pkg/driver/devicelab/webview.go:623:    function vis(e){var b=e.getBoundingClientRect(); return b.width>0&&b.height>0&&e.offsetParent!==null;}
+pkg/driver/devicelab/webview.go:630:      for(var j=0;j<all.length;j++){var e=all[j]; if(!vis(e)) continue; if(!matches(e)) continue; if(e.querySelector&&e.querySelector('button,[role="button"],a,input')) continue; var b=e.getBoundingClientRect(); var a=b.width*b.height; if(a<bestArea){best=e;bestArea=a;}}
+pkg/driver/devicelab/webview.go:639:    var bb=target.getBoundingClientRect();
+pkg/driver/devicelab/webview.go:650:	expr := fmt.Sprintf(jsFindControlRect, string(arg), boolJS(controlsOnly))
+pkg/driver/devicelab/webview.go:1350:	deadline := time.Now().Add(2 * time.Second)
+pkg/driver/devicelab/webview.go:1351:	for time.Now().Before(deadline) {
+pkg/driver/devicelab/webview.go:1385:	// Wrap page with timeout — all downstream Rod calls inherit this deadline.
+pkg/driver/devicelab/webview.go:1738:// DialContext dials the forwarded socket and puts ctx's deadline on the
+pkg/driver/devicelab/webview.go:1741:// deadline, and when the device side never answered, CDP connect blocked for
+pkg/driver/devicelab/webview.go:1750:	if deadline, ok := ctx.Deadline(); ok {
+pkg/driver/devicelab/webview.go:1751:		_ = conn.SetDeadline(deadline)
+pkg/driver/devicelab/webview.go:1757:// clearDeadline removes the handshake deadline from the connection, so a
+pkg/driver/devicelab/webview.go:1805:	deadline := time.Now().Add(timeout)
+pkg/driver/devicelab/webview.go:1806:	for time.Now().Before(deadline) {
+pkg/device/exec_test.go:130:// testable via the exec seam without further mocking of the connect
+pkg/driver/devicelab_ios_legacy/commands.go:219:	ctx, cancel := d.callTimeout()
+pkg/driver/devicelab_ios_legacy/commands.go:220:	defer cancel()
+pkg/driver/devicelab_ios_legacy/commands.go:248:	ctx, cancel := d.callTimeout()
+pkg/driver/devicelab_ios_legacy/commands.go:249:	defer cancel()
+pkg/driver/devicelab_ios_legacy/commands.go:291:	ctx, cancel := d.callTimeout()
+pkg/driver/devicelab_ios_legacy/commands.go:292:	defer cancel()
+pkg/driver/devicelab_ios_legacy/commands.go:387:// deadline passes. The last observed count goes into the failure message —
+pkg/driver/devicelab_ios_legacy/commands.go:390:	deadline := time.Now().Add(time.Duration(d.resolveFindTimeoutMs(s.IsOptional(), s.TimeoutMs)) * time.Millisecond)
+pkg/driver/devicelab_ios_legacy/commands.go:403:		// reported as the cause if it is still failing at the deadline.
+pkg/driver/devicelab_ios_legacy/commands.go:412:		if !time.Now().Before(deadline) {
+pkg/driver/devicelab_ios_legacy/commands.go:437:	deadline := time.Now().Add(time.Duration(d.resolveFindTimeoutMs(s.IsOptional(), s.TimeoutMs)) * time.Millisecond)
+pkg/driver/devicelab_ios_legacy/commands.go:454:		// foreground (stopped, backgrounded, suspended) shows nothing, so
+pkg/driver/devicelab_ios_legacy/commands.go:456:		// failure. A foreground app that failed to answer proves nothing, so
+pkg/driver/devicelab_ios_legacy/commands.go:458:		// deadline. when:/while: notVisible run through here too.
+pkg/driver/devicelab_ios_legacy/commands.go:462:		if !time.Now().Before(deadline) {
+pkg/driver/devicelab_ios_legacy/commands.go:498:			X:      int(node.Rect.X),
+pkg/driver/devicelab_ios_legacy/commands.go:499:			Y:      int(node.Rect.Y),
+pkg/driver/devicelab_ios_legacy/commands.go:500:			Width:  int(node.Rect.Width),
+pkg/driver/devicelab_ios_legacy/commands.go:501:			Height: int(node.Rect.Height),
+pkg/driver/devicelab_ios_legacy/commands.go:519:	ctx, cancel := d.callTimeout()
+pkg/driver/devicelab_ios_legacy/commands.go:520:	defer cancel()
+pkg/driver/devicelab_ios_legacy/commands.go:553:	deadline := time.Now().Add(time.Duration(timeoutMs) * time.Millisecond)
+pkg/driver/devicelab_ios_legacy/commands.go:555:	for time.Until(deadline) > 0 {
+pkg/driver/devicelab_ios_legacy/commands.go:556:		capMs := math.Min(float64(time.Until(deadline).Milliseconds()), settleMaxCapMs)
+pkg/driver/devicelab_ios_legacy/commands.go:597:	ctx, cancel := d.callTimeout()
+pkg/driver/devicelab_ios_legacy/commands.go:598:	defer cancel()
+pkg/driver/devicelab_ios_legacy/commands.go:618:	ctx, cancel := d.callTimeout()
+pkg/driver/devicelab_ios_legacy/commands.go:619:	defer cancel()
+pkg/driver/devicelab_ios_legacy/commands.go:630:	ctx, cancel := d.callTimeout()
+pkg/driver/devicelab_ios_legacy/commands.go:631:	defer cancel()
+pkg/driver/devicelab_ios_legacy/commands.go:687:	ctx, cancel := d.callTimeout()
+pkg/driver/devicelab_ios_legacy/commands.go:688:	defer cancel()
+pkg/driver/devicelab_ios_legacy/commands.go:719:	ctx, cancel := d.callTimeout()
+pkg/driver/devicelab_ios_legacy/commands.go:720:	defer cancel()
+pkg/driver/devicelab_ios_legacy/commands.go:814:	deadline := time.Now().Add(timeout)
+pkg/driver/devicelab_ios_legacy/commands.go:820:	for i := 0; i < maxScrolls && time.Now().Before(deadline); i++ {
+pkg/driver/devicelab_ios_legacy/commands.go:845:		d.settleScreen(settleCapMs(deadline))
+pkg/driver/devicelab_ios_legacy/commands.go:892:		fmt.Fprintf(&sb, "%s|%s|%s|%s|%v\n", n.Type, n.Label, n.Identifier, n.Value, n.Rect)
+pkg/driver/devicelab_ios_legacy/commands.go:901:// settleCapMs is the settle cap, shortened so it never runs past deadline.
+pkg/driver/devicelab_ios_legacy/commands.go:902:func settleCapMs(deadline time.Time) float64 {
+pkg/driver/devicelab_ios_legacy/commands.go:903:	left := time.Until(deadline).Milliseconds()
+pkg/driver/devicelab_ios_legacy/commands.go:917:	ctx, cancel := context.WithTimeout(d.parentContext(), time.Duration(capMs+5000)*time.Millisecond)
+pkg/driver/devicelab_ios_legacy/commands.go:918:	defer cancel()
+pkg/driver/devicelab_ios_legacy/commands.go:939:	ctx, cancel := d.callTimeout()
+pkg/driver/devicelab_ios_legacy/commands.go:940:	defer cancel()
+pkg/driver/devicelab_ios_legacy/commands.go:954:// then waits for the target app to reach foreground state. The wait is
+pkg/driver/devicelab_ios_legacy/commands.go:973:		deadline := time.Now().Add(5 * time.Second)
+pkg/driver/devicelab_ios_legacy/commands.go:974:		for time.Now().Before(deadline) {
+pkg/driver/devicelab_ios_legacy/commands.go:1052:	ctx, cancel := d.callTimeout()
+pkg/driver/devicelab_ios_legacy/commands.go:1053:	defer cancel()
+pkg/driver/devicelab_ios_legacy/commands.go:1097:		if node != nil && node.Rect.Width > 0 {
+pkg/driver/devicelab_ios_legacy/commands.go:1098:			areaX = node.Rect.X
+pkg/driver/devicelab_ios_legacy/commands.go:1099:			areaY = node.Rect.Y
+pkg/driver/devicelab_ios_legacy/commands.go:1100:			areaW = node.Rect.Width
+pkg/driver/devicelab_ios_legacy/commands.go:1101:			areaH = node.Rect.Height
+pkg/driver/devicelab_ios_legacy/commands.go:1179:	deadline := time.Now().Add(timeout)
+pkg/driver/devicelab_ios_legacy/commands.go:1201:			// As in assertNotVisible: an app that is not in the foreground
+pkg/driver/devicelab_ios_legacy/commands.go:1207:		if !time.Now().Before(deadline) {
+pkg/driver/devicelab_ios_legacy/commands.go:1257:	ctx, cancel := d.callTimeout()
+pkg/driver/devicelab_ios_legacy/commands.go:1258:	defer cancel()
+pkg/driver/devicelab_ios_legacy/commands.go:1297:	ctx, cancel := d.callTimeout()
+pkg/driver/devicelab_ios_legacy/commands.go:1298:	defer cancel()
+pkg/driver/devicelab_ios_legacy/commands.go:1329:	deadline := time.Now().Add(time.Duration(d.resolveFindTimeoutMs(optional, stepTimeoutMs)) * time.Millisecond)
+pkg/driver/devicelab_ios_legacy/commands.go:1367:		if !time.Now().Before(deadline) {
+pkg/driver/devicelab_ios_legacy/commands.go:1447:	ctx, cancel := d.callTimeout()
+pkg/driver/devicelab_ios_legacy/commands.go:1448:	defer cancel()
+pkg/driver/devicelab_ios_legacy/commands.go:1518:	ctx, cancel := d.callTimeout()
+pkg/driver/devicelab_ios_legacy/commands.go:1519:	defer cancel()
+pkg/driver/devicelab_ios_legacy/commands.go:1535:	ctx, cancel := d.callTimeout()
+pkg/driver/devicelab_ios_legacy/commands.go:1536:	defer cancel()
+pkg/driver/devicelab_ios_legacy/commands.go:1553:	return n.Rect.X + n.Rect.Width/2, n.Rect.Y + n.Rect.Height/2
+pkg/driver/devicelab_ios_legacy/commands.go:1559:		X:      int(n.Rect.X),
+pkg/driver/devicelab_ios_legacy/commands.go:1560:		Y:      int(n.Rect.Y),
+pkg/driver/devicelab_ios_legacy/commands.go:1561:		Width:  int(n.Rect.Width),
+pkg/driver/devicelab_ios_legacy/commands.go:1562:		Height: int(n.Rect.Height),
+pkg/driver/devicelab_ios_legacy/commands.go:1573:	if point == "" || n.Rect.Width <= 0 || n.Rect.Height <= 0 {
+pkg/driver/devicelab_ios_legacy/commands.go:1577:	dx, dy, err := core.ParsePointCoords(point, int(n.Rect.Width), int(n.Rect.Height))
+pkg/driver/devicelab_ios_legacy/commands.go:1581:	return n.Rect.X + float64(dx), n.Rect.Y + float64(dy), nil
+pkg/driver/devicelab_ios_legacy/commands.go:1590:	if n == nil || n.Rect.Width <= 0 || n.Rect.Height <= 0 {
+pkg/driver/devicelab_ios_legacy/commands.go:1597:	return visibleFraction(n.Rect, w, h) >= minVisibleFraction
+pkg/driver/devicelab_ios_legacy/commands.go:1605:func visibleFraction(r SnapshotRect, w, h int) float64 {
+pkg/driver/devicelab_ios_legacy/commands.go:1677:	ctx, cancel := d.callTimeout()
+pkg/driver/devicelab_ios_legacy/commands.go:1678:	defer cancel()
+pkg/driver/devicelab_ios_legacy/commands.go:1718:	ctx, cancel := d.callTimeout()
+pkg/driver/devicelab_ios_legacy/commands.go:1719:	defer cancel()
+pkg/driver/devicelab_ios_legacy/commands.go:1801:	deadline := time.Now().Add(timeout)
+pkg/driver/devicelab_ios_legacy/commands.go:1810:		if !time.Now().Before(deadline) {
+pkg/core/androidexit_test.go:5:// Verbatim from an emulator on API 34 — a force-stop and a real crash. The
+pkg/core/androidexit_test.go:49:		t.Error("a force-stop is the runner's own doing and must not be reported")
+pkg/core/androidexit_test.go:116:			t.Error("a force-stop must not be reported as an explanation")
+pkg/driver/appium/driver_test.go:220:// TestExecuteLongPressOn tests long press
+pkg/core/imagediff_test.go:15:	img := image.NewRGBA(image.Rect(0, 0, w, h))
+pkg/core/imagediff_test.go:48:	imgA := image.NewRGBA(image.Rect(0, 0, 100, 100))
+pkg/core/imagediff_test.go:132:	img := image.NewRGBA(image.Rect(0, 0, 100, 100))
+pkg/core/imagediff_test.go:209:func TestWriteScreenshotDiff_DrawsRectangleOverlay(t *testing.T) {
+pkg/core/imagediff_test.go:212:	actualImg := image.NewRGBA(image.Rect(0, 0, 80, 80))
+pkg/cloud/saucelabs.go:238:	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+pkg/cloud/saucelabs.go:239:	defer cancel()
+pkg/cloud/saucelabs.go:347:	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+pkg/cloud/saucelabs.go:348:	defer cancel()
+pkg/cloud/saucelabs.go:387:	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+pkg/cloud/saucelabs.go:388:	defer cancel()
+pkg/driver/devicelab_ios_legacy/supervisor_test.go:34:// TestReviveRelaunchIsBounded: a relaunch under a deadline-less context
+pkg/driver/devicelab_ios_legacy/build.go:54:// runnerSourceHash returns a short, stable content hash of the vendored runner
+pkg/driver/devicelab_ios_legacy/build.go:77:	sort.Strings(files) // stable order regardless of filesystem walk order
+pkg/driver/devicelab_ios_legacy/build.go:172:	buildCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+pkg/driver/devicelab_ios_legacy/build.go:173:	defer cancel()
+pkg/driver/devicelab/driver.go:53:	ScrollInArea(area uiautomator2.RectModel, direction string, percent float64, speed int) error
+pkg/driver/devicelab/driver.go:54:	SwipeInArea(area uiautomator2.RectModel, direction string, percent float64, speed int) error
+pkg/driver/devicelab/driver.go:98:	// stayed stable for the full timeout. Mirrors Maestro's isWindowUpdating.
+pkg/driver/devicelab/driver.go:767:	//   - chrome_devtools_remote sockets are only reported when a browser is in the foreground
+pkg/driver/devicelab/driver.go:839:	// The on-device agent already filters chrome sockets by foreground app,
+pkg/driver/devicelab/driver.go:880:	// is actually the foreground app, to avoid connecting to background Chrome.
+pkg/driver/devicelab/driver.go:901:	// Use browser socket only if a browser is actually in the foreground.
+pkg/driver/devicelab/driver.go:931:// isBrowserForeground checks if the foreground app is a known browser.
+pkg/driver/devicelab/driver.go:937:	// dumpsys window displays (SDK 29+) — cheapest way to get foreground activity
+pkg/driver/devicelab/driver.go:971:			if rect, rectErr := active.Rect(); rectErr == nil {
+pkg/driver/devicelab/driver.go:1068:		ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/devicelab/driver.go:1069:		defer cancel()
+pkg/driver/devicelab/driver.go:1087:		ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/devicelab/driver.go:1088:		defer cancel()
+pkg/driver/devicelab/driver.go:1182:	ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/devicelab/driver.go:1183:	defer cancel()
+pkg/driver/devicelab/driver.go:1188:// findElementWithContext finds an element using context for deadline management.
+pkg/driver/devicelab/driver.go:1225:	// Single polling loop with context deadline
+pkg/driver/devicelab/driver.go:1413:	if rect, err := elem.Rect(); err == nil {
+pkg/driver/devicelab/driver.go:2011:// This runs after SortClickableFirst, which is a stable partition: it moves the
+pkg/driver/devicelab/driver.go:2098:	deadline := start.Add(d.calculateTimeout(optional, stepTimeoutMs))
+pkg/driver/devicelab/driver.go:2110:	for time.Now().Before(deadline) {
+pkg/core/imagediff.go:198:	diffRectangleLineWidth = 4
+pkg/core/imagediff.go:199:	diffMinimalRectSize    = 40
+pkg/core/imagediff.go:203:type diffRect struct {
+pkg/core/imagediff.go:235:	rects := mergeDiffRects(diffBoundingRects(mask, width, height), diffMergePad)
+pkg/core/imagediff.go:237:		rects[i] = expandDiffRect(rects[i], width, height, diffMinimalRectSize)
+pkg/core/imagediff.go:240:	diff := image.NewRGBA(image.Rect(0, 0, width, height))
+pkg/core/imagediff.go:243:		drawDiffRectangle(diff, r, diffRectangleLineWidth)
+pkg/core/imagediff.go:267:	expectedBounds, actualBounds image.Rectangle,
+pkg/core/imagediff.go:288:func diffBoundingRects(mask []bool, width, height int) []diffRect {
+pkg/core/imagediff.go:290:	var rects []diffRect
+pkg/core/imagediff.go:297:			r := floodDiffRect(mask, visited, width, height, x, y)
+pkg/core/imagediff.go:304:func floodDiffRect(mask, visited []bool, width, height, startX, startY int) diffRect {
+pkg/core/imagediff.go:308:	r := diffRect{minX: startX, minY: startY, maxX: startX, maxY: startY}
+pkg/core/imagediff.go:342:func mergeDiffRects(rects []diffRect, pad int) []diffRect {
+pkg/core/imagediff.go:346:	merged := append([]diffRect(nil), rects...)
+pkg/core/imagediff.go:350:		next := make([]diffRect, 0, len(merged))
+pkg/core/imagediff.go:361:				if diffRectsOverlapOrNear(cur, merged[j], pad) {
+pkg/core/imagediff.go:362:					cur = unionDiffRect(cur, merged[j])
+pkg/core/imagediff.go:375:func diffRectsOverlapOrNear(a, b diffRect, pad int) bool {
+pkg/core/imagediff.go:379:func unionDiffRect(a, b diffRect) diffRect {
+pkg/core/imagediff.go:380:	return diffRect{
+pkg/core/imagediff.go:388:func expandDiffRect(r diffRect, width, height, minSize int) diffRect {
+pkg/core/imagediff.go:416:func drawDiffRectangle(img *image.RGBA, r diffRect, lineWidth int) {
+pkg/driver/devicelab/commands_test.go:69:func (m *mockDeviceLabClient) ScrollInArea(area uiautomator2.RectModel, direction string, percent float64, speed int) error {
+pkg/driver/devicelab/commands_test.go:73:func (m *mockDeviceLabClient) SwipeInArea(area uiautomator2.RectModel, direction string, percent float64, speed int) error {
+pkg/driver/devicelab/commands_test.go:252:		{"context deadline", context.DeadlineExceeded, true},
+pkg/driver/devicelab/commands_test.go:253:		{"wrapped deadline", fmt.Errorf("element 'x' not found: %w", context.DeadlineExceeded), true},
+pkg/driver/appium/driver.go:373:	deadline := time.Now().Add(timeout)
+pkg/driver/appium/driver.go:385:		if time.Now().After(deadline) {
+pkg/driver/appium/driver.go:596:// findElementByPageSourceWithPolling finds element by page source with deadline-based polling.
+pkg/driver/appium/driver.go:598:	deadline := time.Now().Add(timeout)
+pkg/driver/appium/driver.go:608:		if time.Now().After(deadline) {
+pkg/driver/appium/driver.go:637:	deadline := time.Now().Add(timeout)
+pkg/driver/appium/driver.go:668:		if time.Now().After(deadline) {
+pkg/driver/appium/driver.go:849:	ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/appium/driver.go:850:	defer cancel()
+pkg/driver/appium/driver.go:866:// findElementRelativeWithContext handles relative selectors with context deadline.
+pkg/driver/appium/driver.go:1082:	x, y, w, h, err := d.client.GetElementRect(elementID)
+pkg/driver/devicelab/crash.go:17:// attribute an earlier run's crash — or the force-stop a launch issues itself —
+pkg/driver/devicelab_ios_legacy/visibleonly_test.go:33:				"nodes":     []SnapshotNode{{Type: "Button", Label: "Go", Rect: SnapshotRect{X: 10, Y: 10, Width: 50, Height: 20}}},
+pkg/driver/devicelab/commands.go:91:		ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/devicelab/commands.go:92:		defer cancel()
+pkg/driver/devicelab/commands.go:109:		// uiautomator2 selects the file, devicelab does not). The foreground
+pkg/driver/devicelab/commands.go:268:	if rect, err := elem.Rect(); err == nil {
+pkg/driver/devicelab/commands.go:403:	deadline := time.Now().Add(timeout)
+pkg/driver/devicelab/commands.go:406:	for time.Now().Before(deadline) {
+pkg/driver/devicelab/commands.go:550:		return errorResult(err, fmt.Sprintf("Failed to long press at coordinates: %v", err))
+pkg/driver/devicelab/commands.go:676:	deadline := time.Now().Add(time.Duration(timeout) * time.Millisecond)
+pkg/driver/devicelab/commands.go:687:		if time.Now().After(deadline) {
+pkg/driver/devicelab/commands.go:714:	ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/devicelab/commands.go:715:	defer cancel()
+pkg/driver/devicelab/commands.go:801:	deadline := time.Now().Add(time.Duration(timeout) * time.Millisecond)
+pkg/driver/devicelab/commands.go:820:		if time.Now().After(deadline) {
+pkg/driver/devicelab/commands.go:874:	deadline := time.Now().Add(wait)
+pkg/driver/devicelab/commands.go:879:		if !time.Now().Before(deadline) {
+pkg/driver/devicelab/commands.go:922:	deadline := time.Now().Add(wait)
+pkg/driver/devicelab/commands.go:927:		if !time.Now().Before(deadline) {
+pkg/driver/devicelab/commands.go:1118:		deadline := time.Now().Add(timeout)
+pkg/driver/devicelab/commands.go:1121:		for time.Now().Before(deadline) {
+pkg/driver/devicelab/commands.go:1146:		deadline := time.Now().Add(5 * time.Second)
+pkg/driver/devicelab/commands.go:1147:		for time.Now().Before(deadline) {
+pkg/driver/devicelab/commands.go:1218:		deadline := time.Now().Add(5 * time.Second)
+pkg/driver/devicelab/commands.go:1219:		for time.Now().Before(deadline) {
+pkg/driver/devicelab/commands.go:1251:		deadline := time.Now().Add(500 * time.Millisecond)
+pkg/driver/devicelab/commands.go:1252:		for time.Now().Before(deadline) {
+pkg/driver/devicelab/commands.go:1376:	deadline := time.Now().Add(timeout)
+pkg/driver/devicelab/commands.go:1400:	for i := 0; i < maxScrolls && time.Now().Before(deadline); i++ {
+pkg/driver/devicelab/commands.go:1469:	area := uiautomator2.NewRect(0, height/8, width, height*3/4)
+pkg/driver/devicelab/commands.go:1524:		"context deadline exceeded",
+pkg/driver/devicelab/commands.go:1592:	deadline := time.Now().Add(timeout)
+pkg/driver/devicelab/commands.go:1595:	for time.Now().Before(deadline) {
+pkg/driver/devicelab/commands.go:1742:	deadline := time.Now().Add(wait)
+pkg/driver/devicelab/commands.go:1743:	for time.Now().Before(deadline) {
+pkg/driver/devicelab/commands.go:1854:	// runs, so an earlier crash — or the force-stop below — would otherwise be
+pkg/driver/devicelab/commands.go:1858:	// 1. Clear state or force-stop via RPC (no USB round-trips)
+pkg/driver/devicelab/commands.go:1870:			if _, shellErr := d.device.Shell("am force-stop " + appID); shellErr != nil {
+pkg/driver/devicelab/commands.go:1871:				logger.Warn("failed to force-stop app %s: %v", appID, shellErr)
+pkg/driver/devicelab/commands.go:1991:// shellBounded runs a shell command with a deadline, through the device's
+pkg/driver/devicelab/commands.go:2258:	if _, err := d.device.Shell("am force-stop " + appID); err != nil {
+pkg/driver/devicelab/commands.go:2294:	// force-stop is stopApp; using it here lost duckduckgo's open tab after
+pkg/driver/devicelab/commands.go:2785:	ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/devicelab/commands.go:2786:	defer cancel()
+pkg/driver/devicelab/commands.go:2849:	deadline := time.Now().Add(time.Duration(timeoutMs) * time.Millisecond)
+pkg/driver/devicelab/commands.go:2851:	for time.Now().Before(deadline) {
+pkg/driver/devicelab/commands.go:3218:			rect, err := elem.Rect()
+pkg/cli/ios_devicelab.go:57:		stopCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+pkg/cli/ios_devicelab.go:58:		defer cancel()
+pkg/driver/devicelab/fresh_text_test.go:32:	e := uiautomator2.NewCachedElement("e1", cachedHint, uiautomator2.ElementRect{Width: 100, Height: 50})
+pkg/driver/devicelab_ios_legacy/idle_test.go:67:			body: `{"ok":true,"data":{"message":"not waited: app is not in the foreground","appState":"runningBackground","idle":false,"waitedMs":0}}`,
+pkg/driver/devicelab_ios_legacy/idle_test.go:68:			want: IdleResult{AppState: "runningBackground", Reason: "not waited: app is not in the foreground"},
+pkg/driver/mock/mock_test.go:123:	if state.AppState != "foreground" || state.Orientation != "portrait" {
+pkg/driver/appium/commands.go:124:		duration = 1000 // Default 1 second for long press
+pkg/driver/appium/commands.go:132:		return errorResult(err, "Failed to long press")
+pkg/driver/appium/commands.go:396:	deadline := time.Now().Add(timeout)
+pkg/driver/appium/commands.go:409:	for i := 0; i < maxScrolls && time.Now().Before(deadline); i++ {
+pkg/driver/appium/commands.go:411:			return errorResult(fmt.Errorf("scroll cancelled: %w", err), "")
+pkg/driver/appium/commands.go:767:	deadline := time.Now().Add(timeout)
+pkg/driver/appium/commands.go:786:		if time.Now().After(deadline) {
+pkg/driver/appium/commands.go:835:	deadline := time.Now().Add(time.Duration(timeoutMs) * time.Millisecond)
+pkg/driver/appium/commands.go:851:		if time.Now().After(deadline) {
+pkg/driver/appium/commands.go:1195:	ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/appium/commands.go:1196:	defer cancel()
+pkg/driver/wda/driver_test.go:225:// TestExecuteLongPressOn tests long press
+pkg/driver/wda/driver_test.go:1403:		ctx, cancel := context.WithTimeout(context.Background(), 2000*time.Millisecond)
+pkg/driver/wda/driver_test.go:1404:		defer cancel()
+pkg/driver/wda/driver_test.go:1427:		ctx, cancel := context.WithTimeout(context.Background(), 2000*time.Millisecond)
+pkg/driver/wda/driver_test.go:1428:		defer cancel()
+pkg/driver/wda/driver_test.go:1451:		ctx, cancel := context.WithTimeout(context.Background(), 2000*time.Millisecond)
+pkg/driver/wda/driver_test.go:1452:		defer cancel()
+pkg/driver/wda/driver_test.go:1475:		ctx, cancel := context.WithTimeout(context.Background(), 2000*time.Millisecond)
+pkg/driver/wda/driver_test.go:1476:		defer cancel()
+pkg/driver/wda/driver_test.go:1499:		ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
+pkg/driver/wda/driver_test.go:1500:		defer cancel()
+pkg/driver/wda/driver_test.go:1520:		ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
+pkg/driver/wda/driver_test.go:1521:		defer cancel()
+pkg/driver/wda/driver_test.go:3739:					"message": "Failed to long press",
+pkg/driver/wda/driver_test.go:3958:		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+pkg/driver/wda/driver_test.go:3959:		defer cancel()
+pkg/driver/wda/driver_test.go:3991:		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+pkg/driver/wda/driver_test.go:3992:		defer cancel()
+pkg/driver/wda/driver_test.go:5596:// TestElementRectNetworkError tests ElementRect when network fails
+pkg/driver/wda/driver_test.go:5597:func TestElementRectNetworkError(t *testing.T) {
+pkg/driver/wda/driver_test.go:5605:	_, _, _, _, err := client.ElementRect("elem-1")
+pkg/driver/wda/driver_test.go:5611:// TestElementRectParsesValues tests ElementRect parsing of values
+pkg/driver/wda/driver_test.go:5612:func TestElementRectParsesValues(t *testing.T) {
+pkg/driver/wda/driver_test.go:5636:	x, y, w, h, err := client.ElementRect("elem-1")
+pkg/cli/devices.go:25:The --json form is stable and suited to scripts and CI. Restrict the listing to
+pkg/driver/devicelab_ios_legacy/media.go:64:	ctx, cancel := d.callTimeout()
+pkg/driver/devicelab_ios_legacy/media.go:65:	defer cancel()
+pkg/driver/mock/mock.go:120:		AppState:    "foreground",
+pkg/simulator/ios.go:164:	deadline := time.Now().Add(timeout)
+pkg/simulator/ios.go:168:	for time.Now().Before(deadline) {
+pkg/simulator/ios.go:228:	deadline := time.Now().Add(timeout)
+pkg/simulator/ios.go:232:	for time.Now().Before(deadline) {
+pkg/driver/devicelab_ios_legacy/setup.go:56:	// context has no deadline, because the relaunch holds the supervisor
+pkg/driver/devicelab_ios_legacy/setup.go:553:	bootCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
+pkg/driver/devicelab_ios_legacy/setup.go:554:	defer cancel()
+pkg/driver/devicelab_ios_legacy/setup.go:587:// deadline passes. Backoff is short (200ms) since the runner usually comes
+pkg/driver/devicelab_ios_legacy/setup.go:598:	ctx, cancel := context.WithTimeout(parent, timeout)
+pkg/driver/devicelab_ios_legacy/setup.go:599:	defer cancel()
+pkg/driver/devicelab_ios_legacy/setup.go:601:	deadline := time.Now().Add(timeout)
+pkg/driver/devicelab_ios_legacy/setup.go:646:		if time.Now().After(deadline) {
+pkg/driver/appium/client_test.go:747:func TestClient_GetElementRect(t *testing.T) {
+pkg/driver/appium/client_test.go:767:	x, y, w, h, err := client.GetElementRect("elem-1")
+pkg/driver/appium/client_test.go:769:		t.Fatalf("GetElementRect failed: %v", err)
+pkg/driver/devicelab_ios_legacy/dragdrop_test.go:78:			Rect:       SnapshotRect{X: 40, Y: 100, Width: 80, Height: 40},
+pkg/driver/devicelab_ios_legacy/dragdrop_test.go:157:			Rect:       SnapshotRect{X: 0, Y: y, Width: 100, Height: 40},
+pkg/driver/devicelab_ios_legacy/dragdrop_test.go:179:			Rect:       SnapshotRect{X: 0, Y: 780, Width: 100, Height: 40}, // 50% visible
+pkg/driver/devicelab_ios_legacy/dragdrop_test.go:203:			Rect:       SnapshotRect{X: 0, Y: 780, Width: 100, Height: 40},
+pkg/driver/devicelab_ios_legacy/dragdrop_test.go:231:			{Type: "Link", Label: "Terms of Service", Rect: SnapshotRect{X: 414, Y: 866, Width: 102, Height: 20}},
+pkg/driver/devicelab_ios_legacy/dragdrop_test.go:232:			{Type: "Link", Label: "Terms of Service", Rect: SnapshotRect{X: 216, Y: footerY, Width: 115, Height: 21}},
+pkg/driver/devicelab_ios_legacy/dragdrop_test.go:300:// a long press on whatever sat under the finger. The duration is the rest at
+pkg/simulator/exec_test.go:225:// throughout the deadline window). Skipping.
+pkg/driver/devicelab/browser_jshelper.js:46:    var rect = el.getBoundingClientRect();
+pkg/driver/devicelab/browser_jshelper.js:153:      var deadline = Date.now() + timeoutMs;
+pkg/driver/devicelab/browser_jshelper.js:163:        if (Date.now() >= deadline) {
+pkg/driver/devicelab/browser_jshelper.js:176:      var deadline = Date.now() + timeoutMs;
+pkg/driver/devicelab/browser_jshelper.js:186:        if (Date.now() >= deadline) {
+pkg/driver/devicelab/commands_helpers_test.go:140:	if len(shell.commands) != 1 || !strings.Contains(shell.commands[0], "am force-stop com.test.app") {
+pkg/driver/devicelab/commands_helpers_test.go:141:		t.Errorf("expected 'am force-stop com.test.app', got %v", shell.commands)
+pkg/driver/devicelab/commands_helpers_test.go:205:	// force-stop belongs to stopApp.
+pkg/driver/devicelab/commands_helpers_test.go:1442:// tapOnPoint (no findElement — testable via Click/LongClick mocks)
+pkg/driver/devicelab/commands_helpers_test.go:1499:		t.Fatalf("tapOnPoint long press failed: %v", res.Error)
+pkg/driver/devicelab/commands_helpers_test.go:1886:func makeCachedElement(text string, rect uiautomator2.ElementRect, sendKeys func(string) error) *uiautomator2.Element { //nolint:unused
+pkg/driver/devicelab/commands_helpers_test.go:1901:		"elem", "Sign In", uiautomator2.ElementRect{X: 10, Y: 20, Width: 100, Height: 50},
+pkg/driver/devicelab/commands_helpers_test.go:1975:		"id", "btn", uiautomator2.ElementRect{X: 100, Y: 200, Width: 80, Height: 40},
+pkg/driver/devicelab/commands_helpers_test.go:2012:		"id", "btn", uiautomator2.ElementRect{X: 0, Y: 0, Width: 100, Height: 100},
+pkg/driver/devicelab/commands_helpers_test.go:2032:		"id", "btn", uiautomator2.ElementRect{X: 0, Y: 0, Width: 100, Height: 100},
+pkg/driver/devicelab/commands_helpers_test.go:2060:		"id", "Hello", uiautomator2.ElementRect{X: 0, Y: 0, Width: 10, Height: 10},
+pkg/driver/devicelab/commands_helpers_test.go:2164:	elem := uiautomator2.NewCachedElement("id", "", uiautomator2.ElementRect{X: 0, Y: 0, Width: 100, Height: 50})
+pkg/driver/devicelab/commands_helpers_test.go:2236:		"id", "Hello", uiautomator2.ElementRect{X: 0, Y: 0, Width: 10, Height: 10},
+pkg/driver/devicelab/commands_helpers_test.go:2372:	// Default behavior: force-stop first (StopApp defaults to true), then LaunchApp.
+pkg/driver/devicelab/commands_helpers_test.go:2392:	// clearState path should NOT also force-stop (the else-if).
+pkg/driver/devicelab/commands_helpers_test.go:2461:		"id", "Hello World", uiautomator2.ElementRect{X: 0, Y: 0, Width: 100, Height: 50},
+pkg/driver/devicelab/commands_helpers_test.go:2498:		"id", "Hello", uiautomator2.ElementRect{X: 0, Y: 0, Width: 10, Height: 10},
+pkg/driver/devicelab/commands_helpers_test.go:2970:		t.Error("expected isBrowserForeground=true when chrome in foreground")
+pkg/driver/devicelab/commands_helpers_test.go:2997:	elem := uiautomator2.NewCachedElement("focused", text, uiautomator2.ElementRect{X: 0, Y: 0, Width: 100, Height: 50})
+pkg/driver/devicelab/commands_helpers_test.go:3255:// TestTapOn_UntappableRect_AgentSkipsTap covers the reported failure: a
+pkg/driver/devicelab/commands_helpers_test.go:3261:func TestTapOn_UntappableRect_AgentSkipsTap(t *testing.T) {
+pkg/driver/devicelab/commands_helpers_test.go:3265:		"elem", "", uiautomator2.ElementRect{X: 42, Y: 2134, Width: 996, Height: -51},
+pkg/driver/devicelab/commands_helpers_test.go:3289:		"elem", "Sign In", uiautomator2.ElementRect{X: 10, Y: 20, Width: 100, Height: 50},
+pkg/driver/devicelab/commands_helpers_test.go:3334:// TestDoubleTapAndLongPress_RejectClippedRect covers the sibling commands.
+pkg/driver/devicelab/commands_helpers_test.go:3338:func TestDoubleTapAndLongPress_RejectClippedRect(t *testing.T) {
+pkg/driver/devicelab/commands_helpers_test.go:3339:	clipped := uiautomator2.ElementRect{X: 42, Y: 2134, Width: 996, Height: -51}
+pkg/driver/devicelab/commands_helpers_test.go:3369:		"elem", "Submit", uiautomator2.ElementRect{X: 100, Y: 1800, Width: 300, Height: 120},
+pkg/driver/devicelab/commands_helpers_test.go:3434:// routeShell answers dumpsys with a DocumentsUI foreground and records the rest.
+pkg/driver/devicelab/commands_helpers_test.go:3448:// file-name-like selector is tapped with DocumentsUI in the foreground, the
+pkg/driver/devicelab/commands_helpers_test.go:3453:		"row", "contract.pdf", uiautomator2.ElementRect{X: 0, Y: 1000, Width: 1080, Height: 200},
+pkg/driver/devicelab/commands_helpers_test.go:3477:// foreground check, and a non-picker foreground keeps the agent path.
+pkg/driver/devicelab/commands_helpers_test.go:3481:		"btn", "Save", uiautomator2.ElementRect{X: 0, Y: 1000, Width: 200, Height: 100},
+pkg/driver/devicelab/commands_helpers_test.go:3492:			t.Errorf("foreground check must not run for %q", "Save")
+pkg/driver/wda/wait_crash.go:14:// foreground).
+pkg/driver/appium/crop_test.go:20:	_ = png.Encode(&shot, image.NewRGBA(image.Rect(0, 0, 200, 400)))
+pkg/driver/devicelab_ios_legacy/embedded_test.go:98:		t.Errorf("hash unstable or malformed: %q vs %q", h1, h2)
+pkg/driver/devicelab_ios_legacy/client_revive_test.go:131:// goes away), counting arrivals, so a test can cancel a request mid-flight.
+pkg/driver/devicelab_ios_legacy/client_revive_test.go:167:// cancelled mid-flight, past its deadline, or cancelled before it was sent —
+pkg/driver/devicelab_ios_legacy/client_revive_test.go:176:			name: "cancelled mid-flight",
+pkg/driver/devicelab_ios_legacy/client_revive_test.go:179:				ctx, cancel := context.WithCancel(context.Background())
+pkg/driver/devicelab_ios_legacy/client_revive_test.go:180:				return ctx, cancel, cancel // cancel once the server holds the request
+pkg/driver/devicelab_ios_legacy/client_revive_test.go:184:			name: "deadline exceeded mid-flight",
+pkg/driver/devicelab_ios_legacy/client_revive_test.go:187:				ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+pkg/driver/devicelab_ios_legacy/client_revive_test.go:188:				return ctx, cancel, func() {}
+pkg/driver/devicelab_ios_legacy/client_revive_test.go:207:			ctx, cancel, midFlight := tt.ctx()
+pkg/driver/devicelab_ios_legacy/client_revive_test.go:208:			defer cancel()
+pkg/driver/devicelab_ios_legacy/client_revive_test.go:231:	ctx, cancel := context.WithCancel(context.Background())
+pkg/driver/devicelab_ios_legacy/client_revive_test.go:232:	cancel()
+pkg/driver/devicelab_ios_legacy/client_revive_test.go:246:		t.Errorf("caller cancellation must not relaunch the runner, got %d revives", n)
+pkg/driver/appium/client.go:397:// GetElementRect returns an element's position and size.
+pkg/driver/appium/client.go:398:func (c *Client) GetElementRect(elementID string) (x, y, w, h int, err error) {
+pkg/driver/appium/client.go:488:// LongPress performs a long press at coordinates.
+pkg/driver/appium/count_test.go:84:	step.TimeoutMs = 400 // fail fast: the count is stable at 3
+pkg/driver/wda/client.go:228:// the foreground (0 unknown).
+pkg/driver/wda/client.go:243:// ActivateApp brings an app to foreground.
+pkg/driver/wda/client.go:271:// LongPress performs a long press at coordinates.
+pkg/driver/wda/client.go:707:// ElementRect returns an element's bounds.
+pkg/driver/wda/client.go:708:func (c *Client) ElementRect(elementID string) (x, y, width, height int, err error) {
+pkg/driver/devicelab_ios_legacy/lifecycle.go:69:// call per service, in a stable order. Names iOS gives the host no control
+pkg/driver/appium/pagesource_test.go:213:		{Label: "Cancel", Name: "cancelBtn", Enabled: true},
+pkg/driver/devicelab_ios_legacy/buildhygiene_test.go:162:	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+pkg/driver/devicelab_ios_legacy/buildhygiene_test.go:163:	defer cancel()
+pkg/driver/wda/driver.go:528:		"application is not in foreground",
+pkg/driver/wda/driver.go:592:	ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/wda/driver.go:593:	defer cancel()
+pkg/driver/wda/driver.go:598:// findElementWithContext finds an element using context for deadline management.
+pkg/driver/wda/driver.go:653:		ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/wda/driver.go:654:		defer cancel()
+pkg/driver/wda/driver.go:678:		ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/wda/driver.go:679:		defer cancel()
+pkg/driver/wda/driver.go:1119:		x, y, w, h, rectErr = d.client.ElementRect(elemID)
+pkg/driver/devicelab_ios_legacy/settle_test.go:94:		t.Errorf("far deadline cap = %v, want %v", got, settleDefaultCapMs)
+pkg/driver/devicelab_ios_legacy/settle_test.go:97:		t.Errorf("past deadline cap = %v, want 0", got)
+pkg/driver/devicelab_ios_legacy/settle_test.go:100:		t.Errorf("near deadline cap = %v, want (0, 1000]", got)
+pkg/driver/devicelab_ios_legacy/settle_test.go:113:			{Type: "Other", Label: "row", Rect: SnapshotRect{X: 0, Y: float64(drags) * 10, Width: 400, Height: 40}},
+pkg/driver/devicelab_ios_legacy/settle_test.go:114:			{Type: "Cell", Identifier: "target", Rect: SnapshotRect{X: 0, Y: y, Width: 100, Height: 40}},
+pkg/driver/devicelab_ios_legacy/settle_test.go:131:		return []SnapshotNode{{Type: "Other", Label: "end of list", Rect: SnapshotRect{Width: 400, Height: 40}}}
+pkg/driver/devicelab_ios_legacy/settle_test.go:150:		{Type: "Cell", Label: "item", Rect: SnapshotRect{X: 0, Y: 100, Width: 100, Height: 40}},
+pkg/driver/devicelab_ios_legacy/settle_test.go:151:		{Type: "Cell", Label: "item", Rect: SnapshotRect{X: 0, Y: 200, Width: 100, Height: 40}},
+pkg/driver/devicelab_ios_legacy/settle_test.go:154:	if got == nil || got.Rect.Y != 200 {
+pkg/driver/devicelab_ios_legacy/settle_test.go:162:	offscreen := []SnapshotNode{{Type: "Cell", Label: "item", Rect: SnapshotRect{X: 0, Y: 2000, Width: 100, Height: 40}}}
+pkg/driver/devicelab_ios_legacy/supervisor.go:69:// may pass a deadline-less context (context.WithoutCancel), and without a
+pkg/driver/devicelab_ios_legacy/supervisor.go:99:	relaunchCtx, cancel := context.WithTimeout(ctx, s.relaunchTimeout())
+pkg/driver/devicelab_ios_legacy/supervisor.go:100:	defer cancel()
+pkg/driver/devicelab_ios_legacy/snapshotfailure_test.go:184:// foreground and so has nothing on screen.
+pkg/driver/devicelab_ios_legacy/snapshotfailure_test.go:186:	foregroundFailed := `{"ok":false,"data":{"appState":"runningForeground"},` +
+pkg/driver/devicelab_ios_legacy/snapshotfailure_test.go:193:		{"foreground never readable times out", always(foregroundFailed), false},
+pkg/driver/devicelab_ios_legacy/snapshotfailure_test.go:212:// foreground is an error, not a pass — older runners sent an empty tree here,
+pkg/driver/devicelab_ios_legacy/snapshotfailure_test.go:213:// which asserted absence falsely. An app that is not in the foreground has
+pkg/driver/devicelab_ios_legacy/snapshotfailure_test.go:226:		{"unreadable foreground app fails", failedIn("runningForeground"), false},
+pkg/driver/wda/runlock_test.go:115:	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+pkg/driver/wda/runlock_test.go:116:	defer cancel()
+pkg/driver/devicelab_ios_legacy/pagesource.go:56:		if !withinTolerance(int(n.Rect.Width), sel.Width, sel.Tolerance) {
+pkg/driver/devicelab_ios_legacy/pagesource.go:59:		if !withinTolerance(int(n.Rect.Height), sel.Height, sel.Tolerance) {
+pkg/driver/devicelab_ios_legacy/pagesource.go:181:			X:      int(round(n.Rect.X)),
+pkg/driver/devicelab_ios_legacy/pagesource.go:182:			Y:      int(round(n.Rect.Y)),
+pkg/driver/devicelab_ios_legacy/pagesource.go:183:			Width:  int(round(n.Rect.Width)),
+pkg/driver/devicelab_ios_legacy/pagesource.go:184:			Height: int(round(n.Rect.Height)),
+pkg/driver/devicelab_ios_legacy/pagesource.go:186:		Visible:  n.Rect.Width > 0 && n.Rect.Height > 0,
+pkg/driver/devicelab_ios_legacy/client_timeout_test.go:36:// ErrCallTimeout and never relaunches; a caller deadline always wins over the
+pkg/driver/devicelab_ios_legacy/client_timeout_test.go:37:// default bound, and a caller deadline expiring is a plain context error.
+pkg/driver/devicelab_ios_legacy/client_timeout_test.go:44:		ctxTimeout  time.Duration // 0 = no deadline (context.WithoutCancel shape)
+pkg/driver/devicelab_ios_legacy/client_timeout_test.go:48:		{name: "no deadline, runner slow before headers", delay: time.Second, callTimeout: 50 * time.Millisecond, wantErr: ErrCallTimeout},
+pkg/driver/devicelab_ios_legacy/client_timeout_test.go:49:		{name: "no deadline, runner stalls mid-body", delay: time.Second, stallBody: true, callTimeout: 50 * time.Millisecond, wantErr: ErrCallTimeout},
+pkg/driver/devicelab_ios_legacy/client_timeout_test.go:50:		{name: "no deadline, runner within bound", delay: 10 * time.Millisecond, callTimeout: time.Second},
+pkg/driver/devicelab_ios_legacy/client_timeout_test.go:51:		{name: "caller deadline longer than bound wins", delay: 150 * time.Millisecond, callTimeout: 50 * time.Millisecond, ctxTimeout: 2 * time.Second},
+pkg/driver/devicelab_ios_legacy/client_timeout_test.go:52:		{name: "caller deadline expires", delay: time.Second, callTimeout: 10 * time.Second, ctxTimeout: 50 * time.Millisecond, wantErr: context.DeadlineExceeded, wantNot: ErrCallTimeout},
+pkg/driver/devicelab_ios_legacy/client_timeout_test.go:66:				var cancel context.CancelFunc
+pkg/driver/devicelab_ios_legacy/client_timeout_test.go:67:				ctx, cancel = context.WithTimeout(ctx, tt.ctxTimeout)
+pkg/driver/devicelab_ios_legacy/client_timeout_test.go:68:				defer cancel()
+pkg/driver/wda/commands.go:343:// polls — until the expected count is observed or the deadline passes.
+pkg/driver/wda/commands.go:351:	ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/wda/commands.go:352:	defer cancel()
+pkg/driver/wda/commands.go:422:	deadline := time.Now().Add(time.Duration(timeoutMs) * time.Millisecond)
+pkg/driver/wda/commands.go:435:		if time.Now().After(deadline) {
+pkg/driver/wda/commands.go:660:	ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/wda/commands.go:661:	defer cancel()
+pkg/driver/wda/commands.go:792:	deadline := time.Now().Add(timeout)
+pkg/driver/wda/commands.go:799:	for i := 0; i < maxScrolls && time.Now().Before(deadline); i++ {
+pkg/driver/wda/commands.go:1263:		// WDA waits this long for the app to be stable after every W3C
+pkg/driver/wda/commands.go:1724:	ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/wda/commands.go:1725:	defer cancel()
+pkg/driver/wda/commands.go:1798:	deadline := time.Now().Add(time.Duration(timeoutMs) * time.Millisecond)
+pkg/driver/wda/commands.go:1800:	for time.Now().Before(deadline) {
+pkg/driver/wda/commands.go:1905:			x, y, w, h, err = d.client.ElementRect(elemID)
+pkg/cli/ios_devicelab_legacy.go:150:		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+pkg/cli/ios_devicelab_legacy.go:151:		defer cancel()
+pkg/cli/ios.go:418:	ctx, cancel := context.WithTimeout(context.Background(), installTimeout)
+pkg/cli/ios.go:419:	defer cancel()
+pkg/cli/ios.go:433:	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+pkg/cli/ios.go:434:	defer cancel()
+pkg/cli/ios.go:442:	ctx, cancel := context.WithTimeout(context.Background(), installTimeout)
+pkg/cli/ios.go:443:	defer cancel()
+pkg/driver/wda/stale_element_test.go:105:			if _, err := createTestDriver(server).getElementInfo("cancel"); err == nil {
+pkg/cli/ios_devicelab_device.go:39:		stopCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+pkg/cli/ios_devicelab_device.go:40:		defer cancel()
+pkg/driver/browser/cdp/jshelper.js:208:    var rect = el.getBoundingClientRect();
+pkg/driver/browser/cdp/jshelper.js:233:  //  4. Not currently animating off-frame — deferred to a Go-side stable-
+pkg/driver/browser/cdp/jshelper.js:295:      var box = iframe.getBoundingClientRect();
+pkg/driver/browser/cdp/jshelper.js:466:      var deadline = Date.now() + timeoutMs;
+pkg/driver/browser/cdp/jshelper.js:480:        if (Date.now() >= deadline) {
+pkg/driver/browser/cdp/jshelper.js:495:      var deadline = Date.now() + timeoutMs;
+pkg/driver/browser/cdp/jshelper.js:509:        if (Date.now() >= deadline) {
+pkg/driver/browser/cdp/jshelper.js:563:      var deadline = Date.now() + timeoutMs;
+pkg/driver/browser/cdp/jshelper.js:568:        if (last === expected || Date.now() >= deadline) { resolve(last); return; }
+pkg/driver/browser/cdp/jshelper.js:584:  // Why a new path: Rod's Element.Click() uses getBoundingClientRect() which
+pkg/driver/browser/cdp/jshelper.js:624:  // the existing Rod Click() path — getBoundingClientRect() is already in the
+pkg/driver/browser/cdp/jshelper.js:666:    var r = el.getBoundingClientRect();
+pkg/driver/browser/cdp/jshelper.js:677:      var box = iframe.getBoundingClientRect();
+pkg/driver/browser/cdp/jshelper.js:806:      var box = iframe.getBoundingClientRect();
+pkg/cli/hierarchy.go:113:			Rect        hBounds `json:"rect"`
+pkg/cli/hierarchy.go:131:		b := n.Rect
+pkg/cli/keepalive_test.go:13:// waitForKeepAliveHold blocks until a keep-alive hold is armed or the deadline
+pkg/cli/keepalive_test.go:17:	deadline := time.Now().Add(within)
+pkg/cli/keepalive_test.go:18:	for time.Now().Before(deadline) {
+pkg/driver/wda/wait_crash_test.go:21:// the foreground).
+pkg/driver/wda/runner.go:219:	buildCtx, cancel := context.WithTimeout(ctx, buildTimeout)
+pkg/driver/wda/runner.go:220:	defer cancel()
+pkg/driver/wda/runner.go:919:	bootCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
+pkg/driver/wda/runner.go:920:	defer cancel()
+pkg/driver/wda/client_test.go:393:// TestLongPress tests long press action
+pkg/driver/wda/client_test.go:1075:// TestElementRect tests element bounds retrieval
+pkg/driver/wda/client_test.go:1076:func TestElementRect(t *testing.T) {
+pkg/driver/wda/client_test.go:1095:	x, y, width, height, err := client.ElementRect("elem123")
+pkg/driver/wda/client_test.go:1097:		t.Fatalf("ElementRect failed: %v", err)
+pkg/driver/devicelab_ios/agent.go:131:// PortFor derives a stable port for a simulator from its UDID, in
+pkg/driver/devicelab_ios/agent.go:210:	callCtx, cancel := context.WithTimeout(ctx, wait)
+pkg/driver/devicelab_ios/agent.go:211:	defer cancel()
+pkg/driver/devicelab_ios/agent.go:347:	deadline := time.Now().Add(wait)
+pkg/driver/devicelab_ios/agent.go:348:	for time.Now().Before(deadline) {
+pkg/driver/devicelab_ios/agent.go:389:		callCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+pkg/driver/devicelab_ios/agent.go:391:		cancel()
+pkg/driver/devicelab_ios/agent.go:413:	c, cancel := context.WithTimeout(ctx, timeout)
+pkg/driver/devicelab_ios/agent.go:414:	defer cancel()
+pkg/driver/devicelab_ios/driver_test.go:78:			Rect        map[string]float64 `json:"rect"`
+pkg/driver/devicelab_ios/driver_test.go:85:		got.Nodes[1].Label != "OK" || got.Nodes[1].Rect["width"] != 50 {
+pkg/driver/devicelab_ios/driver_test.go:101:			return ok(&Payload{AppState: "foreground"}), nil
+pkg/driver/devicelab_ios/driver_test.go:107:	if !s.KeyboardVisible || s.Orientation != "portrait" || s.AppState != "foreground" {
+pkg/driver/devicelab_ios/webpage.go:71:	ctx, cancel := context.WithTimeout(context.Background(), webCallTimeout)
+pkg/driver/devicelab_ios/webpage.go:72:	defer cancel()
+pkg/driver/wda/notvisible_test.go:122:	if !isNotFound(fmt.Errorf("context deadline exceeded: %w", notFound("no elements match selector"))) {
+pkg/driver/wda/commands_test.go:4198:		// ElementRect — row is x=16, y=370, w=343, h=52
+pkg/driver/devicelab_ios/webready.go:72:	cctx, cancel := context.WithTimeout(ctx, 2*webCallTimeout)
+pkg/driver/devicelab_ios/webready.go:73:	defer cancel()
+pkg/driver/devicelab_ios/webready.go:229:	octx, ocancel := context.WithTimeout(ctx, sessionOpenTimeout)
+pkg/driver/devicelab_ios/webready.go:231:	ocancel()
+pkg/driver/devicelab_ios/webready.go:235:	cctx, cancel := context.WithTimeout(ctx, timeout)
+pkg/driver/devicelab_ios/webready.go:236:	defer cancel()
+pkg/driver/devicelab_ios/webready.go:360:	deadline := time.Now().Add(webLoadTimeout)
+pkg/driver/devicelab_ios/webready.go:370:		if time.Now().After(deadline) || d.context().Err() != nil {
+pkg/driver/devicelab_ios/find.go:70:	deadline := time.Now().Add(budget)
+pkg/driver/devicelab_ios/find.go:88:		if time.Now().After(deadline) || d.context().Err() != nil {
+pkg/driver/browser/cdp/driver.go:259:			"/usr/bin/google-chrome-stable",
+pkg/driver/browser/cdp/driver.go:390:	deadline := time.Now().Add(timeout)
+pkg/driver/browser/cdp/driver.go:391:	for time.Now().Before(deadline) {
+pkg/driver/devicelab_ios/wir.go:326:	wait, cancel := context.WithTimeout(ctx, targetWait)
+pkg/driver/devicelab_ios/wir.go:327:	defer cancel()
+pkg/driver/devicelab_ios/protocol.go:25:	DeadlineMs  float64           `json:"deadlineMs,omitempty"`
+pkg/driver/wda/settle_crash_test.go:25:	img := image.NewRGBA(image.Rect(0, 0, 4, 4))
+pkg/driver/wda/settle_crash_test.go:39:// state (1 = not running, 4 = running in the foreground).
+pkg/driver/wda/settle_crash_test.go:84:// L24: with the app in the foreground the settle passes as before.
+pkg/driver/devicelab_ios/wir_test.go:401:	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+pkg/driver/devicelab_ios/wir_test.go:402:	defer cancel()
+pkg/driver/devicelab_ios/client.go:109:	reqCtx, cancel := context.WithTimeout(ctx, c.callTimeout)
+pkg/driver/devicelab_ios/client.go:110:	defer cancel()
+pkg/driver/devicelab_ios/device_lifecycle.go:24:	ctx, cancel := context.WithTimeout(context.Background(), devicectlTimeout)
+pkg/driver/devicelab_ios/device_lifecycle.go:25:	defer cancel()
+pkg/driver/browser/cdp/commands.go:22:// tapOn taps on an element. Rod's Click() handles scroll+stable+interactable+enabled.
+pkg/driver/browser/cdp/commands.go:61:	// the existing path — getBoundingClientRect() is already in top-frame
+pkg/driver/browser/cdp/commands.go:270:// longPressDuration returns the press duration for a long press, defaulting to
+pkg/driver/browser/cdp/commands.go:280:// longPressOn performs a long press (mouse down, hold, mouse up).
+pkg/driver/browser/cdp/commands.go:319:			return errorResult(err, "Failed to move to point for long press")
+pkg/driver/browser/cdp/commands.go:334:		return errorResult(err, "Element not interactable for long press")
+pkg/driver/browser/cdp/commands.go:1273:	deadline := time.Now().Add(time.Duration(timeoutMs) * time.Millisecond)
+pkg/driver/browser/cdp/commands.go:1274:	for time.Now().Before(deadline) {
+pkg/driver/browser/cdp/commands.go:1311:	deadline := time.Now().Add(time.Duration(timeoutMs) * time.Millisecond)
+pkg/driver/browser/cdp/commands.go:1312:	for time.Now().Before(deadline) {
+pkg/driver/browser/cdp/commands.go:1336:	return successResult("Animation ended (DOM stable)", nil)
+pkg/driver/browser/cdp/commands.go:1849:			return errorResult(fmt.Errorf("waitForDownload: download was canceled"), "")
+pkg/driver/browser/cdp/commands.go:2303:	deadline := time.Now().Add(time.Duration(timeoutMs) * time.Millisecond)
+pkg/driver/browser/cdp/commands.go:2309:		if !time.Now().Before(deadline) {
+pkg/driver/devicelab_ios/client_test.go:143:	ctx, cancel := context.WithCancel(context.Background())
+pkg/driver/devicelab_ios/client_test.go:144:	cancel()
+pkg/driver/devicelab_ios/actions.go:289:	deadline := time.Now().Add(timeout)
+pkg/driver/devicelab_ios/actions.go:325:		if i >= maxScrolls || time.Now().After(deadline) || d.context().Err() != nil {
+pkg/driver/devicelab_ios/actions.go:431:	deadline := time.Now().Add(d.budget(s.Optional, s.TimeoutMs))
+pkg/driver/devicelab_ios/actions.go:442:		if time.Now().After(deadline) {
+pkg/driver/devicelab_ios/actions.go:466:	deadline := time.Now().Add(time.Duration(timeoutMs) * time.Millisecond)
+pkg/driver/devicelab_ios/actions.go:474:		if time.Now().After(deadline) {
+pkg/driver/devicelab_ios/actions.go:687:	deadline := time.Now().Add(time.Duration(timeoutMs) * time.Millisecond)
+pkg/driver/devicelab_ios/actions.go:693:		if time.Now().After(deadline) {
+pkg/driver/wda/crashloop_test.go:20:		{"app not in foreground", &core.CommandResult{Message: "Application is not in foreground state"}, true},
+pkg/driver/devicelab_ios/actions_test.go:463:	img := image.NewRGBA(image.Rect(0, 0, w, h))
+pkg/driver/wda/stop_tree.go:115:	deadline := time.Now().Add(leftoverWait)
+pkg/driver/wda/stop_tree.go:117:		for processAlive(p) && time.Now().Before(deadline) {
+pkg/driver/wda/runner_lifecycle_test.go:57:	for deadline := time.Now().Add(5 * time.Second); time.Now().Before(deadline); time.Sleep(20 * time.Millisecond) {
+pkg/driver/wda/runner_lifecycle_test.go:131:	for deadline := time.Now().Add(20 * time.Second); time.Now().Before(deadline) && xcodebuild == 0; time.Sleep(20 * time.Millisecond) {
+pkg/driver/devicelab_ios/lifecycle.go:121:// command line is stable.
+pkg/driver/devicelab_ios/lifecycle.go:368:// per call, in a stable order. Names iOS gives the host no control over
+pkg/driver/devicelab_ios/device_launch.go:162:	deadline := time.Now().Add(a.opts.ReadyTimeout)
+pkg/driver/devicelab_ios/device_launch.go:164:	for time.Now().Before(deadline) {
+pkg/driver/devicelab_ios/device_signing.go:403:	buildCtx, cancel := context.WithTimeout(ctx, stubBuildTimeout)
+pkg/driver/devicelab_ios/device_signing.go:404:	defer cancel()
+pkg/driver/devicelab_ios/device_signing.go:642:	c, cancel := context.WithTimeout(ctx, timeout)
+pkg/driver/devicelab_ios/device_signing.go:643:	defer cancel()
+pkg/driver/devicelab_ios/driver.go:167:		Rect        map[string]int `json:"rect"`
+pkg/driver/devicelab_ios/driver.go:185:			Rect: map[string]int{"x": b.X, "y": b.Y, "width": b.Width, "height": b.Height},
+pkg/driver/browser/cdp/finder.go:53:// Uses Rod's clone-based timeout: creates a new page object with deadline.
+pkg/driver/browser/cdp/finder.go:58:	deadline := time.Now().Add(timeout)
+pkg/driver/browser/cdp/finder.go:61:	for time.Now().Before(deadline) {
+pkg/driver/browser/cdp/finder.go:152:// sits there until the deadline and fails with "context deadline exceeded",
+pkg/driver/browser/cdp/finder.go:157:// Polls until the deadline so an element that appears asynchronously is still
+pkg/driver/browser/cdp/finder.go:163:	deadline := time.Now().Add(timeout)
+pkg/driver/browser/cdp/finder.go:183:		if time.Now().After(deadline) {
+pkg/driver/browser/cdp/finder.go:892:	// computed style, getBoundingClientRect) that report iframe-clipped
+pkg/driver/browser/cdp/commands_iframe_test.go:290:// coord root cause as tapOn — coordinates from getBoundingClientRect() are
+pkg/driver/browser/cdp/commands_iframe_test.go:372:// getBoundingClientRect dimensions) and reported elements scrolled outside
+pkg/driver/uiautomator2/active_element_bound_test.go:28:// budget is how long the request context set now leaves (0 = no deadline).
+pkg/driver/uiautomator2/driver_test.go:48:	scrollCalls         []uiautomator2.RectModel
+pkg/driver/uiautomator2/driver_test.go:50:	swipeCalls          []uiautomator2.RectModel
+pkg/driver/uiautomator2/driver_test.go:122:func (m *MockUIA2Client) ScrollInArea(area uiautomator2.RectModel, direction string, percent float64, speed int) error {
+pkg/driver/uiautomator2/driver_test.go:128:func (m *MockUIA2Client) SwipeInArea(area uiautomator2.RectModel, direction string, percent float64, speed int) error {
+pkg/driver/uiautomator2/driver_test.go:809:	img := image.NewRGBA(image.Rect(0, 0, w, h))
+pkg/driver/uiautomator2/commands_test.go:392:		if cmd == "am force-stop com.example.app" {
+pkg/driver/uiautomator2/commands_test.go:393:			t.Error("should not call force-stop when StopApp=false")
+pkg/driver/uiautomator2/commands_test.go:511:	if len(mock.commands) == 0 || mock.commands[0] != "am force-stop com.example.app" {
+pkg/driver/uiautomator2/commands_test.go:512:		t.Errorf("expected force-stop command, got %v", mock.commands)
+pkg/driver/uiautomator2/commands_test.go:3560:	foreground bool
+pkg/driver/uiautomator2/commands_test.go:3567:	case strings.HasPrefix(cmd, "am force-stop "):
+pkg/driver/uiautomator2/commands_test.go:3582:		if s.foreground {
+pkg/driver/uiautomator2/commands_test.go:3591:// L77: a zero force-stop exit is not success while the exact package remains
+pkg/driver/uiautomator2/commands_test.go:3592:// running or foreground, and an ineffective stop must not disarm crash checks.
+pkg/driver/uiautomator2/commands_test.go:3597:		foreground bool
+pkg/driver/uiautomator2/commands_test.go:3600:		{name: "still foreground", foreground: true},
+pkg/driver/uiautomator2/commands_test.go:3603:			shell := &stopStateShell{running: tc.running, foreground: tc.foreground}
+pkg/driver/uiautomator2/commands_test.go:3645:	case strings.HasPrefix(cmd, "am force-stop "):
+pkg/driver/uiautomator2/commands_test.go:3687:	for _, block := range []string{"am force-stop ", "pidof ", "dumpsys activity activities"} {
+pkg/driver/uiautomator2/commands_test.go:3726:	ctx, cancel := context.WithCancel(context.Background())
+pkg/driver/uiautomator2/commands_test.go:3736:	cancel()
+pkg/driver/uiautomator2/commands_test.go:3740:			t.Fatalf("cancelled stop: success=%v message=%q", r.Success, r.Message)
+pkg/driver/uiautomator2/commands_test.go:3743:		t.Fatal("cancelled stop did not return promptly")
+pkg/driver/uiautomator2/commands_test.go:3746:		t.Fatalf("cancelled shell still active after return: %d", active)
+pkg/driver/uiautomator2/commands_test.go:3749:		t.Fatalf("cancelled stop disarmed crash watch: %q", d.watchApp)
+pkg/driver/uiautomator2/commands_test.go:4552:		{"context deadline", context.DeadlineExceeded, true},
+pkg/driver/uiautomator2/commands_test.go:4553:		{"wrapped deadline", fmt.Errorf("element 'x' not found: %w", context.DeadlineExceeded), true},
+pkg/driver/uiautomator2/crash.go:54:// force-stop — to this flow. Best-effort: the command is unavailable before
+pkg/driver/uiautomator2/input_timeout_test.go:68:		t.Errorf("step took %v; the request should end at the 600ms step deadline", elapsed)
+pkg/driver/uiautomator2/input_timeout_test.go:93:	if strings.Contains(line, "Client.Timeout") || strings.Contains(line, "context deadline exceeded") {
+pkg/driver/uiautomator2/input_timeout_test.go:97:		t.Errorf("request cut after %v, before the 600ms step deadline", elapsed)
+pkg/driver/uiautomator2/input_timeout_test.go:114:// L01: Execute hands the step's deadline to the client, so requests of an
+pkg/driver/uiautomator2/input_timeout_test.go:130:		t.Fatal("inputText request context has no deadline")
+pkg/driver/uiautomator2/input_timeout_test.go:133:		t.Errorf("deadline %v after start, want about %v", got, want)
+pkg/driver/uiautomator2/input_timeout_test.go:156:		t.Errorf("scroll step deadline %v after start, want more than 10s", dl.Sub(start))
+pkg/driver/uiautomator2/visibility_wait.go:100:// while one is in flight (a crash cancels it), and "nothing visible" is
+pkg/driver/uiautomator2/visibility_wait.go:105:	deadline := time.Now().Add(timeout)
+pkg/driver/uiautomator2/visibility_wait.go:120:		remaining := time.Until(deadline)
+pkg/driver/uiautomator2/visibility_wait.go:132:		probeCtx, cancelProbe := context.WithCancel(parent)
+pkg/driver/uiautomator2/visibility_wait.go:151:					cancelProbe()
+pkg/driver/uiautomator2/visibility_wait.go:156:				cancelProbe()
+pkg/driver/uiautomator2/visibility_wait.go:161:		// A probe abandoned at the deadline stops at its next lookup
+pkg/driver/uiautomator2/visibility_wait.go:163:		cancelProbe()
+pkg/driver/uiautomator2/visibility_wait.go:179:		pause := min(notVisiblePollInterval, time.Until(deadline))
+pkg/driver/uiautomator2/visibility_wait.go:198:// checks ctx before each request, so a cancelled probe stops early.
+pkg/driver/uiautomator2/visibility_wait.go:247:		rect, rerr := elem.Rect()
+pkg/driver/uiautomator2/retry_deadline_test.go:10:type deadlineClient struct {
+pkg/driver/uiautomator2/retry_deadline_test.go:12:	deadlines []time.Time
+pkg/driver/uiautomator2/retry_deadline_test.go:15:func (c *deadlineClient) SetRetryDeadline(t time.Time) { c.deadlines = append(c.deadlines, t) }
+pkg/driver/uiautomator2/retry_deadline_test.go:20:	c := &deadlineClient{MockUIA2Client: &MockUIA2Client{}}
+pkg/driver/uiautomator2/retry_deadline_test.go:27:	if len(c.deadlines) != 2 {
+pkg/driver/uiautomator2/retry_deadline_test.go:28:		t.Fatalf("deadlines set %d times, want 2", len(c.deadlines))
+pkg/driver/uiautomator2/retry_deadline_test.go:30:	if got := c.deadlines[0].Sub(before); got < 150*time.Millisecond || got > time.Second {
+pkg/driver/uiautomator2/retry_deadline_test.go:31:		t.Errorf("step deadline %v after start, want about the 200ms timeout", got)
+pkg/driver/uiautomator2/retry_deadline_test.go:33:	if !c.deadlines[1].IsZero() {
+pkg/driver/uiautomator2/retry_deadline_test.go:34:		t.Errorf("a step without a timeout should clear the cap, got %v", c.deadlines[1])
+pkg/driver/uiautomator2/launch_first_frame_test.go:95:			return uiautomator2.NewCachedElement("el-1", "Deep Links", uiautomator2.ElementRect{Width: 10, Height: 10}), nil
+pkg/driver/uiautomator2/launch_first_frame_test.go:173:// L05 (b): a lookup the server holds against a dying app is cancelled by
+pkg/driver/uiautomator2/tap_plain_first_test.go:221:			el := uiautomator2.NewCachedElement("el", "Landmarks", uiautomator2.ElementRect{X: 600, Y: 1200, Width: 400, Height: 100})
+pkg/driver/uiautomator2/count_crash_test.go:101:// UiSelector and a page-source selector; the crash cancels it and is
+pkg/driver/uiautomator2/count_crash_test.go:139:			return uiautomator2.NewCachedElement("el", "Landmarks Home", uiautomator2.ElementRect{Width: 10, Height: 10}), nil
+pkg/driver/uiautomator2/not_found_message_test.go:99:			return uiautomator2.NewCachedElement("tahoe", "Lake Tahoe", uiautomator2.ElementRect{X: 42, Y: 469, Width: 227, Height: 63}), nil
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:275:			deadline := time.Now().Add(2 * time.Second)
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:276:			for checksSince(sh, *before) < 4 && time.Now().Before(deadline) {
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:279:			return uiautomator2.NewCachedElement("el", "Landmarks", uiautomator2.ElementRect{Width: 10, Height: 10}), nil
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:322:			return uiautomator2.NewCachedElement("el", "Deep Links", uiautomator2.ElementRect{Width: 10, Height: 10}), nil
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:549:	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Millisecond)
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:550:	defer cancel()
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:552:		t.Fatalf("cancellation: %v", err)
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:555:		t.Fatal("cancelled capture started another child")
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:567:	ctx, cancel := context.WithCancel(context.Background())
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:568:	defer cancel()
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:582:	cancel()
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:586:			t.Fatal("cancelled screenshot succeeded")
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:608:func TestFailureCapturesDoNotEnterUncancellableRecovery(t *testing.T) {
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:616:		ctx, cancel := context.WithTimeout(context.Background(), 300*time.Millisecond)
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:619:		cancel()
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:624:			t.Fatalf("capture lost its deadline: %s", elapsed)
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:657:			// held handler even when the transport incorrectly ignores deadlines.
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:661:			ctx, cancel := context.WithTimeout(context.Background(), 40*time.Millisecond)
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:662:			defer cancel()
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:670:				t.Errorf("capture ignored its deadline: %v", err)
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:673:				t.Errorf("deadline took %s to abort HTTP", elapsed)
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:676:			case cancelled := <-ack:
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:677:				if !cancelled {
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:681:				t.Fatal("HTTP did not acknowledge cancellation")
+pkg/driver/uiautomator2/deterministic_gestures_test.go:370:		t.Errorf("long presses = %+v, want one %+v", client.longClickCalls, want)
+pkg/driver/uiautomator2/deterministic_gestures_test.go:409:			return uiautomator2.NewCachedElement("pad", "", uiautomator2.ElementRect{X: 40, Y: 800, Width: 1000, Height: 800}), nil
+pkg/driver/uiautomator2/deterministic_gestures_test.go:505:					t.Errorf("no hold before the drag starts (it would read as a long press): %+v", a)
+pkg/driver/uiautomator2/deterministic_gestures_test.go:564:		t.Fatalf("bounds reads = %d, want moving then two stable reads", rectReads)
+pkg/driver/uiautomator2/deterministic_gestures_test.go:567:		t.Fatalf("callback=%d tap=%v, want callback once at stable centre [250 150]", callbackCalls, tapped)
+pkg/driver/uiautomator2/deterministic_gestures_test.go:571:// The ownership boundary: when the stable tap reaches the action and the app
+pkg/driver/uiautomator2/deterministic_gestures_test.go:632:	secondStarted, cancelled := make(chan struct{}), make(chan struct{})
+pkg/driver/uiautomator2/deterministic_gestures_test.go:647:				close(cancelled)
+pkg/driver/uiautomator2/deterministic_gestures_test.go:665:		t.Fatal("tap passed after its stabilization deadline")
+pkg/driver/uiautomator2/deterministic_gestures_test.go:676:	case <-cancelled:
+pkg/driver/uiautomator2/deterministic_gestures_test.go:678:		t.Fatal("held bounds HTTP request was not cancelled")
+pkg/driver/uiautomator2/deterministic_gestures_test.go:691:	secondStarted, cancelled := make(chan struct{}), make(chan struct{})
+pkg/driver/uiautomator2/deterministic_gestures_test.go:706:				close(cancelled)
+pkg/driver/uiautomator2/deterministic_gestures_test.go:718:	ctx, cancel := context.WithCancel(context.Background())
+pkg/driver/uiautomator2/deterministic_gestures_test.go:730:	cancel()
+pkg/driver/uiautomator2/deterministic_gestures_test.go:734:			t.Fatal("parent-cancelled tap passed")
+pkg/driver/uiautomator2/deterministic_gestures_test.go:737:		t.Fatal("parent cancellation did not stop stable target read")
+pkg/driver/uiautomator2/deterministic_gestures_test.go:740:	case <-cancelled:
+pkg/driver/uiautomator2/deterministic_gestures_test.go:742:		t.Fatal("held bounds HTTP request was not cancelled")
+pkg/driver/uiautomator2/deterministic_gestures_test.go:745:		t.Fatalf("click requests after parent cancellation = %d, want zero", clicks.Load())
+pkg/driver/uiautomator2/deterministic_gestures_test.go:789:		t.Fatalf("long press failed after stable target decision: %v", r.Error)
+pkg/driver/uiautomator2/deterministic_gestures_test.go:792:		t.Fatalf("long presses=%d duration=%d, want one 1500ms action", presses.Load(), duration)
+pkg/driver/uiautomator2/deterministic_gestures_test.go:822:	requestCtx, cancel := context.WithCancel(context.Background())
+pkg/driver/uiautomator2/deterministic_gestures_test.go:837:	cancel()
+pkg/driver/uiautomator2/deterministic_gestures_test.go:841:		t.Error("step cancellation did not stop the detail read promptly")
+pkg/driver/uiautomator2/deterministic_gestures_test.go:847:		t.Error("text detail request did not receive the client's real step cancellation")
+pkg/driver/uiautomator2/deterministic_gestures_test.go:850:		t.Fatalf("rect requests after step cancellation = %d, want zero", got)
+pkg/driver/uiautomator2/scroll_rect_test.go:8:func TestScrollPointsStayInsideTheRect(t *testing.T) {
+pkg/driver/uiautomator2/scroll_rect_test.go:13:			fromX, fromY, toX, toY := scrollPointsInRect(direction, x, y, w, h, 0.5)
+pkg/driver/uiautomator2/scroll_rect_test.go:34:	_, fromY, _, toY := scrollPointsInRect("down", x, y, w, h, 0.5)
+pkg/driver/uiautomator2/scroll_rect_test.go:39:	_, fromY, _, toY = scrollPointsInRect("up", x, y, w, h, 0.5)
+pkg/driver/uiautomator2/scroll_rect_test.go:44:	fromX, _, toX, _ := scrollPointsInRect("right", x, y, w, h, 0.5)
+pkg/driver/uiautomator2/scroll_rect_test.go:51:	downFrom, _, downTo, _ := scrollPointsInRect("down", x, y, w, h, 0.5)
+pkg/driver/uiautomator2/scroll_rect_test.go:52:	oddFrom, _, oddTo, _ := scrollPointsInRect("sideways", x, y, w, h, 0.5)
+pkg/driver/uiautomator2/scroll_rect_test.go:61:	fromX, _, toX, _ := scrollPointsInRect("down", 100, 600, 800, 400, 0.5)
+pkg/driver/uiautomator2/notvisible_crash_test.go:120:						return uiautomator2.NewCachedElement("el", "Loading", uiautomator2.ElementRect{X: 10, Y: 10, Width: 100, Height: 40}), nil
+pkg/driver/uiautomator2/pagesource_crash_test.go:160:			return uiautomator2.NewCachedElement("launcher-label", "Landmarks", uiautomator2.ElementRect{Width: 10, Height: 10}), nil
+pkg/driver/uiautomator2/wait_crash.go:134:// check runs while its GET /source is in flight, a crash cancels that
+pkg/driver/uiautomator2/wait_crash.go:144:// stepScope is the context given to an attempt whose requests go out under
+pkg/driver/uiautomator2/wait_crash.go:147:var stepScope = context.WithValue(context.Background(), stepScopeKey{}, true)
+pkg/driver/uiautomator2/wait_crash.go:149:type stepScopeKey struct{}
+pkg/driver/uiautomator2/wait_crash.go:151:// ownContext reports whether ctx is a wait's own context, not stepScope.
+pkg/driver/uiautomator2/wait_crash.go:153:	return ctx != nil && ctx != stepScope
+pkg/driver/uiautomator2/wait_crash.go:183:// The wait cancelled its lookup, but the server keeps working on it and
+pkg/driver/uiautomator2/wait_crash.go:190:// cancelled after bound, and returns when call answers or the bound passes,
+pkg/driver/uiautomator2/wait_crash.go:194:	ctx, cancel := context.WithCancel(parent)
+pkg/driver/uiautomator2/wait_crash.go:208:		cancel()
+pkg/driver/uiautomator2/wait_crash.go:211:		cancel()
+pkg/driver/uiautomator2/wait_crash.go:224:// crash the attempt's context is cancelled, which aborts its request, and
+pkg/driver/uiautomator2/wait_crash.go:243:// check runs every crashPoll while it is in flight (a crash cancels the
+pkg/driver/uiautomator2/wait_crash.go:256:	actx, cancel := context.WithCancel(ctx)
+pkg/driver/uiautomator2/wait_crash.go:257:	defer cancel()
+pkg/driver/uiautomator2/crash_during_find_test.go:101:			return uiautomator2.NewCachedElement("launcher-label", "Landmarks", uiautomator2.ElementRect{Width: 10, Height: 10}), nil
+pkg/driver/uiautomator2/crash_during_find_test.go:128:			return uiautomator2.NewCachedElement("el-1", "Landmarks", uiautomator2.ElementRect{Width: 10, Height: 10}), nil
+pkg/driver/uiautomator2/crash_during_find_test.go:187:			return uiautomator2.NewCachedElement("launcher-label", "Landmarks", uiautomator2.ElementRect{Width: 10, Height: 10}), nil
+pkg/driver/uiautomator2/bare_scroll.go:53:	deadline := time.Now().Add(scrollContainerWait)
+pkg/driver/uiautomator2/bare_scroll.go:54:	for time.Now().Before(deadline) {
+pkg/driver/uiautomator2/bare_scroll.go:92:// scrollPointsInRect.
+pkg/driver/uiautomator2/bare_scroll.go:218:// starts after deadline (zero: none). It returns the total distance the
+pkg/driver/uiautomator2/bare_scroll.go:220:func (d *Driver) scrollTopUp(direction string, rect core.Bounds, travel, moved int, before string, deadline time.Time) (int, string, bool) {
+pkg/driver/uiautomator2/bare_scroll.go:229:		if !deadline.IsZero() && !time.Now().Before(deadline) {
+pkg/driver/uiautomator2/driver.go:45:	ScrollInArea(area uiautomator2.RectModel, direction string, percent float64, speed int) error
+pkg/driver/uiautomator2/driver.go:46:	SwipeInArea(area uiautomator2.RectModel, direction string, percent float64, speed int) error
+pkg/driver/uiautomator2/driver.go:73:// retries at the running step's deadline (uiautomator2.Client).
+pkg/driver/uiautomator2/driver.go:75:	SetRetryDeadline(deadline time.Time)
+pkg/driver/uiautomator2/driver.go:79:// running step's context (uiautomator2.Client): its deadline, when further
+pkg/driver/uiautomator2/driver.go:81:// cancelling it aborts one in flight (L01).
+pkg/driver/uiautomator2/driver.go:94:// without a deadline.
+pkg/driver/uiautomator2/driver.go:131:// typingBudgetBase and typingBudgetPerChar size an inputText's deadline from
+pkg/driver/uiautomator2/driver.go:257:	// crash cancelled.
+pkg/driver/uiautomator2/driver.go:338:		var deadline time.Time
+pkg/driver/uiautomator2/driver.go:340:			deadline = start.Add(time.Duration(ms) * time.Millisecond)
+pkg/driver/uiautomator2/driver.go:342:		rd.SetRetryDeadline(deadline)
+pkg/driver/uiautomator2/driver.go:346:		if deadline := stepDeadline(step, start); !deadline.IsZero() {
+pkg/driver/uiautomator2/driver.go:347:			var cancel context.CancelFunc
+pkg/driver/uiautomator2/driver.go:348:			ctx, cancel = context.WithDeadline(ctx, deadline)
+pkg/driver/uiautomator2/driver.go:349:			defer cancel()
+pkg/driver/uiautomator2/driver.go:352:		// Later requests (captures between steps) run with no step deadline.
+pkg/driver/uiautomator2/driver.go:356:	stablePostSwipeTap := d.postSwipeTap
+pkg/driver/uiautomator2/driver.go:363:		if stablePostSwipeTap && !s.Selector.IsEmpty() {
+pkg/driver/uiautomator2/driver.go:510:		// crash cancelled (L05); do not queue the capture behind it.
+pkg/driver/uiautomator2/driver.go:543:	return nil, fmt.Errorf("screenshot client does not support cancellation")
+pkg/driver/uiautomator2/driver.go:548:		return nil, fmt.Errorf("hierarchy client does not support cancellation")
+pkg/driver/uiautomator2/driver.go:561:		return nil, fmt.Errorf("log tail device does not support cancellation")
+pkg/driver/uiautomator2/driver.go:668:		ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/uiautomator2/driver.go:669:		defer cancel()
+pkg/driver/uiautomator2/driver.go:686:		ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/uiautomator2/driver.go:687:		defer cancel()
+pkg/driver/uiautomator2/driver.go:837:	rect, err := elem.Rect()
+pkg/driver/uiautomator2/driver.go:849:	rect, err := elem.RectCtx(ctx)
+pkg/driver/uiautomator2/driver.go:861:	ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/uiautomator2/driver.go:862:	defer cancel()
+pkg/driver/uiautomator2/driver.go:867:// findElementWithContext finds an element using context for deadline management.
+pkg/driver/uiautomator2/driver.go:898:	// Single polling loop with context deadline
+pkg/driver/uiautomator2/driver.go:968:	return d.findElementOnceCtx(stepScope, sel)
+pkg/driver/uiautomator2/driver.go:972:// (stepScope = the step context), so an element wait can cancel one in
+pkg/driver/uiautomator2/driver.go:1038:// ctx (stepScope = the step context). A cancelled ctx stops it before the next
+pkg/driver/uiautomator2/driver.go:1072:// (single attempt) with its lookups sent under ctx (stepScope = the step
+pkg/driver/uiautomator2/driver.go:1100:	var rect uiautomator2.ElementRect
+pkg/driver/uiautomator2/driver.go:1102:		rect, err = elem.RectCtx(ctx)
+pkg/driver/uiautomator2/driver.go:1104:		rect, err = elem.Rect()
+pkg/driver/uiautomator2/driver.go:1211:	return d.resolveRelativeSelectorCtx(stepScope, sel)
+pkg/driver/uiautomator2/driver.go:1215:// read under ctx (stepScope = the step context).
+pkg/driver/uiautomator2/driver.go:1438:	return d.findElementByPageSourceOnceCtx(stepScope, sel)
+pkg/driver/uiautomator2/driver.go:1452:// page source read under ctx (stepScope = the step context).
+pkg/driver/uiautomator2/driver.go:1589:// search, reading the source under ctx (stepScope = the step context). Returns
+pkg/driver/uiautomator2/not_visible_wait_test.go:19:	return uiautomator2.NewCachedElement("loading", "Loading…", uiautomator2.ElementRect{X: x, Y: y, Width: w, Height: h})
+pkg/driver/uiautomator2/wait_crash_test.go:228:			return uiautomator2.NewCachedElement("el-1", "Landmarks", uiautomator2.ElementRect{Width: 10, Height: 10}), nil
+pkg/driver/uiautomator2/wait_crash_test.go:372:				return uiautomator2.NewCachedElement("el-1", "Landmarks", uiautomator2.ElementRect{Width: 10, Height: 10}), nil
+pkg/driver/uiautomator2/commands.go:102:type stableActionClient interface {
+pkg/driver/uiautomator2/commands.go:117:	ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/uiautomator2/commands.go:118:	defer cancel()
+pkg/driver/uiautomator2/commands.go:141:			actions, ok := d.client.(stableActionClient)
+pkg/driver/uiautomator2/commands.go:143:				return errorResult(fmt.Errorf("client does not support bounded actions"), "Failed to dispatch stable target action")
+pkg/driver/uiautomator2/commands.go:158:				return successResult(fmt.Sprintf("Tapped at relative point (%d, %d) on stable element", x, y), info)
+pkg/driver/uiautomator2/commands.go:176:				return successResult("Pressed on stable element", info)
+pkg/driver/uiautomator2/commands.go:182:				return errorResult(err, fmt.Sprintf("Failed to tap stable element: %v", err))
+pkg/driver/uiautomator2/commands.go:184:			return successResult("Tapped on stable element", info)
+pkg/driver/uiautomator2/commands.go:432:			return errorResult(err, fmt.Sprintf("Failed to long press at point: %v", err))
+pkg/driver/uiautomator2/commands.go:465:			return errorResult(err, fmt.Sprintf("Failed to long press at coordinates: %v", err))
+pkg/driver/uiautomator2/commands.go:469:			return errorResult(err, fmt.Sprintf("Failed to long press: %v", err))
+pkg/driver/uiautomator2/commands.go:566:	ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/uiautomator2/commands.go:567:	defer cancel()
+pkg/driver/uiautomator2/commands.go:588:			// Watched like every element wait (L50): a crash cancels the
+pkg/driver/uiautomator2/commands.go:828:	ctx, cancel := context.WithTimeout(d.parentContext(), typingBudget(text))
+pkg/driver/uiautomator2/commands.go:830:	return cancel
+pkg/driver/uiautomator2/commands.go:843:// the step's own deadline has passed, and wait up to keyEventsSettle for the
+pkg/driver/uiautomator2/commands.go:850:		// Background, not the step's context: that deadline has passed, and
+pkg/driver/uiautomator2/commands.go:858:	deadline := time.Now().Add(keyEventsSettle)
+pkg/driver/uiautomator2/commands.go:864:		if time.Now().After(deadline) {
+pkg/driver/uiautomator2/commands.go:945:	deadline := time.Now().Add(keyEventsSettle)
+pkg/driver/uiautomator2/commands.go:954:		if time.Now().After(deadline) {
+pkg/driver/uiautomator2/commands.go:1247:	deadline := time.Now().Add(scrollSettleMax)
+pkg/driver/uiautomator2/commands.go:1253:	for time.Now().Before(deadline) {
+pkg/driver/uiautomator2/commands.go:1323:	deadline := time.Now().Add(timeout)
+pkg/driver/uiautomator2/commands.go:1364:	for ; (maxScrolls == 0 || scrolls < maxScrolls) && time.Now().Before(deadline); scrolls++ {
+pkg/driver/uiautomator2/commands.go:1407:			settled, scrollErr = d.heldScrollStep(direction, width, height, container, scrollMs, settled, deadline)
+pkg/driver/uiautomator2/commands.go:1416:			scrollErr = d.performScrollInRect(direction, *container, step.Engine, 0.3, scrollMs)
+pkg/driver/uiautomator2/commands.go:1444:// settled source after this one. Top-ups stop at the step's deadline.
+pkg/driver/uiautomator2/commands.go:1445:func (d *Driver) heldScrollStep(direction string, width, height int, container *core.Bounds, durationMs int, before string, deadline time.Time) (string, error) {
+pkg/driver/uiautomator2/commands.go:1477:	_, last, _ := d.scrollTopUp(direction, rect, travel, moved, after, deadline)
+pkg/driver/uiautomator2/commands.go:1518:	area := uiautomator2.NewRect(0, height/8, width, height*3/4)
+pkg/driver/uiautomator2/commands.go:1522:// performScrollInRect scrolls inside one container rather than the screen. The
+pkg/driver/uiautomator2/commands.go:1525:func (d *Driver) performScrollInRect(direction string, bounds core.Bounds, engine string, percent float64, durationMs int) error {
+pkg/driver/uiautomator2/commands.go:1535:		return d.scrollByAdbInRect(direction, x, y, w, h, percent, durationMs)
+pkg/driver/uiautomator2/commands.go:1537:	return d.client.ScrollInArea(uiautomator2.NewRect(x, y, w, h), direction, percent, durationMs)
+pkg/driver/uiautomator2/commands.go:1545:	return d.scrollByAdbInRect(direction, 0, 0, screenWidth, screenHeight, percent, durationMs)
+pkg/driver/uiautomator2/commands.go:1548:// scrollByAdbInRect is scrollByAdb over an arbitrary rectangle, so a scroll can
+pkg/driver/uiautomator2/commands.go:1551:func (d *Driver) scrollByAdbInRect(direction string, rectX, rectY, rectW, rectH int, percent float64, durationMs int) error {
+pkg/driver/uiautomator2/commands.go:1552:	fromX, fromY, toX, toY := scrollPointsInRect(direction, rectX, rectY, rectW, rectH, percent)
+pkg/driver/uiautomator2/commands.go:1558:// scrollPointsInRect returns the swipe endpoints for a scroll centred in a
+pkg/driver/uiautomator2/commands.go:1564:func scrollPointsInRect(direction string, rectX, rectY, rectW, rectH int, percent float64) (fromX, fromY, toX, toY int) {
+pkg/driver/uiautomator2/commands.go:1594:		"context deadline exceeded",
+pkg/driver/uiautomator2/commands.go:1703:// (that would read as a long press), the move over an explicit duration, and
+pkg/driver/uiautomator2/commands.go:1723:	deadline := time.Now().Add(timeout)
+pkg/driver/uiautomator2/commands.go:1726:	for time.Now().Before(deadline) {
+pkg/driver/uiautomator2/commands.go:1889:	// runs, so without this a crash from an earlier run — or the force-stop
+pkg/driver/uiautomator2/commands.go:1896:		if _, err := d.device.Shell("am force-stop " + appID); err != nil {
+pkg/driver/uiautomator2/commands.go:1897:			logger.Warn("failed to force-stop app %s before launch: %v", appID, err)
+pkg/driver/uiautomator2/commands.go:2569:	ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/uiautomator2/commands.go:2570:	defer cancel()
+pkg/driver/uiautomator2/commands.go:2572:	if _, err := d.shellCtx(ctx, "am force-stop "+appID); err != nil {
+pkg/driver/uiautomator2/commands.go:2582:		foreground := d.appForegroundStateCtx(ctx, appID)
+pkg/driver/uiautomator2/commands.go:2583:		if process == processGone && foreground == processGone {
+pkg/driver/uiautomator2/commands.go:2682:	// force-stop is stopApp; using it here lost duckduckgo's open tab after
+pkg/driver/uiautomator2/commands.go:3273:	ctx, cancel := context.WithTimeout(d.parentContext(), timeout)
+pkg/driver/uiautomator2/commands.go:3274:	defer cancel()
+pkg/driver/uiautomator2/commands.go:3289:			// like every element wait: a crash cancels a request in flight
+pkg/driver/uiautomator2/commands.go:3344:	deadline := time.Now().Add(time.Duration(timeoutMs) * time.Millisecond)
+pkg/driver/uiautomator2/commands.go:3346:	for time.Now().Before(deadline) {

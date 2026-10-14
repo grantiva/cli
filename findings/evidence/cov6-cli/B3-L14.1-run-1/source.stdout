@@ -1,0 +1,17 @@
+Sources/GrantivaMCP/RequestCancellation.swift:4:/// Which requests the client cancelled with `notifications/cancelled`, so
+Sources/GrantivaMCP/RequestCancellation.swift:14:/// cancel for an unknown or finished id changes nothing.
+Sources/GrantivaMCP/RequestCancellation.swift:46:    /// The outgoing message with every response to a cancelled request
+Sources/GrantivaMCP/RequestCancellation.swift:64:    /// Whether `id` is still a cancelled, unanswered request.
+Sources/GrantivaMCP/RequestCancellation.swift:97:    /// it cancelled is never answered, so no response would remove it.
+Sources/GrantivaMCP/RequestCancellation.swift:119:    /// drops whatever else a cancelled request would get (`CancellationTracker`).
+Sources/GrantivaMCP/ValidatingTransport.swift:109:/// cannot correlate, and a cancelled request gets no reply at all
+Tests/GrantivaMCPTests/MCPTransportTests.swift:239:                if text.contains("notifications/cancelled") { cancelSeen.fulfill() }
+Tests/GrantivaMCPTests/MCPTransportTests.swift:254:        await sink.deliver(Data(#"{"jsonrpc":"2.0","method":"notifications/cancelled","params":{"requestId":2}}"#.utf8))
+Tests/GrantivaMCPTests/MCPTransportTests.swift:277:                if text.contains("notifications/cancelled") {
+Tests/GrantivaMCPTests/MCPTransportTests.swift:293:        await sink.deliver(Data(#"{"jsonrpc":"2.0","method":"notifications/cancelled","params":{"requestId":2}}"#.utf8))
+Tests/GrantivaMCPTests/MCPTransportTests.swift:416:/// L14: a `tools/call` cancelled with `notifications/cancelled` gets no
+Tests/GrantivaMCPTests/MCPTransportTests.swift:418:/// while the tool runs; a cancel for an unknown id changes nothing.
+Tests/GrantivaMCPTests/MCPTransportTests.swift:458:    private let cancel10 = #"{"jsonrpc":"2.0","method":"notifications/cancelled","params":{"requestId":10,"reason":"test"}}"#
+Tests/GrantivaMCPTests/MCPTransportTests.swift:483:        XCTAssertEqual(tracker.incoming(Data(#"{"jsonrpc":"2.0","method":"notifications/cancelled","params":{"requestId":"10"}}"#.utf8)), [])
+Tests/GrantivaMCPTests/MCPTransportTests.swift:528:        let cancel99 = #"{"jsonrpc":"2.0","method":"notifications/cancelled","params":{"requestId":99}}"#
+Sources/GrantivaMCP/MCPServer.swift:102:        // Register tools/call handler; a cancelled call gets no response (L14).

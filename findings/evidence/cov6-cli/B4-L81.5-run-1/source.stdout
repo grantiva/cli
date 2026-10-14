@@ -1,0 +1,39 @@
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:121:            XCTAssertTrue(text.hasPrefix("Invalid argument: Simulator \"Mine\" (USER-3) was not created by Grantiva. It is the only booted simulator, "), text)
+Sources/GrantivaCLI/InitCommand.swift:210:        return "\(article) \(noun) named \(listed.joined(separator: ", ")) already exists and was not created by Grantiva; runs from this directory will boot and drive it. "
+Tests/GrantivaCLITests/InitAndroidTests.swift:115:            "An AVD named \"Pixel_8_API_35\" already exists and was not created by Grantiva; runs from this directory will boot and drive it. "
+Tests/GrantivaCLITests/InitAndroidTests.swift:131:            "A simulator named \"iPhone 18 Pro\" (FE441EE5) already exists and was not created by Grantiva; runs from this directory will boot and drive it. "
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:151:            #"AVD "fix-k53-hand" was not created by Grantiva (grantiva emulator ensure). Pass --force to delete it anyway."#
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:22:            checks.append(await checkBootedSimulator())
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:94:    func checkBootedSimulator(
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:105:                name: "Booted Simulator", status: .warning,
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:106:                message: "Could not list simulators: \(reason)",
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:121:            message += " (\"\(userDefault.name)\" (\(userDefault.udid)) was not created by Grantiva, so it is not used as the default)"
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:124:            name: "Booted Simulator", status: .ok,
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:139:                + "(\"\(name)\" (\(theirs.udid)) was not created by Grantiva, so it is not used as the default)"
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:144:            name: "Booted Simulator", status: .warning,
+Sources/GrantivaMCP/Tools/ContextTool.swift:131:            return "[Simulator]\n  Could not list simulators: \(error.localizedDescription)"
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:45:        "Simulator \"\(name)\" (\(udid)) was not created by Grantiva. "
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:76:            "Error: Invalid argument: Simulator \"\(name)\" (USER-0001) was not created by Grantiva. It has the default simulator's name, "
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:88:        return "Invalid argument: Simulator \"\(name)\" (USER-0001) was not created by Grantiva. It has the default simulator's name, "
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:127:            "Invalid argument: Simulator \"Mine\" (USER-0002) was not created by Grantiva. It is the only booted simulator, "
+Sources/GrantivaCore/Android/EmulatorManager.swift:550:        "AVD \"\(name)\" was not created by Grantiva (grantiva emulator ensure). Pass \(force) to delete it anyway."
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:30:                    "Invalid argument: Simulator \"iPhone 18 Pro\" (USER-1) was not created by Grantiva. It has the default simulator's name, "
+Tests/GrantivaCoreTests/DoctorTests.swift:105:            DoctorCheck(name: "Booted Simulator", status: .warning, message: "No simulator booted", fix: nil),
+Tests/GrantivaCoreTests/DoctorTests.swift:152:        DoctorCheck(name: "Booted Simulator", status: .warning, message: "No simulator booted", fix: nil),
+Tests/GrantivaCoreTests/DoctorTests.swift:247:        let check = await DoctorRunner().checkBootedSimulator(simulators: simulators)
+Tests/GrantivaCoreTests/DoctorTests.swift:248:        XCTAssertEqual(check.name, "Booted Simulator")
+Tests/GrantivaCoreTests/DoctorTests.swift:249:        XCTAssertTrue(check.message.hasPrefix("Could not list simulators: "), check.message)
+Tests/GrantivaCoreTests/DoctorTests.swift:263:                + "(\"iPhone 18 Pro\" (USER-1) was not created by Grantiva, so it is not used as the default)"
+Tests/GrantivaCoreTests/DoctorTests.swift:273:        let check = await DoctorRunner().checkBootedSimulator(simulators: simulators)
+Tests/GrantivaCoreTests/DoctorTests.swift:281:        let check = await DoctorRunner().checkBootedSimulator(simulators: SimulatorManager(execute: { _ in list }))
+Tests/GrantivaCoreTests/DoctorTests.swift:289:        let note = #""iPhone 18 Pro" (USER-DEFAULT) was not created by Grantiva, so it is not used as the default"#
+Tests/GrantivaCoreTests/DoctorTests.swift:293:            let check = await DoctorRunner().checkBootedSimulator(
+Tests/GrantivaCoreTests/DoctorTests.swift:311:        let ordinary = await DoctorRunner().checkBootedSimulator(
+Tests/GrantivaCoreTests/DoctorTests.swift:321:        let owned = await DoctorRunner().checkBootedSimulator(
+Tests/GrantivaCoreTests/DoctorTests.swift:326:        XCTAssertFalse(owned.message.contains("was not created by Grantiva"), owned.message)
+Tests/GrantivaCoreTests/DoctorTests.swift:334:            let check = await DoctorRunner().checkBootedSimulator(
+Tests/GrantivaCoreTests/DoctorTests.swift:339:            XCTAssertTrue(check.message.contains(#""\#(defaultName)" (USER-DEFAULT) was not created by Grantiva"#), check.message)
+Tests/GrantivaCoreTests/DoctorTests.swift:387:        for name in ["Xcode", "Xcode Version", "Booted Simulator"] {
+Tests/GrantivaCoreTests/DoctorTests.swift:395:        XCTAssertEqual(checks.first { $0.name == "Booted Simulator" }?.section, .advisory)
+Tests/GrantivaCoreTests/DoctorTests.swift:441:        XCTAssertEqual(Set(checks.map(\.name)), ["Runner", "Android AVDs", "Running Emulator", "Booted Simulator"])
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:634:            XCTAssertTrue("\(error)".contains("was not created by Grantiva"), "\(error)")

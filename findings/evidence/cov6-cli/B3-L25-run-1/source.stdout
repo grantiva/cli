@@ -1,0 +1,41 @@
+        let parsed = MP4Fixture.Parsed(held.data)
+        XCTAssertEqual(parsed.stts, [[119, 10], [1, 610]] as [[UInt32]])
+        XCTAssertEqual(parsed.cslgEnd, 1_800)
+        XCTAssertEqual(parsed.mdhdDuration, 1_800)
+        XCTAssertEqual(parsed.tkhdDuration, 1_800)
+        XCTAssertEqual(parsed.mvhdDuration, 1_800)
+    }
+
+    // MARK: - L25: a malformed extra track does not stop the hold
+
+    func testAnExtraTrackWithoutMdiaIsSkippedInEitherOrder() throws {
+        for position in [MP4Fixture.ExtraTrak.Position.after, .before] {
+            for kind in [MP4Fixture.ExtraTrak.Kind.noMdia, .mdiaWithoutHdlr] {
+                let file = MP4Fixture(
+                    stts: [(1, 0)], mdhdDuration: 0, movieDuration: 0,
+                    extraTrak: .init(position: position, kind: kind)
+                )
+                let url = try temporaryFile(file.data)
+                defer { try? FileManager.default.removeItem(at: url) }
+                guard case .held(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 4) else {
+                    XCTFail("\(position) \(kind): expected the video track to be held"); continue
+                }
+                XCTAssertEqual(timing.frameCount, 1)
+                let held = try Data(contentsOf: url)
+                XCTAssertEqual(MP4Fixture.Parsed(held).stts, [[1, 360_000]] as [[UInt32]], "\(position) \(kind)")
+                XCTAssertEqual(MP4Fixture.traks(in: held).filter { !$0.contains(Array("stts".utf8)) },
+                               [file.extraTrakBytes], "\(position) \(kind): the extra trak is byte-identical")
+            }
+        }
+    }
+
+    func testAFileWithOnlyAnMdiaLessTrackHasNoVideoTrack() {
+        let file = MP4Fixture(stts: [(1, 0)], mdhdDuration: 0, movieDuration: 0, extraTrak: .init(position: .after, kind: .noMdia), omitVideo: true)
+        XCTAssertEqual(MP4LastFrameHold.timing(of: file.data), .failure(.init("the movie has no video track")))
+    }
+
+    // MARK: - Fixture helpers
+
+
+    func testHoldFileReportsTheTimingOfAHeldTrack() throws {
+        let file = MP4Fixture(stts: [(2, 4_500)], mdhdDuration: 9_000, movieDuration: 100)
