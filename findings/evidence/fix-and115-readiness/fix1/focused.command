@@ -1,1 +1,0 @@
-env -u GRANTIVA_API_KEY GRANTIVA_RUNNER_HOME=/private/tmp/grantiva-fix-and115-fix1-focused-home MAESTRO_RUNNER_HOME=/private/tmp/grantiva-fix-and115-fix1-focused-home swift test --filter EmulatorManagerTests/(four named readiness tests)
