@@ -1,0 +1,61 @@
+Resolved: module=app variant=freeDebug device=cov5-android screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov5-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: /private/tmp/grantiva-cov5-android-core-scratch/.maestro/11-slow.yaml
+
+  grantiva-runner 1.1.28-grantiva.15 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 11-slow (11-slow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.5s)
+    ✓ tapOn: text="Deep Links" (969ms)
+    ✓ tapOn: text="Slow Screen" (732ms)
+    ✓ assertVisible: text="Loading…" (627ms)
+    ✓ extendedWaitUntil: visible text="Loaded after delay" (2.5s)
+    ✓ takeScreenshot (144ms)
+✓ 11-slow 6.5s
+
+  [1/1] 11-slow (/private/tmp/grantiva-cov5-android-core-scratch/.maestro/11-slow.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.5s)
+    ✓ tapOn: text="Deep Links" (969ms)
+    ✓ tapOn: text="Slow Screen" (732ms)
+    ✓ assertVisible: text="Loading…" (627ms)
+    ✓ extendedWaitUntil: visible text="Loaded after delay" (2.5s)
+    ✓ takeScreenshot (144ms)
+✓ 11-slow 6.5s
+
+  6 steps passing (6.5s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  11-slow                        ✓ PASS       6      6      0      0       6.5s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       6      6      0      0       6.5s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+

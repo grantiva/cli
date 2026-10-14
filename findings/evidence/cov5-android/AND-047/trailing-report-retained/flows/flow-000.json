@@ -1,0 +1,96 @@
+{
+  "artifacts" : {
+
+  },
+  "commands" : [
+    {
+      "artifacts" : {
+
+      },
+      "duration" : 1653,
+      "endTime" : "2026-10-13T17:43:14.323897-07:00",
+      "id" : "cmd-000",
+      "index" : 0,
+      "startTime" : "2026-10-13T17:43:12.670897-07:00",
+      "status" : "passed",
+      "type" : "launchApp",
+      "yaml" : "launchApp"
+    },
+    {
+      "artifacts" : {
+        "screenshotAfter" : "assets/flow-000/cmd-001-after.png"
+      },
+      "duration" : 999,
+      "element" : {
+        "bounds" : {
+          "height" : 42,
+          "width" : 167,
+          "x" : 89,
+          "y" : 2253
+        },
+        "found" : true,
+        "text" : "Landmarks"
+      },
+      "endTime" : "2026-10-13T17:43:15.457196-07:00",
+      "id" : "cmd-001",
+      "index" : 1,
+      "params" : {
+        "selector" : {
+          "type" : "text",
+          "value" : "Landmarks"
+        }
+      },
+      "startTime" : "2026-10-13T17:43:14.458196-07:00",
+      "status" : "passed",
+      "type" : "tapOn",
+      "yaml" : "tapOn: text=\"Landmarks\""
+    },
+    {
+      "artifacts" : {
+        "logTail" : "assets/flow-000/cmd-002-log-tail.txt",
+        "screenshotAfter" : "assets/flow-000/cmd-002-after.png",
+        "screenshotBefore" : "assets/flow-000/cmd-002-before.png",
+        "viewHierarchy" : "assets/flow-000/cmd-002-hierarchy.xml"
+      },
+      "duration" : 17270,
+      "endTime" : "2026-10-13T17:43:32.854531-07:00",
+      "error" : {
+        "message" : "Element not visible: text='Never Visible Snapshot Target' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: \"Phone three bars.\", \"Lake Tahoe\", \"Wifi signal full.,No internet\")",
+        "type" : "assertion"
+      },
+      "id" : "cmd-002",
+      "index" : 2,
+      "params" : {
+        "selector" : {
+          "type" : "text",
+          "value" : "Never Visible Snapshot Target"
+        }
+      },
+      "startTime" : "2026-10-13T17:43:15.584531-07:00",
+      "status" : "failed",
+      "type" : "assertVisible",
+      "yaml" : "assertVisible: text=\"Never Visible Snapshot Target\""
+    }
+  ],
+  "device" : {
+    "id" : "emulator-5554",
+    "isSimulator" : true,
+    "name" : "google sdk_gphone64_arm64",
+    "osVersion" : "35",
+    "platform" : "android"
+  },
+  "duration" : 20365,
+  "endTime" : "2026-10-13T17:43:33.030781-07:00",
+  "id" : "flow-000",
+  "name" : "fail",
+  "sourceFile" : "/private/tmp/cov5-snapshot.QIy66p/fail.yaml",
+  "startTime" : "2026-10-13T17:43:12.665428-07:00",
+  "stepLatency" : {
+    "count" : 3,
+    "max" : 17270,
+    "mean" : 6640,
+    "p50" : 1653,
+    "p95" : 17270,
+    "slowestType" : "assertVisible"
+  }
+}

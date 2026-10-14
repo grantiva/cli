@@ -1,0 +1,62 @@
+Resolved: module=app variant=freeDebug device=cov5-android screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov5-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: /private/tmp/cov5-envboth.UpF65N/flow.yaml
+
+  grantiva-runner 1.1.28-grantiva.15 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] flow (flow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✗ assertVisible: text="No landmarks yet" (17.1s)
+      ╰─ Element not visible: text='No landmarks yet' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Landmarks", "All Landmarks", "Deep Links")
+✗ flow 18.7s
+
+  [1/1] flow (/private/tmp/cov5-envboth.UpF65N/flow.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✗ assertVisible: text="No landmarks yet" (17.1s)
+      ╰─ Element not visible: text='No landmarks yet' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Landmarks", "All Landmarks", "Deep Links")
+    - tapOn: text="Deep Links" (skipped)
+    - assertVisible: text="x" (skipped)
+✗ flow 18.7s
+
+  1 steps passing (18.7s)
+  1 steps failing
+  2 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  flow                           ✗ FAIL       4      1      1      2      18.7s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       4      1      1      2      18.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+Failure screenshot: .grantiva/run-captures/android/failure-1791938368.png
+Error: Runner failed (exit 1): flow: assertVisible: text="No landmarks yet": Element not visible: text='No landmarks yet' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Landmarks", "All Landmarks", "Deep Links")
+Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.

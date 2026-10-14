@@ -1,0 +1,96 @@
+
+  grantiva-runner 1.1.28-grantiva.15 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Installing UIAutomator2 APKs...
+  ✓ UIAutomator2 installed
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] screens (grantiva-android.yml)
+────────────────────────────────────────────────────────────
+    ✗ launchApp (315ms)
+      ╰─ launchApp: all launch methods failed for 'com.kylebrowning.landmarks'. The app may not be installed or has no launcher activity. Check with: adb shell pm list packages | grep com.kylebrowning.landmarks (cause: adb shell monkey -p com.kylebrowning.landmarks -c android.intent.category.LAUNCHER 1: exit status 252: args: [-p, com.kylebrowning.landmarks, -c, android.intent.category.LAUNCHER, 1]
+ arg: "-p"
+ arg: "com.kylebrowning.landmarks"
+ arg: "-c"
+ arg: "android.intent.category.LAUNCHER"
+ arg: "1"
+data="com.kylebrowning.landmarks"
+data="android.intent.category.LAUNCHER"
+)
+✗ screens 843ms
+
+  [1/1] screens (grantiva-android.yml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✗ launchApp (315ms)
+      ╰─ launchApp: all launch methods failed for 'com.kylebrowning.landmarks'. The app may not be installed or has no launcher activity. Check with: adb shell pm list packages | grep com.kylebrowning.landmarks (cause: adb shell monkey -p com.kylebrowning.landmarks -c android.intent.category.LAUNCHER 1: exit status 252: args: [-p, com.kylebrowning.landmarks, -c, android.intent.category.LAUNCHER, 1]
+ arg: "-p"
+ arg: "com.kylebrowning.landmarks"
+ arg: "-c"
+ arg: "android.intent.category.LAUNCHER"
+ arg: "1"
+data="com.kylebrowning.landmarks"
+data="android.intent.category.LAUNCHER"
+)
+    - Wait for the app to draw (skipped)
+    - waitForAnimationToEnd (skipped)
+    - takeScreenshot (skipped)
+    - tapOn: text="Favorites" (skipped)
+    - waitForAnimationToEnd (skipped)
+    - takeScreenshot (skipped)
+    - tapOn: text="Deep Links" (skipped)
+    - waitForAnimationToEnd (skipped)
+    - takeScreenshot (skipped)
+    - tapOn: text="Landmarks" (skipped)
+    - waitForAnimationToEnd (skipped)
+    - tapOn: text="Lakes" (skipped)
+    - waitForAnimationToEnd (skipped)
+    - takeScreenshot (skipped)
+    - tapOn: text="Landmarks" (skipped)
+    - waitForAnimationToEnd (skipped)
+    - tapOn: text="Golden Gate Bridge" (skipped)
+    - waitForAnimationToEnd (skipped)
+    - assertVisible: text="Plan Visit" (skipped)
+    - waitForAnimationToEnd (skipped)
+    - takeScreenshot (skipped)
+✗ screens 843ms
+
+  1 steps failing
+  21 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  screens                        ✗ FAIL      22      0      1     21      843ms  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1      22      0      1     21      843ms
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+Error: Runner failed (exit 1): Screen "Home" failed at launchApp: launchApp: all launch methods failed for 'com.kylebrowning.landmarks'. The app may not be installed or has no launcher activity. Check with: adb shell pm list packages | grep com.kylebrowning.landmarks (cause: adb shell monkey -p com.kylebrowning.landmarks -c android.intent.category.LAUNCHER 1: exit status 252: args: [-p, com.kylebrowning.landmarks, -c, android.intent.category.LAUNCHER, 1]
+ arg: "-p"
+ arg: "com.kylebrowning.landmarks"
+ arg: "-c"
+ arg: "android.intent.category.LAUNCHER"
+ arg: "1"
+data="com.kylebrowning.landmarks"
+data="android.intent.category.LAUNCHER"
+)

@@ -1,0 +1,89 @@
+{
+  "id": "flow-000",
+  "name": "fail",
+  "sourceFile": "/private/tmp/cov5-snapshot.QIy66p/fail.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T17:42:49.94189-07:00",
+  "endTime": "2026-10-13T17:43:09.532768-07:00",
+  "duration": 19590,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T17:42:49.947254-07:00",
+      "endTime": "2026-10-13T17:42:51.360254-07:00",
+      "duration": 1413,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Landmarks\"",
+      "status": "passed",
+      "startTime": "2026-10-13T17:42:51.361464-07:00",
+      "endTime": "2026-10-13T17:42:52.254464-07:00",
+      "duration": 893,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Landmarks",
+        "bounds": {
+          "x": 89,
+          "y": 2253,
+          "width": 167,
+          "height": 42
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Never Visible Snapshot Target\"",
+      "status": "failed",
+      "startTime": "2026-10-13T17:42:52.255104-07:00",
+      "endTime": "2026-10-13T17:43:09.395104-07:00",
+      "duration": 17140,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Never Visible Snapshot Target"
+        }
+      },
+      "error": {
+        "type": "assertion",
+        "message": "Element not visible: text='Never Visible Snapshot Target' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: \"Phone signal full.\", \"Lake Tahoe\", \"Wifi signal full.,No internet\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-002-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-002-hierarchy.xml",
+        "logTail": "assets/flow-000/cmd-002-log-tail.txt"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 6482,
+    "p50": 1413,
+    "p95": 17140,
+    "max": 17140,
+    "slowestType": "assertVisible"
+  },
+  "artifacts": {}
+}

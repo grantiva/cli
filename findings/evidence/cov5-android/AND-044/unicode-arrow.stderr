@@ -1,0 +1,99 @@
+Resolved: module=app variant=freeDebug device=cov5-android screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov5-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/coverage/01-selectors.yaml
+
+  grantiva-runner 1.1.28-grantiva.15 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 01-selectors (01-selectors.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Golden Gate.*" (861ms)
+    ✓ assertVisible: text="San Francisco, CA" (613ms)
+    ✓ launchApp (1.4s)
+    ✓ assertVisible: text="Golden Gate.*" (701ms)
+    ✓ assertNotVisible: text="Golden Gate.*", exact=true (100ms)
+    ✓ tapOn: text="Lakes", exact=true (176ms)
+    ✓ assertVisible: text=".*Lake.*" (666ms)
+    ✓ assertNotVisible: text="Lake" (99ms)
+    ✓ tapOn: text="Lake Tahoe", exact=true (145ms)
+    ✓ assertVisible: text="Sierra Nevada, CA" (72ms)
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Lakes" (852ms)
+    ✓ tapOn: text="(Lake .*|.* Lake)", index=1 (693ms)
+    ✓ assertVisible: text="Lee Vining, CA" (78ms)
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Deep Links" (787ms)
+    ✓ tapOn: text="Mountains → Yosemite Valley" (751ms)
+    ✓ assertVisible: text="Yosemite Valley" (638ms)
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Deep Links" (782ms)
+    ✓ tapOn: text="Caching Demo" (750ms)
+    ✓ assertVisible: id="clock" (621ms)
+    ✓ tapOn: id="clock" (94ms)
+    ✓ takeScreenshot (129ms)
+✓ 01-selectors 16.7s
+
+  [1/1] 01-selectors (.maestro/coverage/01-selectors.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Golden Gate.*" (861ms)
+    ✓ assertVisible: text="San Francisco, CA" (613ms)
+    ✓ launchApp (1.4s)
+    ✓ assertVisible: text="Golden Gate.*" (701ms)
+    ✓ assertNotVisible: text="Golden Gate.*", exact=true (100ms)
+    ✓ tapOn: text="Lakes", exact=true (176ms)
+    ✓ assertVisible: text=".*Lake.*" (666ms)
+    ✓ assertNotVisible: text="Lake" (99ms)
+    ✓ tapOn: text="Lake Tahoe", exact=true (145ms)
+    ✓ assertVisible: text="Sierra Nevada, CA" (72ms)
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Lakes" (852ms)
+    ✓ tapOn: text="(Lake .*|.* Lake)", index=1 (693ms)
+    ✓ assertVisible: text="Lee Vining, CA" (78ms)
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Deep Links" (787ms)
+    ✓ tapOn: text="Mountains → Yosemite Valley" (751ms)
+    ✓ assertVisible: text="Yosemite Valley" (638ms)
+    ✓ launchApp (1.4s)
+    ✓ tapOn: text="Deep Links" (782ms)
+    ✓ tapOn: text="Caching Demo" (750ms)
+    ✓ assertVisible: id="clock" (621ms)
+    ✓ tapOn: id="clock" (94ms)
+    ✓ takeScreenshot (129ms)
+✓ 01-selectors 16.7s
+
+  25 steps passing (16.7s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  01-selectors                   ✓ PASS      25     25      0      0      16.7s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      25     25      0      0      16.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+

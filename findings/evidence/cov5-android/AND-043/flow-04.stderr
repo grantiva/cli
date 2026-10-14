@@ -1,0 +1,75 @@
+Resolved: module=app variant=freeDebug device=cov5-android screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov5-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: /private/tmp/grantiva-cov5-android-core-scratch/.maestro/04-discard.yaml
+
+  grantiva-runner 1.1.28-grantiva.15 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 04-discard (04-discard.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.5s)
+    ✓ tapOn: text="Deep Links" (803ms)
+    ✓ tapOn: text="Edit Landmark" (766ms)
+    ✓ tapOn: text="Location" (765ms)
+    ✓ inputText: "X" (1.5s)
+    ✓ tapOn: text="Cancel" (247ms)
+    ✓ assertVisible: text="You have unsaved changes that will be lost." (803ms)
+    ✓ takeScreenshot (143ms)
+    ✓ tapOn: text="Keep Editing" (466ms)
+    ✓ assertVisible: text="Edit Landmark" (712ms)
+    ✓ tapOn: text="Cancel" (771ms)
+    ✓ tapOn: text="Discard" (1.5s)
+    ✓ assertVisible: text="Deep Links" (595ms)
+✓ 04-discard 10.5s
+
+  [1/1] 04-discard (/private/tmp/grantiva-cov5-android-core-scratch/.maestro/04-discard.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.5s)
+    ✓ tapOn: text="Deep Links" (803ms)
+    ✓ tapOn: text="Edit Landmark" (766ms)
+    ✓ tapOn: text="Location" (765ms)
+    ✓ inputText: "X" (1.5s)
+    ✓ tapOn: text="Cancel" (247ms)
+    ✓ assertVisible: text="You have unsaved changes that will be lost." (803ms)
+    ✓ takeScreenshot (143ms)
+    ✓ tapOn: text="Keep Editing" (466ms)
+    ✓ assertVisible: text="Edit Landmark" (712ms)
+    ✓ tapOn: text="Cancel" (771ms)
+    ✓ tapOn: text="Discard" (1.5s)
+    ✓ assertVisible: text="Deep Links" (595ms)
+✓ 04-discard 10.5s
+
+  13 steps passing (10.5s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  04-discard                     ✓ PASS      13     13      0      0      10.5s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      13     13      0      0      10.5s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+

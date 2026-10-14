@@ -1,0 +1,65 @@
+Resolved: module=app variant=freeDebug device=cov5-android screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov5-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/01-browse.yaml
+
+  grantiva-runner 1.1.28-grantiva.15 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.5s)
+    ✓ assertVisible: text="Landmarks" (82ms)
+    ✓ assertVisible: text="Featured" (574ms)
+    ✓ takeScreenshot (140ms)
+    ✓ tapOn: text="Golden Gate Bridge" (188ms)
+    ✓ assertVisible: text="San Francisco, CA" (634ms)
+    ✓ assertVisible: text="Plan Visit" (27ms)
+    ✓ takeScreenshot (126ms)
+✓ 01-browse 3.3s
+
+  [1/1] 01-browse (.maestro/01-browse.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.5s)
+    ✓ assertVisible: text="Landmarks" (82ms)
+    ✓ assertVisible: text="Featured" (574ms)
+    ✓ takeScreenshot (140ms)
+    ✓ tapOn: text="Golden Gate Bridge" (188ms)
+    ✓ assertVisible: text="San Francisco, CA" (634ms)
+    ✓ assertVisible: text="Plan Visit" (27ms)
+    ✓ takeScreenshot (126ms)
+✓ 01-browse 3.3s
+
+  8 steps passing (3.3s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  01-browse                      ✓ PASS       8      8      0      0       3.3s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0       3.3s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
