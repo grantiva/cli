@@ -1,0 +1,829 @@
+{
+  "schema": "grantiva.coverage.static-batch-plan.v1",
+  "status": "PREPARED_ONLY",
+  "candidateManifestSHA256": "191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c",
+  "requiredKeysSHA256": "fb724be2d4d2eb1a6777b9b14b433f7f2ce951f0f758bca38f6cb0f174619749",
+  "canonicalStartIndexOneBased": 72,
+  "canonicalEndIndexOneBased": 172,
+  "count": 101,
+  "keys": [
+    {
+      "key": "AND-051",
+      "baseId": "AND-051",
+      "matrixLine": 621,
+      "command": "`run --keep-alive`",
+      "precondition": "`--flow <flow>`",
+      "expected": "Holds the UIAutomator2 session until Ctrl-C (docs/android.md:104)"
+    },
+    {
+      "key": "AND-052",
+      "baseId": "AND-052",
+      "matrixLine": 622,
+      "command": "`hierarchy`",
+      "precondition": "two sessions (cov-android, cov-android-2), no `--udid`",
+      "expected": "Newest (README:91)"
+    },
+    {
+      "key": "AND-053",
+      "baseId": "AND-053",
+      "matrixLine": 623,
+      "command": "`hierarchy`",
+      "precondition": "default",
+      "expected": "UIAutomator2 page source XML; app untouched (docs/android.md:105)"
+    },
+    {
+      "key": "AND-054",
+      "baseId": "AND-054",
+      "matrixLine": 624,
+      "command": "`hierarchy`",
+      "precondition": "`--format json`",
+      "expected": "Same tree as JSON, frames in dp (docs/android.md:106)"
+    },
+    {
+      "key": "AND-055",
+      "baseId": "AND-055",
+      "matrixLine": 625,
+      "command": "`hierarchy`",
+      "precondition": "`--json`",
+      "expected": "JSON (docs/dump-hierarchy.md:38; brief D01)"
+    },
+    {
+      "key": "AND-056",
+      "baseId": "AND-056",
+      "matrixLine": 626,
+      "command": "`hierarchy`",
+      "precondition": "`--udid <serial>` with two sessions",
+      "expected": "That serial's session (docs/android.md:110-111)"
+    },
+    {
+      "key": "AND-057",
+      "baseId": "AND-057",
+      "matrixLine": 627,
+      "command": "`hierarchy`",
+      "precondition": "`adb forward --list` before/after",
+      "expected": "A local port to 6790 only for the command (docs/android.md:108-110)"
+    },
+    {
+      "key": "AND-058",
+      "baseId": "AND-058",
+      "matrixLine": 628,
+      "command": "`hierarchy`",
+      "precondition": "after `kill -9` of the run",
+      "expected": "Dead session ignored; fails fast (docs/dump-hierarchy.md:21)"
+    },
+    {
+      "key": "AND-059",
+      "baseId": "AND-059",
+      "matrixLine": 629,
+      "command": "`run --keep-alive`, Ctrl-C",
+      "precondition": "passing flow",
+      "expected": "Session, owner sidecar, UIAutomator2 server and forwards cleaned; demo mode and animation scales restored; no `failure-<ts>.png` written (obs; #186)"
+    },
+    {
+      "key": "AND-060",
+      "baseId": "AND-060",
+      "matrixLine": 630,
+      "command": "`run --keep-alive &`, `kill -INT`",
+      "precondition": "`--ready-file r`",
+      "expected": "Same cleanup; `r` says `interrupted`, no flow `running` (README:76, 89; brief A06)"
+    },
+    {
+      "key": "AND-061",
+      "baseId": "AND-061",
+      "matrixLine": 631,
+      "command": "`run --keep-alive --ready-file r`, `hierarchy`",
+      "precondition": "as soon as `r` exists",
+      "expected": "No race (docs/dump-hierarchy.md:23)"
+    },
+    {
+      "key": "AND-062",
+      "baseId": "AND-062",
+      "matrixLine": 632,
+      "command": "`run`",
+      "precondition": "two concurrent runs, cov-android and cov-android-2",
+      "expected": "Both pass without interfering (README:92)"
+    },
+    {
+      "key": "AND-063",
+      "baseId": "AND-063",
+      "matrixLine": 633,
+      "command": "`run`",
+      "precondition": "second run on a serial owned by a live run",
+      "expected": "Fails fast: `Emulator <serial> ...` naming the owner; suggests `grantiva emulator teardown --serial <serial> --force` / `grantiva emulator ensure --name <unique-name>`; no ` exited with code 1`; no failure screenshot (brief A10)"
+    },
+    {
+      "key": "AND-064",
+      "baseId": "AND-064",
+      "matrixLine": 634,
+      "command": "`run`",
+      "precondition": "orphan forwards for another serial",
+      "expected": "Cleanup removes only this serial's forwards (docs/android.md:137)"
+    },
+    {
+      "key": "AND-122",
+      "baseId": "AND-122",
+      "matrixLine": 635,
+      "command": "docs/android.md keep-alive examples",
+      "precondition": ":104-106 as written",
+      "expected": "Each prints as its comment says (docs/android.md:102-111)"
+    },
+    {
+      "key": "AND-065",
+      "baseId": "AND-065",
+      "matrixLine": 641,
+      "command": "`run`, `diff capture`",
+      "precondition": "default",
+      "expected": "Demo mode (09:41, full battery, no notifications), animation scales 0, portrait (docs/android.md:78-79)"
+    },
+    {
+      "key": "AND-066",
+      "baseId": "AND-066",
+      "matrixLine": 642,
+      "command": "`run`",
+      "precondition": "during run",
+      "expected": "Previous values in `.grantiva/android-settings-<serial>.json` (docs/android.md:79-80)"
+    },
+    {
+      "key": "AND-067",
+      "baseId": "AND-067",
+      "matrixLine": 643,
+      "command": "`run`",
+      "precondition": "after normal exit",
+      "expected": "Restored (docs/android.md:80)"
+    },
+    {
+      "key": "AND-068",
+      "baseId": "AND-068",
+      "matrixLine": 644,
+      "command": "`run`",
+      "precondition": "`kill -9` mid-run, then another run",
+      "expected": "Next run restores them first (docs/android.md:80-81)"
+    },
+    {
+      "key": "AND-069",
+      "baseId": "AND-069",
+      "matrixLine": 645,
+      "command": "`run`",
+      "precondition": "`--device <physical serial>`",
+      "expected": "`n/a`: no physical device (spec \u00a7Out of scope) (docs/android.md:37-38)"
+    },
+    {
+      "key": "AND-070",
+      "baseId": "AND-070",
+      "matrixLine": 646,
+      "command": "`run`",
+      "precondition": "`--device <physical serial> --allow-device-settings`",
+      "expected": "`n/a`: no physical device (spec \u00a7Out of scope) (docs/android.md:37-38)"
+    },
+    {
+      "key": "AND-071",
+      "baseId": "AND-071",
+      "matrixLine": 652,
+      "command": "`run --logs`",
+      "precondition": "none",
+      "expected": "`[log]` logcat lines from the app's uid (docs/android.md:85)"
+    },
+    {
+      "key": "AND-072",
+      "baseId": "AND-072",
+      "matrixLine": 653,
+      "command": "`run`",
+      "precondition": "`--logs-tag Landmarks`",
+      "expected": "Implies `--logs`; only that tag (docs/android.md:86)"
+    },
+    {
+      "key": "AND-073",
+      "baseId": "AND-073",
+      "matrixLine": 654,
+      "command": "`run`",
+      "precondition": "`--logs` with no level, `default`, `info`, `debug`",
+      "expected": "logcat `*:I`, `*:I`, `*:I`, `*:D`; default and info give the same set, debug adds D (docs/android.md:87-95; brief A08)"
+    },
+    {
+      "key": "AND-074",
+      "baseId": "AND-074",
+      "matrixLine": 655,
+      "command": "`run`",
+      "precondition": "`--logs-predicate x`",
+      "expected": "Rejected by name (docs/android.md:95)"
+    },
+    {
+      "key": "AND-075",
+      "baseId": "AND-075",
+      "matrixLine": 656,
+      "command": "`run --logs`",
+      "precondition": "exit by success, failure, Ctrl-C (exit 130)",
+      "expected": "No `adb ... logcat` process remains (brief A07)"
+    },
+    {
+      "key": "AND-123",
+      "baseId": "AND-123",
+      "matrixLine": 657,
+      "command": "`run --logs`",
+      "precondition": "lines logged before the run",
+      "expected": "Not shown: starts at the device's current time; buffer not cleared (docs/android.md:85-86; brief A08)"
+    },
+    {
+      "key": "AND-076",
+      "baseId": "AND-076",
+      "matrixLine": 663,
+      "command": "`record`",
+      "precondition": "`--duration 5 --frames-at 0,1000,3000` on a static screen",
+      "expected": "Exit 0; `.grantiva/recordings/recording.mp4` of about 5 s; three PNGs; `actualMilliseconds` the held frame (docs/android.md:115-121; brief A05)"
+    },
+    {
+      "key": "AND-077",
+      "baseId": "AND-077",
+      "matrixLine": 664,
+      "command": "`record`",
+      "precondition": "`--duration 181`",
+      "expected": "Refused before recording (docs/android.md:118)"
+    },
+    {
+      "key": "AND-078",
+      "baseId": "AND-078",
+      "matrixLine": 665,
+      "command": "`record`",
+      "precondition": "`--device <serial>`; `--emulator cov-android`",
+      "expected": "Each targets that; config `emulator` default (docs/android.md:124-125)"
+    },
+    {
+      "key": "AND-079",
+      "baseId": "AND-079",
+      "matrixLine": 666,
+      "command": "`record --json`",
+      "precondition": "`--output \"/private/tmp/.../cov rec/a.mp4\"`",
+      "expected": "Written there; JSON names `emulator` and `serial` (plus `simulator`/`udid` with the same values) (docs/android.md:125-127)"
+    },
+    {
+      "key": "AND-124",
+      "baseId": "AND-124",
+      "matrixLine": 667,
+      "command": "`record`",
+      "precondition": "static screen, `--duration 4`",
+      "expected": "stderr note that most of the recording was held (docs/android.md:121-123; README:342-344)"
+    },
+    {
+      "key": "AND-125",
+      "baseId": "AND-125",
+      "matrixLine": 668,
+      "command": "docs/android.md record example",
+      "precondition": ":115 as written",
+      "expected": "Video plus three PNGs (docs/android.md:115-118)"
+    },
+    {
+      "key": "AND-139",
+      "baseId": "AND-139",
+      "matrixLine": 669,
+      "command": "`record --quiet` / `--verbose`",
+      "precondition": "`record --duration 2 --json` plain, `--quiet`, `--verbose`",
+      "expected": "stdout identical in all three modes (compare byte for byte; with `--json` the JSON); `--quiet`: no progress narration on stderr, `Warning:`/`Error:` still printed; `--verbose`: stderr adds timestamps, labels and every subprocess with its exit status (README:388-396)"
+    },
+    {
+      "key": "AND-080",
+      "baseId": "AND-080",
+      "matrixLine": 675,
+      "command": "`runner start --detach`",
+      "precondition": "none",
+      "expected": "Boots emulator if needed, holds UIAutomator2, port in `.grantiva/session.json` (docs/android.md:131, 136)"
+    },
+    {
+      "key": "AND-081",
+      "baseId": "AND-081",
+      "matrixLine": 676,
+      "command": "`runner dump-hierarchy`",
+      "precondition": "`--format tree`, `json`, `xml`",
+      "expected": "Same tree in each (docs/android.md:111)"
+    },
+    {
+      "key": "AND-082",
+      "baseId": "AND-082",
+      "matrixLine": 677,
+      "command": "`runner stop`",
+      "precondition": "after start",
+      "expected": "Kills runner, stops UIAutomator2, removes the serial's forwards (docs/android.md:136-137)"
+    },
+    {
+      "key": "AND-083",
+      "baseId": "AND-083",
+      "matrixLine": 678,
+      "command": "`runner start`",
+      "precondition": "`--application-id x.y --emulator cov-android`",
+      "expected": "Flags win over config (help: runner_start.txt)"
+    },
+    {
+      "key": "AND-084",
+      "baseId": "AND-084",
+      "matrixLine": 679,
+      "command": "`runner start`",
+      "precondition": "stale session.json (dead pid)",
+      "expected": "Starts cleanly (docs/dump-hierarchy.md:21)"
+    },
+    {
+      "key": "AND-126",
+      "baseId": "AND-126",
+      "matrixLine": 680,
+      "command": "`runner start --json`, `stop --json`; `--device <serial>`; `--headless`",
+      "precondition": "none",
+      "expected": "JSON results; flags honoured (README:367-369; help: runner_start.txt)"
+    },
+    {
+      "key": "AND-127",
+      "baseId": "AND-127",
+      "matrixLine": 681,
+      "command": "docs/android.md session example",
+      "precondition": ":131-134 as written (mcp: send tools/list)",
+      "expected": "`runner start --detach` prints a log path and writes `.grantiva/session.json` with the forwarded port; `runner dump-hierarchy --format tree` prints a tree containing `Landmarks`; `mcp` answers `tools/list` with 22 tools; `runner stop` exits 0 and `adb forward --list` has no entry for the serial afterwards (docs/android.md:129-137)"
+    },
+    {
+      "key": "AND-085",
+      "baseId": "AND-085",
+      "matrixLine": 687,
+      "command": "`diff capture`",
+      "precondition": "first capture",
+      "expected": "`.grantiva/captures/android/`; prints `Emulator: cov-android (<serial>)`; `--json` has an `emulator` object next to `simulator` (docs/android.md:70-76)"
+    },
+    {
+      "key": "AND-086",
+      "baseId": "AND-086",
+      "matrixLine": 688,
+      "command": "`diff approve`",
+      "precondition": "after capture",
+      "expected": "`.grantiva/baselines/android/`; iOS paths untouched (docs/android.md:70-71)"
+    },
+    {
+      "key": "AND-087",
+      "baseId": "AND-087",
+      "matrixLine": 689,
+      "command": "`diff compare`",
+      "precondition": "unchanged; changed pixel; `--json`",
+      "expected": "Pass; fail per both thresholds; valid JSON (README:123-128)"
+    },
+    {
+      "key": "AND-088",
+      "baseId": "AND-088",
+      "matrixLine": 690,
+      "command": "`diff compare`",
+      "precondition": "logged in",
+      "expected": "`blocked`: no credentials in the campaign (spec \u00a7Out of scope) (docs/android.md:71-73)"
+    },
+    {
+      "key": "AND-089",
+      "baseId": "AND-089",
+      "matrixLine": 691,
+      "command": "`ci run`",
+      "precondition": "Android project",
+      "expected": "Refuses with the local-only message (docs/android.md:71-73)"
+    },
+    {
+      "key": "AND-128",
+      "baseId": "AND-128",
+      "matrixLine": 692,
+      "command": "`diff capture`",
+      "precondition": "`NEW:cfg/screens-steps` and Maestro-format config",
+      "expected": "Every step executes; a capture per screen (README:132-172)"
+    },
+    {
+      "key": "AND-140",
+      "baseId": "AND-140",
+      "matrixLine": 693,
+      "command": "`diff capture`",
+      "precondition": "`--emulator cov-android --module app --variant freeDebug --headless`, cov-android shut down",
+      "expected": "Boots cov-android headless (no window), builds `assembleFreeDebug`, captures the 5 screens, prints `Emulator: cov-android (<serial>)` (help: diff_capture.txt; docs/android.md:33, 38, 74)"
+    },
+    {
+      "key": "AND-141",
+      "baseId": "AND-141",
+      "matrixLine": 694,
+      "command": "`diff capture --app-file`",
+      "precondition": "`--app-file <app-free-debug.apk>`",
+      "expected": "Skips Gradle; application ID read from the APK (`apkanalyzer`); 5 screens (help: diff_capture.txt; docs/android.md:48)"
+    },
+    {
+      "key": "AND-142",
+      "baseId": "AND-142",
+      "matrixLine": 695,
+      "command": "`diff compare --capture`",
+      "precondition": "`--emulator cov-android --module app --variant freeDebug --application-id com.kylebrowning.landmarks --headless`; then `--device <serial> --no-build`; then `--app-file <apk>`; then `--allow-device-settings`",
+      "expected": "Each capture step honours the flags (boot/target/build/skip), then compares; `--allow-device-settings` accepted on an emulator (help: diff_compare.txt)"
+    },
+    {
+      "key": "AND-138",
+      "baseId": "AND-138",
+      "matrixLine": 696,
+      "command": "`diff capture --quiet` / `--verbose`",
+      "precondition": "`diff capture --no-build --json` plain, `--quiet`, `--verbose`",
+      "expected": "Decoded screen names/order, paths, statuses, device identity and dimensions agree; measured durations/timestamps and PNG bytes may differ. Quiet is silent on successful stderr; verbose adds diagnostics only. (corrected round 4)"
+    },
+    {
+      "key": "AND-090",
+      "baseId": "AND-090",
+      "matrixLine": 702,
+      "command": "`doctor --platform android`",
+      "precondition": "toolchain present, cov-android running",
+      "expected": "SDK, adb, emulator, JDK, AVDs pass; exit 0 (docs/android.md:13)"
+    },
+    {
+      "key": "AND-091",
+      "baseId": "AND-091",
+      "matrixLine": 703,
+      "command": "`doctor --platform android`",
+      "precondition": "`ANDROID_HOME` unset",
+      "expected": "Falls back (docs/android-environment.md:15-16)"
+    },
+    {
+      "key": "AND-092",
+      "baseId": "AND-092",
+      "matrixLine": 704,
+      "command": "`doctor --platform android --json`",
+      "precondition": "`JAVA_HOME=/nonexistent`",
+      "expected": "JDK check fails; non-zero; JSON valid (README:330)"
+    },
+    {
+      "key": "AND-201",
+      "baseId": "AND-201",
+      "matrixLine": 759,
+      "command": "`run --flow` tapOn (string)",
+      "precondition": "`tapOn: \"Golden Gate Bridge\"`",
+      "expected": "Taps; detail opens (README:172)"
+    },
+    {
+      "key": "AND-202",
+      "baseId": "AND-202",
+      "matrixLine": 760,
+      "command": "`run --flow` tapOn {text:}",
+      "precondition": "`tapOn: {text: \"Lake Tahoe\"}`",
+      "expected": "Taps the element whose text matches (README:172)"
+    },
+    {
+      "key": "AND-203",
+      "baseId": "AND-203",
+      "matrixLine": 761,
+      "command": "`run --flow` tapOn {id:}",
+      "precondition": "`tapOn: {id: \"clock\"}`, `assertVisible: {id: \"clock\"}` on Caching Demo; android needs hook H2 (testTag as resource id)",
+      "expected": "Matches the accessibility identifier (iOS) / resource id (Android), not text (README:172; docs/mcp.md:88; brief C08)"
+    },
+    {
+      "key": "AND-204",
+      "baseId": "AND-204",
+      "matrixLine": 762,
+      "command": "`run --flow` selector regex",
+      "precondition": "`tapOn: \"Golden Gate.*\"`; `assertVisible: \".*Lake.*\"`",
+      "expected": "Case-insensitive regex over the whole text: matches; `assertVisible: \"Lake\"` alone does not match `Lake Tahoe` (README:143-145)"
+    },
+    {
+      "key": "AND-205",
+      "baseId": "AND-205",
+      "matrixLine": 763,
+      "command": "`run --flow` selector exact",
+      "precondition": "`assertVisible: {text: \"Golden Gate.*\"}` (regex, no exact) then `assertNotVisible: {text: \"Golden Gate.*\", exact: true}` on the Landmarks list; `tapOn: {text: \"Lake Tahoe\", exact: true}`",
+      "expected": "The regex assert passes; the exact `assertNotVisible` passes only because `exact` is honoured (the literal text `Golden Gate.*` is on no element; if `exact` were ignored the regex would match and the step would fail); the exact tap opens Lake Tahoe; no `\"exact\" is not supported` warning. Runner flows follow the runner rule (docs/mcp.md:88: `text` is a case-insensitive regex over the whole value, `exact: true` is the whole value as written); screens steps follow README:143-147 (docs/mcp.md:88; README:143-147; obs exact on Android)"
+    },
+    {
+      "key": "AND-206",
+      "baseId": "AND-206",
+      "matrixLine": 764,
+      "command": "`run --flow` selector exact (negative)",
+      "precondition": "`assertVisible: {text: \"Golden Gate.*\", exact: true}` on the Landmarks list",
+      "expected": "Step fails as element not visible naming `Golden Gate.*` (exact honoured: the literal text is absent); run exit 1. If the step passes, `exact` was ignored: `fail`. Runner flows follow the runner rule (docs/mcp.md:88: `text` is a case-insensitive regex over the whole value, `exact: true` is the whole value as written); screens steps follow README:143-147 (docs/mcp.md:88; README:143-147)"
+    },
+    {
+      "key": "AND-207",
+      "baseId": "AND-207",
+      "matrixLine": 765,
+      "command": "`run --flow` selector index",
+      "precondition": "`tapOn: {text: \"(Lake .*\\|.* Lake)\", index: 1}` on Lakes",
+      "expected": "Taps the second match (Mono Lake); `assertNotVisible: \"Lake Tahoe\"` on its detail passes (Maestro selector `index`; plan Task 1 Step 3)"
+    },
+    {
+      "key": "AND-208",
+      "baseId": "AND-208",
+      "matrixLine": 766,
+      "command": "`run --flow` tapOn point %",
+      "precondition": "`tapOn: {point: \"50%,50%\"}` on Gesture Lab; hook H1",
+      "expected": "Lands at the screen centre: `Last tap: center`, `Taps: 1` (plan Task 1 Step 3)"
+    },
+    {
+      "key": "AND-209",
+      "baseId": "AND-209",
+      "matrixLine": 767,
+      "command": "`run --flow` tapOn point 100%",
+      "precondition": "`tapOn: {point: \"100%,100%\"}`, `{point: \"0%,0%\"}`; hook H1",
+      "expected": "Step passes (no out-of-bounds error); lands on screen (plan N11)"
+    },
+    {
+      "key": "AND-210",
+      "baseId": "AND-210",
+      "matrixLine": 768,
+      "command": "`run --flow` doubleTapOn",
+      "precondition": "`doubleTapOn: {id: \"gesture-pad\"}`; hook H1",
+      "expected": "`Double taps: 1`, `Taps: 0` (README:172)"
+    },
+    {
+      "key": "AND-211",
+      "baseId": "AND-211",
+      "matrixLine": 769,
+      "command": "`run --flow` longPressOn",
+      "precondition": "`longPressOn: {id: \"gesture-pad\"}`; hook H1",
+      "expected": "`Long presses: 1` (README:172)"
+    },
+    {
+      "key": "AND-212",
+      "baseId": "AND-212",
+      "matrixLine": 770,
+      "command": "`run --flow` inputText append",
+      "precondition": "flow 03: `tapOn: \"Name\"`, `inputText: \" Renamed\"`",
+      "expected": "`Golden Gate Bridge Renamed` visible; no `warning` in report.json (README:172; brief R01)"
+    },
+    {
+      "key": "AND-213",
+      "baseId": "AND-213",
+      "matrixLine": 771,
+      "command": "`run --flow` inputText unicode",
+      "precondition": "`inputText: \"Pier 39 \u00b7 \u00dcn\u00efc\u00f8d\u00e9 \u2713\"` into Location",
+      "expected": "Text appears unmangled (README:172)"
+    },
+    {
+      "key": "AND-214",
+      "baseId": "AND-214",
+      "matrixLine": 772,
+      "command": "`run --flow` assertVisible",
+      "precondition": "string, `{text:}`, regex, `{id:}`",
+      "expected": "Each passes on a visible element (README:172)"
+    },
+    {
+      "key": "AND-215",
+      "baseId": "AND-215",
+      "matrixLine": 773,
+      "command": "`run --flow` assertNotVisible",
+      "precondition": "`assertNotVisible: \"Golden Gate Bridge\"` on Lakes",
+      "expected": "Passes (README:172)"
+    },
+    {
+      "key": "AND-216",
+      "baseId": "AND-216",
+      "matrixLine": 774,
+      "command": "`run --flow` swipe direction",
+      "precondition": "`swipe: {direction: LEFT/RIGHT/UP/DOWN}` on Gesture Lab; hook H1",
+      "expected": "`Last swipe: left/right/up/down` after each (README:172)"
+    },
+    {
+      "key": "AND-217",
+      "baseId": "AND-217",
+      "matrixLine": 775,
+      "command": "`run --flow` swipe from: element",
+      "precondition": "flow 02 `swipe: {direction: LEFT, from: \"Lake Tahoe\"}`",
+      "expected": "Row opens; `Remove` tapped; empty state (README:172; brief A02, R02)"
+    },
+    {
+      "key": "AND-218",
+      "baseId": "AND-218",
+      "matrixLine": 776,
+      "command": "`run --flow` swipe from: {id}",
+      "precondition": "`swipe: {direction: UP, from: {id: \"gesture-pad\"}}`; hook H1",
+      "expected": "`Last swipe: up` (README:172)"
+    },
+    {
+      "key": "AND-219",
+      "baseId": "AND-219",
+      "matrixLine": 777,
+      "command": "`run --flow` swipe from: missing (negative)",
+      "precondition": "`swipe: {direction: LEFT, from: \"No Such Row\"}`",
+      "expected": "Fails at the swipe: `Element not found for swipe`, exit 1 (brief R02 criterion 3)"
+    },
+    {
+      "key": "AND-220",
+      "baseId": "AND-220",
+      "matrixLine": 778,
+      "command": "`run --flow` swipe start/end %",
+      "precondition": "`swipe: {start: \"80%, 50%\", end: \"20%, 50%\"}`; hook H1",
+      "expected": "`Last swipe: left` (README:172)"
+    },
+    {
+      "key": "AND-221",
+      "baseId": "AND-221",
+      "matrixLine": 779,
+      "command": "`run --flow` swipe start/end absolute",
+      "precondition": "`swipe: {start: \"300, 600\", end: \"60, 600\"}`; hook H1",
+      "expected": "Either outcome brief R02 criterion 4 allows, recorded as which happened: (a) the coordinates are read as pixels (Android) / points (iOS) and the swipe lands on screen, `Last swipe: left`; or (b) the step fails before the swipe with an error saying coordinates must be percentages, which passes only if README documents plain coordinates as unsupported (README:172 lists `start:`/`end:` as `\"x%, y%\"`; the 51c597a release notes say plain coordinates are read as pixels). Never `\u2713 swipe` with `Last swipe: none` (brief R02 criterion 4; README:172)"
+    },
+    {
+      "key": "AND-222",
+      "baseId": "AND-222",
+      "matrixLine": 780,
+      "command": "`run --flow` swipe duration",
+      "precondition": "`swipe: {direction: LEFT, duration: 1500}`; hook H1",
+      "expected": "Slow swipe still registers `Last swipe: left`; takes about 1.5 s (README:172)"
+    },
+    {
+      "key": "AND-223",
+      "baseId": "AND-223",
+      "matrixLine": 781,
+      "command": "`run --flow` scroll",
+      "precondition": "bare `scroll` x4 with seed many",
+      "expected": "Scrolls down; `Landmark 28` visible as the last row on Android (20-28 visible; the N-03/B2-K07 correction, landmarks-demo asserts 28) (README:172; brief C10) (corrected round 3)"
+    },
+    {
+      "key": "AND-224",
+      "baseId": "AND-224",
+      "matrixLine": 782,
+      "command": "`run --flow` scrollUntilVisible",
+      "precondition": "`scrollUntilVisible: {element: \"Landmark 70\", direction: DOWN}`, then `{element: \"Golden Gate Bridge\", direction: UP}`",
+      "expected": "Both found (README:172)"
+    },
+    {
+      "key": "AND-225",
+      "baseId": "AND-225",
+      "matrixLine": 783,
+      "command": "`run --flow` runFlow file",
+      "precondition": "`runFlow: 14-runflow-sub.yaml`, `runFlow: {file: 14-runflow-sub.yaml}`",
+      "expected": "Sub-flow steps run each time (README:172)"
+    },
+    {
+      "key": "AND-226",
+      "baseId": "AND-226",
+      "matrixLine": 784,
+      "command": "`run --flow` runFlow inline",
+      "precondition": "`runFlow: {commands: [...]}`",
+      "expected": "Inline commands run (README:172 `runFlow`)"
+    },
+    {
+      "key": "AND-227",
+      "baseId": "AND-227",
+      "matrixLine": 785,
+      "command": "`run --flow` extendedWaitUntil visible",
+      "precondition": "flow 11",
+      "expected": "`Loaded after delay` within 10 s (README:172)"
+    },
+    {
+      "key": "AND-228",
+      "baseId": "AND-228",
+      "matrixLine": 786,
+      "command": "`run --flow` extendedWaitUntil notVisible",
+      "precondition": "`extendedWaitUntil: {notVisible: \"Loading\u2026\", timeout: 10000}`",
+      "expected": "Passes once loading ends (README:172)"
+    },
+    {
+      "key": "AND-229",
+      "baseId": "AND-229",
+      "matrixLine": 787,
+      "command": "`run --flow` waitForAnimationToEnd",
+      "precondition": "bare and `{timeout: 2000}`",
+      "expected": "Both pass (README:172; brief C07)"
+    },
+    {
+      "key": "AND-230",
+      "baseId": "AND-230",
+      "matrixLine": 788,
+      "command": "`run --flow` launchApp",
+      "precondition": "bare",
+      "expected": "Launches (README:172)"
+    },
+    {
+      "key": "AND-231",
+      "baseId": "AND-231",
+      "matrixLine": 789,
+      "command": "`run --flow` launchApp clearState",
+      "precondition": "`launchApp: {clearState: true}` after favoriting Lake Tahoe",
+      "expected": "Before it, the flow favorites Lake Tahoe; after `launchApp: {clearState: true}` the Favorites tab shows `Landmarks you favorite will appear here.` and the runner log shows `pm clear` (or the driver's clear-app call); no `--app-file` passed (README:172)"
+    },
+    {
+      "key": "AND-232",
+      "baseId": "AND-232",
+      "matrixLine": 790,
+      "command": "`run --flow` launchApp environment",
+      "precondition": "`launchApp: {environment: {LANDMARKS_NOTE: \"from step\"}}`",
+      "expected": "Note shown on Deep Links (README:176; docs/android.md:61-63)"
+    },
+    {
+      "key": "AND-233",
+      "baseId": "AND-233",
+      "matrixLine": 791,
+      "command": "`run --flow` stopApp",
+      "precondition": "`stopApp` before launch and after",
+      "expected": "Idempotent; app stopped (README:172)"
+    },
+    {
+      "key": "AND-234",
+      "baseId": "AND-234",
+      "matrixLine": 792,
+      "command": "`run --flow` killApp",
+      "precondition": "`killApp` then `launchApp`",
+      "expected": "App killed and relaunched (README:172)"
+    },
+    {
+      "key": "AND-235",
+      "baseId": "AND-235",
+      "matrixLine": 793,
+      "command": "`run --flow` takeScreenshot",
+      "precondition": "`takeScreenshot: \"Deep Link Lakes\"` (space in name)",
+      "expected": "PNG written with the plain name (README:172; brief I16)"
+    },
+    {
+      "key": "AND-236",
+      "baseId": "AND-236",
+      "matrixLine": 794,
+      "command": "`run --flow` header env",
+      "precondition": "flow header `env:` (flow 09)",
+      "expected": "Defines `${VAR}` and reaches the app at launch (README:176)"
+    },
+    {
+      "key": "AND-237",
+      "baseId": "AND-237",
+      "matrixLine": 795,
+      "command": "`run --flow` setPermissions (runner)",
+      "precondition": "`setPermissions` with the header appId; bare `scroll`",
+      "expected": "Passes through to the runner and succeeds (README:172 last sentence; brief C10)"
+    },
+    {
+      "key": "AND-238",
+      "baseId": "AND-238",
+      "matrixLine": 796,
+      "command": "`run --flow` launchApp arguments",
+      "precondition": "`launchApp: {arguments: {LANDMARKS_SEED: empty}, environment: {LANDMARKS_NOTE: merged}}`",
+      "expected": "Both delivered as extras (docs/android.md:61-64)"
+    },
+    {
+      "key": "AND-239",
+      "baseId": "AND-239",
+      "matrixLine": 797,
+      "command": "`run --flow` back",
+      "precondition": "`back` from Caching Demo",
+      "expected": "Returns to Deep Links (README:172 last sentence)"
+    },
+    {
+      "key": "AND-093",
+      "baseId": "AND-093",
+      "matrixLine": 833,
+      "command": "`mcp` tools/list",
+      "precondition": "only `grantiva-android.yml`, after `runner start`",
+      "expected": "Android; same 22 tools (docs/android.md:138-140)"
+    },
+    {
+      "key": "AND-094",
+      "baseId": "AND-094",
+      "matrixLine": 834,
+      "command": "`grantiva_context`",
+      "precondition": "live session",
+      "expected": "`platform: android` under `[Config]`; `[Emulator]` = session serial; Android SDK (docs/mcp.md:64; brief C06)"
+    },
+    {
+      "key": "AND-095",
+      "baseId": "AND-095",
+      "matrixLine": 835,
+      "command": "`grantiva_tap`",
+      "precondition": "`x`/`y` in dp from `hierarchy --format json`",
+      "expected": "Hits the element (docs/android.md:141)"
+    },
+    {
+      "key": "AND-096",
+      "baseId": "AND-096",
+      "matrixLine": 836,
+      "command": "`grantiva_tap`, `grantiva_type`, `grantiva_swipe`",
+      "precondition": "label tap, text entry, swipe up",
+      "expected": "Each acts and returns the tree (docs/mcp.md:50-52)"
+    },
+    {
+      "key": "AND-097",
+      "baseId": "AND-097",
+      "matrixLine": 837,
+      "command": "`grantiva_screenshot`",
+      "precondition": "default, `format: file`",
+      "expected": "Base64 PNG; file path (docs/mcp.md:49)"
+    },
+    {
+      "key": "AND-098",
+      "baseId": "AND-098",
+      "matrixLine": 838,
+      "command": "`grantiva_script`",
+      "precondition": "`tap_xy` in dp",
+      "expected": "Executes in dp (docs/mcp.md:55)"
+    },
+    {
+      "key": "AND-099",
+      "baseId": "AND-099",
+      "matrixLine": 839,
+      "command": "`grantiva_a11y_check`",
+      "precondition": "Landmarks list, Deep Links",
+      "expected": "48 dp minimum; no `missing_label` for Compose buttons labelled by merged text (docs/android.md:142-144; brief A11)"
+    },
+    {
+      "key": "AND-100",
+      "baseId": "AND-100",
+      "matrixLine": 840,
+      "command": "`grantiva_emulator_list/boot/ensure/delete`",
+      "precondition": "ensure `{name: \"cov-android-2\"}` then delete",
+      "expected": "Mirror the sim tools; ensure needs only `name` (docs/android.md:145)"
+    }
+  ],
+  "bindings": {
+    "session": "candidate5-android",
+    "runnerHome": "/private/tmp/grantiva-candidate5-coverage-qjr26z3g/android-runner-home",
+    "primaryAvd": "cov6-android",
+    "primarySerial": "emulator-5554",
+    "primaryPidAtPreparation": 91961,
+    "secondaryAvd": "cov6-android-2",
+    "secondarySerial": "PENDING_ACTIVE_RESERVATION"
+  },
+  "executionStatus": "NO_COMMAND_EXECUTED"
+}

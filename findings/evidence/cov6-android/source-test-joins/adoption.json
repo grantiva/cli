@@ -1,0 +1,68 @@
+{
+  "schema": "grantiva.coverage.source-test-join-adoption.v1",
+  "candidateManifest": {
+    "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/candidate.json",
+    "sha256": "191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c"
+  },
+  "requiredKeys": {
+    "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/coverage/required-keys.json",
+    "sha256": "fb724be2d4d2eb1a6777b9b14b433f7f2ce951f0f758bca38f6cb0f174619749"
+  },
+  "proposal": {
+    "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/preparation/campaign-completion/candidate5-platform-source-joins.json",
+    "sha256": "126112500346291b18574c4974bf37de5879b4aea79c04f4ee60dd65411f446d"
+  },
+  "approval": {
+    "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/reviews/campaign-completion/candidate5-platform-source-joins-review.md",
+    "sha256": "5f7aba5444fccb7552632e5999ca7893456414b2592856caa39970fe894149da"
+  },
+  "joins": [
+    {
+      "key": "B4-L65.2 [android]",
+      "verdict": "PASS",
+      "matrixLine": 1617,
+      "scope": "wholly test-only; no runtime claim",
+      "test": "ToolErrorContractTests.testScriptArgumentContractsThroughRegistryOnBothPlatforms",
+      "evidence": [
+        {
+          "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix6-L87-package/swift-full/stdout.txt",
+          "sha256": "96e0e82c1b8ac6eec5d975c8a465ea46efa9cdee9675fa81476e97ca591ef552",
+          "lines": [
+            472,
+            473
+          ]
+        },
+        {
+          "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix6-L87-package/swift-full/exit.txt",
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        }
+      ]
+    },
+    {
+      "key": "B4-L64.1",
+      "verdict": "PASS",
+      "matrixLine": 1611,
+      "scope": "wholly deterministic regression; no live-crash claim",
+      "test": "TestLaunchFinalFatalDecision",
+      "evidence": [
+        {
+          "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix6-L87-source/source-proof.json",
+          "sha256": "58c00d3badca68aeae76b0a915a23305d79baed56398b96087583de13a106a1a"
+        },
+        {
+          "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix6-L87-source/full-go/test.stdout.txt",
+          "sha256": "08d74744db75930b7bae015d72886a4cea0f87e13dc2dab04cc4e2ff6da83e21"
+        },
+        {
+          "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix6-L87-source/full-go/test.exit.txt",
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Keys were unexecuted in cov6-android before adoption.",
+    "No device, build, test, or network command was run.",
+    "No runtime verdict or evidence was transferred."
+  ]
+}
