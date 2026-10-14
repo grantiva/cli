@@ -164,6 +164,46 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         }
     }
 
+    func testDetachedStartsAllocateIndependentLogFiles() throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-detached-log-test-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        let first = try RunnerStartCommand.createDetachedLogFile(in: directory)
+        defer {
+            try? first.handle.close()
+        }
+        try first.handle.write(contentsOf: Data("WDA started successfully on port 8190\n".utf8))
+        try first.handle.synchronize()
+
+        let second = try RunnerStartCommand.createDetachedLogFile(in: directory)
+        defer { try? second.handle.close() }
+
+        XCTAssertNotEqual(first.path, second.path)
+        XCTAssertEqual(try String(contentsOfFile: first.path, encoding: .utf8), "WDA started successfully on port 8190\n")
+        try second.handle.write(contentsOf: Data("UIAutomator2 server started on port 57289\n".utf8))
+        try second.handle.synchronize()
+
+        let firstOutput = try String(contentsOfFile: first.path, encoding: .utf8)
+        let secondOutput = try String(contentsOfFile: second.path, encoding: .utf8)
+        XCTAssertTrue(firstOutput.contains("WDA started successfully on port 8190"))
+        XCTAssertFalse(secondOutput.contains("WDA started successfully"))
+        XCTAssertEqual(secondOutput, "UIAutomator2 server started on port 57289\n")
+    }
+
+    func testDetachedLogAllocationReportsMissingDirectoryWithoutCreatingAFile() throws {
+        let parent = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-detached-log-test-\(UUID().uuidString)", isDirectory: true)
+        let missingDirectory = parent.appendingPathComponent("missing", isDirectory: true)
+        defer { try? FileManager.default.removeItem(at: parent) }
+
+        XCTAssertThrowsError(try RunnerStartCommand.createDetachedLogFile(in: missingDirectory)) { error in
+            XCTAssertTrue(String(describing: error).contains("Could not create runner log"))
+        }
+        XCTAssertFalse(FileManager.default.fileExists(atPath: parent.path))
+    }
+
     func testForegroundPortDiscoveryHandlesPortSplitAcrossOutputChunks() async {
         let (stream, continuation) = AsyncStream<Data>.makeStream()
         let probed = LockedValue(false)

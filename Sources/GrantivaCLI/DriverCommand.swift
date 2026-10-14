@@ -1,6 +1,7 @@
 import ArgumentParser
 import GrantivaCore
 import Foundation
+import Darwin
 
 @available(macOS 15, *)
 struct RunnerCommand: AsyncParsableCommand {
@@ -553,14 +554,27 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
     // MARK: - Detached start
 
-    private func startDetached(_ launch: Launch) async throws -> Int32 {
-        let logPath = FileManager.default.temporaryDirectory
-            .appendingPathComponent("grantiva-runner-\(Int(Date().timeIntervalSince1970)).log")
-            .path
-        FileManager.default.createFile(atPath: logPath, contents: nil)
-        guard let log = FileHandle(forWritingAtPath: logPath) else {
-            throw GrantivaError.commandFailed("Could not open runner log: \(logPath)", 1)
+    static func createDetachedLogFile(
+        in directory: URL = FileManager.default.temporaryDirectory
+    ) throws -> (path: String, handle: FileHandle) {
+        var template = Array(directory.appendingPathComponent("grantiva-runner-XXXXXX.log").path.utf8CString)
+        let descriptor = template.withUnsafeMutableBufferPointer { buffer in
+            Darwin.mkstemps(buffer.baseAddress!, 4)
         }
+        guard descriptor >= 0 else {
+            let reason = String(cString: strerror(errno))
+            throw GrantivaError.commandFailed("Could not create runner log in \(directory.path): \(reason)", 1)
+        }
+        return (
+            path: String(cString: template),
+            handle: FileHandle(fileDescriptor: descriptor, closeOnDealloc: true)
+        )
+    }
+
+    private func startDetached(_ launch: Launch) async throws -> Int32 {
+        let detachedLog = try Self.createDetachedLogFile()
+        let logPath = detachedLog.path
+        let log = detachedLog.handle
         let child: ChildProcess
         do {
             child = try ChildProcess.spawn(
