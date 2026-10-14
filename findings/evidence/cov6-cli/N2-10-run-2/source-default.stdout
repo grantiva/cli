@@ -1,0 +1,250 @@
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:397:        XCTAssertEqual(reason(hanging, timeout: 0.5), "it did not exit within 0.5 seconds")
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:168:        wait(for: [held], timeout: 5)
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:176:        wait(for: [second], timeout: 5)
+Tests/GrantivaCLITests/InitAndroidTests.swift:127:        let device = SimulatorDevice(name: "iPhone 18 Pro", udid: "FE441EE5", state: "Shutdown", runtime: "iOS-27-0", isAvailable: true)
+Tests/GrantivaCLITests/InitAndroidTests.swift:128:        let warning = try XCTUnwrap(InitCommand.existingSimulatorWarning(name: "iPhone 18 Pro", devices: [device], createdByGrantiva: []))
+Tests/GrantivaCLITests/InitAndroidTests.swift:131:            "A simulator named \"iPhone 18 Pro\" (FE441EE5) already exists and was not created by Grantiva; runs from this directory will boot and drive it. "
+Tests/GrantivaCLITests/InitAndroidTests.swift:132:                + "To keep them off it, set simulator: in grantiva.yml to a name of your own, for example \"Grantiva iPhone 18 Pro\" "
+Tests/GrantivaCLITests/InitAndroidTests.swift:133:                + "(create it with `grantiva simulator ensure --name \"Grantiva iPhone 18 Pro\"`)."
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:101:            timeout: 5000
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:299:            timeout: 5000
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:321:            timeout: 5000
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:324:            timeout: 5000
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:326:            timeout: 5000
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:332:            timeout: 5000
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:336:            timeout: 5000
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:340:            timeout: 5000
+Tests/GrantivaCoreTests/FlowStagingTests.swift:142:            timeout: 5000
+Tests/GrantivaCoreTests/FlowStagingTests.swift:166:            timeout: 5000
+Tests/GrantivaCoreTests/FlowStagingTests.swift:214:        timeout: 5000
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:39:            arguments: ["device_type": .string("iPhone 16"), "runtime": .string("latest")]
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:47:            arguments: ["name": .int(7), "device_type": .string("iPhone 16"), "runtime": .string("latest")]
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:9:final class DefaultSimulatorOwnershipCoreTests: XCTestCase {
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:22:            let simctl = FakeSimctl(devices: [.init(name: "iPhone 18 Pro", udid: "USER-1", state: state, runtime: "iOS-26-0", type: FakeSimctl.iPhone17Pro)])
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:25:                _ = try await manager.bootDefault(name: "iPhone 18 Pro", ephemeral: true)
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:30:                    "Invalid argument: Simulator \"iPhone 18 Pro\" (USER-1) was not created by Grantiva. It has the default simulator's name, "
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:31:                        + "and Grantiva does not take a simulator you created as its default. Pass --simulator \"iPhone 18 Pro\" to use it anyway, "
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:32:                        + "or set simulator: in grantiva.yml (create one with grantiva simulator ensure --name \"Grantiva iPhone 18 Pro\")."
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:42:        let simctl = FakeSimctl(devices: [.init(name: "iPhone 18 Pro", udid: "OURS-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17Pro)])
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:44:        try provenance.register(udid: "OURS-1", name: "iPhone 18 Pro")
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:45:        let device = try await manager.bootDefault(name: "iPhone 18 Pro", ephemeral: true)
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:53:        XCTAssertEqual(unnamed.simulator, DefaultSimulator.name)
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:54:        let flagged = try await ResolvedProject.resolve(schemeFlag: "S", simulatorFlag: DefaultSimulator.name, bundleIdFlag: "com.x", config: nil, loadCache: { nil }, saveCache: { _ in })
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:86:        let json = #"{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-27-0":[{"name":"iPhone 17 Pro","udid":"B","state":"Shutdown","isAvailable":true}],"com.apple.CoreSimulator.SimRuntime.iOS-26-0":[{"name":"iPhone 17 Pro","udid":"C","state":"Shutdown","isAvailable":true},{"name":"iPhone 17 Pro","udid":"A","state":"Shutdown","isAvailable":true}]}}"#
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:110:                "Invalid argument: Simulator \"qa-x\" exists with incompatible configuration (device type: iPhone 17, runtime: iOS 26.0); requested iOS 27.0"
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:26:        let booted = SimulatorDevice(name: "iPhone 16", udid: "ABC-123", state: "Booted", runtime: "iOS-18-1", isAvailable: true)
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:29:        let shutdown = SimulatorDevice(name: "iPhone 16", udid: "ABC-123", state: "Shutdown", runtime: "iOS-18-1", isAvailable: true)
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:121:        simulator: iPhone 16
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:137:        XCTAssertEqual(config.simulator, "iPhone 16")
+Tests/GrantivaCoreTests/AndroidCaptureSettingsTests.swift:167:        let warnings = await quickSettings(shell, timeout: 0.05).restore(serial: "emulator-5554")
+Tests/GrantivaCoreTests/AndroidCaptureSettingsTests.swift:181:        let warnings = await quickSettings(shell, timeout: 30, grace: 0.05).restore(serial: "emulator-5554")
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:56:    private let settle = "- waitForAnimationToEnd:\n    timeout: 5000"
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:105:                timeout: 5000
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:109:                timeout: 5000
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:113:                timeout: 5000
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:116:                timeout: 5000
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:121:                timeout: 5000
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:127:                timeout: 5000
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:17:        let devices = [device("iPhone 17 Pro", "B27D7D31"), device("qa-ios-1", "QA-1")]
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:20:            XCTAssertTrue(message.contains("iPhone 17 Pro (B27D7D31)"), message)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:57:        ("iPhone 16", "com.apple.CoreSimulator.SimDeviceType.iPhone-16"),
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:58:        ("iPhone 17", "com.apple.CoreSimulator.SimDeviceType.iPhone-17"),
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:59:        ("iPhone 17 Pro", "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro"),
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:64:        // `grantiva simulator ensure --name "iPhone 17"` must work on its own.
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:65:        let inferred = SimulatorManager.inferDeviceType(fromName: "iPhone 17", in: catalog)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:70:        let inferred = SimulatorManager.inferDeviceType(fromName: "BLE iPhone 17 Pro", in: catalog)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:71:        XCTAssertEqual(inferred?.name, "iPhone 17 Pro")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:77:            "iPhone 16"
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:85:    // MARK: - newest installed iPhone (doctor and init suggest it instead of "iPhone 16")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:90:          {"name":"iPhone 18 Pro","identifier":"t.18p","minRuntimeVersionString":"27.0.0","productFamily":"iPhone"},
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:92:          {"name":"iPhone 17 Pro","identifier":"t.17p","minRuntimeVersionString":"26.0.0","productFamily":"iPhone"},
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:93:          {"name":"iPhone 17e","identifier":"t.17e","minRuntimeVersionString":"26.3.0","productFamily":"iPhone"},
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:94:          {"name":"iPhone 16","identifier":"t.16","minRuntimeVersionString":"18.0.0","productFamily":"iPhone"}
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:100:        XCTAssertEqual(SimulatorManager.newestIPhone(catalogJSON: Data(json.utf8)), "iPhone 17 Pro")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:104:        let json = #"{"devicetypes":[{"name":"iPhone 17","identifier":"t","minRuntimeVersionString":"26.0.0","productFamily":"iPhone"}],"runtimes":[]}"#
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:191:            _ = try await manager.ensure(name: "qa-ios-2", deviceType: "iPhone 17", runtime: "26.0", boot: true)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:321:        XCTAssertEqual(result.deviceType, "iPhone 17")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:328:            .init(name: "QA iPhone 17 Pro", udid: "PIN-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17Pro),
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:332:        let result = try await manager.ensure(name: "QA iPhone 17 Pro", boot: false)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:334:        XCTAssertEqual(result.deviceType, "iPhone 17 Pro")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:339:            .init(name: "QA iPhone 17 Pro", udid: "PIN-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17Pro),
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:343:        let result = try await manager.ensure(name: "QA iPhone 17 Pro", deviceType: "iPhone 17 Pro", boot: false)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:391:            _ = try await manager.ensure(name: "qa-ios-2", deviceType: "iPhone 17", runtime: "26.0", boot: true)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:415:            _ = try await manager.ensure(name: "qa-ios-2", deviceType: "iPhone 17", runtime: "26.0", boot: true)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:436:            _ = try await manager.ensure(name: "qa-ios-2", deviceType: "iPhone 17", runtime: "26.0", boot: true)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:454:            _ = try await manager.ensure(name: "qa-ios-2", deviceType: "iPhone 17", runtime: "26.0", boot: true)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:521:            udid: "RACE-1", name: "Race iPhone 17", sessionId: "qa", ownerPID: 4242, acquiredAt: Date(), state: .pending
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:525:        XCTAssertTrue(wait.message.contains("Race iPhone 17 (RACE-1)"), wait.message)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:720:      {"name": "iPhone 17", "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-17"},
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:721:      {"name": "iPhone 17 Pro", "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro"}
+Tests/GrantivaCLITests/RecordCommandTests.swift:103:        XCTAssertEqual(try RecordCommand.target(platform: .ios, simulator: "iPhone 17", emulator: nil, device: nil, config: nil), "iPhone 17")
+Tests/GrantivaCLITests/RecordCommandTests.swift:104:        XCTAssertEqual(try RecordCommand.target(platform: .ios, simulator: nil, emulator: nil, device: nil, config: GrantivaConfig(simulator: "iPhone 16")), "iPhone 16")
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:35:        XCTAssertEqual(result.simulator, DefaultSimulator.name)
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:36:        XCTAssertEqual(ResolvedProject().simulator, DefaultSimulator.name)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:6:final class DefaultSimulatorTests: XCTestCase {
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:9:      {"name":"iPhone 18 Pro","identifier":"t.18p","minRuntimeVersionString":"27.0.0","productFamily":"iPhone"},
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:10:      {"name":"iPhone 17 Pro","identifier":"t.17p","minRuntimeVersionString":"26.0.0","productFamily":"iPhone"},
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:11:      {"name":"iPhone 16","identifier":"t.16","minRuntimeVersionString":"18.0.0","productFamily":"iPhone"}
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:18:        XCTAssertEqual(DefaultSimulator.name(catalogJSON: Data(catalog.utf8)), "iPhone 17 Pro")
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:22:        XCTAssertEqual(DefaultSimulator.name(catalogJSON: nil), DefaultSimulator.fallback)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:23:        XCTAssertEqual(DefaultSimulator.name(catalogJSON: Data("not json".utf8)), DefaultSimulator.fallback)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:28:        let data = DefaultSimulator.catalogJSON(executable: "/bin/sleep", arguments: ["30"], timeout: 0.5)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:31:        XCTAssertEqual(DefaultSimulator.name(catalogJSON: data), DefaultSimulator.fallback)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:35:        let data = DefaultSimulator.catalogJSON(executable: "/bin/echo", arguments: ["hello"], timeout: 5)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:37:        XCTAssertNil(DefaultSimulator.catalogJSON(executable: "/usr/bin/false", arguments: [], timeout: 5))
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:41:        XCTAssertEqual(DefaultSimulator.name, DefaultSimulator.resolved ?? DefaultSimulator.fallback)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:42:        XCTAssertFalse(DefaultSimulator.name.isEmpty)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:45:    func testAMissingDefaultSimulatorSaysHowToCreateOrOverrideIt() async {
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:48:            _ = try await manager.exactDevice(nameOrUDID: DefaultSimulator.name)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:52:            XCTAssertTrue(message.contains("Simulator not found: \"\(DefaultSimulator.name)\""), message)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:53:            XCTAssertTrue(message.contains("grantiva simulator ensure --name \"\(DefaultSimulator.name)\""), message)
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:54:            ["--platform", "android", "--device", "emulator-5554", "--no-ansi", "--no-app-install", "--driver-start-timeout", "120"]
+Tests/GrantivaCoreTests/LogStreamerTests.swift:278:    private func waitForExit(_ pid: pid_t, timeout: TimeInterval = 5) -> Bool {
+Tests/GrantivaCoreTests/CLILogHandlerTests.swift:47:        let line = render(.debug, "Booting simulator: iPhone 17")
+Tests/GrantivaCoreTests/CLILogHandlerTests.swift:48:        XCTAssertEqual(line, "[debug] \(stamp) com.grantiva.cli: Booting simulator: iPhone 17")
+Tests/GrantivaCoreTests/CLILogHandlerTests.swift:134:                udid: "EXACT-UDID", name: "APP-652 iPhone 17", sessionId: "APP-652",
+Tests/GrantivaCoreTests/CLILogHandlerTests.swift:140:        XCTAssertEqual(wait.message, "Waiting for simulator capacity (1/4): APP-652 iPhone 17 [APP-652]")
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:39:        RunnerSession.terminationCleanup(platform: fake, deviceID: "emulator-5554", timeout: 0.05)()
+Tests/GrantivaCoreTests/SignalRelayTests.swift:45:        wait(for: [observed], timeout: 5)
+Tests/GrantivaCoreTests/DoctorTests.swift:236:    func testNoBootedSimulatorFixNamesTheSharedDefaultSimulator() {
+Tests/GrantivaCoreTests/DoctorTests.swift:237:        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck(name: "iPhone 18 Pro").fix, "Run: grantiva simulator ensure --name \"iPhone 18 Pro\"")
+Tests/GrantivaCoreTests/DoctorTests.swift:238:        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck().fix, "Run: grantiva simulator ensure --name \"\(DefaultSimulator.name)\"")
+Tests/GrantivaCoreTests/DoctorTests.swift:259:        let mine = SimulatorDevice(name: "iPhone 18 Pro", udid: "USER-1", state: "Shutdown", runtime: "iOS-26-0", isAvailable: true)
+Tests/GrantivaCoreTests/DoctorTests.swift:261:            DoctorRunner.noBootedSimulatorCheck(name: "iPhone 18 Pro", devices: [mine], createdByGrantiva: []).fix,
+Tests/GrantivaCoreTests/DoctorTests.swift:262:            "Run: grantiva simulator ensure --name \"Grantiva iPhone 18 Pro\" and set simulator: Grantiva iPhone 18 Pro in grantiva.yml "
+Tests/GrantivaCoreTests/DoctorTests.swift:263:                + "(\"iPhone 18 Pro\" (USER-1) was not created by Grantiva, so it is not used as the default)"
+Tests/GrantivaCoreTests/DoctorTests.swift:266:            DoctorRunner.noBootedSimulatorCheck(name: "iPhone 18 Pro", devices: [mine], createdByGrantiva: ["USER-1"]).fix,
+Tests/GrantivaCoreTests/DoctorTests.swift:267:            "Run: grantiva simulator ensure --name \"iPhone 18 Pro\""
+Tests/GrantivaCoreTests/DoctorTests.swift:276:        XCTAssertEqual(check.fix, "Run: grantiva simulator ensure --name \"\(DefaultSimulator.name)\"")
+Tests/GrantivaCoreTests/DoctorTests.swift:287:        let booted = #"{"name":"iPhone 17 Pro","udid":"BOOTED","state":"Booted","isAvailable":true}"#
+Tests/GrantivaCoreTests/DoctorTests.swift:288:        let userDefault = #"{"name":"iPhone 18 Pro","udid":"USER-DEFAULT","state":"Shutdown","isAvailable":true}"#
+Tests/GrantivaCoreTests/DoctorTests.swift:289:        let note = #""iPhone 18 Pro" (USER-DEFAULT) was not created by Grantiva, so it is not used as the default"#
+Tests/GrantivaCoreTests/DoctorTests.swift:295:                defaultName: "iPhone 18 Pro"
+Tests/GrantivaCoreTests/DoctorTests.swift:299:            XCTAssertTrue(check.message.contains("iPhone 17 Pro — iOS 26.0"), check.message)
+Tests/GrantivaCoreTests/DoctorTests.swift:309:        let booted = #"{"name":"iPhone 17 Pro","udid":"BOOTED","state":"Booted","isAvailable":true}"#
+Tests/GrantivaCoreTests/DoctorTests.swift:313:            defaultName: "iPhone 18 Pro"
+Tests/GrantivaCoreTests/DoctorTests.swift:315:        XCTAssertEqual(ordinary.message, "iPhone 17 Pro — iOS 26.0")
+Tests/GrantivaCoreTests/DoctorTests.swift:318:        try provenance.register(udid: "USER-DEFAULT", name: "iPhone 18 Pro")
+Tests/GrantivaCoreTests/DoctorTests.swift:319:        let ownedDefault = #"{"name":"iPhone 18 Pro","udid":"USER-DEFAULT","state":"Shutdown","isAvailable":true}"#
+Tests/GrantivaCoreTests/DoctorTests.swift:323:            defaultName: "iPhone 18 Pro"
+Tests/GrantivaCoreTests/DoctorTests.swift:330:        for defaultName in ["iPhone 17 Pro", "iPhone 18 Pro"] {
+Tests/GrantivaCoreTests/ADBTests.swift:234:            .sync(serial: "emulator-5554", timeoutSeconds: 5, isExecutable: { _ in true }, warn: warnings.append)
+Tests/GrantivaCoreTests/ADBTests.swift:243:            .sync(serial: "emulator-5554", timeoutSeconds: 5, perl: "/nonexistent/perl", warn: warnings.append)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:447:        XCTAssertLessThan(Date().timeIntervalSince(started), 0.5, "must not wait for the boot timeout")
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:477:        XCTAssertLessThan(Date().timeIntervalSince(started), 0.5, "must not wait for the boot timeout")
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:65:        try write("grantiva.yml", "scheme: Demo\nsimulator: iPhone 16\n")
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:211:            simulator: iPhone 17
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:469:        let line = " 4806  4806 /Library/Developer/PrivateFrameworks/CoreSimulator.framework/Versions/A/Resources/bin/simctl diagnose -l -b --timeout=600 --log-option=--last --log-option=2m --output=/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/fix3-cli/runner-home/versions/1.1.28-grantiva.10+android-drivers-2/devices/\(udid)/cache/wda-builds/sim-ios26.0-iphone-wda16.12.8-r1/devices/\(udid)/run-4685-1791728323714722000/attempt-1.xcresult/Staging/1_Test/Diagnostics/simctl_diagnostics --no-archive --udid=\(udid)"
+Tests/GrantivaCLITests/RunCommandTests.swift:62:        let command = try RunCommand.parse(["--report-dir", "out", "--timeout", "45", "--continue-on-failure"])
+Tests/GrantivaCLITests/RunCommandTests.swift:63:        let expected = RunCommand.SessionOptions(reportDir: "out", timeoutSeconds: 45, failFast: false)
+Tests/GrantivaCLITests/RunCommandTests.swift:192:        XCTAssertThrowsError(try RunCommand.parse(["--timeout", "5", "--ready-file", readyFile]))
+Tests/GrantivaCLITests/RunCommandTests.swift:535:            simulator: "iPhone 17", screens: [], flows: ["flow.yaml"]
+Tests/GrantivaCLITests/RunCommandTests.swift:539:            "Resolved: scheme=Landmarks simulator=iPhone 17 screens=0 flows=1"
+Tests/GrantivaCLITests/RunCommandTests.swift:560:        XCTAssertEqual(RunCommand.bootNarration(platform: .ios, target: "iPhone 17"), "Booting simulator: iPhone 17")
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:13:final class DefaultSimulatorOwnershipTests: XCTestCase {
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:50:        for udid in created { try provenance.register(udid: udid, name: DefaultSimulator.name) }
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:59:        Host([.init(name: DefaultSimulator.name, udid: "USER-0001", state: "Shutdown")])
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:73:        let name = DefaultSimulator.name
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:87:        let name = DefaultSimulator.name
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:142:            arguments: ["scheme": .string("Demo"), "simulator": .string(DefaultSimulator.name)]
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:149:        let host = Host([.init(name: DefaultSimulator.name, udid: "GRANTIVA-1", state: "Shutdown")])
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:155:        XCTAssertTrue(text.contains("Scheme: Demo\nSimulator: \(DefaultSimulator.name) (GRANTIVA-1)\n"), text)
+Sources/GrantivaCLI/DriverCommand.swift:271:        case .ios: return simulator ?? config?.simulator ?? DefaultSimulator.name
+Tests/GrantivaMCPTests/ArgumentValidationTests.swift:79:            ["device_type": .string("iPhone 16"), "runtime": .string("latest")],
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:84:                name: "fix2-4-ios", udid: session.udid, deviceType: "iPhone 17", runtime: "iOS 26.0", created: true,
+Tests/GrantivaCLITests/HierarchyCommandTests.swift:201:        let command = try HierarchyCommand.parse(["--timeout", "5"])
+Tests/GrantivaMCPTests/ToolSchemaTests.swift:39:            XCTAssertTrue(description.contains("default: \(DefaultSimulator.description)"), "\(name): \(description)")
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:59:            "--device-type", "iPhone 15 Pro",
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:63:        XCTAssertEqual(command.deviceType, "iPhone 15 Pro")
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:70:    // It shipped in 1.7.0 printing "Created iPhone 17 (UDID) — Booted" on stdout,
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:76:            name: "iPhone 17", udid: "921A0945-7157-4533-BA1F-21E8132D3E40",
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:77:            deviceType: "iPhone 17", runtime: "iOS 27.0", created: true, state: "Booted",
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:88:        XCTAssertTrue(rendered.stderr.contains("iPhone 17"))
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:94:            name: "iPhone 17", udid: "AAAA1111-2222-3333-4444-555566667777",
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:95:            deviceType: "iPhone 17", runtime: "iOS 27.0", created: false, state: "Shutdown",
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:181:        let command = try SimulatorCommand.Ensure.parse(["--name", "iPhone 17"])
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:182:        XCTAssertEqual(command.name, "iPhone 17")
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:191:        let command = try SimulatorCommand.Ensure.parse(["--name", "iPhone 17", "--no-boot"])
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:197:            name: "APP-302 iPhone 393x852", udid: "EXACT-UDID", deviceType: "iPhone 15 Pro",
+Tests/GrantivaCLITests/TargetOptionsTests.swift:13:        XCTAssertNoThrow(try TargetOptions.parse(["--simulator", "Grantiva iPhone 18 Pro"]).validate())
+Sources/GrantivaCLI/AuthCommand.swift:110:            let timeout: TimeInterval = 300 // 5 minutes
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:10:final class DefaultSimulatorCommandTests: XCTestCase {
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:29:        _ = try await RunCommand.targetDevice(platform: .ios, device: fake, target: "iPhone 18 Pro", serialFlag: nil, targetIsDefault: true, log: { _ in })
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:31:        XCTAssertEqual(fake.calls, ["bootDefaultDevice(iPhone 18 Pro)", "bootDevice(qa-ios)"])
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:53:        XCTAssertEqual(fake.calls, ["checkDefaultDevice(\(DefaultSimulator.name))"])
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:83:        XCTAssertEqual(fake.calls, ["bootDefaultDevice(\(DefaultSimulator.name))"])
+Tests/GrantivaCLITests/InitIOSTests.swift:10:        let (yaml, warnings) = InitCommand.iosTemplate(scheme: nil, detected: nil, bundleId: nil, newestIPhone: "iPhone 17")
+Tests/GrantivaCLITests/InitIOSTests.swift:13:        XCTAssertTrue(yaml.contains("simulator: iPhone 17\n"), yaml)
+Tests/GrantivaCLITests/InitIOSTests.swift:17:        XCTAssertEqual(InitCommand.iosTemplate(scheme: "X", detected: nil, bundleId: nil, newestIPhone: "iPhone 17").warnings, [])
+Tests/GrantivaCLITests/InitIOSTests.swift:18:        XCTAssertEqual(InitCommand.iosTemplate(scheme: nil, detected: .init(container: "Landmarks", schemes: ["Landmarks"]), bundleId: nil, newestIPhone: "iPhone 17").warnings, [])
+Tests/GrantivaCLITests/InitIOSTests.swift:23:        XCTAssertTrue(yaml.contains("simulator: \(DefaultSimulator.fallback)\n"), yaml)
+Tests/GrantivaCLITests/InitIOSTests.swift:25:        XCTAssertTrue(warnings[0].contains("simulator \"\(DefaultSimulator.fallback)\" is a placeholder"), warnings[0])
+Tests/GrantivaCLITests/InitIOSTests.swift:29:    func testTheTemplateWritesTheSharedDefaultSimulator() {
+Tests/GrantivaCLITests/InitIOSTests.swift:31:        XCTAssertTrue(yaml.contains("simulator: \(DefaultSimulator.name)\n"), yaml)
+Tests/GrantivaCLITests/InitIOSTests.swift:37:            SimulatorDevice(name: "iPhone 18 Pro", udid: "FE441EE5", state: "Shutdown", runtime: "iOS-27-0", isAvailable: true),
+Tests/GrantivaCLITests/InitIOSTests.swift:40:        let warning = InitCommand.existingSimulatorWarning(name: "iPhone 18 Pro", devices: devices, createdByGrantiva: [])
+Tests/GrantivaCLITests/InitIOSTests.swift:42:        XCTAssertTrue(warning?.contains("\"iPhone 18 Pro\" (FE441EE5)") == true, warning ?? "")
+Tests/GrantivaCLITests/InitIOSTests.swift:46:        XCTAssertNil(InitCommand.existingSimulatorWarning(name: "iPhone 18 Pro", devices: devices, createdByGrantiva: ["FE441EE5"]))
+Tests/GrantivaCLITests/InitIOSTests.swift:47:        XCTAssertNil(InitCommand.existingSimulatorWarning(name: "iPhone 17", devices: devices, createdByGrantiva: []))
+Tests/GrantivaCLITests/InitIOSTests.swift:54:        let (yaml, _) = InitCommand.iosTemplate(scheme: "Demo", detected: nil, bundleId: "com.example.demo", newestIPhone: "iPhone 17")
+Tests/GrantivaCLITests/InitIOSTests.swift:58:        XCTAssertEqual(config.simulator, "iPhone 17")
+Tests/GrantivaCLITests/InitIOSTests.swift:65:        let (yaml, warnings) = InitCommand.iosTemplate(scheme: nil, detected: detected, bundleId: nil, newestIPhone: "iPhone 17")
+Tests/GrantivaCLITests/InitIOSTests.swift:78:        let (yaml, warnings) = InitCommand.iosTemplate(scheme: "Landmarks (UI Testing)", detected: detected, bundleId: nil, newestIPhone: "iPhone 17")
+Tests/GrantivaCLITests/InitIOSTests.swift:85:        let (yaml, warnings) = InitCommand.iosTemplate(scheme: nil, detected: detected, bundleId: nil, newestIPhone: "iPhone 17")
+Tests/GrantivaCLITests/InstallCommandTests.swift:152:            deviceName: "iPhone 17",
+Tests/GrantivaCLITests/InstallCommandTests.swift:158:            "[grantiva] Done — com.example.app running on iPhone 17\nData container: /tmp/simulator/data"
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:127:        XCTAssertEqual(secondReturned.wait(timeout: .now() + 0.05), .timedOut,
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:176:            timeout: { _ in try? await Task.sleep(for: .seconds(5)) },
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:242:            timeout: { _ in try? await Task.sleep(for: .seconds(5)) },
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:256:            timeout: { _ in try? await Task.sleep(for: .seconds(5)) },
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:397:        XCTAssertEqual(RunnerStartCommand.target(platform: .ios, simulator: nil, emulator: nil, device: nil, config: nil), DefaultSimulator.name)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:410:            timeout: 5,
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:786:        XCTAssertEqual(retainReturned.wait(timeout: .now() + 0.05), .timedOut)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:787:        XCTAssertEqual(releaseReturned.wait(timeout: .now() + 0.05), .timedOut,
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:816:        XCTAssertEqual(releaseReturned.wait(timeout: .now() + 0.05), .timedOut,
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1048:            timeout: 5,
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1060:            timeout: 5, sleep: {}
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:43:    func retain(_ attachment: DriverAttachment, timeout: TimeInterval = 15) -> Bool {
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:71:    func release(timeout: TimeInterval = 15, onRequested: @Sendable () -> Void = {}) {
+Sources/GrantivaCLI/InitCommand.swift:73:                   name: DefaultSimulator.name, devices: devices,
+Sources/GrantivaCLI/InitCommand.swift:117:        scheme: String?, detected: DetectedSchemes?, bundleId: String?, newestIPhone: String? = DefaultSimulator.resolved
+Sources/GrantivaCLI/InitCommand.swift:147:            simulator = DefaultSimulator.fallback
+Tests/GrantivaMCPTests/ContextToolTests.swift:9:    private static let first = SimulatorDevice(name: "iPhone 17 Pro", udid: "B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C", state: "Booted", runtime: "iOS-26-0", isAvailable: true)
+Tests/GrantivaMCPTests/ContextToolTests.swift:44:            config: GrantivaConfig(scheme: "Other", simulator: "iPhone 16e"), platform: .ios,
+Tests/GrantivaMCPTests/ContextToolTests.swift:87:              Booted (a hint only; the UI tools use only a runner session's device): iPhone 17 Pro (\(Self.first.udid)), qa-c06 (\(Self.second.udid))
+Sources/GrantivaCLI/SimulatorCommand.swift:14:            abstract: "Create or reuse a named simulator and boot it. `--name` alone reuses an existing simulator with that name. To create one, the name must contain a device model (\"iPhone 17\") or --device-type must be given; the newest installed runtime is used unless --runtime is passed."
+Sources/GrantivaCLI/SimulatorCommand.swift:18:        @Option(name: .long, help: "Simulator name. An existing simulator with this name is reused as-is. When creating, the device type is read from the name if --device-type is omitted, so `--name \"iPhone 17\"` works on its own.")
+Sources/GrantivaCLI/SimulatorCommand.swift:21:        @Option(name: .long, help: "Device type name (\"iPhone 17 Pro\") or identifier. Defaults to the device model named in --name. Checked against an existing simulator only when given.")
+Sources/GrantivaCLI/SimulatorCommand.swift:47:        ///     udid=$(grantiva simulator ensure --name "iPhone 17")
+Sources/GrantivaCLI/SimulatorCommand.swift:52:        /// been captured verbatim, so callers got "Created iPhone 17 (…) —
+Tests/GrantivaMCPTests/BuildToolsTests.swift:24:        let ios = try BuildTools.resolvedProject(platform: .ios, config: GrantivaConfig(scheme: "Demo", simulator: "iPhone 17"), arguments: ["simulator": .string("iPhone 16")])
+Tests/GrantivaMCPTests/BuildToolsTests.swift:26:        XCTAssertEqual(ios.simulator, "iPhone 16")
+Tests/GrantivaMCPTests/BuildToolsTests.swift:33:        XCTAssertEqual(ios.simulator, DefaultSimulator.name)
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:96:        defaultName: String = DefaultSimulator.name
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:129:    /// Names the default simulator every command uses (see `DefaultSimulator`).
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:134:        name: String = DefaultSimulator.name, devices: [SimulatorDevice] = [], createdByGrantiva: Set<String> = []
+Sources/GrantivaMCP/Tools/SimTools.swift:35:                        "description": .string("Simulator name or UDID to boot (default: \(DefaultSimulator.description))"),
+Sources/GrantivaMCP/Tools/SimTools.swift:43:            description: "Create or idempotently reuse an exact named simulator, optionally booting it to readiness. Only 'name' is required: an existing simulator with that name is reused as-is. To create one, the name must contain a device model (\"iPhone 17\") or 'device_type' must be given; the runtime defaults to the newest installed one.",
+Sources/GrantivaMCP/Tools/SimTools.swift:110:            try await simManager.bootDefault(name: DefaultSimulator.name, override: "name:")
+Sources/GrantivaMCP/Tools/BuildTools.swift:24:                        "description": .string("Simulator name for destination (default: \(DefaultSimulator.description))"),
+Sources/GrantivaMCP/Tools/BuildTools.swift:54:                        "description": .string("Simulator name (default: \(DefaultSimulator.description))"),
+Sources/GrantivaMCP/Tools/BuildTools.swift:84:                        "description": .string("Simulator name for destination (default: \(DefaultSimulator.description))"),
+Sources/GrantivaMCP/Tools/BuildTools.swift:108:                simulator: named ?? DefaultSimulator.name, simulatorIsDefault: named == nil
+Sources/GrantivaMCP/Tools/BuildTools.swift:292:            try await simManager.bootDefault(name: DefaultSimulator.name, override: simulatorOverride)
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:10:public enum DefaultSimulator {
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:13:    public static let fallback = "iPhone 17 Pro"
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:62:        timeout: TimeInterval = 5
+Sources/GrantivaCore/Output/Output.swift:10:///     udid=$(grantiva simulator ensure --name "iPhone 17")
+Sources/GrantivaCore/Android/ADB.swift:246:        serial: String, timeoutSeconds: Int = 5,
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:145:    /// pick a simulator (`override`, see `DefaultSimulator.notCreatedRefusal`).
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:158:                DefaultSimulator.notCreatedRefusal(name: device.name, udid: device.udid, override: override)
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:170:            throw GrantivaError.invalidArgument(DefaultSimulator.notCreatedRefusal(
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:187:                ? "Simulator not found: \"\(nameOrUDID)\"" + (DefaultSimulator.notFoundHint(for: nameOrUDID).map { ".\($0)" } ?? "")
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:200:    /// model inferred from the name (so `--name "iPhone 17"` is enough); the
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:261:                            + "Include a device model in the name (for example \"iPhone 17\") or pass --device-type."
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:445:    /// longest match wins so "BLE iPhone 17 Pro" resolves to "iPhone 17 Pro"
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:446:    /// rather than "iPhone 17".
+Sources/GrantivaCore/Runner/RunnerSession.swift:667:    static func terminationCleanup(platform: any DevicePlatform, deviceID: String, timeout: TimeInterval = 15) -> @Sendable () -> Void {
+Sources/GrantivaCore/Config/ProjectResolver.swift:12:    /// True when `simulator` is `DefaultSimulator.name` because no flag,
+Sources/GrantivaCore/Config/ProjectResolver.swift:29:        simulator: String = DefaultSimulator.name,
+Sources/GrantivaCore/Config/ProjectResolver.swift:139:        let simulator = flagSim ?? configSim ?? DefaultSimulator.name

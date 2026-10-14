@@ -1,0 +1,43 @@
+0464d5dbec9e1aad0dc52535c11063c4277df4875cef75533b9caa0bb69dc0dd  docs/mcp.md
+a9ddd874284bca44cbbe6054e721ab17b286f529f52aec536bba364012779ba7  Tests/GrantivaMCPTests/ToolErrorContractTests.swift
+docs/mcp.md:30:``Error: No active runner session at <project>/.grantiva/session.json. Start one with `grantiva runner start` or `grantiva run --keep-alive` in <project>.``
+docs/mcp.md:161:| `grantiva://hierarchy` | The current view hierarchy as a JSON tree (`application/json`), as `grantiva_a11y_tree` returns it. |
+docs/mcp.md:162:| `grantiva://screenshot` | The current screenshot as a PNG (`image/png`, base64 blob). |
+docs/mcp.md:167:`No active runner session ... Start one with ...` or `The runner session is starting ... Retry in a few
+docs/mcp.md:171:`resources/subscribe` to `grantiva://hierarchy` turns on `notifications/resources/updated` for it, and
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:109:                resolveSession: { throw GrantivaError.invalidArgument("No active runner session.") },
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:174:    func testResourceReadWithoutASessionIsNotAnInternalError() async throws {
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:176:        for uri in ["grantiva://hierarchy", "grantiva://screenshot"] {
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:188:                XCTAssertTrue(message.hasPrefix("No active runner session"), message)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:200:            _ = try await registry.readResource(uri: "grantiva://hierarchy")
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:239:            _ = try await registry.readResource(uri: "grantiva://hierarchy")
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:252:            _ = try await registry.readResource(uri: "grantiva://screenshot")
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:313:            XCTAssertTrue(text(noSession).contains("No active runner session"), text(noSession))
+Tests/GrantivaMCPTests/ToolRegistrationTests.swift:113:        XCTAssertEqual(resources.map(\.uri).sorted(), ["grantiva://hierarchy", "grantiva://screenshot"])
+Tests/GrantivaMCPTests/ToolRegistrationTests.swift:116:            ["grantiva://hierarchy": "application/json", "grantiva://screenshot": "image/png"]
+Tests/GrantivaMCPTests/MCPServerTests.swift:82:            XCTAssertTrue(message.contains("No active runner session"))
+Tests/GrantivaMCPTests/MCPServerTests.swift:114:            XCTAssertTrue(message.contains("No active runner session"), message)
+Tests/GrantivaMCPTests/MCPServerTests.swift:191:            XCTAssertTrue(String(describing: error).contains("No active runner session"), "\(error)")
+Tests/GrantivaMCPTests/MCPServerTests.swift:204:            XCTAssertTrue(String(describing: error).contains("No active runner session"), "\(error)")
+Tests/GrantivaMCPTests/MCPServerTests.swift:207:            XCTAssertTrue(String(describing: error).contains("No active runner session"), "\(error)")
+Tests/GrantivaMCPTests/MCPServerTests.swift:264:                "No active runner session at \(project.path)/.grantiva/session.json. Start one with `grantiva runner start` or `grantiva run --keep-alive` in \(project.path)."
+Tests/GrantivaMCPTests/MCPServerTests.swift:408:                XCTAssertTrue(text.contains("No active runner session"), "\(name): \(text)")
+Tests/GrantivaMCPTests/MCPServerTests.swift:560:                    throw GrantivaError.invalidArgument("No active runner session at x. Start one with 'grantiva runner start'.")
+Tests/GrantivaMCPTests/MCPServerTests.swift:576:            XCTAssertTrue(String(describing: error).contains("No active runner session"))
+Tests/GrantivaMCPTests/MCPTransportTests.swift:137:                    try await clientSide.send(Data("{\"jsonrpc\":\"2.0\",\"id\":\(id),\"method\":\"resources/read\",\"params\":{\"uri\":\"grantiva://hierarchy\"}}".utf8))
+Tests/GrantivaMCPTests/MCPTransportTests.swift:380:                resolveSession: { throw GrantivaError.invalidArgument("No active runner session at /p/.grantiva/session.json.") },
+Tests/GrantivaMCPTests/MCPTransportTests.swift:401:            #"{"jsonrpc":"2.0","id":2,"method":"resources/read","params":{"uri":"grantiva://hierarchy"}}"#,
+Tests/GrantivaMCPTests/MCPTransportTests.swift:412:        XCTAssertEqual(error["message"] as? String, "No active runner session at /p/.grantiva/session.json.")
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:171:        XCTAssertTrue(text.contains("No active runner session"), text)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:182:                resolveSession: { throw GrantivaError.invalidArgument("No active runner session at x.") },
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:134:        let contents = try await registry.readResource(uri: "grantiva://hierarchy")
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:138:        XCTAssertEqual(content.uri, "grantiva://hierarchy")
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:150:        let contents = try await registry.readResource(uri: "grantiva://screenshot")
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:154:        XCTAssertEqual(content.uri, "grantiva://screenshot")
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:39:        await registry.subscriptions.subscribe("grantiva://hierarchy")
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:50:        XCTAssertEqual(notified.all, ["grantiva://hierarchy"])
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:52:        await registry.subscriptions.unsubscribe("grantiva://hierarchy")
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:63:        await registry.subscriptions.subscribe("grantiva://hierarchy")
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:69:        XCTAssertEqual(notified.all, ["grantiva://hierarchy"])
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:76:        await registry.subscriptions.subscribe("grantiva://hierarchy")
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:80:        XCTAssertEqual(notified.all, ["grantiva://hierarchy"])

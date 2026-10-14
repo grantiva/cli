@@ -1,0 +1,143 @@
+6d3adf50c86008b1844a19403ca6e83dd61a820a72645098b3efd115b7da322c  Sources/GrantivaCore/Simulator/DefaultSimulator.swift
+4b2df641e87e3451f241711d295e3231efe3cfb68a6d183b5e602807a311b5ee  Tests/GrantivaMCPTests/ToolSchemaTests.swift
+public enum DefaultSimulator {
+    /// The name used when simctl cannot be asked (no Xcode, a broken
+    /// `DEVELOPER_DIR`) or lists no iPhone type an installed runtime runs.
+    public static let fallback = "iPhone 17 Pro"
+
+    /// The newest installed iPhone type, read once per process; nil when
+    /// simctl is unavailable or no iOS runtime is installed.
+    public static let resolved: String? = SimulatorManager.newestIPhone(catalogJSON: catalogJSON() ?? Data())
+
+    /// The default simulator name.
+    public static var name: String { resolved ?? fallback }
+
+    /// The default for a given `simctl list devicetypes runtimes --json`.
+    static func name(catalogJSON: Data?) -> String {
+        catalogJSON.flatMap(SimulatorManager.newestIPhone(catalogJSON:)) ?? fallback
+    }
+
+    /// The hint added to "Simulator not found" for the default name, which
+    /// the user never typed and so may not know how to create or replace.
+    static func notFoundHint(for name: String) -> String? {
+        guard name == Self.name else { return nil }
+        return " It is Grantiva's default simulator: create it with `grantiva simulator ensure --name \"\(name)\"`, "
+            + "or pass --simulator <name|UDID> or set simulator: in grantiva.yml."
+    }
+
+    /// The refusal for a simulator that has the default name but that
+    /// Grantiva did not create (L08): the default is a stock device-type
+    /// name, so the user may own a simulator of that name for something else,
+    /// and an unnamed run must never boot or drive it. `override` is how the
+    /// caller names a simulator: `--simulator` on the CLI, `simulator:` (the
+    /// tool's argument) in MCP. `soleBooted` is the `--no-build` capture's
+    /// default, the only booted simulator, rather than the default name.
+    public static func notCreatedRefusal(
+        name: String, udid: String, override: String = "--simulator", soleBooted: Bool = false
+    ) -> String {
+        "Simulator \"\(name)\" (\(udid)) was not created by Grantiva. "
+            + (soleBooted ? "It is the only booted simulator, " : "It has the default simulator's name, ")
+            + "and Grantiva does not take a simulator you created as its default. "
+            + "Pass \(override) \"\(name)\" to use it anyway, or set simulator: in grantiva.yml "
+            + "(create one with grantiva simulator ensure --name \"Grantiva \(name)\")."
+    }
+
+    /// The phrase tool schemas use for the default. Static on purpose: a
+    /// schema is built at registration, and finding the name runs simctl.
+    public static let description = "the newest installed iPhone type"
+
+    /// `simctl list devicetypes runtimes --json`, or nil when it fails or
+    /// takes longer than `timeout` (it is then killed): a wedged
+    /// CoreSimulatorService must not hang every command that needs a default.
+    static func catalogJSON(
+        executable: String = "/usr/bin/xcrun",
+        arguments: [String] = ["simctl", "list", "devicetypes", "runtimes", "--json"],
+        timeout: TimeInterval = 5
+    ) -> Data? {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: executable)
+        process.arguments = arguments
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = FileHandle.nullDevice
+        process.standardInput = FileHandle.nullDevice
+        let exited = DispatchSemaphore(value: 0)
+        process.terminationHandler = { _ in exited.signal() }
+        do { try process.run() } catch { return nil }
+        let output = OutputCollector()
+        let reader = DispatchSemaphore(value: 0)
+        DispatchQueue.global().async {
+            output.set(pipe.fileHandleForReading.readDataToEndOfFile())
+            reader.signal()
+        }
+        guard exited.wait(timeout: .now() + timeout) == .success else {
+            process.terminate()
+            if exited.wait(timeout: .now() + 1) != .success { kill(process.processIdentifier, SIGKILL) }
+            return nil
+        }
+        _ = reader.wait(timeout: .now() + 1)
+        return process.terminationStatus == 0 ? output.value : nil
+    }
+}
+
+private final class OutputCollector: @unchecked Sendable {
+import Foundation
+import GrantivaCore
+import MCP
+import XCTest
+
+@testable import GrantivaMCP
+
+/// A malformed input schema is silently accepted by the server but makes the tool
+/// unusable (or misused) by every client, so each schema is validated structurally.
+final class ToolSchemaTests: XCTestCase {
+
+    /// Tools that declare required parameters, and which ones.
+    static let expectedRequired: [String: Set<String>] = [
+        "grantiva_swipe": ["direction"],
+        "grantiva_type": ["text"],
+        "grantiva_script": ["steps"],
+        "grantiva_sim_ensure": ["name"],
+        "grantiva_sim_delete": ["name"],
+        "grantiva_emulator_ensure": ["name"],
+        "grantiva_emulator_delete": ["name"],
+    ]
+
+    private func allTools() -> [Tool] {
+        MCPTestSupport.registry(driver: MCPTestSupport.fakeDriver(recorder: WDARecorder())).allTools()
+    }
+
+    // MARK: - K37: one default simulator
+
+    func testSimulatorSchemasStateTheSharedDefault() throws {
+        let tools = Dictionary(uniqueKeysWithValues: allTools().map { ($0.name, $0) })
+        for (name, property) in [
+            ("grantiva_build", "simulator"), ("grantiva_run", "simulator"), ("grantiva_test", "simulator"),
+            ("grantiva_sim_boot", "name"),
+        ] {
+            let tool = try XCTUnwrap(tools[name], name)
+            let properties = try XCTUnwrap(object(object(tool.inputSchema)?["properties"]), name)
+            let description = try XCTUnwrap(string(object(properties[property])?["description"]), "\(name).\(property)")
+            // Static text: building a schema must never run simctl.
+            XCTAssertTrue(description.contains("default: \(DefaultSimulator.description)"), "\(name): \(description)")
+            XCTAssertNil(description.range(of: #"iPhone \d"#, options: .regularExpression), "\(name): \(description)")
+        }
+    }
+
+    // MARK: - Structural validation
+
+    func testEverySchemaIsAJSONSchemaObjectWithAPropertiesMap() throws {
+        for tool in allTools() {
+            let schema = try XCTUnwrap(object(tool.inputSchema), "\(tool.name): schema is not an object")
+            XCTAssertEqual(string(schema["type"]), "object", "\(tool.name): schema type must be \"object\"")
+            XCTAssertNotNil(object(schema["properties"]), "\(tool.name): schema has no properties map")
+        }
+    }
+
+    func testEveryDeclaredPropertyHasATypeAndAValidJSONSchemaType() throws {
+        let validTypes: Set<String> = ["string", "number", "integer", "boolean", "array", "object", "null"]
+        for tool in allTools() {
+            let properties = try XCTUnwrap(object(object(tool.inputSchema)?["properties"]))
+            for (key, value) in properties {
+                let property = try XCTUnwrap(object(value), "\(tool.name).\(key): property is not an object")
+                let type = try XCTUnwrap(string(property["type"]), "\(tool.name).\(key): missing \"type\"")

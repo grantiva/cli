@@ -1,0 +1,91 @@
+{
+  "status": "PENDING_OWNED_IOS_WINDOW",
+  "candidateManifestSHA256": "191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c",
+  "reason": "Candidate5 smoke contains no exact L75 cycle-output captures; first CLI attempts failed at protected default-device ownership before parsing. No pass claimed.",
+  "binding": {
+    "binary": "/Users/kyle/.grantiva-qa/bin/grantiva",
+    "runnerHome": "<iOS actor candidate5 home>",
+    "session": "candidate5-ios",
+    "simulatorName": "cov6-ios-26",
+    "simulatorUDID": "1E436AED-5626-4520-9E43-1CC741510637"
+  },
+  "rows": [
+    {
+      "key": "B4-L75.1",
+      "fixture": "copy current `/private/tmp/grantiva-candidate5-coverage-qjr26z3g/cli-scratch/batch17/l75`",
+      "argv": [
+        "grantiva",
+        "run",
+        "--no-build",
+        "--simulator",
+        "cov6-ios-26",
+        "--flow",
+        "flows/a.yaml"
+      ],
+      "assert": [
+        "exit 1",
+        "under 5 seconds",
+        "exact `flows/a.yaml -> shared/b.yaml -> flows/a.yaml -> shared/b.yaml`"
+      ]
+    },
+    {
+      "key": "B4-L75.2",
+      "fixtures": [
+        "root a.yaml\u2194b.yaml",
+        "screens grantiva.yml\u2192a.yaml\u2192b.yaml\u2192a.yaml"
+      ],
+      "argvTemplate": [
+        "grantiva",
+        "run",
+        "--no-build",
+        "--simulator",
+        "cov6-ios-26",
+        "--flow",
+        "<root a.yaml; then screens config>"
+      ],
+      "assert": [
+        "root exact `a.yaml -> b.yaml -> a.yaml -> b.yaml`",
+        "screens exact `grantiva.yml -> a.yaml -> b.yaml -> a.yaml`"
+      ]
+    },
+    {
+      "key": "B4-L75.3",
+      "fixture": "same nested cycle plus user-supplied absolute flow path",
+      "argv": [
+        "grantiva",
+        "run",
+        "--no-build",
+        "--simulator",
+        "cov6-ios-26",
+        "--flow",
+        "<absolute path>/flows/a.yaml"
+      ],
+      "assert": [
+        "exit 1",
+        "contract-required user absolute operand remains absolute"
+      ]
+    },
+    {
+      "key": "B4-L75.5",
+      "fixture": "copy nested cycle once under `/tmp` spelling and once under `/private/tmp` spelling",
+      "argvTemplate": [
+        "grantiva",
+        "run",
+        "--no-build",
+        "--simulator",
+        "cov6-ios-26",
+        "--flow",
+        "flows/a.yaml"
+      ],
+      "assert": [
+        "both spellings rewrite to identical containing-file-relative cycle diagnostic"
+      ]
+    }
+  ],
+  "constraints": [
+    "capture simulator inventory before/after",
+    "do not touch protected iPhone 18 Pro",
+    "preserve first CLI attempts",
+    "stop on unexpected build/boot progression"
+  ]
+}

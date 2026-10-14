@@ -1,0 +1,26 @@
+README.md:99:- **`--logs`** — Streams app logs from the simulator or emulator, prefixed with `[log]` and interleaved with the flow output. On iOS (`xcrun simctl spawn log stream`) the predicate is scoped to your app: subsystems starting with its bundle ID, plus every line from its process (the installed app's `CFBundleExecutable`); override it with `--logs-predicate`. On Android `logcat` is filtered to the app's uid; `--logs-tag <tag>` keeps one tag and implies `--logs`. `--logs-level default|info|debug` sets the level on both (see [docs/android.md](docs/android.md#logs)).
+README.md:197:| `GRANTIVA_DRIVER_START_TIMEOUT` | Seconds the runner waits for the UIAutomator2 server to start on Android (the runner's default is 30). Raise it on a slow or busy host; `runner start` then waits for the session for twice this plus 30 seconds (at least 90). A start that fails says so at once, with the runner's reason. |
+README.md:423:a session that is still starting has `"port": null`, and its text says
+README.md:424:`Runner already running (pid N, starting)`. `runnerPid` is the stable field: it
+README.md:443:It is written the moment the runner is spawned with `"state": "starting"` and
+README.md:445:commands say meanwhile is in [docs/mcp.md](docs/mcp.md#a-session-that-is-starting).
+README.md:446:grantiva 2.1.0 reads a `starting` file (no port yet) as no session at
+README.md:457:teardown writes `<pid>.stop.json` beside the runner's owner file in
+docs/superpowers/plans/2026-10-08-android-support-3-hierarchy-mcp-emulator.md:4238:   - `kill -INT <pid of the backgrounded run>` (capture `$!` right after starting it) and `wait` for it; `adb forward --list` still empty; `.grantiva/android-settings-emulator-5554.json` absent.
+docs/dump-hierarchy.md:57:`grantiva runner dump-hierarchy` and the MCP server's hierarchy tool share the same discovery as `grantiva hierarchy`: when no `grantiva runner start` session is active in the project, both fall back to the newest live `--keep-alive` session (`dump-hierarchy --udid <UDID or adb serial>` selects a specific simulator or emulator). With neither, all three fail with the same message (exit 1): ``Error: No active runner session. Start one with `grantiva runner start` or `grantiva run --keep-alive`, or pass --port.`` from `runner dump-hierarchy`; `grantiva hierarchy`, which has no `--port`, omits ", or pass --port"; the MCP tools also name the project's `.grantiva/session.json` and directory. While a session is still starting, they say so and to retry instead; [mcp.md](mcp.md#a-session-that-is-starting) gives the texts and which command prints which. An unknown `--format` is a usage error (exit 64) before any session is looked up.
+docs/android.md:45:listing what exists, read with one bounded Gradle call: `Variants of :app: freeDebug, freeRelease,
+docs/android.md:121:`grantiva run --logs` streams `logcat` filtered to the app's uid, starting at the device's
+docs/android.md:171:held span (or the `trimmed=` span), the threshold and whether the note printed (or why the file
+docs/android.md:202:session on the next call once it starts. While a session is starting they say so and to retry
+docs/android.md:203:instead; [mcp.md](mcp.md#a-session-that-is-starting) gives the texts. Tools that need a config file
+docs/mcp.md:40:### A session that is starting
+docs/mcp.md:42:While a session is starting, on either platform, the session tools return an error (`isError`) saying
+docs/mcp.md:44:is starting from the moment `grantiva runner start` (with or without `--detach`) or `grantiva run
+docs/mcp.md:47:- `Error: The runner session is starting (WDA has no session yet). Retry in a few seconds.`
+docs/mcp.md:49:  `runner start` writes `.grantiva/session.json` with `"state": "starting"` and no port the moment it
+docs/mcp.md:51:  `run --keep-alive` runner (or a `runner start` runner, whose session flow runs first) is starting
+docs/mcp.md:54:  starting `session.json` and for a runner that has not published yet: they share one session
+docs/mcp.md:56:- `Error: The runner session is starting (WDA on port <port> has no session yet). Retry in a few seconds.`
+docs/mcp.md:142:| `grantiva_emulator_boot` | Android only | no | Boot an Android emulator by AVD name, or use it if it is already running. Defaults to `emulator` in `grantiva-android.yml`. Says which happened: `Emulator booted: <avd> (<serial>)` when it booted the AVD, `Emulator reused: <avd> (<serial>), already running` when it was running (nothing is booted). |
+docs/mcp.md:164:Both read through the runner session. When there is no usable session (none, one still starting, a
+docs/mcp.md:167:`No active runner session ... Start one with ...` or `The runner session is starting ... Retry in a few

@@ -3,10 +3,11 @@
 Frozen candidate manifest SHA-256: `191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c`.
 Session: `candidate5-cli`. Runner home: `/private/tmp/grantiva-candidate5-coverage-qjr26z3g/cli-runner-home`.
 
-The direct CLI ledger contains exactly 425 canonical keys in matrix order: 421 PASS, 1 PENDING, and 3 N/A. Each runtime grade points to current-candidate command metadata and retained stdout/stderr, or to an explicit current-candidate join assessment. Historical runtime verdicts were not transferred.
+The direct CLI ledger contains exactly 425 canonical keys in matrix order: 417 PASS, 5 PENDING, and 3 N/A. Each runtime grade points to current-candidate command metadata and retained stdout/stderr, or to an explicit current-candidate join assessment. Historical runtime verdicts were not transferred.
 
-Pending direct key:
+Pending direct keys:
 
+- `B4-L75.1`, `B4-L75.2`, `B4-L75.3`, and `B4-L75.5`: exact public cycle diagnostics require the next owned iOS window; handoff is `findings/evidence/cov6-cli/B4-L75-live-handoff.json`.
 - `B4-L85.5`: root-owned replacement-candidate/full-campaign final gate, pending by design.
 
 `CLI-091` and `CLI-156` are now PASS from fresh device-free authentication prevalidation against the explicit owned `cov6-ios-26` target, with valid copied frozen-app fixtures and byte-identical simulator inventories before/after.
