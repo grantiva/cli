@@ -77,10 +77,26 @@ final class FlowGeneratorTests: XCTestCase {
     }
 
     func testFractionalWaitIsInMilliseconds() {
-        // Date.now() has millisecond resolution. One extra quantum guarantees
-        // that elapsed monotonic time cannot fall just below the requested wait.
         XCTAssertTrue(FlowGenerator.sleepScript(seconds: 1.5).contains("Date.now() + 1501;"))
         XCTAssertEqual(FlowGenerator.waitLabel(seconds: 1.5), "Wait 1.5s")
+    }
+
+    func testWaitDeadlineCannotFinishEarlyAtClockTickBoundary() {
+        // Date.now() returns an integral millisecond. Model the first sample at
+        // several phases within the corresponding monotonic millisecond; the
+        // generated deadline must leave at least the requested elapsed time.
+        for seconds in [3.0, 1.5009, 0.0001] {
+            let requestedMilliseconds = seconds * 1000
+            let deadline = Double(FlowGenerator.sleepDeadlineMilliseconds(seconds: seconds))
+            for firstSamplePhase in [0.0, 0.25, 0.999_999] {
+                let modeledElapsed = deadline - firstSamplePhase
+                XCTAssertGreaterThanOrEqual(
+                    modeledElapsed, requestedMilliseconds,
+                    "\(seconds)s wait ended early at phase \(firstSamplePhase)"
+                )
+            }
+        }
+        XCTAssertEqual(FlowGenerator.sleepDeadlineMilliseconds(seconds: 1.5009), 1502)
     }
 
     // Golden: against the 2.0.1 output for this config, the only differences

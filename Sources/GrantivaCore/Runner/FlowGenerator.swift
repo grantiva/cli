@@ -300,13 +300,19 @@ public enum FlowGenerator {
     /// command, and `waitForAnimationToEnd` is only an upper bound: it returns
     /// as soon as the screen is still. The runner's JS engine runs `evalScript`
     /// synchronously. `Date.now()` is integral milliseconds, so the deadline
-    /// includes one clock quantum; otherwise a sample late in the first
-    /// millisecond can let the loop finish at 2999.x ms for `wait: 3`.
+    /// rounds the requested duration up and includes one clock quantum;
+    /// otherwise a sample late in the first millisecond can let `wait: 3`
+    /// finish at 2999.x ms. This closes that quantization boundary; like every
+    /// `Date.now()` deadline, it cannot protect against a wall-clock jump.
     /// The loop spins one core for those N seconds; a sleep command in the
     /// runner is the real fix and belongs in the runner repo.
     static func sleepScript(seconds: Double) -> String {
-        let ms = Int(seconds * 1000) + 1
+        let ms = sleepDeadlineMilliseconds(seconds: seconds)
         return "${var grantivaWaitUntil = Date.now() + \(ms); while (Date.now() < grantivaWaitUntil) {}}"
+    }
+
+    static func sleepDeadlineMilliseconds(seconds: Double) -> Int {
+        Int(ceil(seconds * 1000)) + 1
     }
 
     /// The step's name in run reports, instead of the raw script.
