@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- Android emulator selection waits for the operating system to finish booting when ADB already reports the emulator as connected.
+
 ## 2.1.0
 
 ### Changed

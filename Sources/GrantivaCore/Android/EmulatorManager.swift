@@ -274,7 +274,7 @@ public struct EmulatorManager: Sendable {
 
         if let configured, !configured.isEmpty {
             if let match = running.first(where: { names[$0.serial] == configured }) {
-                return BootedDevice(udid: match.serial, name: configured)
+                return try await waitForBooting(match.serial, name: configured)
             }
             if let starting = booting.first(where: { names[$0.serial] == configured }) {
                 return try await waitForBooting(starting.serial, name: configured)
@@ -291,7 +291,10 @@ public struct EmulatorManager: Sendable {
 
         switch running.count {
         case 1:
-            return BootedDevice(udid: running[0].serial, name: names[running[0].serial] ?? running[0].serial)
+            return try await waitForBooting(
+                running[0].serial,
+                name: names[running[0].serial] ?? running[0].serial
+            )
         case 0:
             if booting.count == 1 {
                 return try await waitForBooting(booting[0].serial, name: names[booting[0].serial] ?? booting[0].serial)

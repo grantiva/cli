@@ -302,6 +302,9 @@ final class EmulatorManagerTests: XCTestCase {
             .success("List of devices attached\nemulator-5554 device\nemulator-5556 device"),
             .success("Pixel_7_API_34\nOK"),
             .success("Pixel_8_API_35\nOK"),
+            .success("1"),
+            .success("package:/system/framework/framework-res.apk"),
+            .success(""),
         ])
         let device = try await manager(shell).selectDevice(configured: "Pixel_8_API_35")
         XCTAssertEqual(device, BootedDevice(udid: "emulator-5556", name: "Pixel_8_API_35"))
@@ -311,9 +314,50 @@ final class EmulatorManagerTests: XCTestCase {
         let shell = ScriptedShell([
             .success("List of devices attached\nemulator-5554 device\nR58M1234ABC device"),
             .success("Pixel_8_API_35\nOK"),
+            .success("1"),
+            .success("package:/system/framework/framework-res.apk"),
+            .success(""),
         ])
         let device = try await manager(shell).selectDevice(configured: nil)
         XCTAssertEqual(device.udid, "emulator-5554", "physical devices are never picked by default")
+    }
+
+    func testConfiguredADBDeviceWaitsForAndroidReadinessWithoutSpawningAnotherEmulator() async throws {
+        let spawn = SpawnRecorder()
+        let shell = ScriptedShell([
+            .success("List of devices attached\nemulator-5554 device"),
+            .success("Pixel_8_API_35\nOK"),
+            .success(""),
+            .success("1"),
+            .success("package:/system/framework/framework-res.apk"),
+            .success(""),
+        ])
+
+        let device = try await manager(shell, spawn: spawn).selectDevice(configured: "Pixel_8_API_35")
+
+        XCTAssertEqual(device, BootedDevice(udid: "emulator-5554", name: "Pixel_8_API_35"))
+        XCTAssertTrue(spawn.calls.isEmpty, "an adb-attached emulator must be waited on, not started twice")
+        XCTAssertTrue(shell.commands.contains { $0.contains("boot_completed") })
+        XCTAssertTrue(shell.commands.contains { $0.contains("pm path android") })
+    }
+
+    func testDefaultADBDeviceWaitsForAndroidReadinessWithoutSelectingThePhysicalDevice() async throws {
+        let spawn = SpawnRecorder()
+        let shell = ScriptedShell([
+            .success("List of devices attached\nemulator-5554 device\nR58M1234ABC device"),
+            .success("Pixel_8_API_35\nOK"),
+            .success("1"),
+            .success("package:/system/framework/framework-res.apk"),
+            .success(""),
+        ])
+
+        let device = try await manager(shell, spawn: spawn).selectDevice(configured: nil)
+
+        XCTAssertEqual(device, BootedDevice(udid: "emulator-5554", name: "Pixel_8_API_35"))
+        XCTAssertTrue(spawn.calls.isEmpty)
+        XCTAssertTrue(shell.commands.contains { $0.contains("boot_completed") })
+        XCTAssertTrue(shell.commands.contains { $0.contains("pm path android") })
+        XCTAssertFalse(shell.commands.contains { $0.contains("R58M1234ABC") && $0.contains("getprop") })
     }
 
     func testSelectDeviceWithTwoRunningAndNoConfigAsksForAChoice() async throws {
