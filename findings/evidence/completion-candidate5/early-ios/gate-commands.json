@@ -1,0 +1,41 @@
+{
+  "status": "BOUND_NOT_EXECUTED",
+  "cwd": "/Users/kyle/Developer/landmarks-demo/.worktrees/release-round4-candidate2/ios",
+  "environment": {
+    "GRANTIVA_RUNNER_HOME": "/private/tmp/grantiva-completion-candidate5-y6myz3jd/runner-home",
+    "MAESTRO_RUNNER_HOME": "/private/tmp/grantiva-completion-candidate5-y6myz3jd/runner-home",
+    "GRANTIVA_SESSION_ID": "candidate5-early-ios",
+    "GRANTIVA_API_KEY": "<unset>"
+  },
+  "ordered": [
+    {
+      "label": "stock-ios26",
+      "output": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/early-ios/IOS-117-candidate5",
+      "timeoutSeconds": 1200,
+      "bootObservation": true,
+      "argv": ["/Users/kyle/.grantiva-qa/bin/grantiva", "run", "--no-build", "--simulator", "0DF686A9-BF94-4FEE-9F48-5CA5FB4BADA4", "--bundle-id", "com.kylebrowning.Landmarks"]
+    },
+    {
+      "label": "diff-ios26",
+      "output": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/early-ios/IOS-120-candidate5",
+      "timeoutSeconds": 300,
+      "bootObservation": true,
+      "argv": ["/Users/kyle/.grantiva-qa/bin/grantiva", "diff", "capture", "--no-build", "--simulator", "0DF686A9-BF94-4FEE-9F48-5CA5FB4BADA4"]
+    },
+    {
+      "label": "stock-ios27",
+      "output": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/early-ios/IOS-118-candidate5",
+      "timeoutSeconds": 1200,
+      "bootObservation": true,
+      "argv": ["/Users/kyle/.grantiva-qa/bin/grantiva", "run", "--no-build", "--simulator", "7BE6242E-5F5C-4D37-ACCE-15EBE1BBE18B", "--bundle-id", "com.kylebrowning.Landmarks"]
+    },
+    {
+      "label": "diff-ios27",
+      "output": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/early-ios/IOS-120-candidate5",
+      "timeoutSeconds": 300,
+      "bootObservation": true,
+      "argv": ["/Users/kyle/.grantiva-qa/bin/grantiva", "diff", "capture", "--no-build", "--simulator", "7BE6242E-5F5C-4D37-ACCE-15EBE1BBE18B"]
+    }
+  ],
+  "stopRule": "Any iOS 26 failure stops the gate before iOS 27. Preserve first capture and do not overwrite labels."
+}

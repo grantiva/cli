@@ -1,0 +1,8 @@
+{
+  "passed": false,
+  "stage": "protected postcondition comparison after both fixtures were installed",
+  "error": "RuntimeError: protected simulator inventory changed",
+  "cause": "The original script compared volatile dataPathSize. Protected B27D dataPathSize changed from 2623238144 to 2623176704 while its stable identity and Booted state remained unchanged.",
+  "liveStepsRepeated": false,
+  "correction": "Adjacent read-only finalization compares stable protected identity/state fields only. Original before/after records remain preserved."
+}
