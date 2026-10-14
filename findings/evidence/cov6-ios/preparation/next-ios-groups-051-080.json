@@ -1,0 +1,428 @@
+{
+  "schema": "grantiva.candidate5.cov6-ios.next-groups.v1",
+  "status": "PREPARED_NOT_ACTIVE",
+  "candidateManifest": {
+    "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate5/candidate.json",
+    "sha256": "191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c"
+  },
+  "binary": "/Users/kyle/.grantiva-qa/bin/grantiva",
+  "runnerHome": "/private/tmp/grantiva-candidate5-coverage-qjr26z3g/ios-runner-home",
+  "sessionId": "candidate5-ios",
+  "collector": {
+    "path": "findings/tools/cov6-ios/capture-one.rb",
+    "sha256": "70b5a1d5f93a1af3f51e79098b3d2f1aee14a8a2cb72d6f0a7b6f6075defc152"
+  },
+  "resources": {
+    "primary26": {
+      "name": "cov6-ios-26",
+      "udid": "1E436AED-5626-4520-9E43-1CC741510637"
+    },
+    "primary27": {
+      "name": "cov6-ios-27",
+      "udid": "9C1D624E-C6F2-4930-9581-B1A257C0DBD7"
+    },
+    "extraNames": [
+      "cov6-ios-3",
+      "cov6-ios-4"
+    ],
+    "protectedUUIDs": [
+      "B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C",
+      "FE441EE5-BBFC-4981-B68A-59C0DBCE26D6"
+    ]
+  },
+  "fixtures": {
+    "sourceCwd": "/Users/kyle/Developer/landmarks-demo/.worktrees/release-round4-candidate2/ios",
+    "sourceCommit": "84af7581b75134b0e417b254e4317d565f7b73c6",
+    "frozenApp": "/private/tmp/grantiva-round4-candidate3-demo.9jkg9hna/Build/Products/UITesting-iphonesimulator/Landmarks.app",
+    "bundleId": "com.kylebrowning.Landmarks",
+    "frozenAppManifestSHA256": "b9619e1d41004db3edcd1537381f5b1285925071546a762ff6af06f8d14e2074"
+  },
+  "canonicalRows": [
+    {
+      "key": "IOS-051",
+      "baseId": "IOS-051",
+      "matrixLine": 422,
+      "command": "`hierarchy`",
+      "precondition": "`--udid <UDID>`",
+      "expected": "That simulator's tree via `<pid>.owner.json` (docs/dump-hierarchy.md:36)"
+    },
+    {
+      "key": "IOS-052",
+      "baseId": "IOS-052",
+      "matrixLine": 423,
+      "command": "`hierarchy`",
+      "precondition": "two keep-alive sessions (cov-ios-1, cov-ios-2), no `--udid`",
+      "expected": "Newest session (README:91)"
+    },
+    {
+      "key": "IOS-053",
+      "baseId": "IOS-053",
+      "matrixLine": 424,
+      "command": "`hierarchy`",
+      "precondition": "two sessions, `--udid` of the older",
+      "expected": "Older session's tree (docs/dump-hierarchy.md:36)"
+    },
+    {
+      "key": "IOS-054",
+      "baseId": "IOS-054",
+      "matrixLine": 425,
+      "command": "`hierarchy`",
+      "precondition": "after `kill -9` of the keep-alive run",
+      "expected": "Dead session ignored; fails fast if none (docs/dump-hierarchy.md:21)"
+    },
+    {
+      "key": "IOS-055",
+      "baseId": "IOS-055",
+      "matrixLine": 426,
+      "command": "`hierarchy`",
+      "precondition": "`--timeout 0.01`",
+      "expected": "One line, e.g. `Error: GrantivaAgent on port <p> did not answer within 0.01s (--timeout). Is the run still alive?` (brief I15)"
+    },
+    {
+      "key": "IOS-056",
+      "baseId": "IOS-056",
+      "matrixLine": 427,
+      "command": "`run --keep-alive --ready-file r`, `hierarchy`",
+      "precondition": "`hierarchy` as soon as `r` exists",
+      "expected": "No race (docs/dump-hierarchy.md:23)"
+    },
+    {
+      "key": "IOS-057",
+      "baseId": "IOS-057",
+      "matrixLine": 428,
+      "command": "`run --keep-alive`, Ctrl-C",
+      "precondition": "none",
+      "expected": "Runner, WDA, `simctl diagnose` reaped; session and owner files removed; lease released (README:76)"
+    },
+    {
+      "key": "IOS-058",
+      "baseId": "IOS-058",
+      "matrixLine": 429,
+      "command": "`run --keep-alive &`, `kill -INT <pid>`",
+      "precondition": "`--ready-file r`",
+      "expected": "SIGINT during active work yields terminal `interrupted`. If all configured work already completed and the command is only holding the session open, preserve the earned terminal `passed` document while releasing the session through the signal path. (corrected round 4)"
+    },
+    {
+      "key": "IOS-059",
+      "baseId": "IOS-059",
+      "matrixLine": 430,
+      "command": "`run`",
+      "precondition": "two concurrent runs, cov-ios-1 and cov-ios-2",
+      "expected": "Both exit 0; distinct WDA ports and sessions; per-UDID homes (README:92; brief I01)"
+    },
+    {
+      "key": "IOS-060",
+      "baseId": "IOS-060",
+      "matrixLine": 431,
+      "command": "`run`",
+      "precondition": "second run on a UDID owned by a live run",
+      "expected": "Fails immediately with \"already owned by another Grantiva run\", owner pid and the freeing command (README:92)"
+    },
+    {
+      "key": "IOS-129",
+      "baseId": "IOS-129",
+      "matrixLine": 432,
+      "command": "README agent example",
+      "precondition": "README:70 `run --flow ... --keep-alive --logs`, README:73 `hierarchy > state.xml`",
+      "expected": "Both as written (flow path substituted); `state.xml` non-empty XML (README:68-74)"
+    },
+    {
+      "key": "IOS-130",
+      "baseId": "IOS-130",
+      "matrixLine": 433,
+      "command": "README ready-file loop",
+      "precondition": "README:80-82 as written (flow substituted)",
+      "expected": "Loop ends; `jq -r .status` prints `passed` (README:79-83)"
+    },
+    {
+      "key": "IOS-131",
+      "baseId": "IOS-131",
+      "matrixLine": 434,
+      "command": "docs/dump-hierarchy.md examples",
+      "precondition": ":13, :16, :18",
+      "expected": "Run as written; XML and JSON files non-empty (docs/dump-hierarchy.md:11-19)"
+    },
+    {
+      "key": "IOS-061",
+      "baseId": "IOS-061",
+      "matrixLine": 440,
+      "command": "`run --logs`",
+      "precondition": "default predicate",
+      "expected": "`[log]` app lines (hundreds for flow 08), no `getpwuid_r`/\"Filtering the log data\" banners (README:93; brief I07)"
+    },
+    {
+      "key": "IOS-062",
+      "baseId": "IOS-062",
+      "matrixLine": 441,
+      "command": "`run`",
+      "precondition": "`--logs-predicate 'subsystem == \"com.kylebrowning.Landmarks\"'`",
+      "expected": "Implies `--logs`; only matching lines (README:94)"
+    },
+    {
+      "key": "IOS-063",
+      "baseId": "IOS-063",
+      "matrixLine": 442,
+      "command": "`run`",
+      "precondition": "`--logs --logs-level debug`, then `info`, then `default`",
+      "expected": "Passed to `log stream --level`; debug >= info >= default line counts (help: run.txt)"
+    },
+    {
+      "key": "IOS-064",
+      "baseId": "IOS-064",
+      "matrixLine": 443,
+      "command": "`run --logs`",
+      "precondition": "success, failure, Ctrl-C",
+      "expected": "No orphan `log stream` (help: run.txt)"
+    },
+    {
+      "key": "IOS-065",
+      "baseId": "IOS-065",
+      "matrixLine": 444,
+      "command": "`run`",
+      "precondition": "`--snapshot failure` (default)",
+      "expected": "One screenshot after the failing step (README:95)"
+    },
+    {
+      "key": "IOS-066",
+      "baseId": "IOS-066",
+      "matrixLine": 445,
+      "command": "`run`",
+      "precondition": "`--snapshot trailing`",
+      "expected": "Last-good plus failing step (README:95)"
+    },
+    {
+      "key": "IOS-067",
+      "baseId": "IOS-067",
+      "matrixLine": 446,
+      "command": "`run`",
+      "precondition": "`--snapshot full`",
+      "expected": "A screenshot per step (README:95)"
+    },
+    {
+      "key": "IOS-068",
+      "baseId": "IOS-068",
+      "matrixLine": 447,
+      "command": "`run`",
+      "precondition": "`--continue-on-failure`, crash flow first",
+      "expected": "Remaining flows run; exit non-zero (README:96)"
+    },
+    {
+      "key": "IOS-069",
+      "baseId": "IOS-069",
+      "matrixLine": 448,
+      "command": "`run`",
+      "precondition": "crash flow first, no flag",
+      "expected": "Suite stops after the first broken flow (README:96)"
+    },
+    {
+      "key": "IOS-070",
+      "baseId": "IOS-070",
+      "matrixLine": 449,
+      "command": "`run`",
+      "precondition": "`--report-dir out` (relative)",
+      "expected": "`out/report.json`, assets, screenshots; no `./.grantiva/captures` (README:99)"
+    },
+    {
+      "key": "IOS-071",
+      "baseId": "IOS-071",
+      "matrixLine": 450,
+      "command": "`run`",
+      "precondition": "`--report-dir out`, failing flow",
+      "expected": "No `/var/folders` path in `out/`; `sourceFile` and junit `file` are the paths as passed (README:99; brief I11)"
+    },
+    {
+      "key": "IOS-072",
+      "baseId": "IOS-072",
+      "matrixLine": 451,
+      "command": "`run`",
+      "precondition": "two flows named `same.yaml` in different dirs",
+      "expected": "Each runs once (README:99)"
+    },
+    {
+      "key": "IOS-073",
+      "baseId": "IOS-073",
+      "matrixLine": 452,
+      "command": "`run`",
+      "precondition": "`--timeout 30 --ready-file r`",
+      "expected": "Killed with SIGTERM at about 30 s; ready `failed`, no flow `running`; message ends without a stray colon (README:89, 97; brief A06; obs)"
+    },
+    {
+      "key": "IOS-074",
+      "baseId": "IOS-074",
+      "matrixLine": 453,
+      "command": "`run --json`",
+      "precondition": "failing flow; passing flow",
+      "expected": "stdout only JSON; failing: `\"allPassed\": false`, failed step and message, `error`, `reportDir` with `--report-dir`; exit 1 (README:383-386; brief I12)"
+    },
+    {
+      "key": "IOS-075",
+      "baseId": "IOS-075",
+      "matrixLine": 454,
+      "command": "`run`",
+      "precondition": "`- stopApp` before any launch",
+      "expected": "Does not fail (README:172)"
+    },
+    {
+      "key": "IOS-077",
+      "baseId": "IOS-077",
+      "matrixLine": 455,
+      "command": "`run`",
+      "precondition": "`launchApp: {arguments: {\"--flag\": true}}`",
+      "expected": "App receives `--flag` (README:172)"
+    },
+    {
+      "key": "IOS-078",
+      "baseId": "IOS-078",
+      "matrixLine": 456,
+      "command": "`run`",
+      "precondition": "`assertVisible: {text: \"Golden Gate.*\", exact: true}`; `assertVisible: \"Golden Gate.*\"`; `assertVisible: \"Golden Gate\"`",
+      "expected": "Exact form fails (literal text absent); the regex passes; `Golden Gate` alone fails (whole-value match, not substring) (docs/mcp.md:88; README:143-147)"
+    },
+    {
+      "key": "IOS-132",
+      "baseId": "IOS-132",
+      "matrixLine": 457,
+      "command": "`run` screens",
+      "precondition": "`--snapshot full` with screens config",
+      "expected": "Applies to screens too (README:95)"
+    },
+    {
+      "key": "IOS-133",
+      "baseId": "IOS-133",
+      "matrixLine": 458,
+      "command": "`run` screens+flows",
+      "precondition": "`--report-dir out` with screens and flows",
+      "expected": "Screens report under `out/screens/` (README:99)"
+    },
+    {
+      "key": "IOS-134",
+      "baseId": "IOS-134",
+      "matrixLine": 459,
+      "command": "`run` screens",
+      "precondition": "`--continue-on-failure` with a failing screen",
+      "expected": "Failed screens session reported; configured flows still run (README:99)"
+    },
+    {
+      "key": "IOS-135",
+      "baseId": "IOS-135",
+      "matrixLine": 460,
+      "command": "`run` screens",
+      "precondition": "`--timeout 30` with a screen that waits 45 s",
+      "expected": "Killed at about 30 s (README:99; brief R03, C04)"
+    },
+    {
+      "key": "IOS-152",
+      "baseId": "IOS-152",
+      "matrixLine": 461,
+      "command": "`run --quiet` / `--verbose`",
+      "precondition": "`run --flow .maestro/01-browse.yaml` plain, `--quiet`, `--verbose`; then `--quiet` with NEW:02-exact-negative",
+      "expected": "stdout identical in all three modes (compare byte for byte; with `--json` the JSON); `--quiet`: no progress narration on stderr, `Warning:`/`Error:` still printed; `--verbose`: stderr adds timestamps, labels and every subprocess with its exit status (README:388-396); the failing run still prints its failure under `--quiet`"
+    },
+    {
+      "key": "IOS-079",
+      "baseId": "IOS-079",
+      "matrixLine": 467,
+      "command": "`record`",
+      "precondition": "`--simulator <UDID> --duration 3`",
+      "expected": "`.grantiva/recordings/recording.mov`; exit 0 (help: record.txt)"
+    },
+    {
+      "key": "IOS-080",
+      "baseId": "IOS-080",
+      "matrixLine": 468,
+      "command": "`record`",
+      "precondition": "`--output \"/private/tmp/.../cov rec/a.mov\"`",
+      "expected": "Written there (help: record.txt)"
+    }
+  ],
+  "captureSharing": [
+    {
+      "capture": "two-keepalive-hierarchy",
+      "keys": [
+        "IOS-051",
+        "IOS-052",
+        "IOS-053"
+      ],
+      "why": "One authenticated two-session fixture can capture explicit older-UDID hierarchy, implicit newest-session hierarchy, and prove each selected tree separately; distinct invocations and outputs remain retained."
+    },
+    {
+      "capture": "passing-held-sigint",
+      "keys": [
+        "IOS-057",
+        "IOS-058"
+      ],
+      "why": "One passing flow held under --keep-alive and terminated by SIGINT can prove earned passed ready status plus runner/WDA/diagnose/session/owner/lease cleanup; retain signal timing and every cleanup observation."
+    },
+    {
+      "capture": "concurrent-owned-runs",
+      "keys": [
+        "IOS-059",
+        "IOS-060"
+      ],
+      "why": "While two successful runs on distinct primaries remain live, an additional run against one owned UDID supplies the immediate ownership refusal; the two successful parent results and ports/homes are separate artifacts."
+    },
+    {
+      "capture": "readme-agent-logs-hierarchy",
+      "keys": [
+        "IOS-129",
+        "IOS-061"
+      ],
+      "why": "Use README agent example with flow 08, --keep-alive and --logs; its default-predicate log stream can prove IOS-061 while the separate hierarchy command proves IOS-129. No flags or inputs differ."
+    },
+    {
+      "capture": "log-process-cleanup-joins",
+      "keys": [
+        "IOS-064"
+      ],
+      "joins": [
+        "successful --logs process from IOS-061",
+        "failing logged run retained with failure group",
+        "SIGINT logged hold only if IOS-057 includes --logs"
+      ],
+      "why": "Reuse only exact log-enabled success/failure/SIGINT executions, with per-PID post-exit absence; do not infer cleanup from a run without --logs."
+    },
+    {
+      "capture": "failure-json-report",
+      "keys": [
+        "IOS-065",
+        "IOS-071",
+        "IOS-074"
+      ],
+      "why": "A failing flow with default snapshot, --json, and relative --report-dir can simultaneously prove one failure screenshot, JSON failure shape/exit, and portable sourceFile/JUnit paths, provided stdout remains JSON-only and every clause is inspected."
+    },
+    {
+      "capture": "full-snapshot-screens",
+      "keys": [
+        "IOS-067",
+        "IOS-132"
+      ],
+      "why": "One screens run with --snapshot full proves both generic per-step full snapshots and the explicit screens application. Keep the screens report and artifact count."
+    },
+    {
+      "capture": "screens-flows-report-dir",
+      "keys": [
+        "IOS-070",
+        "IOS-133"
+      ],
+      "why": "One passing combined screens+flows run with a relative --report-dir proves report/assets placement, absence of default captures, and screens under out/screens."
+    }
+  ],
+  "nonShareableNotes": [
+    "IOS-054 dead-session filtering, IOS-055 0.01-second timeout, and IOS-056 ready-file race each require their own state transition/timing evidence.",
+    "IOS-062 and each IOS-063 level require distinct predicate/level invocations; compare line counts only within matched fixtures.",
+    "IOS-066 trailing and IOS-067 full snapshot modes require their exact modes; never derive one from another.",
+    "IOS-068 crash-flow continuation and IOS-134 failing-screen continuation are separate because their failure origins and remaining-work clauses differ.",
+    "IOS-073 flow timeout and IOS-135 screen wait timeout remain distinct timed invocations.",
+    "IOS-078 requires all three exact matcher forms as separate invocations.",
+    "IOS-152 requires plain, quiet, verbose, and quiet-negative outputs with byte comparisons; no ordinary run substitutes.",
+    "IOS-079 must use the default recording destination; IOS-080 must independently prove the spaced explicit output path."
+  ],
+  "executionRules": [
+    "No live, device, WDA, compiler, or build command until root activates an exclusive iOS reservation.",
+    "Preserve command/env/cwd/timestamps/exits and raw streams for every invocation even when a shared fixture supports multiple keys.",
+    "A shared capture is accepted only when command, flags, inputs, runtime, artifact, target, and precondition satisfy every joined clause; otherwise split it before grading.",
+    "Primary devices are shutdown-only during scoped recovery and never deleted. Authenticate every extra UUID before mutation; at most two extras coexist.",
+    "Use both GRANTIVA_RUNNER_HOME and MAESTRO_RUNNER_HOME with the bound iOS home, GRANTIVA_SESSION_ID=candidate5-ios, and GRANTIVA_API_KEY unset.",
+    "Restore frozen app after any scratch install; preserve protected inventories; finish with primaries Booted/frozen, extras retired, and no owned workers/sessions/forwards."
+  ]
+}
