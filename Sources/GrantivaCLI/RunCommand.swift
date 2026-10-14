@@ -200,6 +200,7 @@ struct RunCommand: AsyncParsableCommand {
     /// only show whatever was already on screen.
     static func wantsFailureScreenshot(error: Error, report: RunnerFailureReport) -> Bool {
         if case .invalidArgument = error as? GrantivaError { return false }
+        if case .commandFailed(_, 130) = error as? GrantivaError { return false }
         return !SimulatorLease.isOwnershipRefusal(error) && !report.passedBeforeInterruption
     }
 

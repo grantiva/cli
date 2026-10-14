@@ -560,12 +560,13 @@ final class RunCommandTests: XCTestCase {
         XCTAssertEqual(RunCommand.bootNarration(platform: .ios, target: "iPhone 17"), "Booting simulator: iPhone 17")
     }
 
-    /// A10: Ctrl-C releasing a `--keep-alive` run whose flows all passed is
-    /// not a flow failure, so no failure screenshot is taken.
-    func testNoFailureScreenshotAfterAPassedRunIsInterrupted() {
+    /// A10: Ctrl-C is cancellation, not a flow failure, so it never takes a
+    /// failure screenshot. A released `--keep-alive` pass remains covered by
+    /// the same rule and keeps its earned result.
+    func testNoFailureScreenshotAfterARunIsInterrupted() {
         let error = GrantivaError.commandFailed("Runner interrupted:\n", 130)
         let report = RunnerFailureReport()
-        XCTAssertTrue(RunCommand.wantsFailureScreenshot(error: error, report: report))
+        XCTAssertFalse(RunCommand.wantsFailureScreenshot(error: error, report: report))
         report.markPassedBeforeInterrupt()
         XCTAssertFalse(RunCommand.wantsFailureScreenshot(error: error, report: report))
     }
@@ -590,14 +591,22 @@ final class RunCommandTests: XCTestCase {
         XCTAssertEqual(emitted.values.count, 1)
         XCTAssertTrue(emitted.values.first?.contains(#""allPassed" : true"#) ?? false, "\(emitted.values)")
 
-        let failed = FakeDevicePlatform(platform: .android)
+        let interrupted = FakeDevicePlatform(platform: .android)
         let none = CapturedLines()
         await RunCommand.handleSuiteFailure(
-            error: error, report: RunnerFailureReport(), device: failed, deviceID: "emulator-5554", captureDir: captureDir,
+            error: error, report: RunnerFailureReport(), device: interrupted, deviceID: "emulator-5554", captureDir: captureDir,
             json: false, resultOutput: ResultOutput { none.append($0) }, log: { _ in }
         )
-        XCTAssertTrue(failed.calls.contains("screenshot"), "\(failed.calls)")
+        XCTAssertFalse(interrupted.calls.contains("screenshot"), "\(interrupted.calls)")
         XCTAssertEqual(none.values, [], "no document without --json")
+
+        let failed = FakeDevicePlatform(platform: .android)
+        await RunCommand.handleSuiteFailure(
+            error: GrantivaError.commandFailed("Runner failed", 1), report: RunnerFailureReport(),
+            device: failed, deviceID: "emulator-5554", captureDir: captureDir,
+            json: false, resultOutput: ResultOutput { _ in }, log: { _ in }
+        )
+        XCTAssertTrue(failed.calls.contains("screenshot"), "\(failed.calls)")
     }
 
     /// L10: a failing run without --json prints, on stdout, the blocks of
