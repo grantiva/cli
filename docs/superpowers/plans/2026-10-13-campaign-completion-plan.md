@@ -49,3 +49,13 @@ Join every required key, shared platform half and runtime qualification. Review 
 - Minor review observations are ledgered, not grounds for expanding the current fix.
 - Every test/build has a named acceptance purpose; passing checks repeat only after relevant changes or an unresolved concern.
 - No time estimate until replacement freeze and measured feature-group throughput provide evidence.
+
+## Task4 interruption: L87 runner fix
+
+Candidate4 full coverage is FAILED / INCOMPLETE after the exact iOS26 stock run and diff capture both fail the Detail navigation sequence. Preserve the passed candidate4 smoke gate and completed coverage as historical evidence; do not spend the remaining matrix on the known failing runner.
+
+1. Retain both public failures and minimal hierarchy/screenshot diagnosis. Return owned iOS resources safely; freeze remaining coverage as unexecuted.
+2. One isolated runner implementer adds deterministic competing-button RED evidence, then the smallest tap-only BackButton preference. Preserve all selector semantics, ordinary fallback, frozen demo and configuration. Run focused tests only after iOS yields the compiler window.
+3. One independent source/spec review; correct only substantiated defects, at most five review rounds. Then run required runner checks and bounded owned iOS26/iOS27 live acceptance.
+4. Pass required CI, merge the reviewed fix and package/freeze a replacement using the established workflow. Do not rebuild unchanged demo or WDA. Reuse unchanged source-test evidence under existing provenance rules; do not transfer prior runtime verdicts to a different candidate.
+5. Resume the full approved matrix on the replacement and complete final reconciliation/owned cleanup. No tags/releases; no further routine permission requests.
