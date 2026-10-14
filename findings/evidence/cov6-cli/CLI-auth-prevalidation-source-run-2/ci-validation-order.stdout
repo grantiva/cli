@@ -1,0 +1,85 @@
+da12165c3cdcea7fa135a677c297862c7a96781d09f4573e4a23133c10cb641a  Sources/GrantivaCLI/CICommand.swift
+        func run() async throws {
+            options.applyRunnerNarration()
+            let (platform, config) = try platformOptions.loadConfig()
+            guard platform == .ios else {
+                throw GrantivaError.invalidArgument(DiffCommand.androidLocalOnlyMessage)
+            }
+            try target.checkFlags(for: platform, derivedDataPath: buildOptions.derivedDataPath)
+            let device = try devicePlatform.make(platform, android: target.androidOptions)
+            let captureDir = ".grantiva/captures"
+            let diffDir = ".grantiva/captures/diffs"
+            let start = Date()
+
+            // Resolve app binary first (if --app-file provided) so we can derive bundle ID
+            let resolvedBinary: ResolvedBinary? = if let appFile = buildOptions.appFile { try await device.resolveBinary(appFile) } else { nil }
+            defer { resolvedBinary?.cleanup() }
+
+            let appBundleId = resolvedBinary?.appID
+
+            // Resolve project
+            let resolved = try await target.resolve(
+                platform: platform, config: config, skipBuild: buildOptions.shouldSkipBuild, appID: appBundleId
+            )
+            // A default simulator the user created is refused before anything else (L08).
+            try await device.checkDefault(for: resolved)
+            log("Resolved: scheme=\(resolved.scheme ?? "(none)") simulator=\(resolved.simulator) screens=\(resolved.screens.count)")
+
+            guard !resolved.screens.isEmpty else {
+                throw GrantivaError.invalidArgument("No screens configured in grantiva.yml")
+            }
+
+            // Must be authenticated for CI
+            guard let credentials = AuthStore.resolveCredentials() else {
+                throw GrantivaError.notAuthenticated
+            }
+            log("Authenticated with \(credentials.baseURL)")
+
+            let client = try RangeClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
+            let projectId = try await ProjectIdentifier.resolve()
+            let project = projectId.projectSlug
+            let branch = projectId.currentBranch
+            log("Project: \(project) Branch: \(branch)")
+
+            // Get commit SHA (best effort)
+            let commitSHA = try? await shell("git rev-parse HEAD")
+            let trimmedSHA = commitSHA?.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            // Determine trigger
+            let trigger = ProcessInfo.processInfo.environment["CI"] != nil ? "ci" : "manual"
+
+            // Start run immediately so it appears in the dashboard as "running"
+            let startResponse = try await client.startRun(project, StartRunRequest(
+                branch: branch, commitSHA: trimmedSHA, trigger: trigger
+            ))
+            let runId = startResponse.runId
+            var remoteLogs = CILogBuffer()
+            var completionState = CIRunCompletionState()
+            remoteLogs.append(log("Run started: \(runId)"))
+
+            // Buffer remote logs so completion cannot race fire-and-forget tasks.
+            func rlog(_ message: String) {
+                remoteLogs.append(log(message))
+            }
+
+            func flushLogs() async throws {
+                try await remoteLogs.flush { line in
+                    try await client.appendLog(project, runId, line)
+                }
+            }
+
+            var ciVerdictFailed = false
+            do {
+                // 0. Preflight: ensure runner binary is extracted
+                rlog("Preparing runner...")
+                try await runnerManager.ensureAvailable()
+                rlog("Runner ready")
+
+                // 1. Boot → Build → Install → Launch → Capture
+                let deviceNoun = platform == .ios ? "simulator" : "emulator"
+                rlog(RunCommand.bootNarration(platform: platform, target: resolved.simulator))
+                let booted = try await device.bootDevice(for: resolved)
+                rlog("\(deviceNoun.capitalized) booted: \(booted.name) (\(booted.udid))")
+
+                var productPath: String?
+                var builtAppID: String?
