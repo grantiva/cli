@@ -299,11 +299,13 @@ public enum FlowGenerator {
     /// `wait: N` must sleep N seconds unconditionally. The runner has no sleep
     /// command, and `waitForAnimationToEnd` is only an upper bound: it returns
     /// as soon as the screen is still. The runner's JS engine runs `evalScript`
-    /// synchronously, so a deadline loop holds the flow for exactly N seconds.
+    /// synchronously. `Date.now()` is integral milliseconds, so the deadline
+    /// includes one clock quantum; otherwise a sample late in the first
+    /// millisecond can let the loop finish at 2999.x ms for `wait: 3`.
     /// The loop spins one core for those N seconds; a sleep command in the
     /// runner is the real fix and belongs in the runner repo.
     static func sleepScript(seconds: Double) -> String {
-        let ms = Int(seconds * 1000)
+        let ms = Int(seconds * 1000) + 1
         return "${var grantivaWaitUntil = Date.now() + \(ms); while (Date.now() < grantivaWaitUntil) {}}"
     }
 

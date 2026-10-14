@@ -63,7 +63,7 @@ final class FlowGeneratorTests: XCTestCase {
         XCTAssertTrue(
             yaml.contains("""
                 - evalScript:
-                    script: "${var grantivaWaitUntil = Date.now() + 3000; while (Date.now() < grantivaWaitUntil) {}}"
+                    script: "${var grantivaWaitUntil = Date.now() + 3001; while (Date.now() < grantivaWaitUntil) {}}"
                     label: "Wait 3s"
                 """),
             yaml
@@ -77,7 +77,9 @@ final class FlowGeneratorTests: XCTestCase {
     }
 
     func testFractionalWaitIsInMilliseconds() {
-        XCTAssertTrue(FlowGenerator.sleepScript(seconds: 1.5).contains("Date.now() + 1500;"))
+        // Date.now() has millisecond resolution. One extra quantum guarantees
+        // that elapsed monotonic time cannot fall just below the requested wait.
+        XCTAssertTrue(FlowGenerator.sleepScript(seconds: 1.5).contains("Date.now() + 1501;"))
         XCTAssertEqual(FlowGenerator.waitLabel(seconds: 1.5), "Wait 1.5s")
     }
 
