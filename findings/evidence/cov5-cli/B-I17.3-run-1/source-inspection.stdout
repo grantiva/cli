@@ -1,0 +1,10 @@
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:249:        client.testWebhook = { _ in WebhookTestResult(success: false, httpStatus: 500, responseBody: "boom", latencyMs: 12, error: nil) }
+Tests/GrantivaMCPTests/BuildToolsTests.swift:8:final class BuildToolsTests: XCTestCase {
+Tests/GrantivaMCPTests/BuildToolsTests.swift:90:            output: "Command line invocation:\n    xcodebuild -scheme X test\n\nxcodebuild: error: Scheme X is not currently configured for the test action.\n"
+Tests/GrantivaMCPTests/BuildToolsTests.swift:94:        XCTAssertTrue(text.contains("Errors:\nxcodebuild: error: Scheme X is not currently configured for the test action."), text)
+Tests/GrantivaMCPTests/BuildToolsTests.swift:106:        let text = BuildTools.testSummary(TestResult(success: false, scheme: "Demo", duration: 1, testsPassed: 1, testsFailed: 1, output: output))
+Tests/GrantivaMCPTests/BuildToolsTests.swift:115:        let text = BuildTools.testSummary(TestResult(success: false, scheme: "Demo", duration: 1, testsPassed: 0, testsFailed: 0, output: output))
+Tests/GrantivaMCPTests/BuildToolsTests.swift:129:            throw GrantivaError.commandFailed("xcodebuild: error: Scheme X is not currently configured for the test action.", 66)
+Tests/GrantivaMCPTests/BuildToolsTests.swift:133:        XCTAssertTrue(BuildTools.testSummary(result).contains("Scheme X is not currently configured for the test action"))
+Tests/GrantivaMCPTests/BuildToolsTests.swift:139:        let text = BuildTools.testSummary(TestResult(success: false, scheme: "Demo", duration: 1, testsPassed: 0, testsFailed: 0, output: output), tailLines: 0)
+Tests/GrantivaMCPTests/BuildToolsTests.swift:155:        let failing = TestResult(success: false, scheme: "D", duration: 1, testsPassed: 0, testsFailed: 0, output: (1...200).map { "ligne é✘ \($0)" }.joined(separator: "\n"))

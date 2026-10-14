@@ -1,0 +1,244 @@
+Tests/GrantivaAPITests/OrgAdminAPITests.swift:13:        XCTAssertEqual(try! OrgAdminEndpoints.patchFailureRate(PatchFailureRateAlertRequest(threshold: 20)).url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/alerts/failure-rate")
+Tests/GrantivaAPITests/OrgAdminAPITests.swift:49:        let prefs = #"{"newFeatureRequest":true,"featureVoteThreshold":true,"featureVoteThresholdCount":10,"featureStatusChange":true,"newSupportTicket":true,"ticketAdminReply":true,"ticketResolved":true,"ticketUserReply":true,"flagToggle":false,"teamInvite":true,"usageAlert":true}"#
+Sources/GrantivaAPI/OrgAdminClient.swift:71:public struct RiskAlertRule: Codable, Sendable, Equatable {
+Sources/GrantivaAPI/OrgAdminClient.swift:81:public struct CreateRiskAlertRuleRequest: Codable, Sendable, Equatable {
+Sources/GrantivaAPI/OrgAdminClient.swift:89:public struct PatchRiskAlertRuleRequest: Codable, Sendable, Equatable {
+Sources/GrantivaAPI/OrgAdminClient.swift:100:public struct RiskAlertDelivery: Codable, Sendable, Equatable {
+Sources/GrantivaAPI/OrgAdminClient.swift:113:public struct FailureRateAlert: Codable, Sendable, Equatable {
+Sources/GrantivaAPI/OrgAdminClient.swift:118:    public let lastAlertedAt: String?
+Sources/GrantivaAPI/OrgAdminClient.swift:123:public struct PatchFailureRateAlertRequest: Codable, Sendable, Equatable {
+Sources/GrantivaAPI/OrgAdminClient.swift:130:public struct FailureRateAlertEvent: Codable, Sendable, Equatable {
+Sources/GrantivaAPI/OrgAdminClient.swift:148:    public let usageAlert: Bool
+Sources/GrantivaAPI/OrgAdminClient.swift:150:    public init(newFeatureRequest: Bool, featureVoteThreshold: Bool, featureVoteThresholdCount: Int, featureStatusChange: Bool, newSupportTicket: Bool, ticketAdminReply: Bool, ticketResolved: Bool, ticketUserReply: Bool, flagToggle: Bool, teamInvite: Bool, usageAlert: Bool) {
+Sources/GrantivaAPI/OrgAdminClient.swift:153:        self.ticketResolved = ticketResolved; self.ticketUserReply = ticketUserReply; self.flagToggle = flagToggle; self.teamInvite = teamInvite; self.usageAlert = usageAlert
+Sources/GrantivaAPI/OrgAdminClient.swift:308:    static func listRules() -> Endpoint<EmptyBody, [RiskAlertRule]> { Endpoint(path: "\(prefix)/risk-alerts/rules", method: .get) }
+Sources/GrantivaAPI/OrgAdminClient.swift:309:    static func createRule(_ body: CreateRiskAlertRuleRequest) -> Endpoint<CreateRiskAlertRuleRequest, RiskAlertRule> { Endpoint(path: "\(prefix)/risk-alerts/rules", method: .post, body: body) }
+Sources/GrantivaAPI/OrgAdminClient.swift:310:    static func patchRule(_ id: String, _ body: PatchRiskAlertRuleRequest) -> Endpoint<PatchRiskAlertRuleRequest, RiskAlertRule> { Endpoint(path: "\(prefix)/risk-alerts/rules/\(EndpointPath.segment(id))", method: .patch, body: body) }
+Sources/GrantivaAPI/OrgAdminClient.swift:311:    static func deleteRule(_ id: String) -> Endpoint<EmptyBody, EmptyResponse> { Endpoint(path: "\(prefix)/risk-alerts/rules/\(EndpointPath.segment(id))", method: .delete) }
+Sources/GrantivaAPI/OrgAdminClient.swift:312:    static func ruleDeliveries() -> Endpoint<EmptyBody, [RiskAlertDelivery]> { Endpoint(path: "\(prefix)/risk-alerts/deliveries", method: .get) }
+Sources/GrantivaAPI/OrgAdminClient.swift:313:    static func failureRate() -> Endpoint<EmptyBody, FailureRateAlert> { Endpoint(path: "\(prefix)/alerts/failure-rate", method: .get) }
+Sources/GrantivaAPI/OrgAdminClient.swift:314:    static func patchFailureRate(_ body: PatchFailureRateAlertRequest) -> Endpoint<PatchFailureRateAlertRequest, FailureRateAlert> { Endpoint(path: "\(prefix)/alerts/failure-rate", method: .patch, body: body) }
+Sources/GrantivaAPI/OrgAdminClient.swift:315:    static func failureRateHistory() -> Endpoint<EmptyBody, [FailureRateAlertEvent]> { Endpoint(path: "\(prefix)/alerts/failure-rate/history", method: .get) }
+Sources/GrantivaAPI/OrgAdminClient.swift:344:/// API client for `console webhooks|alerts|keys|team|audit|org`.
+Sources/GrantivaAPI/OrgAdminClient.swift:354:    public var listRules: @Sendable () async throws -> [RiskAlertRule]
+Sources/GrantivaAPI/OrgAdminClient.swift:355:    public var createRule: @Sendable (CreateRiskAlertRuleRequest) async throws -> RiskAlertRule
+Sources/GrantivaAPI/OrgAdminClient.swift:356:    public var patchRule: @Sendable (String, PatchRiskAlertRuleRequest) async throws -> RiskAlertRule
+Sources/GrantivaAPI/OrgAdminClient.swift:358:    public var ruleDeliveries: @Sendable () async throws -> [RiskAlertDelivery]
+Sources/GrantivaAPI/OrgAdminClient.swift:359:    public var failureRate: @Sendable () async throws -> FailureRateAlert
+Sources/GrantivaAPI/OrgAdminClient.swift:360:    public var patchFailureRate: @Sendable (PatchFailureRateAlertRequest) async throws -> FailureRateAlert
+Sources/GrantivaAPI/OrgAdminClient.swift:361:    public var failureRateHistory: @Sendable () async throws -> [FailureRateAlertEvent]
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:289:            ["console", "alerts", "rules", "list"],
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:290:            ["console", "alerts", "rules", "get"],
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:291:            ["console", "alerts", "rules", "create"],
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:292:            ["console", "alerts", "rules", "update"],
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:293:            ["console", "alerts", "rules", "delete"],
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:294:            ["console", "alerts", "rules", "deliveries"],
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:295:            ["console", "alerts", "failure-rate", "get"],
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:296:            ["console", "alerts", "failure-rate", "set"],
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:297:            ["console", "alerts", "failure-rate", "history"],
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:298:            ["console", "alerts", "notifications", "get"],
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:299:            ["console", "alerts", "notifications", "set"],
+Sources/GrantivaCLI/ConsoleOpenCommand.swift:16:        case home, flags, apps, claims, devices, analytics, vrt, releases, feedback, support, webhooks, alerts, keys, team, audit, settings, billing
+Sources/GrantivaCLI/ConsoleOpenCommand.swift:25:            case .alerts: return "/dashboard/settings/alerts"
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:11:        XCTAssertEqual(try ConsoleAlertsCommand.RulesCommand.GetCommand.parse(["R1"]).rule, "R1")
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:23:            [try! decoder.decode(RiskAlertRule.self, from: Data(#"{"id":"R1","name":"High risk","threshold":80,"comparison":"gte","webhookUrl":"https://x","isActive":true,"createdAt":null}"#.utf8))]
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:33:        try await ConsoleAlertsCommand.RulesCommand.GetCommand.parse(["R1", "--json"]).run(client: client)
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:258:    func testAlertsValidation() throws {
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:259:        XCTAssertThrowsError(try ConsoleAlertsCommand.RulesCommand.CreateCommand.parse(["r", "--threshold", "101", "--url", "https://x"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:260:        XCTAssertThrowsError(try ConsoleAlertsCommand.RulesCommand.CreateCommand.parse(["r", "--threshold", "80", "--comparison", "lt", "--url", "https://x"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:261:        XCTAssertEqual(try ConsoleAlertsCommand.RulesCommand.CreateCommand.parse(["r", "--threshold", "80", "--url", "https://x"]).comparison, "gte")
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:262:        XCTAssertThrowsError(try ConsoleAlertsCommand.RulesCommand.CreateCommand.parse(["   ", "--threshold", "80", "--url", "https://x"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:263:        XCTAssertThrowsError(try ConsoleAlertsCommand.RulesCommand.CreateCommand.parse(["r", "--threshold", "80", "--url", "http://x"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:264:        XCTAssertThrowsError(try ConsoleAlertsCommand.RulesCommand.CreateCommand.parse(["r", "--threshold", "80", "--url", "not-a-url"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:265:        XCTAssertThrowsError(try ConsoleAlertsCommand.RulesCommand.UpdateCommand.parse(["   ", "--active"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:266:        XCTAssertThrowsError(try ConsoleAlertsCommand.RulesCommand.UpdateCommand.parse(["R1", "--name", " \n "]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:267:        XCTAssertThrowsError(try ConsoleAlertsCommand.RulesCommand.UpdateCommand.parse(["R1", "--url", "ftp://x"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:268:        XCTAssertThrowsError(try ConsoleAlertsCommand.FailureRateCommand.SetCommand.parse(["--threshold", "60"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:269:        XCTAssertThrowsError(try ConsoleAlertsCommand.FailureRateCommand.SetCommand.parse([]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:270:        XCTAssertEqual(try ConsoleAlertsCommand.FailureRateCommand.SetCommand.parse(["--no-enabled"]).enabled, false)
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:271:        XCTAssertThrowsError(try ConsoleAlertsCommand.NotificationsCommand.SetCommand.parse(["bogus=on"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:272:        XCTAssertThrowsError(try ConsoleAlertsCommand.NotificationsCommand.SetCommand.parse(["flagToggle=maybe"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:273:        XCTAssertThrowsError(try ConsoleAlertsCommand.NotificationsCommand.SetCommand.parse(["featureVoteThresholdCount=0"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:274:        XCTAssertThrowsError(try ConsoleAlertsCommand.NotificationsCommand.SetCommand.parse(["flagToggle=on", "flagToggle=off"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:277:    func testAlertRuleListCreateAndUpdateSendExactRequests() async throws {
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:279:            RiskAlertRule.self,
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:283:        let created = Capture<CreateRiskAlertRuleRequest>()
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:285:        let updated = Capture<PatchRiskAlertRuleRequest>()
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:301:        try await ConsoleAlertsCommand.RulesCommand.ListCommand.parse(["--json"]).run(client: client)
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:302:        try await ConsoleAlertsCommand.RulesCommand.CreateCommand.parse([
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:305:        try await ConsoleAlertsCommand.RulesCommand.UpdateCommand.parse([
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:315:        XCTAssertEqual(createRequest, CreateRiskAlertRuleRequest(name: "High risk", threshold: 80, comparison: "gt", webhookUrl: "https://ops.example.com/risk"))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:317:        XCTAssertEqual(updateRequest, PatchRiskAlertRuleRequest(name: "Critical", threshold: 90, comparison: "gte", webhookUrl: "https://ops.example.com/critical", isActive: false))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:320:    func testAlertRuleCommandsMapReadWriteAndMissingErrors() async throws {
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:323:        await assertPermissionScope("alerts:read") {
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:324:            try await ConsoleAlertsCommand.RulesCommand.ListCommand.parse([]).run(client: client)
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:328:        await assertPermissionScope("alerts:write") {
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:329:            try await ConsoleAlertsCommand.RulesCommand.CreateCommand.parse(["r", "--threshold", "80", "--url", "https://x"]).run(client: client)
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:334:            try await ConsoleAlertsCommand.RulesCommand.UpdateCommand.parse(["R1", "--active"]).run(client: client)
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:344:        XCTAssertThrowsError(try ConsoleAlertsCommand.RulesCommand.DeleteCommand.parse([" \n\t ", "--yes"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:367:            try await ConsoleAlertsCommand.RulesCommand.DeleteCommand.parse(["R1"]).run(
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:392:        try await ConsoleAlertsCommand.RulesCommand.DeleteCommand.parse(["R1", "--yes", "--json"]).run(client: client, interactive: false)
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:414:            try await ConsoleAlertsCommand.RulesCommand.DeleteCommand.parse(["R1", "--yes"]).run(client: client, interactive: false)
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:427:            return NotificationPreferences(newFeatureRequest: true, featureVoteThreshold: true, featureVoteThresholdCount: 25, featureStatusChange: true, newSupportTicket: true, ticketAdminReply: true, ticketResolved: true, ticketUserReply: true, flagToggle: false, teamInvite: true, usageAlert: true)
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:429:        try await ConsoleAlertsCommand.NotificationsCommand.SetCommand.parse(["flagToggle=off", "featureVoteThresholdCount=25", "--json"]).run(client: client)
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:436:        let prefs = NotificationPreferences(newFeatureRequest: true, featureVoteThreshold: true, featureVoteThresholdCount: 25, featureStatusChange: true, newSupportTicket: true, ticketAdminReply: true, ticketResolved: true, ticketUserReply: true, flagToggle: false, teamInvite: true, usageAlert: true)
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:449:        try await ConsoleAlertsCommand.NotificationsCommand.GetCommand.parse(["--json"]).run(client: client)
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:450:        try await ConsoleAlertsCommand.NotificationsCommand.SetCommand.parse([
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:451:            "newFeatureRequest=true", "flagToggle=OFF", "usageAlert=on", "teamInvite=false", "--json",
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:458:            "usageAlert": .bool(true), "teamInvite": .bool(false),
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:463:            try await ConsoleAlertsCommand.NotificationsCommand.GetCommand.parse([]).run(client: client)
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:467:            try await ConsoleAlertsCommand.NotificationsCommand.SetCommand.parse(["flagToggle=on"]).run(client: client)
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:237:// MARK: - console alerts
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:240:struct ConsoleAlertsCommand: AsyncParsableCommand {
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:242:        commandName: "alerts",
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:243:        abstract: "Risk alert rules, the attestation failure-rate alert, and notification preferences.",
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:248:        static let configuration = CommandConfiguration(commandName: "rules", abstract: "Risk alert rules (Business plan and up).", subcommands: [ListCommand.self, GetCommand.self, CreateCommand.self, UpdateCommand.self, DeleteCommand.self, DeliveriesCommand.self])
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:257:            static let configuration = CommandConfiguration(commandName: "list", abstract: "List risk alert rules.")
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:261:                let rules: [RiskAlertRule]
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:262:                do { rules = try await client.listRules() } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.alertsRead) }
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:268:            static let configuration = CommandConfiguration(commandName: "get", abstract: "Show one risk alert rule.")
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:273:                let rules: [RiskAlertRule]
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:274:                do { rules = try await client.listRules() } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.alertsRead) }
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:283:            static let configuration = CommandConfiguration(commandName: "create", abstract: "Alert a webhook when a device's risk score crosses a threshold.")
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:297:                let rule: RiskAlertRule
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:298:                do { rule = try await client.createRule(CreateRiskAlertRuleRequest(name: name, threshold: threshold, comparison: comparison, webhookUrl: url)) } catch {
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:299:                    throw ConsoleSupport.map(error, scope: ConsoleScope.alertsWrite)
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:324:                let updated: RiskAlertRule
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:325:                do { updated = try await client.patchRule(rule, PatchRiskAlertRuleRequest(name: name, threshold: threshold, comparison: comparison, webhookUrl: url, isActive: active)) } catch {
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:326:                    throw ConsoleSupport.map(error, scope: ConsoleScope.alertsWrite, notFound: "rule not found: \(rule)")
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:333:            static let configuration = CommandConfiguration(commandName: "delete", abstract: "Delete a risk alert rule.")
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:347:                try ConsoleSupport.confirm("delete risk alert rule '\(rule)'", yes: yes, interactive: interactive, readAnswer: readAnswer)
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:348:                do { try await client.deleteRule(rule) } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.alertsWrite, notFound: "rule not found: \(rule)") }
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:354:            static let configuration = CommandConfiguration(commandName: "deliveries", abstract: "Recent risk alert deliveries across all rules.")
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:358:                let items: [RiskAlertDelivery]
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:359:                do { items = try await client.ruleDeliveries() } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.alertsRead) }
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:366:        static let configuration = CommandConfiguration(commandName: "failure-rate", abstract: "The attestation failure-rate alert.", subcommands: [GetCommand.self, SetCommand.self, HistoryCommand.self])
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:369:            static let configuration = CommandConfiguration(commandName: "get", abstract: "Show the failure-rate alert settings.")
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:373:                let alert: FailureRateAlert
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:374:                do { alert = try await client.failureRate() } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.alertsRead) }
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:375:                try ConsoleAdmin.emit(alert, options: options) { ConsoleAdminFormat.failureRate(alert) }
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:380:            static let configuration = CommandConfiguration(commandName: "set", abstract: "Enable, disable, or tune the failure-rate alert.")
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:382:            @Flag(name: .long, inversion: .prefixedNo, help: "Turn the alert on or off.") var enabled: Bool?
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:383:            @Option(name: .long, help: "Failure-rate percentage that triggers the alert, 5–50.") var threshold: Int?
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:392:                let alert: FailureRateAlert
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:393:                do { alert = try await client.patchFailureRate(PatchFailureRateAlertRequest(isEnabled: enabled, threshold: threshold, minAttestationCount: minAttestations)) } catch {
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:396:                try ConsoleAdmin.emit(alert, options: options) { ConsoleAdminFormat.failureRate(alert) }
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:401:            static let configuration = CommandConfiguration(commandName: "history", abstract: "Times the failure-rate alert fired.")
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:405:                let events: [FailureRateAlertEvent]
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:406:                do { events = try await client.failureRateHistory() } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.alertsRead) }
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:408:                    guard !events.isEmpty else { return "The failure-rate alert has never fired." }
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:420:        static let toggles = ["newFeatureRequest", "featureVoteThreshold", "featureStatusChange", "newSupportTicket", "ticketAdminReply", "ticketResolved", "ticketUserReply", "flagToggle", "teamInvite", "usageAlert"]
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:437:                discussion: "Example:\n  grantiva console alerts notifications set flagToggle=off usageAlert=on featureVoteThresholdCount=25\nToggles: \(NotificationsCommand.toggles.joined(separator: ", "))"
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:828:    static func rules(_ rules: [RiskAlertRule]) -> String {
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:829:        guard !rules.isEmpty else { return "No risk alert rules." }
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:835:    static func ruleDeliveries(_ items: [RiskAlertDelivery]) -> String {
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:836:        guard !items.isEmpty else { return "No risk alert deliveries." }
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:842:    static func failureRate(_ alert: FailureRateAlert) -> String {
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:844:        Failure-rate alert: \(alert.isEnabled ? "enabled" : "disabled")
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:845:          Threshold:        \(alert.threshold)% of attestations failing
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:846:          Min attestations: \(alert.minAttestationCount)
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:847:          Last alerted:     \(ConsoleAdmin.date(alert.lastAlertedAt))
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:862:            ("usageAlert", ConsoleAdmin.onOff(p.usageAlert)),
+Sources/GrantivaCLI/ConsoleCommand.swift:28:            ConsoleAlertsCommand.self,
+Sources/GrantivaCLI/ConsoleCommand.swift:65:    static let alertsRead = "alerts:read"
+Sources/GrantivaCLI/ConsoleCommand.swift:66:    static let alertsWrite = "alerts:write"
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:406:// TestExecuteAcceptAlert tests acceptAlert via Execute dispatch
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:407:func TestExecuteAcceptAlert(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:412:	step := &flow.AcceptAlertStep{BaseStep: flow.BaseStep{TimeoutMs: 500}}
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:420:// TestExecuteDismissAlert tests dismissAlert via Execute dispatch
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:421:func TestExecuteDismissAlert(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:426:	step := &flow.DismissAlertStep{BaseStep: flow.BaseStep{TimeoutMs: 500}}
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:5976:// TestDriverAlertActionField tests that alertAction defaults to "" (no
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:5979:func TestDriverAlertActionField(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:5984:	if driver.alertAction != "" {
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:5985:		t.Errorf("Expected default alertAction '', got '%s'", driver.alertAction)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:5988:	driver.alertAction = "dismiss"
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:5989:	if driver.alertAction != "dismiss" {
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:5990:		t.Errorf("Expected 'dismiss', got '%s'", driver.alertAction)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:5993:	driver.alertAction = "accept"
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:5994:	if driver.alertAction != "accept" {
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:5995:		t.Errorf("Expected 'accept', got '%s'", driver.alertAction)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:6000:// LaunchAppStep and sets alertAction to match resolveAlertAction's verdict.
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:6006:	t.Run("no launchApp leaves alertAction empty", func(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:6009:		if d.alertAction != "" {
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:6010:			t.Errorf("Expected '', got %q", d.alertAction)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:6017:		if d.alertAction != "accept" {
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:6018:			t.Errorf("Expected 'accept', got %q", d.alertAction)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:6027:		if d.alertAction != "dismiss" {
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:6028:			t.Errorf("Expected 'dismiss', got %q", d.alertAction)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:6038:		if d.alertAction != "accept" {
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:6039:			t.Errorf("Expected 'accept' (first launchApp wins), got %q", d.alertAction)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:6069:// TestPrepareForFlow_AlertAction verifies which launchApp permissions arm WDA's
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:6070:// alert monitor (#108 follow-up). The flow runner already feeds PrepareForFlow a
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:6072:// launchApp's permissions map to d.alertAction, including the mixed-permissions
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:6074:func TestPrepareForFlow_AlertAction(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:6095:			if d.alertAction != c.want {
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:6096:				t.Errorf("alertAction = %q, want %q", d.alertAction, c.want)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:6102:// TestPrepareForFlow_NoLaunchApp leaves the monitor off (alertAction stays "").
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:6106:	if d.alertAction != "" {
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver_test.go:6107:		t.Errorf("alertAction = %q, want empty (no launchApp = no monitor)", d.alertAction)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:36:	// System-alert policy from launchApp's permissions: "accept", "dismiss",
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:37:	// or "" (no implicit alert handling). Applied by the runner itself to
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:38:	// SpringBoard alerts only; see alerts.go.
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:39:	alertAction string
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:40:	// When handleSystemAlert last asked WDA for an alert.
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:41:	alertCheckedAt time.Time
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:42:	// Text of the app-owned alert last seen and when its owner was queried,
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:43:	// so ownership is re-queried at most every appAlertOwnerTTL.
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:44:	appAlertText   string
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:45:	appAlertSeenAt time.Time
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:46:	// Notes for the running step (a system alert answered during it);
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:94:		// Default to "": no implicit alert handling. PrepareForFlow
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:96:		// flow's launchApp permissions. Either way WDA's own alerts monitor
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:97:		// is never registered (it also answers the app's own alerts, with
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:98:		// their default button); the runner answers SpringBoard alerts
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:99:		// itself, see alerts.go.
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:100:		alertAction:  "",
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:106:// it scans the flow's steps for a LaunchAppStep and sets d.alertAction to the
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:107:// resolved system-alert policy. Flows without launchApp leave alertAction at
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:108:// "", which means no alert is handled implicitly.
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:115:		d.alertAction = resolveAlertAction(launchApp.Permissions)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:118:		// auto-handled ONLY via the runner's system-alert policy, which needs
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:121:		// un-dismissed SpringBoard alert can wedge later runs. The simulator
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:125:		if d.alertAction == "" && d.info != nil && !d.info.IsSimulator &&
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:127:			logger.Warn("[wda] launchApp declares mixed permissions; on a real iOS device the runner can only auto-accept or auto-dismiss ALL permission dialogs, so they won't be auto-handled and may block the flow (and can wedge the device). Use permissions: { all: allow } (or { all: deny }), or add an explicit acceptAlert/dismissAlert step where the prompt appears.")
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:131:	// No launchApp in this flow — leave alertAction at "" (no auto-handling).
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:241:	// Answer a SpringBoard permission prompt left over from the previous
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:242:	// step before acting on the app (the app's own alerts are left alone).
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:243:	if checksSystemAlertsBefore(step) {
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:244:		d.handleSystemAlert(false)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:290:	case *flow.AcceptAlertStep:
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:291:		result = d.acceptAlert(s)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:292:	case *flow.DismissAlertStep:
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:293:		result = d.dismissAlert(s)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:392:// checksSystemAlertsBefore reports whether Execute looks for a SpringBoard
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:393:// alert before running step. Steps that launch, stop, or reset the app,
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:394:// that handle alerts explicitly, that do not act on the UI, or that check
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:395:// for alerts in their own wait loop (waitUntil) are left out.
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:396:func checksSystemAlertsBefore(step flow.Step) bool {
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:400:		*flow.AcceptAlertStep, *flow.DismissAlertStep,
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:616:			d.handleSystemAlert(false)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:702:			d.handleSystemAlert(false)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/driver.go:1243:			d.handleSystemAlert(false)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:31:	// ordinary buttons: an alert's Delete, a form's Return. Tap such an
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:137:	// with that label (an alert's Delete is already up when the step runs)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:426:		d.handleSystemAlert(false)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:645:func (d *Driver) acceptAlert(step *flow.AcceptAlertStep) *core.CommandResult {
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:646:	return d.waitForAlert(step.TimeoutMs, true)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:649:func (d *Driver) dismissAlert(step *flow.DismissAlertStep) *core.CommandResult {
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:650:	return d.waitForAlert(step.TimeoutMs, false)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:653:// waitForAlert polls for a system alert and accepts/dismisses it.
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:654:// If no alert appears within the timeout, succeeds silently.
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:655:func (d *Driver) waitForAlert(timeoutMs int, accept bool) *core.CommandResult {
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:671:			return successResult(fmt.Sprintf("No alert to %s", action), nil)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:675:				err = d.client.AcceptAlert()
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:677:				err = d.client.DismissAlert()
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:680:				return successResult(fmt.Sprintf("Alert %sed", action), nil)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:804:		d.handleSystemAlert(false)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:1196:		d.alertAction = resolveAlertAction(permissions)
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:1198:	// The first system-alert check after a launch is not throttled.
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:1199:	d.alertCheckedAt = time.Time{}
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:1246:		// No defaultAlertAction: system alerts are answered by the runner
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:1247:		// (alerts.go), never by WDA's monitor.
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:1258:	// Always update settings. defaultAlertAction is cleared so a reused
+/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair/pkg/driver/wda/commands.go:1259:	// session never answers alerts on WDA's side.

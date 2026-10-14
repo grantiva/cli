@@ -1,0 +1,12 @@
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:306:            // reused it waits in `reserve` instead of booting into the delete.
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:311:            _ = try? await execute("xcrun simctl delete \(shellQuoted(udid))")
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:321:        _ = try await execute("xcrun simctl delete \(shellQuoted(device.udid))")
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:406:                _ = try await execute("xcrun simctl delete \(shellQuoted(record.udid))")
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:434:            _ = try await execute("xcrun simctl delete \(shellQuoted(record.udid))")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:265:        XCTAssertFalse(simctl.commands.contains { $0.contains("simctl shutdown") || $0.contains("simctl delete") }, "\(simctl.commands)")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:398:        XCTAssertTrue(simctl.commands.contains("xcrun simctl delete '\(created)'"), "\(simctl.commands)")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:420:        XCTAssertFalse(simctl.commands.contains { $0.contains("simctl shutdown") || $0.contains("simctl delete") }, "\(simctl.commands)")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:458:        XCTAssertFalse(simctl.commands.contains { $0.contains("simctl delete") }, "\(simctl.commands)")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:656:    /// Called (outside the lock) with each `simctl delete` command before it runs.
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:667:        if command.hasPrefix("xcrun simctl delete "), let onDelete { onDelete(command) }
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:689:            case command.hasPrefix("xcrun simctl delete "):

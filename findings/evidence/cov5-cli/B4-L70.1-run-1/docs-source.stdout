@@ -1,0 +1,17 @@
+Sources/GrantivaAPI/Endpoint.swift:52:        // Path segments are already percent-encoded by the endpoint definitions,
+README.md:738:only path-unsafe characters. Grantiva still performs legacy baseline lookup
+README.md:739:for the older percent-encoded filename (for example, `Deep%20Links.png` for
+README.md:740:`Deep Links`) and performs migration on approval to `Deep Links.png`; working
+README.md:741:legacy baselines do not need to be renamed by hand. Encoding literal `%` as
+Tests/GrantivaAPITests/GrantivaAPITests.swift:36:        // Project slug with "/" should be percent-encoded
+Tests/GrantivaCLITests/DocsContractTests.swift:187:        XCTAssertTrue(readme.contains("legacy baseline"), "README must name legacy baseline compatibility")
+Tests/GrantivaCLITests/DocsContractTests.swift:188:        XCTAssertTrue(readme.contains("percent-encoded"), "README must name the old filename form")
+Tests/GrantivaCLITests/DocsContractTests.swift:190:        XCTAssertTrue(readme.contains("migration on approval"), "README must say approval performs migration")
+docs/superpowers/specs/2026-10-07-android-support-design.md:285:so nothing moves and nothing migrates. `diff compare` and `approve` resolve the platform
+Sources/GrantivaCLI/DiffCommand.swift:582:                    "Invalid capture filename \"\(fileName)\". Capture files are named after the screen, with only /, :, NUL and % percent-encoded."
+Sources/GrantivaCore/Diff/BaselineStore.swift:6:    /// (`/`, `:`, NUL) percent-encoded, plus `%` so decoding stays
+Sources/GrantivaCore/Diff/BaselineStore.swift:23:    /// `urlPathAllowed` (spaces included) percent-encoded. Read as a fallback
+Sources/GrantivaCore/Diff/BaselineStore.swift:92:                // Approving migrates a baseline saved under the legacy name.
+Tests/GrantivaCLITests/DiffCommandTests.swift:37:    // Captures left by a version that percent-encoded spaces still compare;
+Tests/GrantivaCoreTests/ScreenArtifactTests.swift:48:        XCTAssertFalse(FileManager.default.fileExists(atPath: legacy.path), "legacy file is migrated, not left beside the new one")
+Sources/GrantivaCore/Runner/RunnerSession.swift:315:            // The legacy (percent-encoded) name too: diff compare still reads

@@ -1,0 +1,53 @@
+Tests/GrantivaMCPTests/MCPTestSupport.swift:178:    func recordVideo(deviceID: String, to path: String, seconds: Double) async throws { record("recordVideo") }
+Sources/GrantivaCore/Android/AndroidPlatform.swift:328:    public func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {
+Tests/GrantivaCoreTests/RunnerSessionAppIdTests.swift:132:            func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {}
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:359:    func testRecordVideoRecordsPullsAndRemoves() async throws {
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:362:        try await platform(shell).recordVideo(deviceID: "emulator-5554", to: out, seconds: 4.2)
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:371:    func testRecordVideoOver180SecondsIsRefusedBeforeTouchingTheDevice() async {
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:374:            try await platform(shell).recordVideo(deviceID: "emulator-5554", to: "/tmp/x.mp4", seconds: 200)
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:382:    func testRecordVideoRefusesAnInfiniteDuration() async {
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:385:            try await platform(shell).recordVideo(deviceID: "emulator-5554", to: "/tmp/x.mp4", seconds: .infinity)
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:259:    func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {}
+Sources/GrantivaCore/Platform/IOSPlatform.swift:190:    /// The `simctl io recordVideo` process. Both of its streams go to `log`:
+Sources/GrantivaCore/Platform/IOSPlatform.swift:196:        recorder.arguments = ["simctl", "io", deviceID, "recordVideo", "--codec=h264", path]
+Sources/GrantivaCore/Platform/IOSPlatform.swift:215:    /// `simctl io recordVideo`, stopped with SIGINT so simctl finalizes the file.
+Sources/GrantivaCore/Platform/IOSPlatform.swift:216:    public func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:149:    func testRecordVideoProcessDoesNotInheritStdout() throws {
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:152:        XCTAssertEqual(recorder.arguments, ["simctl", "io", "ABC-123", "recordVideo", "--codec=h264", "/tmp/x.mov"])
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:303:    func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {}
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:9:            SubprocessLog.commandLine(executable: "/usr/bin/xcrun", arguments: ["simctl", "io", "ABC", "recordVideo", "--codec=h264", "/tmp/a b.mp4"], environment: [:]),
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:10:            "/usr/bin/xcrun simctl io ABC recordVideo --codec=h264 '/tmp/a b.mp4'"
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:53:            "/usr/bin/xcrun simctl io ABC recordVideo --codec=h264 /tmp/r.mp4"
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:612:    func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {}
+Sources/GrantivaCLI/RecordCommand.swift:69:        return "--frames-at \(last) is past --duration \(shownDuration) (\(Int(durationMilliseconds.rounded())) ms)."
+Sources/GrantivaCLI/RecordCommand.swift:72:    /// The parsed, de-duplicated `--frames-at` values. `validate()` has
+Sources/GrantivaCLI/RecordCommand.swift:82:                throw ValidationError("--frames-at must contain non-negative integer milliseconds, e.g. 0,150,300; got \(framesAt)")
+Sources/GrantivaCLI/RecordCommand.swift:233:        try await platformDevice.recordVideo(deviceID: booted.udid, to: outputPath, seconds: duration)
+Sources/GrantivaCore/Platform/DevicePlatform.swift:146:    func recordVideo(deviceID: String, to path: String, seconds: Double) async throws
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:6:/// `screenrecord` (Android) and `simctl io recordVideo` (iOS) write a frame
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:3:/// Stops simctl recordVideo using the same interrupt semantics as Control-C.
+Tests/GrantivaCLITests/Support/SimctlRecordingFixture.swift:4:    /// The layout `simctl io recordVideo` writes for an idle screen (L60):
+Tests/GrantivaCLITests/RecordCommandTests.swift:164:        XCTAssertEqual(fake.calls, ["bootDevice(Pixel_8_API_35)", "recordVideo(emulator-5598,1.0)", "displayGeometry(emulator-5598)"])
+Tests/GrantivaCLITests/RecordCommandTests.swift:177:        XCTAssertThrowsError(try RecordCommand.parse(["--duration", "5", "--frames-at", "a,b"])) { error in
+Tests/GrantivaCLITests/RecordCommandTests.swift:179:            XCTAssertTrue(RecordCommand.message(for: error).contains("--frames-at"), RecordCommand.message(for: error))
+Tests/GrantivaCLITests/RecordCommandTests.swift:181:        XCTAssertThrowsError(try RecordCommand.parse(["--duration", "5", "--frames-at", "-1"]))
+Tests/GrantivaCLITests/RecordCommandTests.swift:182:        XCTAssertEqual(try RecordCommand.parse(["--duration", "5", "--frames-at", "1500, 0,500,500"]).requestedFrames, [0, 500, 1500])
+Tests/GrantivaCLITests/RecordCommandTests.swift:230:        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "1000,2000"])
+Tests/GrantivaCLITests/RecordCommandTests.swift:260:            "--platform", "ios", "--simulator", "Fake", "--duration", "3", "--frames-at", "0,1500,2900",
+Tests/GrantivaCLITests/RecordCommandTests.swift:294:        XCTAssertThrowsError(try RecordCommand.parse(["--duration", "2", "--frames-at", "2500"])) { error in
+Tests/GrantivaCLITests/RecordCommandTests.swift:295:            XCTAssertEqual(RecordCommand.message(for: error), "--frames-at 2500 is past --duration 2 (2000 ms).")
+Tests/GrantivaCLITests/RecordCommandTests.swift:350:    // MARK: - K84: --frames-at past --duration
+Tests/GrantivaCLITests/RecordCommandTests.swift:353:        XCTAssertThrowsError(try RecordCommand.parse(["--duration", "2", "--frames-at", "5000"])) { error in
+Tests/GrantivaCLITests/RecordCommandTests.swift:355:            XCTAssertEqual(RecordCommand.message(for: error), "--frames-at 5000 is past --duration 2 (2000 ms).")
+Tests/GrantivaCLITests/RecordCommandTests.swift:357:        XCTAssertEqual(try RecordCommand.parse(["--duration", "2", "--frames-at", "0,2000"]).requestedFrames, [0, 2000])
+Tests/GrantivaCLITests/RecordCommandTests.swift:358:        XCTAssertThrowsError(try RecordCommand.parse(["--duration", "1.5", "--frames-at", "1501"])) { error in
+Tests/GrantivaCLITests/RecordCommandTests.swift:359:            XCTAssertEqual(RecordCommand.message(for: error), "--frames-at 1501 is past --duration 1.5 (1500 ms).")
+Tests/GrantivaCLITests/RecordCommandTests.swift:373:        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "1000", "--platform", "ios", "--simulator", "Fake"])
+Tests/GrantivaCLITests/RecordCommandTests.swift:378:        XCTAssertTrue(fake.calls.contains { $0.hasPrefix("recordVideo(") }, "\(fake.calls)")
+Tests/GrantivaCLITests/RecordCommandTests.swift:406:        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "1000", "--platform", "ios", "--simulator", "Fake"])
+Tests/GrantivaCLITests/RecordCommandTests.swift:416:        XCTAssertTrue(fake.calls.contains { $0.hasPrefix("recordVideo(") }, "\(fake.calls)")
+Tests/GrantivaCLITests/RecordCommandTests.swift:446:        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "1000", "--output", "clips/a.mp4", "--json"])
+Tests/GrantivaCLITests/RecordCommandTests.swift:473:        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "1000", "--output", output])
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:98:    func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:99:        record("recordVideo(\(deviceID),\(seconds))")
+Sources/GrantivaCore/Runner/SubprocessLog.swift:5:/// `adb logcat`, `simctl spawn … log stream`, `simctl io … recordVideo`. Same

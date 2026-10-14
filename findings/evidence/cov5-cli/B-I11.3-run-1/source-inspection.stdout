@@ -1,0 +1,48 @@
+Sources/GrantivaCore/Runner/RunnerReportRewriter.swift:6:/// The runner writes `report.json`, `flows/*.json`, `junit-report.xml` and
+Sources/GrantivaCore/Runner/RunnerReportRewriter.swift:12:    static func rewrite(reportDir: String, stagedPathMap: [String: String]) {
+Sources/GrantivaCore/Runner/RunnerReportRewriter.swift:13:        let map = expanded(stagedPathMap)
+Sources/GrantivaCore/Runner/RunnerReportRewriter.swift:26:        rewriteFile(at: root.appendingPathComponent("junit-report.xml")) { rewriteXML($0, map: map) }
+Sources/GrantivaCore/Runner/RunnerArtifactCollector.swift:39:        stagedPathMap: [String: String],
+Sources/GrantivaCore/Runner/RunnerArtifactCollector.swift:46:            stagedPathMap: stagedPathMap
+Sources/GrantivaCore/Runner/RunnerArtifactCollector.swift:110:        stagedPathMap: [String: String]
+Sources/GrantivaCore/Runner/RunnerArtifactCollector.swift:123:            stagedPathMap: stagedPathMap,
+Sources/GrantivaCore/Runner/RunnerArtifactCollector.swift:139:        stagedPathMap: [String: String],
+Sources/GrantivaCore/Runner/RunnerArtifactCollector.swift:175:            guard let attributedPath = stagedPathMap[flow.sourceFile],
+Sources/GrantivaCore/Runner/RunnerSession.swift:161:                RunnerReportRewriter.rewrite(reportDir: reportDir, stagedPathMap: [flowPath: "screens"])
+Sources/GrantivaCore/Runner/RunnerSession.swift:169:                stagedPathMap: [flowPath: "screens"]
+Sources/GrantivaCore/Runner/RunnerSession.swift:420:        var stagedPathMap: [String: String] = [:]
+Sources/GrantivaCore/Runner/RunnerSession.swift:455:            stagedPathMap[tempFlowPath] = flowPaths[index]
+Sources/GrantivaCore/Runner/RunnerSession.swift:475:            .merging(stagedPathMap) { _, staged in staged }
+Sources/GrantivaCore/Runner/RunnerSession.swift:516:                RunnerReportRewriter.rewrite(reportDir: reportDir, stagedPathMap: reportPathMap)
+Sources/GrantivaCore/Runner/RunnerSession.swift:522:                requestedFlowPaths: flowPaths, stagedPathMap: stagedPathMap
+Sources/GrantivaCore/Runner/RunnerSession.swift:613:                requestedFlowPaths: flowPaths, stagedPathMap: stagedPathMap, pathMap: outputPathMap
+Sources/GrantivaCore/Runner/RunnerSession.swift:651:            stagedPathMap: stagedPathMap,
+Sources/GrantivaCore/Runner/RunnerSession.swift:752:        stagedPathMap: [String: String]
+Sources/GrantivaCore/Runner/RunnerSession.swift:763:                stagedPathMap: stagedPathMap
+Sources/GrantivaCore/Runner/RunnerNarration.swift:71:    static let reportNotKept = "  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.\n"
+Sources/GrantivaCore/Runner/RunnerNarration.swift:189:        ["├──", "└──", "│", "Paths:", "JSON:", "JUnit:", "Allure:"].contains { trimmed.hasPrefix($0) }
+Sources/GrantivaCore/Runner/RunnerReportFinalizer.swift:6:/// The runner leaves report.json, the per-flow files and the JUnit file as
+Sources/GrantivaCore/Runner/RunnerReportFinalizer.swift:15:    /// records the failures in the JUnit file. Best-effort: an unreadable
+Sources/GrantivaCore/Runner/RunnerReportFinalizer.swift:68:        finalizeJUnit(at: root.appendingPathComponent("junit-report.xml"), flows: finalizedFlows.map(\.name), reason: reason)
+Sources/GrantivaCore/Runner/RunnerReportFinalizer.swift:103:    private static func finalizeJUnit(at url: URL, flows: [String], reason: String) {
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:7:/// junit-report.xml, maestro-runner.log) against the flow paths it is handed.
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:47:        """.write(to: report.appendingPathComponent("junit-report.xml"), atomically: true, encoding: .utf8)
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:50:        RunnerReportRewriter.rewrite(reportDir: report.path, stagedPathMap: [staged: user])
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:60:        let xmlData = try Data(contentsOf: report.appendingPathComponent("junit-report.xml"))
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:62:        XCTAssertTrue(parser.parse(), "rewritten junit must stay valid XML")
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:65:        for file in ["report.json", "flows/flow-000.json", "junit-report.xml", "maestro-runner.log"] {
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:80:            for file in ["report.json", "flows/flow-000.json", "junit-report.xml", "maestro-runner.log"] {
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:251:        printf '<?xml version="1.0"?><testsuites><testsuite>%s</testsuite></testsuites>\\n' "$cases" > "$out/junit-report.xml"
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:86:        RunnerReportRewriter.rewrite(reportDir: reportDir.path, stagedPathMap: ["/staged/crash.yaml": "flows/crash.yaml"])
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:181:        try write(Self.runningJUnit, to: "junit-report.xml")
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:203:        let junit = try String(contentsOf: reportDir.appendingPathComponent("junit-report.xml"), encoding: .utf8)
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:204:        XCTAssertTrue(junit.contains("<failure message=\"grantiva stopped the run at the --timeout cap (30s)\""), junit)
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:205:        XCTAssertTrue(junit.contains("<testsuites tests=\"1\" failures=\"1\""), junit)
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:206:        XCTAssertTrue(junit.contains("<testsuite name=\"maestro-runner\" tests=\"1\" failures=\"1\""), junit)
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:296:    static let runningJUnit = """
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:314:            requestedFlowPaths: [requestedFlow], stagedPathMap: ["/staged/01-browse.yaml": requestedFlow]
+Tests/GrantivaCoreTests/RunnerArtifactCollectorTests.swift:115:            stagedPathMap: map
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:169:        ├── junit-report.xml
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:174:        JUnit:  /var/folders/jv/T/grantiva-report-ABC/junit-report.xml
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:187:        XCTAssertTrue(relayed.contains("Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure."), relayed)
+Tests/GrantivaCoreTests/RunnerTraceExportTests.swift:205:            stagedPathMap: map

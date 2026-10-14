@@ -1,0 +1,1606 @@
+pkg/flow/step_test.go:99:		&InputTextStep{BaseStep: BaseStep{StepType: StepInputText}},
+pkg/flow/step_test.go:578:func TestInputTextStep_Describe(t *testing.T) {
+pkg/flow/step_test.go:579:	s := InputTextStep{
+pkg/flow/step_test.go:580:		BaseStep: BaseStep{StepType: StepInputText},
+pkg/flow/step_test.go:583:	expected := `inputText: "user@example.com"`
+pkg/flow/step_test.go:814:		StepInputText:             "inputText",
+pkg/flow/step_test.go:886:func TestInputTextDescribe_KeepsVariableAfterExpansion(t *testing.T) {
+pkg/flow/step_test.go:887:	f, err := Parse([]byte("- inputText: ${PASSWORD}\n- inputText:\n    text: ${USER}\n    id: user\n- inputText: plain\n"), "t.yaml")
+pkg/flow/step_test.go:891:	scalar := f.Steps[0].(*InputTextStep)
+pkg/flow/step_test.go:892:	mapped := f.Steps[1].(*InputTextStep)
+pkg/flow/step_test.go:893:	plain := f.Steps[2].(*InputTextStep)
+pkg/flow/step_test.go:897:	if got := scalar.Describe(); got != `inputText: "${PASSWORD}"` {
+pkg/flow/step_test.go:900:	if got := mapped.Describe(); got != `inputText: "${USER}"` {
+pkg/flow/step_test.go:903:	if got := plain.Describe(); got != `inputText: "plain"` {
+pkg/flow/flow.go:52:			testCases = append(testCases, rf)
+pkg/flow/selector_test.go:101:focused: false
+pkg/flow/selector_test.go:113:				if s.Focused == nil || *s.Focused {
+pkg/flow/selector_test.go:114:					t.Error("expected focused=false")
+pkg/flow/selector_test.go:1117:			name:     "InputTextStep",
+pkg/flow/selector_test.go:1118:			step:     &InputTextStep{Selector: Selector{ID: "input"}},
+pkg/simulator/manager.go:155:		udids = append(udids, key.(string))
+pkg/simulator/manager.go:173:			errs = append(errs, err)
+pkg/simulator/manager.go:194:		udids = append(udids, key.(string))
+pkg/emulator/manager.go:171:		serials = append(serials, key.(string))
+pkg/emulator/manager.go:191:			errs = append(errs, err)
+pkg/emulator/manager.go:212:		serials = append(serials, key.(string))
+pkg/flow/step.go:33:	StepInputText             StepType = "inputText"
+pkg/flow/step.go:357:// InputTextStep inputs text.
+pkg/flow/step.go:360:// the map form populates both from one value. For inputText, `text:` is the
+pkg/flow/step.go:364:// and any `inputText` naming an `id:` could not match (#166).
+pkg/flow/step.go:365:type InputTextStep struct {
+pkg/flow/step.go:377:// UnmarshalYAML decodes InputTextStep and drops the `text:` value that the
+pkg/flow/step.go:379:func (s *InputTextStep) UnmarshalYAML(node *yaml.Node) error {
+pkg/flow/step.go:380:	type inputTextAlias InputTextStep
+pkg/flow/step.go:381:	var a inputTextAlias
+pkg/flow/step.go:385:	*s = InputTextStep(a)
+pkg/flow/step.go:1071:		parts = append(parts, "point=\""+point+"\"")
+pkg/flow/step.go:1105:func (s *InputTextStep) Describe() string {
+pkg/flow/step.go:1111:		return "inputText: \"" + s.RawText + "\""
+pkg/flow/step.go:1113:	return "inputText: \"" + s.Text + "\""
+pkg/flutter/widgettree.go:244:					nodes = append(nodes, n)
+pkg/flutter/widgettree.go:255:				textFields = append(textFields, n)
+pkg/flutter/widgettree.go:268:					nodes = append(nodes, n)
+pkg/flutter/widgettree.go:280:					nodes = append(nodes, n)
+pkg/uiautomator2/client.go:89:	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+pkg/executor/schedule.go:62:			vals = append(vals, d)
+pkg/flow/parser_test.go:13:- inputText: "username"
+pkg/flow/parser_test.go:36:	input, ok := flow.Steps[1].(*InputTextStep)
+pkg/flow/parser_test.go:38:		t.Fatalf("expected InputTextStep, got %T", flow.Steps[1])
+pkg/flow/parser_test.go:112:		{"inputText scalar", `- inputText: "hello"`, StepInputText},
+pkg/flow/parser_test.go:113:		{"inputText mapping", `- inputText: {text: hello}`, StepInputText},
+pkg/flow/parser_test.go:488:      - inputText: "user"
+pkg/flow/parser_test.go:556:      - inputText: "fallback"
+pkg/flow/parser_test.go:572:	if rf.ElseSteps[1].Type() != StepInputText {
+pkg/flow/parser_test.go:573:		t.Errorf("else[1] type = %v, want inputText", rf.ElseSteps[1].Type())
+pkg/flow/parser_test.go:1346:		"inputText", "inputRandom", "inputRandomEmail", "inputRandomNumber",
+pkg/flow/parser_test.go:1594:		{"inputText invalid", `- inputText: {text: [invalid]}`},
+pkg/flow/parser_test.go:1808:- inputText: >
+pkg/flow/parser_test.go:1835:- inputText: >-
+pkg/flow/parser_test.go:2487:// `text:` on inputText is the value to type, never a selector predicate.
+pkg/flow/parser_test.go:2488:// InputTextStep.Text and the inlined Selector.Text share the yaml key, and
+pkg/flow/parser_test.go:2491:func TestParse_InputTextWithIDDoesNotLeakTextIntoSelector(t *testing.T) {
+pkg/flow/parser_test.go:2493:- inputText:
+pkg/flow/parser_test.go:2501:	step := flow.Steps[0].(*InputTextStep)
+pkg/flow/parser_test.go:2513:// Map form with only `text:` means "type into the focused element": the
+pkg/flow/parser_test.go:2515:func TestParse_InputTextMapWithoutSelectorIsEmptySelector(t *testing.T) {
+pkg/flow/parser_test.go:2517:- inputText:
+pkg/flow/parser_test.go:2524:	step := flow.Steps[0].(*InputTextStep)
+pkg/flow/parser_test.go:2534:func TestParse_InputTextMapKeepsSiblingFields(t *testing.T) {
+pkg/flow/parser_test.go:2536:- inputText:
+pkg/flow/parser_test.go:2548:	step := flow.Steps[0].(*InputTextStep)
+pkg/flow/parser.go:106:				parts = append(parts, current.String())
+pkg/flow/parser.go:118:			parts = append(parts, current.String())
+pkg/flow/parser.go:177:		config.OnFlowStart = append(config.OnFlowStart, step)
+pkg/flow/parser.go:185:		config.OnFlowComplete = append(config.OnFlowComplete, step)
+pkg/flow/parser.go:206:		flow.Steps = append(flow.Steps, step)
+pkg/flow/parser.go:298:		StepInputText, StepInputRandom, StepInputRandomEmail, StepInputRandomNumber,
+pkg/flow/parser.go:339:			node.Content = append(node.Content[:i], node.Content[i+2:]...)
+pkg/flow/parser.go:437:	case StepInputText:
+pkg/flow/parser.go:438:		var s InputTextStep
+pkg/flow/parser.go:1212:		s.Steps = append(s.Steps, step)
+pkg/flow/parser.go:1249:		s.Steps = append(s.Steps, step)
+pkg/flow/parser.go:1297:		s.Steps = append(s.Steps, step)
+pkg/flow/parser.go:1318:				s.ElseSteps = append(s.ElseSteps, step)
+pkg/flow/parser.go:1333:		s.ElseSteps = append(s.ElseSteps, step)
+pkg/flow/parser.go:1392:			flows = append(flows, flow)
+pkg/report/builder_test.go:109:				&flow.InputTextStep{
+pkg/report/builder_test.go:110:					BaseStep: flow.BaseStep{StepType: flow.StepInputText},
+pkg/report/builder_test.go:144:	// Check inputText has text
+pkg/report/builder_test.go:283:			name:    "InputTextStep",
+pkg/report/builder_test.go:284:			step:    &flow.InputTextStep{BaseStep: flow.BaseStep{StepType: flow.StepInputText, TimeoutMs: 600}},
+pkg/report/builder_test.go:403:			name:     "InputTextStep with selector",
+pkg/report/builder_test.go:404:			step:     &flow.InputTextStep{BaseStep: flow.BaseStep{StepType: flow.StepInputText}, Selector: flow.Selector{ID: "input_field"}},
+pkg/report/builder_test.go:486:			name: "inputText with text and selector",
+pkg/report/builder_test.go:487:			step: &flow.InputTextStep{
+pkg/report/builder_test.go:488:				BaseStep: flow.BaseStep{StepType: flow.StepInputText},
+pkg/report/builder_test.go:502:			name: "inputText with empty text but selector",
+pkg/report/builder_test.go:503:			step: &flow.InputTextStep{
+pkg/report/builder_test.go:504:				BaseStep: flow.BaseStep{StepType: flow.StepInputText},
+pkg/uiautomator2/double_tap_test.go:65:			presses = append(presses, pauseSum)
+pkg/uiautomator2/double_tap_test.go:94:		calls = append(calls, r.Method+" "+r.URL.Path)
+pkg/flutter/apk_check_test.go:27:	a.cmds = append(a.cmds, cmd)
+pkg/flow/launcharguments.go:75:		keys = append(keys, k)
+pkg/flow/launcharguments.go:121:			out = append(out, LaunchArgKey(k))
+pkg/flow/launcharguments.go:124:		out = append(out, LaunchArgKey(k), LaunchArgValue(a[k]))
+pkg/executor/step_clone.go:14:// in: `inputText: "${output.domains[output.counter]}"` in a repeat typed the
+pkg/uiautomator2/types.go:39:// InputTextRequest for typing text.
+pkg/uiautomator2/types.go:40:type InputTextRequest struct {
+pkg/uiautomator2/types.go:43:	// server appends to the text it reads from the field first.
+pkg/uiautomator2/element_replace_test.go:17:		bodies = append(bodies, body)
+pkg/flow/selector.go:34:	Focused  *bool `yaml:"focused"`
+pkg/flow/selector.go:93:	Focused               *bool       `yaml:"focused"`
+pkg/flow/selector.go:153:	s.Focused = raw.Focused
+pkg/flow/selector.go:307:			parts = append(parts, "text=\""+s.Text+"\"")
+pkg/flow/selector.go:309:			parts = append(parts, s.Text)
+pkg/flow/selector.go:314:			parts = append(parts, "id=\""+s.ID+"\"")
+pkg/flow/selector.go:316:			parts = append(parts, "#"+s.ID)
+pkg/flow/selector.go:320:		parts = append(parts, q("css", s.CSS))
+pkg/flow/selector.go:323:		parts = append(parts, q("testId", s.TestID))
+pkg/flow/selector.go:326:		parts = append(parts, q("role", s.Role))
+pkg/flow/selector.go:329:		parts = append(parts, q("placeholder", s.Placeholder))
+pkg/flow/selector.go:332:		parts = append(parts, q("href", s.Href))
+pkg/flow/selector.go:335:		parts = append(parts, q("alt", s.Alt))
+pkg/flow/selector.go:338:		parts = append(parts, q("title", s.Title))
+pkg/flow/selector.go:341:		parts = append(parts, q("name", s.Name))
+pkg/flow/selector.go:344:		parts = append(parts, q("textContains", s.TextContains))
+pkg/flow/selector.go:347:		parts = append(parts, q("textRegex", s.TextRegex))
+pkg/flow/selector.go:350:		parts = append(parts, "exact=true")
+pkg/flow/selector.go:356:		parts = append(parts, "index="+idx)
+pkg/flow/selector.go:392:		"enabled": true, "selected": true, "checked": true, "focused": true,
+pkg/flow/selector.go:401:		"enabled": true, "selected": true, "checked": true, "focused": true,
+pkg/flow/selector.go:409:		"enabled": true, "selected": true, "checked": true, "focused": true,
+pkg/flow/selector.go:435:	{"focused", func(s *Selector) bool { return s.Focused != nil }},
+pkg/flow/selector.go:485:			unsupported = append(unsupported, f.Name)
+pkg/flow/selector.go:500:		selectors = append(selectors, s)
+pkg/flow/selector.go:514:	case *InputTextStep:
+pkg/emulator/android.go:103:		avds = append(avds, AVDInfo{
+pkg/emulator/android.go:155:				ports = append(ports, port)
+pkg/emulator/android.go:492:				pids = append(pids, fields[0])
+pkg/emulator/android.go:497:			pids = append(pids, fields[0])
+pkg/report/latency_test.go:11:			{Type: "inputText", Duration: ms(20)},
+pkg/executor/device_variables_test.go:57:				if s, ok := step.(*flow.InputTextStep); ok {
+pkg/executor/device_variables_test.go:59:					seen[dev] = append(seen[dev], s.Text)
+pkg/executor/device_variables_test.go:68:		flows = append(flows, flow.Flow{
+pkg/executor/device_variables_test.go:71:			Steps:      []flow.Step{&flow.InputTextStep{Text: "${DEVICE_UDID}"}},
+pkg/flutter/semantics.go:83:				entries[len(entries)-1].lines = append(entries[len(entries)-1].lines, line)
+pkg/flutter/semantics.go:93:		entries = append(entries, nodeEntry{depth: depth, node: node, lines: []string{line}})
+pkg/flutter/semantics.go:121:		parent.Children = append(parent.Children, e.node)
+pkg/flutter/semantics.go:122:		stack = append(stack, stackEntry{depth: e.depth, node: e.node})
+pkg/flutter/semantics.go:174:					node.Flags = append(node.Flags, p)
+pkg/flutter/semantics.go:183:					node.Actions = append(node.Actions, p)
+pkg/flutter/semantics.go:200:			cleaned = append(cleaned, line)
+pkg/flutter/semantics.go:225:			results = append(results, n)
+pkg/flutter/semantics.go:236:			results = append(results, n)
+pkg/flutter/semantics.go:247:			results = append(results, n)
+pkg/uiautomator2/gestures.go:89:	actions = append(actions, tap()...)
+pkg/uiautomator2/gestures.go:90:	actions = append(actions, map[string]interface{}{"type": "pause", "duration": DoubleTapGapMs})
+pkg/uiautomator2/gestures.go:91:	actions = append(actions, tap()...)
+pkg/uiautomator2/gestures.go:208:		actions = append(actions, map[string]interface{}{
+pkg/uiautomator2/gestures.go:215:	actions = append(actions,
+pkg/uiautomator2/element.go:177:// SendKeysToActive sends text to the currently focused element (2 HTTP calls for native client).
+pkg/uiautomator2/element.go:186:// ActiveElement returns the currently focused element.
+pkg/uiautomator2/element.go:243:	req := InputTextRequest{Text: text}
+pkg/uiautomator2/element.go:248:// ReplaceText sets the element's value to text outright (set-value with
+pkg/uiautomator2/element.go:249:// "replace": true), instead of letting the server append to whatever it reads
+pkg/uiautomator2/element.go:254:		// replace mode: clear first so the write cannot append.
+pkg/uiautomator2/element.go:260:	req := InputTextRequest{Text: text, Replace: true}
+pkg/emulator/forcekill_test.go:41:				pids = append(pids, fields[0])
+pkg/emulator/forcekill_test.go:59:		h.killed = append(h.killed, args[len(args)-1])
+pkg/emulator/forcekill_test.go:68:	out := append([]string(nil), h.killed...)
+pkg/emulator/forcekill_test.go:176:			refused = append(refused, strings.Join(append([]string{name}, args...), " "))
+pkg/report/allure.go:157:			labels = append(labels, AllureLabel{Name: "host", Value: dev.Name})
+pkg/report/allure.go:160:			labels = append(labels, AllureLabel{Name: "thread", Value: dev.ID})
+pkg/report/allure.go:164:		labels = append(labels, AllureLabel{Name: "tag", Value: tag})
+pkg/report/allure.go:202:		steps = append(steps, step)
+pkg/report/allure.go:235:		attachments = append(attachments, AllureAttachment{
+pkg/report/allure.go:242:		attachments = append(attachments, AllureAttachment{
+pkg/report/allure.go:274:			*attachments = append(*attachments, AllureAttachment{
+pkg/report/allure.go:281:			*attachments = append(*attachments, AllureAttachment{
+pkg/cli/cli_test.go:2631:		onStepComplete(0, `inputText: " Renamed"`, true, 100, "the field's earlier text was replaced")
+pkg/cli/cli_test.go:2632:		onNestedStep(0, `inputText: " Renamed"`, true, 100, "the field's earlier text was replaced")
+pkg/simulator/ios.go:69:			sims = append(sims, SimulatorDevice{
+pkg/simulator/ios.go:95:			iosSims = append(iosSims, sim)
+pkg/simulator/ios.go:111:			shutdown = append(shutdown, sim)
+pkg/simulator/ios.go:127:			shutdown = append(shutdown, sim)
+pkg/simulator/ios.go:304:			deviceTypes = append(deviceTypes, dt.Identifier)
+pkg/report/builder.go:134:	if s, ok := step.(*flow.InputTextStep); ok && s.Text != "" {
+pkg/report/builder.go:187:	case *flow.InputTextStep:
+pkg/report/builder.go:249:	case *flow.InputTextStep:
+pkg/uiautomator2/context_requests_test.go:39:// L47: the focused-element lookup can be given a bound of its own.
+pkg/uiautomator2/context_requests_test.go:46:		t.Fatal("a cancelled focused-element lookup succeeded")
+pkg/maestro/adapter.go:47:// ActiveElement returns the currently focused element.
+pkg/maestro/adapter.go:87:		return a.focusedFieldText(result.ElementID, result.Bounds)
+pkg/maestro/adapter.go:116:// focusedFieldText reads the current text of the field a find returned, after
+pkg/maestro/adapter.go:123:// first, and key events only reach the focused view — so UI.activeElement
+pkg/maestro/adapter.go:126:// Focus alone does not prove identity, so the focused node must sit where the
+pkg/maestro/adapter.go:133:func (a *Adapter) focusedFieldText(elementID string, at BoundsResult) (string, error) {
+pkg/maestro/adapter.go:138:	var focused ElementResult
+pkg/maestro/adapter.go:139:	if err := json.Unmarshal(resp.Result, &focused); err != nil {
+pkg/maestro/adapter.go:142:	b := focused.Bounds
+pkg/maestro/adapter.go:144:		return "", fmt.Errorf("re-read text of %s: focused element is a different view", elementID)
+pkg/maestro/adapter.go:146:	return focused.Text, nil
+pkg/flutter/wrapper_test.go:551:		{&flow.InputTextStep{}, true},
+pkg/executor/convert_test.go:120:	t.Run("appends to existing details", func(t *testing.T) {
+pkg/executor/convert_test.go:171:	t.Run("appends to existing details", func(t *testing.T) {
+pkg/maestro/client.go:68:	f, err := os.OpenFile("/tmp/devicelab-driver-client.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+pkg/maestro/client.go:77:	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+pkg/uiautomator2/device.go:46:		keyActions = append(keyActions,
+pkg/uiautomator2/device.go:51:			keyActions = append(keyActions,
+pkg/uiautomator2/element_test.go:260:		var req InputTextRequest
+pkg/report/allure_test.go:397:		index.Flows = append(index.Flows, FlowEntry{
+pkg/report/allure_test.go:400:		flows = append(flows, FlowDetail{
+pkg/report/allure_test.go:706:		labelMap[l.Name] = append(labelMap[l.Name], l.Value)
+pkg/cli/test_unified_output.go:317:			grouped[deviceKey] = append(grouped[deviceKey], flow)
+pkg/report/flow_test.go:471:			name:           "name without extension gets .png appended",
+pkg/executor/step_note_test.go:40:			events = append(events, "step")
+pkg/executor/step_note_test.go:43:			events = append(events, "note:"+n)
+pkg/logger/logger.go:28:	f, err := os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+pkg/cli/doctor.go:90:	checks = append(checks, checkCommand("adb", "adb (Android SDK)", "Android runs need adb. Install Android platform-tools and put them on PATH."))
+pkg/cli/doctor.go:91:	checks = append(checks, checkAndroidHome())
+pkg/cli/doctor.go:92:	checks = append(checks, checkAVDImages()...)
+pkg/cli/doctor.go:95:		checks = append(checks, checkCommand("xcrun", "xcrun (Xcode command line tools)", "iOS runs need the Xcode command line tools. Install them with `xcode-select --install`."))
+pkg/cli/doctor.go:96:		checks = append(checks, checkFullXcode())
+pkg/cli/doctor.go:98:			checks = append(checks, checkTeamID(teamID))
+pkg/cli/doctor.go:102:	checks = append(checks, checkVisibleDevices())
+pkg/cli/doctor.go:173:			checks = append(checks, DoctorCheck{
+pkg/cli/doctor.go:303:				teams = append(teams, team)
+pkg/cli/doctor.go:332:		teams = append(teams, cert.Subject.OrganizationalUnit...)
+pkg/config/config.go:72:				content = append(content, node.Content[:i]...)
+pkg/config/config.go:73:				node.Content = append(content, node.Content[i+2:]...)
+pkg/executor/scripting.go:200:		names = append(names, name)
+pkg/executor/scripting.go:369:		out = append(out, name)
+pkg/executor/scripting.go:534:		names = append(names, name)
+pkg/executor/scripting.go:775:	case *flow.InputTextStep:
+pkg/report/consumer.go:42:			changed = append(changed, f.ID)
+pkg/maestro/adapter_fresh_text_test.go:9:// fieldAt is where the found EditText sits; the focused-element reply is
+pkg/maestro/adapter_fresh_text_test.go:14:// change its value, and UI.activeElement reports whatever `focused` returns.
+pkg/maestro/adapter_fresh_text_test.go:19:	focused func(value string) interface{}
+pkg/maestro/adapter_fresh_text_test.go:25:	f.methods = append(f.methods, req.Method)
+pkg/maestro/adapter_fresh_text_test.go:36:		return f.focused(f.value)
+pkg/maestro/adapter_fresh_text_test.go:53:func focusedAt(b BoundsResult) func(string) interface{} {
+pkg/maestro/adapter_fresh_text_test.go:65:		focused  func(string) interface{}
+pkg/maestro/adapter_fresh_text_test.go:69:		{"same field focused", focusedAt(fieldAt), "bo", ""},
+pkg/maestro/adapter_fresh_text_test.go:70:		{"multi-line field grew", focusedAt(grown), "bo", ""},
+pkg/maestro/adapter_fresh_text_test.go:71:		{"another field focused", focusedAt(moved), "", "different view"},
+pkg/maestro/adapter_fresh_text_test.go:72:		{"no focused element", func(string) interface{} {
+pkg/maestro/adapter_fresh_text_test.go:73:			return &ErrorPayload{Code: "error", Message: "No focused element"}
+pkg/maestro/adapter_fresh_text_test.go:74:		}, "", "No focused element"},
+pkg/maestro/adapter_fresh_text_test.go:79:			field := &fakeField{focused: tt.focused}
+pkg/maestro/adapter_fresh_text_test.go:112:	field := &fakeField{value: "bob", focused: focusedAt(fieldAt)}
+pkg/maestro/adapter_fresh_text_test.go:181:	field := &fakeField{focused: focusedAt(fieldAt)}
+pkg/cli/keepalive.go:112:	postponedCleanups = append(postponedCleanups, fn)
+pkg/cli/keepalive.go:230:	if err := os.WriteFile(path, append(data, '\n'), 0o644); err != nil {
+pkg/executor/tap_options.go:102:	case *flow.InputTextStep, *flow.InputRandomStep, *flow.EraseTextStep:
+pkg/cli/narration_test.go:296:					driverLines = append(driverLines, strings.TrimSpace(l[i:]))
+pkg/executor/flow_hooks_test.go:38:			run.taps = append(run.taps, tap.Selector.Text)
+pkg/executor/flow_hooks_test.go:144:			taps = append(taps, tap.Selector.Text)
+pkg/cli/devices.go:88:		entries = append(entries, androidEntries()...)
+pkg/cli/devices.go:91:		entries = append(entries, simulatorEntries(includeShutdown)...)
+pkg/cli/devices.go:92:		entries = append(entries, physicalIOSEntries()...)
+pkg/cli/devices.go:104:		entries = append(entries, DeviceEntry{
+pkg/cli/devices.go:126:		entries = append(entries, DeviceEntry{
+pkg/cli/devices.go:172:		entries = append(entries, entry)
+pkg/cli/devices.go:231:			out = append(out, e)
+pkg/cli/cli.go:148:	allFlags := append(GlobalFlags, testCommand.Flags...)
+pkg/cli/ios.go:612:			devices = append(devices, dev.UDID)
+pkg/cli/ios.go:639:			udids = append(udids, serial)
+pkg/validator/validator_test.go:18:- inputText: "username"
+pkg/validator/validator_test.go:510:	r.Errors = append(r.Errors, &ValidationError{File: "test", Message: "error"})
+pkg/validator/validator_test.go:769:      - inputText: "text"
+pkg/validator/validator_test.go:1326:	for _, p := range append(included, excluded...) {
+pkg/validator/validator_test.go:1395:	for _, p := range append(included, excluded...) {
+pkg/core/driver_test.go:88:		Focused:            false,
+pkg/core/driver_test.go:120:		FocusedElement: &ElementInfo{
+pkg/core/driver_test.go:134:	if state.FocusedElement == nil {
+pkg/core/driver_test.go:135:		t.Error("FocusedElement should not be nil")
+pkg/flutter/wrapper.go:612:	case *flow.InputTextStep, *flow.CopyTextFromStep:
+pkg/flutter/wrapper.go:637:		*flow.AssertVisibleStep, *flow.InputTextStep, *flow.CopyTextFromStep:
+pkg/flutter/wrapper.go:680:	case *flow.InputTextStep:
+pkg/flutter/wrapper.go:794:			keys = append(keys, fields[1])
+pkg/report/junit_test.go:655:		{"inputText", "InputError"},
+pkg/report/junit_test.go:698:			{ID: "sub-1", Type: "inputText", Status: StatusFailed, Label: "Enter email"},
+pkg/cli/test_unified_output_test.go:163:		printCommand(report.Command{Type: "inputText", Label: `" Renamed"`, Status: report.StatusPassed, Duration: &d,
+pkg/cli/hierarchy_test.go:88:  <node class="android.widget.EditText" resource-id="name" text="" enabled="true" focused="true" bounds="[0,120][100,170]"/>
+pkg/cli/hierarchy_test.go:92:	// JSON: disabled button, checked checkbox, focused field.
+pkg/cli/hierarchy_test.go:97:	for _, want := range []string{`"enabled": false`, `"checked": true`, `"focused": true`} {
+pkg/cli/hierarchy_test.go:109:	for _, want := range []string{"[disabled]", "[checked]", "[focused]"} {
+pkg/cli/retry_failed.go:57:			found = append(found, candidate{path: p, name: e.Name(), mod: info.ModTime()})
+pkg/cli/retry_failed.go:90:		paths = append(paths, f.SourceFile)
+pkg/cli/retry_failed.go:112:			selected = append(selected, d)
+pkg/cli/retry_failed.go:119:			missing = append(missing, f)
+pkg/cli/retry_failed.go:199:			out = append(out, flows[i])
+pkg/report/junit.go:154:			keys = append(keys, k)
+pkg/report/junit.go:235:			out = append(out, "warning: "+name+": "+message)
+pkg/report/junit.go:237:		out = append(out, commandWarnings(cmd.SubCommands)...)
+pkg/report/junit.go:253:			atts = append(atts, cmd.Artifacts.ScreenshotAfter)
+pkg/report/junit.go:257:		atts = append(atts, detail.Artifacts.Video)
+pkg/report/junit.go:317:	case "inputText", "eraseText":
+pkg/executor/flow_runner.go:1081:				out = append(out, s)
+pkg/executor/flow_runner.go:1491:			// No replacement happened — append the timeout info
+pkg/executor/flow_runner.go:1511:	result := fr.driver.Execute(&flow.InputTextStep{Text: text})
+pkg/executor/flow_runner.go:1535:			headerKeys = append(headerKeys, k)
+pkg/executor/flow_runner.go:1823:	fr.subCommands = append(fr.subCommands, cmd)
+pkg/executor/flow_runner.go:1840:		fr.subFlowEnv = append(fr.subFlowEnv, subFlow.Config.Env)
+pkg/executor/flow_runner.go:2083:			errs = append(errs, fmt.Sprintf("[%s] %s", e.Level, e.Message))
+pkg/executor/runner_test.go:988:				tapTargets = append(tapTargets, t.Selector.Text)
+pkg/executor/runner_test.go:1046:				tapTargets = append(tapTargets, t.Selector.Text)
+pkg/executor/runner_test.go:2907:			executed = append(executed, step.Type())
+pkg/validator/validator.go:60:		result.Errors = append(result.Errors, &ValidationError{
+pkg/validator/validator.go:71:			result.Errors = append(result.Errors, &ValidationError{
+pkg/validator/validator.go:102:			v.excludeTags = append(v.excludeTags, cfg.ExcludeTags...)
+pkg/validator/validator.go:105:			v.includeTags = append(v.includeTags, cfg.IncludeTags...)
+pkg/validator/validator.go:157:				files = append(files, match)
+pkg/validator/validator.go:170:			negative = append(negative, pattern)
+pkg/validator/validator.go:172:			positive = append(positive, pattern)
+pkg/validator/validator.go:220:				files = append(files, dirFiles...)
+pkg/validator/validator.go:224:			files = append(files, match)
+pkg/validator/validator.go:262:				files = append(files, m)
+pkg/validator/validator.go:299:		roots = append(roots, m)
+pkg/validator/validator.go:328:		files = append(files, path)
+pkg/validator/validator.go:367:			files = append(files, path)
+pkg/validator/validator.go:448:				cycle = append(cycle, h.display())
+pkg/validator/validator.go:450:			cycle = append(cycle, hop.display())
+pkg/validator/validator.go:451:			result.Errors = append(result.Errors, &ValidationError{
+pkg/validator/validator.go:465:			result.Errors = append(result.Errors, &ValidationError{
+pkg/validator/validator.go:474:		newChain := append(chain[:len(chain):len(chain)], hop)
+pkg/validator/validator.go:494:			result.TestCases = append(result.TestCases, filePath)
+pkg/cli/android.go:234:	// span ALL accessibility windows, not just the focused one. Without it,
+pkg/cli/android.go:376:		devices = append(devices, serial)
+pkg/cli/hierarchy.go:23:	// elements; Selected/Focused only when true.
+pkg/cli/hierarchy.go:27:	Focused  *bool   `json:"focused,omitempty"`
+pkg/cli/hierarchy.go:115:			Focused     *bool   `json:"focused"`
+pkg/cli/hierarchy.go:136:		if n.Focused != nil && *n.Focused {
+pkg/cli/hierarchy.go:137:			node.Focused = boolPtr(true)
+pkg/cli/hierarchy.go:151:			rootIdx = append(rootIdx, i)
+pkg/cli/hierarchy.go:154:			childIdx[p] = append(childIdx[p], i)
+pkg/cli/hierarchy.go:161:			node.Children = append(node.Children, assemble(c))
+pkg/cli/hierarchy.go:166:		roots = append(roots, assemble(r))
+pkg/cli/hierarchy.go:201:			converted.Children = append(converted.Children, convertXML(c, true))
+pkg/cli/hierarchy.go:239:		if n.attr("focused") == "true" {
+pkg/cli/hierarchy.go:240:			out.Focused = boolPtr(true)
+pkg/cli/hierarchy.go:262:		out.Children = append(out.Children, convertXML(c, android))
+pkg/cli/hierarchy.go:365:	if n.Focused != nil && *n.Focused {
+pkg/cli/hierarchy.go:366:		b.WriteString("  [focused]")
+pkg/executor/duration_consistency_test.go:78:					stepDurations = append(stepDurations, durationMs)
+pkg/cli/lint.go:105:			report.Results = append(report.Results, LintResult{File: path, Error: perr.Error()})
+pkg/cli/lint.go:108:		report.Results = append(report.Results, LintResult{File: path, OK: true})
+pkg/cli/lint.go:162:		paths = append(paths, p)
+pkg/cli/envfile.go:139:		missing = append(missing, name)
+pkg/report/latency.go:48:			durations = append(durations, d)
+pkg/driver/devicelab_ios_legacy/setup_test.go:85:				resets = append(resets, udid)
+pkg/report/index.go:249:			f.AttemptHistory = append(f.AttemptHistory, AttemptEntry{
+pkg/driver/devicelab_ios_legacy/settle_test.go:36:			r.settles = append(r.settles, cmd)
+pkg/core/media_test.go:91:func (f *fakePusher) Shell(cmd string) (string, error) { f.cmds = append(f.cmds, cmd); return "", nil }
+pkg/core/media_test.go:93:	f.pushes = append(f.pushes, [2]string{l, r})
+pkg/executor/interaction_clock_test.go:21:		{"inputText", &flow.InputTextStep{}, false, true},
+pkg/report/warning_test.go:52:			{ID: "cmd-001", Index: 1, Type: "inputText", Label: `" Renamed"`, Status: StatusPassed, StartTime: &now, Duration: &d, Warning: testWarning},
+pkg/report/warning_test.go:62:	if !strings.Contains(xml, "<system-out>") || !strings.Contains(xml, "warning: inputText") || !strings.Contains(xml, "Golden Gate Bridge") {
+pkg/executor/scripting_test.go:416:	// element and append; after this output.list should be ["a","b"].
+pkg/executor/scripting_test.go:1233:func TestScriptEngine_ExpandStep_InputTextStep(t *testing.T) {
+pkg/executor/scripting_test.go:1239:	step := &flow.InputTextStep{
+pkg/executor/scripting_test.go:2502:				queriedIDs = append(queriedIDs, av.Selector.ID)
+pkg/executor/animations_test.go:17:	a.calls = append(a.calls, disabled)
+pkg/report/flow.go:86:	w.flow.Commands[cmdIndex].Notes = append([]string(nil), notes...)
+pkg/report/flow.go:203:	w.flow.Artifacts.VideoTimestamps = append(w.flow.Artifacts.VideoTimestamps, VideoTimestamp{
+pkg/report/html.go:1311:                tagFiltersDiv.appendChild(label);
+pkg/report/html.go:1320:                    tagFiltersDiv.appendChild(btn);
+pkg/report/html.go:1331:                deviceFiltersDiv.appendChild(label);
+pkg/report/html.go:1342:                        deviceFiltersDiv.appendChild(btn);
+pkg/report/html.go:1355:                        deviceFiltersDiv.appendChild(btn);
+pkg/cli/test.go:180:			Usage:   "Typing speed in keys/sec (default 30). Lower values help apps that drop fast key events. Applies to WDA and the DeviceLab iOS driver (all typing) and to keyPress-mode inputText on uiautomator2; the default DeviceLab Android driver types through its agent and is unaffected.",
+pkg/cli/test.go:1167:			cloudResult.Flows = append(cloudResult.Flows, cloud.FlowResult{
+pkg/cli/test.go:1230:		allTestCases = append(allTestCases, result.TestCases...)
+pkg/cli/test.go:1231:		allErrors = append(allErrors, result.Errors...)
+pkg/cli/test.go:1256:		flows = append(flows, *f)
+pkg/cli/test.go:1279:					warnings = append(warnings,
+pkg/cli/test.go:1287:						warnings = append(warnings,
+pkg/cli/test.go:1409:						stoppedAVDs = append(stoppedAVDs, avd)
+pkg/cli/test.go:1445:					deviceIDs = append(deviceIDs, serial)
+pkg/cli/test.go:1483:					deviceIDs = append(deviceIDs, udid)
+pkg/cli/test.go:1520:						deviceIDs = append(deviceIDs, udid)
+pkg/cli/test.go:2007:	*e = append(*e, v)
+pkg/cli/test.go:2022:			out := append([]string(nil), *v...)
+pkg/cli/test.go:2145:			workerFlows = append(workerFlows, cloud.FlowResult{
+pkg/cli/test.go:2300:		providers = append(providers, p)
+pkg/cli/test.go:2303:		providers = append(providers, cloud.NewSessionExporter(cfg.AppiumSessionFile))
+pkg/cli/test.go:2711:			unavailableDevices = append(unavailableDevices,
+pkg/cli/test.go:2759:		workers = append(workers, executor.DeviceWorker{
+pkg/cli/test.go:2765:		cleanups = append(cleanups, cleanup)
+pkg/cli/test.go:2798:		workers = append(workers, executor.DeviceWorker{
+pkg/cli/test.go:2804:		cleanups = append(cleanups, cleanup)
+pkg/cli/test.go:2850:				snapshot := append([]*appiumdriver.Driver(nil), kaDrivers...)
+pkg/cli/test.go:2896:			kaDrivers = append(kaDrivers, appDrv)
+pkg/cli/test.go:2927:		workers = append(workers, executor.DeviceWorker{
+pkg/cli/test.go:2936:		cleanups = append(cleanups, cleanup)
+pkg/cli/test.go:2938:		cloudMetas = append(cloudMetas, appiumWorkerMeta{
+pkg/executor/runshell.go:91:		env = append(env, name+"="+value)
+pkg/executor/runshell.go:94:		env = append(env, name+"="+value)
+pkg/executor/runshell.go:99:		env = append(env, "MAESTRO_DEVICE_ID="+id)
+pkg/executor/runshell.go:102:		env = append(env, "MAESTRO_PLATFORM="+device.Platform)
+pkg/executor/runshell.go:105:		env = append(env, "MAESTRO_APP_ID="+appID)
+pkg/cloud/saucelabs.go:420:		keys = append(keys, k)
+pkg/executor/fail_fast_test.go:17:		flows = append(flows, flow.Flow{
+pkg/executor/truthiness_test.go:116:			taps = append(taps, tap.Selector.Text)
+pkg/executor/step_notes.go:14:		*n = append(*n, r.Notes...)
+pkg/executor/step_notes.go:22:		r.Notes = append([]string(nil), (*n)...)
+pkg/executor/parallel_test.go:247:		callsBySession[sessionID] = append(callsBySession[sessionID], hookCall{event: event, flow: flowName})
+pkg/executor/parallel_test.go:298:		flowsBySession[fr.SessionID] = append(flowsBySession[fr.SessionID], fr.Name)
+pkg/executor/parallel_test.go:308:				startNames = append(startNames, c.flow)
+pkg/executor/parallel_test.go:310:				endNames = append(endNames, c.flow)
+pkg/executor/runner.go:347:			expanded = append(expanded, f)
+pkg/executor/runner.go:374:				expanded = append(expanded, flow.Flow{
+pkg/executor/runner.go:413:			expanded = append(expanded, *tcFlow)
+pkg/executor/nested_steps_test.go:20:			*seen = append(*seen, step)
+pkg/executor/nested_steps_test.go:130:		if in, ok := s.(*flow.InputTextStep); ok {
+pkg/executor/nested_steps_test.go:148:		if in, ok := step.(*flow.InputTextStep); ok {
+pkg/executor/nested_steps_test.go:149:			typed = append(typed, in.Text)
+pkg/executor/nested_steps_test.go:162:					&flow.InputTextStep{BaseStep: flow.BaseStep{StepType: flow.StepInputText}, Text: "${output.d[output.i]}"},
+pkg/cloud/loopback_test.go:94:func TestLoopback_LifecycleHooks_AppendJSONL(t *testing.T) {
+pkg/driver/devicelab_ios_legacy/lifecycle_test.go:29:		f.calls = append(f.calls, args)
+pkg/driver/devicelab_ios_legacy/lifecycle_test.go:41:		f.cmds = append(f.cmds, cmd) // kept so a test can read the Env the caller set
+pkg/driver/devicelab_ios_legacy/lifecycle_test.go:51:		out = append(out, strings.Join(c, " "))
+pkg/executor/launch_env_test.go:25:				launches = append(launches, la)
+pkg/executor/launch_env_test.go:119:				launches = append(launches, la)
+pkg/core/driver.go:126:	Focused            bool              `json:"focused,omitempty"`
+pkg/core/driver.go:199:	FocusedElement  *ElementInfo `json:"focusedElement,omitempty"`  // Currently focused element
+pkg/core/closesttexts.go:28:			candidates = append(candidates, scored{text, score})
+pkg/executor/tap_options_test.go:203:			timestamps = append(timestamps, time.Now())
+pkg/cloud/composite.go:23:			m = append(m, p)
+pkg/cloud/composite.go:53:		errs = append(errs, p.OnRunStart(meta, totalFlows))
+pkg/cloud/composite.go:61:		errs = append(errs, p.OnFlowStart(meta, flowIdx, totalFlows, name, file))
+pkg/cloud/composite.go:69:		errs = append(errs, p.OnFlowEnd(meta, result))
+pkg/cloud/composite.go:77:		errs = append(errs, p.ReportResult(appiumURL, meta, result))
+pkg/driver/devicelab_ios_legacy/driver.go:41:	// recent successful tap so handleInputText can pass those coordinates
+pkg/driver/devicelab_ios_legacy/driver.go:51:	// inputText can tell whether typing actually changed it (#139-class
+pkg/driver/devicelab_ios_legacy/driver.go:60:	// inputText, assertVisible chains). Invalidated on every interaction
+pkg/core/androidexit.go:93:		infos = append(infos, info)
+pkg/executor/warned_step_test.go:22:			if _, ok := step.(*flow.InputTextStep); ok {
+pkg/executor/warned_step_test.go:43:			calls = append(calls, call{passed, msg})
+pkg/executor/warned_step_test.go:52:			&flow.InputTextStep{BaseStep: flow.BaseStep{StepType: flow.StepInputText}, Text: " Renamed"},
+pkg/core/textentry.go:36:// path appends to whatever the field already held, and the caller would
+pkg/core/textentry.go:92:// value still starts with it: typing appends, so a real value stays in front,
+pkg/core/textentry.go:170:		warn("inputText: field holds %q after typing %q — retyping", after, typed)
+pkg/core/textentry.go:173:		// Without the clear, retyping would append to the partial value and
+pkg/core/element.go:4:// Used by commands that need to interact with the focused element (inputText, eraseText, etc.)
+pkg/driver/devicelab_ios_legacy/embedded.go:93:			files = append(files, p)
+pkg/core/textentry_test.go:18:		{"appended to existing content", "world", "hello ", "hello world", true, TextEntryLanded},
+pkg/core/textentry_test.go:77:	f.typed = append(f.typed, s)
+pkg/core/textentry_test.go:89:		{"existing text survives", "abc", "defgh", "abcd", "abcdefgh"},
+pkg/driver/devicelab_ios_legacy/types.go:175:	// side can populate lastTappedIdentifier for the next inputText to
+pkg/driver/devicelab_ios_legacy/types.go:238:	Focused            bool         `json:"focused,omitempty"`
+pkg/core/selectordesc.go:18:		parts = append(parts, fmt.Sprintf("text='%s'", sel.Text))
+pkg/core/selectordesc.go:21:		parts = append(parts, fmt.Sprintf("id='%s'", sel.ID))
+pkg/core/selectordesc.go:30:		parts = append(parts, "exact=true")
+pkg/cloud/session_export.go:102:		doc.Sessions = append(doc.Sessions, e)
+pkg/core/animations_test.go:14:	f.commands = append(f.commands, cmd)
+pkg/core/imagediff.go:298:			rects = append(rects, r)
+pkg/core/imagediff.go:336:			queue = append(queue, n)
+pkg/core/imagediff.go:346:	merged := append([]diffRect(nil), rects...)
+pkg/core/imagediff.go:368:			next = append(next, cur)
+pkg/driver/devicelab_ios_legacy/erasetext_test.go:136:// TestEraseTextWithNothingFocusedPasses: with no text input to act on there
+pkg/driver/devicelab_ios_legacy/erasetext_test.go:139:func TestEraseTextWithNothingFocusedPasses(t *testing.T) {
+pkg/driver/devicelab_ios_legacy/erasetext_test.go:141:		"code": ErrNoTextInput, "message": "no focused text input to clear",
+pkg/driver/devicelab_ios_legacy/erasetext_test.go:145:		t.Errorf("nothing focused failed the step: %s", res.Message)
+pkg/device/devicelab_install_test.go:25:	s.answers = append(s.answers, struct{ match, out string }{match, out})
+pkg/device/devicelab_install_test.go:32:	s.calls = append(s.calls, joined)
+pkg/device/devicelab_install_test.go:34:		s.removed = append(s.removed, joined[i+len("uninstall "):])
+pkg/device/devicelab_install_test.go:59:			kept = append(kept, line)
+pkg/core/media.go:73:			documents = append(documents, p)
+pkg/core/media.go:75:			media = append(media, p)
+pkg/cloud/loopback.go:40:// loopbackEventMu serialises JSONL appends across goroutines so concurrent
+pkg/cloud/loopback.go:71:	appendLoopbackEvent(meta, map[string]interface{}{
+pkg/cloud/loopback.go:82:	appendLoopbackEvent(meta, map[string]interface{}{
+pkg/cloud/loopback.go:96:	appendLoopbackEvent(meta, map[string]interface{}{
+pkg/cloud/loopback.go:116:		flowNames = append(flowNames, f.Name)
+pkg/cloud/loopback.go:121:	appendLoopbackEvent(meta, map[string]interface{}{
+pkg/cloud/loopback.go:155:// appendLoopbackEvent appends one JSON line to <OutputDir>/loopback-cloud-<jobID>.events.jsonl.
+pkg/cloud/loopback.go:161:func appendLoopbackEvent(meta map[string]string, payload map[string]interface{}) {
+pkg/cloud/loopback.go:189:	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+pkg/cloud/loopback.go:195:	if _, err := f.Write(append(line, '\n')); err != nil {
+pkg/core/scrollprogress.go:40:	p.recent = append(p.recent, signature)
+pkg/core/androiddropbox.go:71:			entries = append(entries, entry)
+pkg/core/selectormatch.go:172:			tier = append(tier, `.hintMatches("`+re+`")`)
+pkg/core/selectormatch.go:178:		tiers = append(tiers, regexTier(false))
+pkg/core/selectormatch.go:180:	return append(tiers, regexTier(true))
+pkg/core/selectormatch.go:275:				cur = append(cur, n) // an escaped metacharacter is itself
+pkg/core/selectormatch.go:293:			cur = append(cur, c)
+pkg/device/uia2_forward_restore_test.go:17:		*calls = append(*calls, strings.Join(args, " "))
+pkg/device/uia2_forward_restore_test.go:74:		calls = append(calls, strings.Join(args, " "))
+pkg/cloud/provider_test.go:118:		extract: func() { events = append(events, event{kind: "extract"}) },
+pkg/cloud/provider_test.go:120:			events = append(events, event{kind: "run", idx: total})
+pkg/cloud/provider_test.go:123:			events = append(events, event{kind: "flowStart", idx: flowIdx, name: name})
+pkg/cloud/provider_test.go:126:			events = append(events, event{kind: "flowEnd", name: name, passed: passed})
+pkg/cloud/provider_test.go:128:		report: func(passed bool) { events = append(events, event{kind: "report", passed: passed}) },
+pkg/cloud/provider.go:83:	factories = append(factories, f)
+pkg/device/devicelab_driver_test.go:50:// TestAppendDriverDiagnostics_PreservesOriginalError ensures the
+pkg/device/devicelab_driver_test.go:56:func TestAppendDriverDiagnostics_PreservesOriginalError(t *testing.T) {
+pkg/device/devicelab_driver_test.go:57:	// We can't easily call appendDriverDiagnostics without a real
+pkg/device/devicelab_driver_test.go:74:// wrapForDiag mirrors appendDriverDiagnostics's error-wrapping shape
+pkg/device/devicelab_driver_test.go:213:// marker (written before the launch), and append the driver's output after
+pkg/driver/devicelab_ios_legacy/build.go:71:		files = append(files, p)
+pkg/core/screenshot_test.go:127:		sizes = append(sizes, fmt.Sprintf("%dx%d", w, h))
+pkg/driver/devicelab_ios_legacy/commands.go:30:		*flow.InputTextStep, *flow.PressKeyStep, *flow.EraseTextStep,
+pkg/driver/devicelab_ios_legacy/commands.go:53:	case *flow.InputTextStep:
+pkg/driver/devicelab_ios_legacy/commands.go:54:		return d.handleInputText(s)
+pkg/driver/devicelab_ios_legacy/commands.go:146:	args = append(args, flattenArguments(s.Arguments)...)
+pkg/driver/devicelab_ios_legacy/commands.go:229:	// Remember the tap location so a following inputText (with no inline
+pkg/driver/devicelab_ios_legacy/commands.go:230:	// selector — Maestro's tapOn+inputText idiom) can pass the same coords
+pkg/driver/devicelab_ios_legacy/commands.go:246:// a following inputText, the same way an element tap does.
+pkg/driver/devicelab_ios_legacy/commands.go:286:// handleInputText routes text through the runner's `type` command. When the
+pkg/driver/devicelab_ios_legacy/commands.go:289:// tap, falls through to focused-element typing.
+pkg/driver/devicelab_ios_legacy/commands.go:290:func (d *Driver) handleInputText(s *flow.InputTextStep) *core.CommandResult {
+pkg/driver/devicelab_ios_legacy/commands.go:298:			return core.ErrorResult(err, "inputText: "+err.Error())
+pkg/driver/devicelab_ios_legacy/commands.go:328:			return core.ErrorResult(err, "inputText failed: "+err.Error())
+pkg/driver/devicelab_ios_legacy/commands.go:336:	// No inline selector — Maestro's tapOn+inputText idiom.
+pkg/driver/devicelab_ios_legacy/commands.go:351:		return core.ErrorResult(err, "inputText failed: "+err.Error())
+pkg/driver/devicelab_ios_legacy/commands.go:528:		// Type a newline through the focused element.
+pkg/driver/devicelab_ios_legacy/commands.go:601:			return core.SuccessResult("nothing to erase: no focused text input", nil)
+pkg/driver/devicelab_ios_legacy/commands.go:1231:	if sel.Enabled != nil || sel.Selected != nil || sel.Focused != nil {
+pkg/driver/devicelab_ios_legacy/commands.go:1281:// inputText reads those to hint the runner at which editable element to
+pkg/driver/devicelab_ios_legacy/commands.go:1427:			hits = append(hits, nodes[i])
+pkg/driver/devicelab_ios_legacy/commands.go:1494:			inputs = append(inputs, n)
+pkg/driver/devicelab_ios_legacy/commands.go:1496:			controls = append(controls, n)
+pkg/driver/devicelab_ios_legacy/commands.go:1498:			others = append(others, n)
+pkg/driver/devicelab_ios_legacy/commands.go:1505:	out = append(out, inputs...)
+pkg/driver/devicelab_ios_legacy/commands.go:1506:	out = append(out, controls...)
+pkg/driver/devicelab_ios_legacy/commands.go:1507:	out = append(out, others...)
+pkg/driver/devicelab_ios_legacy/commands.go:1635:		parts = append(parts, "text="+s.Text)
+pkg/driver/devicelab_ios_legacy/commands.go:1638:		parts = append(parts, "id="+s.ID)
+pkg/driver/devicelab_ios_legacy/commands.go:1742:// populates SnapshotNode.Focused — so the only evidence available is whether
+pkg/driver/devicelab_ios_legacy/commands.go:1812:				"inputText reported success but %q is unchanged (still %q) after %s — the text was typed "+
+pkg/driver/devicelab_ios_legacy/commands.go:1813:					"somewhere else; check that the preceding tap focused this field",
+pkg/driver/devicelab_ios_legacy/media.go:37:			args := append([]string{"simctl", "addmedia", d.udid}, media...)
+pkg/device/discover.go:60:		devices = append(devices, d)
+pkg/device/devicelab_driver.go:112:		err = d.appendDriverDiagnostics(err)
+pkg/device/devicelab_driver.go:578:			paths = append(paths, p)
+pkg/device/devicelab_driver.go:631:				errs = append(errs, fmt.Sprintf("%s: %v", pkg, err))
+pkg/device/devicelab_driver.go:642:// appendDriverDiagnostics enriches a driver-not-ready error with two
+pkg/device/devicelab_driver.go:659:func (d *AndroidDevice) appendDriverDiagnostics(origErr error) error {
+pkg/driver/browser/cdp/commands_iframe_test.go:92:sr.appendChild(document.getElementById("t").content.cloneNode(true));
+pkg/driver/devicelab_ios_legacy/dragdrop_test.go:50:			g.drags = append(g.drags, cmd)
+pkg/device/forward_cleanup_test.go:17:	f.calls = append(f.calls, slices.Clone(args))
+pkg/driver/devicelab_ios_legacy/textentry_test.go:14:// SnapshotNode.Focused unpopulated — so the only available evidence is whether
+pkg/driver/devicelab_ios_legacy/textentry_test.go:25:		{"appended to existing text", "abc", "abcdef", "def", true},
+pkg/driver/devicelab_ios_legacy/visibleonly_test.go:27:		s.requests = append(s.requests, cmd)
+pkg/driver/browser/cdp/console_report_test.go:189:		out = append(out, k)
+pkg/driver/devicelab/webview.go:240:		all = append(all, ci.unique)
+pkg/driver/devicelab/webview.go:243:			uids = append(uids, ci.unique)
+pkg/driver/devicelab/webview.go:363:				dead = append(dead, uid)
+pkg/driver/devicelab/webview.go:380:// discovery on every inputText congested the connection enough that later evals
+pkg/driver/devicelab/webview.go:513:			kept = append(kept, uid)
+pkg/driver/devicelab/webview.go:521:// appends text through the native value setter (bypassing framework-wrapped
+pkg/driver/devicelab/webview.go:525:// text the flow tapped, e.g. "Card number"); otherwise it uses the focused
+pkg/driver/devicelab/webview.go:732:// jsFocusIframeInput finds the input matching label (or the focused input) in a
+pkg/driver/devicelab/webview.go:757:// the browser to the focused frame, so it reaches the iframe input that Android
+pkg/driver/devicelab/webview.go:758:// hardware key events can't (they route to the native IME view, not a JS-focused
+pkg/driver/devicelab/webview.go:762:// Returns true if a context focused a matching input and the text was inserted.
+pkg/driver/devicelab/webview.go:779:				dead = append(dead, uid)
+pkg/driver/devicelab/webview.go:787:		// Field focused in this context; type via CDP so the keys reach it and
+pkg/driver/devicelab/webview.go:799:// fillIframeInput finds the input matching label (or the focused input) inside a
+pkg/driver/devicelab/webview.go:800:// cross-origin iframe — Shopify checkout's hosted card fields — and appends text
+pkg/driver/devicelab/webview.go:801:// to it entirely over CDP, so it works without the native tap having focused the
+pkg/driver/devicelab/webview.go:834:				dead = append(dead, uid)
+pkg/driver/devicelab/webview.go:905:	// where the old tab may still be focused. Using the highest ID is more reliable.
+pkg/driver/devicelab/webview.go:1420:// findFocusedWeb returns the currently focused element in the WebView.
+pkg/driver/devicelab/webview.go:1422:func (m *webViewManager) findFocusedWeb() (core.Element, error) {
+pkg/driver/devicelab/webview.go:1438:			logger.Info("[cdp:cleanup] connection dead detected during findFocused, cleaning up")
+pkg/driver/devicelab/webview.go:1442:		return nil, fmt.Errorf("no focused web element: %w", err)
+pkg/driver/devicelab/webview.go:1447:		return nil, fmt.Errorf("focused element from object: %w", err)
+pkg/driver/devicelab/webview.go:1452:		return nil, fmt.Errorf("focused web element is not visible")
+pkg/driver/devicelab/webview.go:1590:		candidates = append(candidates, candidate{elem: elem, priority: pri})
+pkg/device/android.go:140:		noDevErr.Suggestions = append(noDevErr.Suggestions,
+pkg/device/android.go:148:			noDevErr.Suggestions = append(noDevErr.Suggestions,
+pkg/device/android.go:153:		noDevErr.Suggestions = append(noDevErr.Suggestions,
+pkg/device/android.go:184:			avds = append(avds, line)
+pkg/device/android.go:235:		args = append(args, "-s", d.serial)
+pkg/device/android.go:237:	args = append(args, "shell", command)
+pkg/device/android.go:501:		args = append(args, "-s", d.serial)
+pkg/device/android.go:503:	args = append(args, "shell", cmd)
+pkg/device/android.go:534:		cmdArgs = append(cmdArgs, "-s", d.serial)
+pkg/device/android.go:536:	cmdArgs = append(cmdArgs, args...)
+pkg/driver/devicelab_ios_legacy/simprefs.go:43:		applied = append(applied, p.why)
+pkg/device/uiautomator.go:483:				errs = append(errs, fmt.Sprintf("%s: %v", pkg, err))
+pkg/driver/browser/cdp/driver_test.go:369:func TestInputText(t *testing.T) {
+pkg/driver/browser/cdp/driver_test.go:377:	result := d.Execute(&flow.InputTextStep{
+pkg/driver/browser/cdp/driver_test.go:382:		t.Errorf("inputText should succeed: %s", result.Message)
+pkg/driver/browser/cdp/driver_test.go:402:	d.Execute(&flow.InputTextStep{
+pkg/driver/browser/cdp/driver_test.go:1416:func TestInputTextNoSelector(t *testing.T) {
+pkg/driver/browser/cdp/driver_test.go:1427:	result := d.Execute(&flow.InputTextStep{Text: "test"})
+pkg/driver/browser/cdp/driver_test.go:1429:		t.Errorf("inputText without selector should succeed: %s", result.Message)
+pkg/driver/browser/cdp/driver_test.go:1592:func TestStateFiltersFocused(t *testing.T) {
+pkg/driver/browser/cdp/driver_test.go:1605:	// Find focused input with focused=true
+pkg/driver/browser/cdp/driver_test.go:1607:		Selector: flow.Selector{CSS: "#input1", Focused: &tr},
+pkg/driver/browser/cdp/driver_test.go:1610:		t.Errorf("focused input with focused=true should be found: %s", result.Message)
+pkg/driver/browser/cdp/driver_test.go:1613:	// Find unfocused button with focused=false
+pkg/driver/browser/cdp/driver_test.go:1615:		Selector: flow.Selector{CSS: "#btn", Focused: &fa},
+pkg/driver/browser/cdp/driver_test.go:1618:		t.Errorf("unfocused button with focused=false should be found: %s", result.Message)
+pkg/driver/browser/cdp/driver_test.go:1950:func TestInputTextSelectorNotFound(t *testing.T) {
+pkg/driver/browser/cdp/driver_test.go:1958:	result := d.Execute(&flow.InputTextStep{
+pkg/driver/browser/cdp/driver_test.go:1964:		t.Error("inputText with non-existent selector should fail")
+pkg/driver/browser/cdp/driver_test.go:1968:func TestInputTextNoSelectorInsertTextFallback(t *testing.T) {
+pkg/driver/browser/cdp/driver_test.go:1980:	result := d.Execute(&flow.InputTextStep{Text: "hello world 123"})
+pkg/driver/browser/cdp/driver_test.go:1982:		t.Errorf("inputText without selector should succeed: %s", result.Message)
+pkg/driver/browser/cdp/driver_test.go:1986:func TestStateFiltersFromAXNodeFocused(t *testing.T) {
+pkg/driver/browser/cdp/driver_test.go:2005:	// Find the focused input via text selector with focused=true
+pkg/driver/browser/cdp/driver_test.go:2006:	// This exercises matchesStateFiltersFromAXNode focused branch
+pkg/driver/browser/cdp/driver_test.go:2008:		Selector: flow.Selector{Text: "Search Input", Focused: &tr},
+pkg/driver/browser/cdp/driver_test.go:2011:		t.Errorf("focused input with focused=true via text should be found: %s", result.Message)
+pkg/driver/browser/cdp/driver_test.go:2014:	// The unfocused button with focused=false via text
+pkg/driver/browser/cdp/driver_test.go:2016:		Selector: flow.Selector{Text: "Go", Focused: &fa},
+pkg/driver/browser/cdp/driver_test.go:2019:		t.Errorf("unfocused button with focused=false via text should be found: %s", result.Message)
+pkg/driver/browser/cdp/driver_test.go:2097:	// Success: find existing text via JS
+pkg/driver/browser/cdp/driver_test.go:2127:	// Success: find existing text via Search
+pkg/driver/browser/cdp/driver_test.go:3172:	// Success: find existing text via JS textContent contains
+pkg/driver/browser/cdp/driver_test.go:3202:	// Success: find existing text via JS regex
+pkg/driver/wda/driver_test.go:327:// TestExecuteInputText tests text input
+pkg/driver/wda/driver_test.go:328:func TestExecuteInputText(t *testing.T) {
+pkg/driver/wda/driver_test.go:333:	step := &flow.InputTextStep{
+pkg/driver/wda/driver_test.go:343:// TestExecuteInputTextWithSelector tests input with selector
+pkg/driver/wda/driver_test.go:344:func TestExecuteInputTextWithSelector(t *testing.T) {
+pkg/driver/wda/driver_test.go:349:	step := &flow.InputTextStep{
+pkg/driver/wda/driver_test.go:360:// TestExecuteInputTextEmpty tests empty text input
+pkg/driver/wda/driver_test.go:361:func TestExecuteInputTextEmpty(t *testing.T) {
+pkg/driver/wda/driver_test.go:366:	step := &flow.InputTextStep{
+pkg/driver/wda/driver_test.go:907:	focusedTrue := true
+pkg/driver/wda/driver_test.go:916:		{flow.Selector{Focused: &focusedTrue}, []string{"hasFocus == true"}},
+pkg/driver/wda/driver_test.go:2056:// TestInputTextWithSelector tests inputText when finding element first
+pkg/driver/wda/driver_test.go:2057:func TestInputTextWithSelector(t *testing.T) {
+pkg/driver/wda/driver_test.go:2062:	step := &flow.InputTextStep{
+pkg/driver/wda/driver_test.go:2067:	result := driver.inputText(step)
+pkg/driver/wda/driver_test.go:2073:// TestInputTextWithoutSelector tests inputText without selector
+pkg/driver/wda/driver_test.go:2074:func TestInputTextWithoutSelector(t *testing.T) {
+pkg/driver/wda/driver_test.go:2079:	step := &flow.InputTextStep{
+pkg/driver/wda/driver_test.go:2083:	result := driver.inputText(step)
+pkg/driver/wda/driver_test.go:2089:// TestInputTextEmptyText tests inputText with empty text
+pkg/driver/wda/driver_test.go:2090:func TestInputTextEmptyText(t *testing.T) {
+pkg/driver/wda/driver_test.go:2095:	step := &flow.InputTextStep{
+pkg/driver/wda/driver_test.go:2099:	result := driver.inputText(step)
+pkg/driver/wda/driver_test.go:2462:// TestInputTextWithUnicode tests inputText with non-ASCII characters
+pkg/driver/wda/driver_test.go:2463:func TestInputTextWithUnicode(t *testing.T) {
+pkg/driver/wda/driver_test.go:2468:	step := &flow.InputTextStep{
+pkg/driver/wda/driver_test.go:2472:	result := driver.inputText(step)
+pkg/driver/wda/driver_test.go:2482:// TestInputTextSelectorNotFound tests inputText when selector fails to find element
+pkg/driver/wda/driver_test.go:2483:func TestInputTextSelectorNotFound(t *testing.T) {
+pkg/driver/wda/driver_test.go:2514:	step := &flow.InputTextStep{
+pkg/driver/wda/driver_test.go:2520:	result := driver.inputText(step)
+pkg/driver/wda/driver_test.go:2526:// TestInputTextWithSelectorNoElementID tests inputText with element that has no ID (tap fallback)
+pkg/driver/wda/driver_test.go:2527:func TestInputTextWithSelectorNoElementID(t *testing.T) {
+pkg/driver/wda/driver_test.go:2549:				"value":  map[string]interface{}{"ELEMENT": "elem-focused"},
+pkg/driver/wda/driver_test.go:2572:	step := &flow.InputTextStep{
+pkg/driver/wda/driver_test.go:2577:	result := driver.inputText(step)
+pkg/driver/wda/driver_test.go:4199:// TestBuildStateFilterFocused tests buildStateFilter with focused
+pkg/driver/wda/driver_test.go:4200:func TestBuildStateFilterFocused(t *testing.T) {
+pkg/driver/wda/driver_test.go:4201:	focused := true
+pkg/driver/wda/driver_test.go:4202:	sel := flow.Selector{Focused: &focused}
+pkg/driver/wda/driver_test.go:4208:	focused = false
+pkg/driver/wda/driver_test.go:4209:	sel = flow.Selector{Focused: &focused}
+pkg/driver/wda/driver_test.go:4619:// TestInputTextAppendMode tests inputText with append mode
+pkg/driver/wda/driver_test.go:4620:func TestInputTextAppendMode(t *testing.T) {
+pkg/driver/wda/driver_test.go:4623:		// A text field holds focus, which is the state inputText runs in.
+pkg/driver/wda/driver_test.go:4627:				"value":  map[string]interface{}{"ELEMENT": "elem-focused"},
+pkg/driver/wda/driver_test.go:4636:	step := &flow.InputTextStep{
+pkg/driver/wda/driver_test.go:4639:	result := driver.inputText(step)
+pkg/driver/wda/driver_test.go:4835:// TestInputTextTapError tests inputText when tap for focus fails
+pkg/driver/wda/driver_test.go:4836:func TestInputTextTapError(t *testing.T) {
+pkg/driver/wda/driver_test.go:4858:	step := &flow.InputTextStep{
+pkg/driver/wda/driver_test.go:4862:	result := driver.inputText(step)
+pkg/driver/wda/driver_test.go:5130:// TestInputTextSendKeysError tests inputText when sendKeys fails
+pkg/driver/wda/driver_test.go:5131:func TestInputTextSendKeysError(t *testing.T) {
+pkg/driver/wda/driver_test.go:5145:	step := &flow.InputTextStep{Text: "test"}
+pkg/driver/wda/driver_test.go:5146:	result := driver.inputText(step)
+pkg/driver/wda/driver_test.go:5545:// TestInputTextWithUnicodeChars tests inputText with non-ASCII characters
+pkg/driver/wda/driver_test.go:5546:func TestInputTextWithUnicodeChars(t *testing.T) {
+pkg/driver/wda/driver_test.go:5549:		// A text field holds focus, which is the state inputText runs in.
+pkg/driver/wda/driver_test.go:5553:				"value":  map[string]interface{}{"ELEMENT": "elem-focused"},
+pkg/driver/wda/driver_test.go:5562:	step := &flow.InputTextStep{Text: "こんにちは"} // Japanese characters
+pkg/driver/wda/driver_test.go:5563:	result := driver.inputText(step)
+pkg/driver/wda/driver_test.go:6128:			rec.finds = append(rec.finds, fmt.Sprint(body["using"], "|", body["value"]))
+pkg/driver/wda/driver_test.go:6135:			rec.finds = append(rec.finds, fmt.Sprint(body["using"], "|", body["value"]))
+pkg/driver/wda/driver_test.go:6143:			rec.drags = append(rec.drags, swipePayload(raw))
+pkg/driver/wda/driver_test.go:6292:// TestInputTextFailsWhenNothingTakesFocus pins the focus gate. Previously the
+pkg/driver/wda/driver_test.go:6297:func TestInputTextFailsWhenNothingTakesFocus(t *testing.T) {
+pkg/driver/wda/driver_test.go:6306:	result := driver.inputText(&flow.InputTextStep{Text: "Hello World"})
+pkg/driver/wda/driver_test.go:6309:		t.Fatal("expected inputText to fail when nothing took keyboard focus")
+pkg/driver/appium/driver_test.go:403:// TestExecuteInputText tests text input
+pkg/driver/appium/driver_test.go:404:func TestExecuteAppiumInputText(t *testing.T) {
+pkg/driver/appium/driver_test.go:409:	step := &flow.InputTextStep{
+pkg/driver/appium/driver_test.go:2609:// --- #122: Android inputText must reach WebView DOM inputs ---
+pkg/driver/appium/driver_test.go:2611:// TestInputText_AndroidTypesIntoActiveElement verifies the Android path
+pkg/driver/appium/driver_test.go:2612:// prefers element-scoped typing (POST /element/{id}/value) into the focused
+pkg/driver/appium/driver_test.go:2614:func TestInputText_AndroidTypesIntoActiveElement(t *testing.T) {
+pkg/driver/appium/driver_test.go:2628:				"value": map[string]interface{}{"element-6066-11e4-a52e-4f735466cecf": "focused-1"},
+pkg/driver/appium/driver_test.go:2630:		case strings.HasSuffix(path, "/element/focused-1/value") && r.Method == "POST":
+pkg/driver/appium/driver_test.go:2644:	result := driver.inputText(&flow.InputTextStep{Text: "web-input-122"})
+pkg/driver/appium/driver_test.go:2657:// TestInputText_AndroidFallsBackToBlindKeys verifies key actions remain the
+pkg/driver/appium/driver_test.go:2659:func TestInputText_AndroidFallsBackToBlindKeys(t *testing.T) {
+pkg/driver/appium/driver_test.go:2678:	result := driver.inputText(&flow.InputTextStep{Text: "fallback-text"})
+pkg/driver/appium/driver_test.go:2688:// TestInputText_AndroidHonorsSelector verifies an inline selector finds the
+pkg/driver/appium/driver_test.go:2690:func TestInputText_AndroidHonorsSelector(t *testing.T) {
+pkg/driver/appium/driver_test.go:2719:	step := &flow.InputTextStep{Text: "selector-typed"}
+pkg/driver/appium/driver_test.go:2721:	result := driver.inputText(step)
+pkg/driver/appium/driver_test.go:2731:// TestInputTextError tests inputText when SendKeys fails
+pkg/driver/appium/driver_test.go:2732:func TestInputTextError(t *testing.T) {
+pkg/driver/appium/driver_test.go:2750:	step := &flow.InputTextStep{Text: "test"}
+pkg/driver/appium/driver_test.go:2751:	result := driver.inputText(step)
+pkg/driver/appium/driver_test.go:2754:		t.Error("Expected failure when inputText fails")
+pkg/driver/appium/driver_test.go:2758:// TestInputTextIOSUsesMobileKeys verifies iOS uses "mobile: keys" instead of W3C key actions
+pkg/driver/appium/driver_test.go:2759:func TestInputTextIOSUsesMobileKeys(t *testing.T) {
+pkg/driver/appium/driver_test.go:2776:	step := &flow.InputTextStep{Text: "hello"}
+pkg/driver/appium/driver_test.go:2777:	result := driver.inputText(step)
+pkg/driver/appium/driver_test.go:2780:		t.Errorf("iOS inputText failed: %v", result.Error)
+pkg/driver/appium/driver_test.go:2783:		t.Errorf("iOS inputText should use /execute/sync (mobile: keys), got %s", lastPath)
+pkg/driver/appium/driver_test.go:2786:		t.Errorf("iOS inputText should call 'mobile: keys', got %v", lastBody["script"])
+pkg/driver/appium/driver_test.go:2790:// TestInputTextAndroidStillUsesActions verifies Android still uses W3C key actions for inputText
+pkg/driver/appium/driver_test.go:2791:func TestInputTextAndroidStillUsesActions(t *testing.T) {
+pkg/driver/appium/driver_test.go:2803:	step := &flow.InputTextStep{Text: "hello"}
+pkg/driver/appium/driver_test.go:2804:	result := driver.inputText(step)
+pkg/driver/appium/driver_test.go:2807:		t.Errorf("Android inputText failed: %v", result.Error)
+pkg/driver/appium/driver_test.go:2810:		t.Errorf("Android inputText should use /actions, got %s", lastPath)
+pkg/driver/appium/driver_test.go:2882:		paths = append(paths, r.URL.Path)
+pkg/driver/devicelab_ios/fake_test.go:32:	f.calls = append(f.calls, call{cmd, a})
+pkg/driver/devicelab_ios/fake_test.go:47:			out = append(out, c.args)
+pkg/driver/devicelab_ios/fake_test.go:86:	s.calls = append(s.calls, line)
+pkg/driver/devicelab_ios/device_launch.go:127:	flags := os.O_CREATE | os.O_WRONLY | os.O_APPEND
+pkg/driver/devicelab/checked_state_test.go:9:// A Switch that is on but not focused has checked="true" selected="false", so
+pkg/driver/appium/session_settings_test.go:48:// UiAutomator2 server reads only the focused one unless enableMultiWindows is
+pkg/driver/devicelab_ios_legacy/setup.go:466:		args = append(args, "-collect-test-diagnostics", "never")
+pkg/driver/devicelab/typing_focus_test.go:16:		focused *core.ElementInfo
+pkg/driver/devicelab/typing_focus_test.go:24:		{"unknown focused bounds", &core.ElementInfo{}, field, true},
+pkg/driver/devicelab/typing_focus_test.go:25:		{"nothing focused", nil, field, false},
+pkg/driver/devicelab/typing_focus_test.go:27:		if got := focusIsOn(tc.focused, tc.tapped); got != tc.want {
+pkg/driver/devicelab_ios/webready.go:98:			pages = append(pages, p) // extension and internal pages never "load" for the user
+pkg/driver/devicelab_ios/webready.go:194:			gone = append(gone, pc)
+pkg/driver/devicelab_ios/webready.go:214:		parts = append(parts, fmt.Sprintf("%d=%s", p.ID, p.URL))
+pkg/driver/devicelab_ios/find_test.go:46:	n.Focused = true
+pkg/driver/devicelab_ios/find_test.go:59:		{flow.Selector{Focused: boolp(true)}, true},
+pkg/driver/devicelab_ios/find_test.go:276:// never focused it, and inputText failed with NO_FOCUS on every device.
+pkg/driver/browser/cdp/finder.go:380:			matches = append(matches, node)
+pkg/driver/browser/cdp/finder.go:417:			matches = append(matches, node)
+pkg/driver/browser/cdp/finder.go:806:	if sel.Focused != nil {
+pkg/driver/browser/cdp/finder.go:807:		// Check if element is focused using Evaluate
+pkg/driver/browser/cdp/finder.go:808:		isFocused, err := elem.Eval(`() => document.activeElement === this`)
+pkg/driver/browser/cdp/finder.go:810:			if isFocused.Value.Bool() != *sel.Focused {
+pkg/driver/browser/cdp/finder.go:850:	if sel.Focused != nil {
+pkg/driver/browser/cdp/finder.go:851:		if v, ok := props["focused"]; ok {
+pkg/driver/browser/cdp/finder.go:852:			isFocused := v.Value.Bool()
+pkg/driver/browser/cdp/finder.go:853:			if *sel.Focused != isFocused {
+pkg/driver/appium/driver.go:29:	lastTappedElementID       string                 // iOS: last element clicked via ClickElement, used by inputText
+pkg/driver/appium/driver.go:114:// for every step that can move focus. inputText on iOS types into that element
+pkg/driver/appium/driver.go:120:	case *flow.InputTextStep, *flow.InputRandomStep, *flow.EraseTextStep, *flow.PasteTextStep,
+pkg/driver/appium/driver.go:178:	case *flow.InputTextStep:
+pkg/driver/appium/driver.go:179:		return d.inputText(s)
+pkg/driver/appium/driver.go:399:	if sel.Enabled != nil || sel.Selected != nil || sel.Focused != nil || sel.Checked != nil {
+pkg/driver/appium/driver.go:688:			out = append(out, e)
+pkg/driver/appium/driver.go:700:	return sel.ID != "" || sel.Enabled != nil || sel.Selected != nil || sel.Focused != nil ||
+pkg/driver/appium/driver.go:825:		alts = append(alts, "("+strings.Join(terms, " AND ")+")")
+pkg/driver/appium/driver.go:919:		Focused:   sel.Focused,
+pkg/driver/appium/wholetext_uiautomator_test.go:41:		s.queries = append(s.queries, body.Value)
+pkg/driver/devicelab_ios/device_launch_test.go:211:		devicectl = append(devicectl, strings.Join(args, " "))
+pkg/driver/devicelab_ios_legacy/lifecycle.go:18:	return exec.Command("xcrun", append([]string{"simctl"}, args...)...)
+pkg/driver/devicelab_ios_legacy/lifecycle.go:32:		keys = append(keys, k)
+pkg/driver/devicelab_ios_legacy/lifecycle.go:37:		env = append(env, fmt.Sprintf("SIMCTL_CHILD_%s=%s", k, appEnv[k]))
+pkg/driver/devicelab_ios_legacy/lifecycle.go:75:		names = append(names, name)
+pkg/driver/devicelab_ios_legacy/lifecycle.go:92:				failures = append(failures, fmt.Sprintf("%s: %s", resolved, strings.TrimSpace(string(out))))
+pkg/driver/devicelab_ios/client.go:164:				parts = append(parts, fmt.Sprintf("%s=%.0f", k, v))
+pkg/driver/devicelab_ios/client.go:170:			parts = append(parts, "app="+resp.Data.BundleID)
+pkg/driver/devicelab_ios_legacy/pagesource.go:25:			hits = append(hits, n)
+pkg/driver/devicelab_ios_legacy/pagesource.go:39:	if sel.Focused != nil && n.Focused != *sel.Focused {
+pkg/driver/devicelab_ios_legacy/pagesource.go:92:			exact = append(exact, n)
+pkg/driver/devicelab_ios_legacy/pagesource.go:123:			exact = append(exact, n)
+pkg/driver/devicelab_ios_legacy/pagesource.go:188:		Focused:  n.Focused,
+pkg/driver/devicelab_ios_legacy/pagesource.go:251:			exact = append(exact, n)
+pkg/driver/devicelab_ios_legacy/pagesource.go:253:			rest = append(rest, n)
+pkg/driver/devicelab_ios_legacy/pagesource.go:256:	return append(exact, rest...)
+pkg/driver/devicelab_ios/webready_test.go:24:	f.bundles = append(f.bundles, bundleID)
+pkg/driver/devicelab_ios/webready_test.go:163:				urls = append(urls, fmt.Sprintf("%d:%s", p.ID, p.URL))
+pkg/driver/devicelab/driver.go:124:	// Keyboard auto-dismiss: set after inputText/inputRandom, checked on next tap/assert
+pkg/driver/devicelab/driver.go:130:	// The element the last step tapped, while the next inputText may be
+pkg/driver/devicelab/driver.go:145:	// matching cross-origin iframe input over CDP when the following inputText
+pkg/driver/devicelab/driver.go:147:	// across the multi-part inputTexts of one field until the next tap.
+pkg/driver/devicelab/driver.go:300:// extendedWaitUntil, inputText — NOT assertNotVisible) after they've polled
+pkg/driver/devicelab/driver.go:385:	return append(clickable, all...)
+pkg/driver/devicelab/driver.go:563:	case *flow.InputTextStep:
+pkg/driver/devicelab/driver.go:564:		result = d.inputText(s)
+pkg/driver/devicelab/driver.go:671:	case *flow.InputTextStep, *flow.InputRandomStep:
+pkg/driver/devicelab/driver.go:951:// findFocused returns the currently focused element as a core.Element.
+pkg/driver/devicelab/driver.go:953:func (d *Driver) findFocused() (core.Element, error) {
+pkg/driver/devicelab/driver.go:958:		if elem, err := d.webView.findFocusedWeb(); err == nil {
+pkg/driver/devicelab/driver.go:978:	return nil, fmt.Errorf("no focused element")
+pkg/driver/devicelab/driver.go:1044:// findElement path. Used by inputText, where the next step actually consumes
+pkg/driver/devicelab/driver.go:1052:		logger.Info("[devicelab] lazy retry: re-issued tap on %s before inputText", d.lastTapSelector.Describe())
+pkg/driver/devicelab/driver.go:1103:	combined := append(clickableStrategies, allStrategies...)
+pkg/driver/devicelab/driver.go:1165:			strategies = append(strategies, LocatorStrategy{
+pkg/driver/devicelab/driver.go:1529:		Focused:   sel.Focused,
+pkg/driver/devicelab/driver.go:1619:		Focused:   sel.Focused,
+pkg/driver/devicelab/driver.go:1832:					strategies = append(strategies, LocatorStrategy{
+pkg/driver/devicelab/driver.go:1839:				strategies = append(strategies, LocatorStrategy{
+pkg/driver/devicelab/driver.go:1876:						tier = append(tier, id+text)
+pkg/driver/devicelab/driver.go:1879:				combined = append(combined, tier)
+pkg/driver/devicelab/driver.go:1891:		strategies = append(strategies, LocatorStrategy{
+pkg/driver/devicelab/driver.go:1960:	if sel.Focused != nil {
+pkg/driver/devicelab/driver.go:1961:		filters.WriteString(fmt.Sprintf(".focused(%t)", *sel.Focused))
+pkg/driver/browser/cdp/driver.go:473:	case *flow.InputTextStep:
+pkg/driver/browser/cdp/driver.go:474:		result = d.inputText(s)
+pkg/driver/browser/cdp/driver.go:783:		d.consoleLogs = append(d.consoleLogs, ConsoleEntry{Level: level, Message: msg})
+pkg/driver/browser/cdp/driver.go:801:		d.consoleLogs = append(d.consoleLogs, ConsoleEntry{Level: "exception", Message: msg})
+pkg/driver/browser/cdp/driver.go:819:			parts = append(parts, arg.Value.Str())
+pkg/driver/browser/cdp/driver.go:821:			parts = append(parts, arg.Description)
+pkg/driver/browser/cdp/driver.go:823:			parts = append(parts, arg.Value.String())
+pkg/driver/devicelab/commands_test.go:77:	m.swipeCoordsCalls = append(m.swipeCoordsCalls, [5]int{startX, startY, endX, endY, durationMs})
+pkg/driver/devicelab_ios/lifecycle_test.go:19:		got = append([]string{}, args...)
+pkg/driver/devicelab_ios/lifecycle_test.go:22:				got = append(got, e)
+pkg/driver/devicelab_ios/protocol.go:69:	Focused     bool    `json:"foc"`
+pkg/driver/devicelab_ios/wir.go:161:				gone = append(gone, s)
+pkg/driver/devicelab_ios/wir.go:242:				out = append(out, p)
+pkg/driver/devicelab_ios/actions_test.go:334:func TestInputTextEraseAndKeys(t *testing.T) {
+pkg/driver/devicelab_ios/actions_test.go:346:	res := d.Execute(&flow.InputTextStep{Text: "a@b.c", Selector: flow.Selector{Text: "Email"}})
+pkg/driver/devicelab_ios/actions_test.go:353:	d.Execute(&flow.InputTextStep{})
+pkg/driver/devicelab_ios/actions_test.go:382:	if res := d.Execute(&flow.InputTextStep{Text: "x"}); res.Success {
+pkg/driver/devicelab_ios/actions_test.go:513:// A tap that did not take focus: the agent answers NO_FOCUS, and inputText
+pkg/driver/devicelab_ios/actions_test.go:516:func TestInputTextRetapsWhenNothingHasFocus(t *testing.T) {
+pkg/driver/devicelab_ios/actions_test.go:537:	if r := d.Execute(&flow.InputTextStep{Text: "a"}); !r.Success {
+pkg/driver/devicelab_ios/actions_test.go:538:		t.Fatalf("inputText failed: %s", r.Message)
+pkg/driver/devicelab_ios/actions_test.go:549:	if r := d2.Execute(&flow.InputTextStep{Text: "a"}); r.Success {
+pkg/driver/devicelab_ios/actions_test.go:550:		t.Error("inputText with nothing focused and no previous tap should fail")
+pkg/driver/devicelab_ios/actions_test.go:554:// "tapOn field, eraseText, inputText": the erase taps nothing, so inputText
+pkg/driver/devicelab_ios/actions_test.go:556:// search field unfocused after the tap and the flow failed with NO_FOCUS.
+pkg/driver/devicelab_ios/actions_test.go:557:func TestInputTextRetapsAfterEraseText(t *testing.T) {
+pkg/driver/devicelab_ios/actions_test.go:582:	if r := d.Execute(&flow.InputTextStep{Text: "appium"}); !r.Success {
+pkg/driver/devicelab_ios/actions_test.go:583:		t.Fatalf("inputText failed: %s", r.Message)
+pkg/driver/devicelab_ios/actions_test.go:690:			order = append(order, c.cmd)
+pkg/driver/devicelab_ios/actions_test.go:711:func TestInputTextWithSelectorRetapsItsOwnField(t *testing.T) {
+pkg/driver/devicelab_ios/actions_test.go:732:	if r := d.Execute(&flow.InputTextStep{Selector: flow.Selector{Text: "Email"}, Text: "a@b.c"}); !r.Success {
+pkg/driver/devicelab_ios/driver.go:52:	// it did, so inputText can re-tap a field whose focus did not take.
+pkg/driver/devicelab_ios/driver.go:170:		Focused     bool           `json:"focused"`
+pkg/driver/devicelab_ios/driver.go:184:			Placeholder: n.Placeholder, Enabled: n.Enabled, Selected: n.Selected, Focused: n.Focused,
+pkg/driver/devicelab_ios/driver.go:190:		out = append(out, f)
+pkg/driver/devicelab_ios/driver.go:272:	// between "tapOn field" and "inputText" keeps the tap point.
+pkg/driver/devicelab_ios/driver.go:276:		// "tapOn field, eraseText, inputText" keeps the tap point for the
+pkg/driver/devicelab_ios/driver.go:314:	case *flow.InputTextStep:
+pkg/driver/devicelab_ios/driver.go:315:		return d.inputText(s)
+pkg/driver/devicelab_ios/driver.go:317:		return d.inputText(&flow.InputTextStep{Text: randomInput(s.DataType, s.Length)})
+pkg/driver/devicelab_ios/driver.go:387:		*flow.BackStep, *flow.PressKeyStep, *flow.InputTextStep, *flow.InputRandomStep,
+pkg/driver/devicelab_ios/driver.go:399:		*flow.BackStep, *flow.PressKeyStep, *flow.InputTextStep, *flow.InputRandomStep,
+pkg/driver/wda/driver.go:284:	case *flow.InputTextStep:
+pkg/driver/wda/driver.go:285:		result = d.inputText(s)
+pkg/driver/wda/driver.go:385:		result.Notes = append(result.Notes, d.stepNotes...)
+pkg/driver/wda/driver.go:419:		*flow.BackStep, *flow.PressKeyStep, *flow.InputTextStep, *flow.CopyTextFromStep:
+pkg/driver/wda/driver.go:431:		*flow.BackStep, *flow.PressKeyStep, *flow.InputTextStep, *flow.LaunchAppStep:
+pkg/driver/wda/driver.go:920:			out = append(out, c)
+pkg/driver/wda/driver.go:953:			conditions = append(conditions, "enabled == true")
+pkg/driver/wda/driver.go:955:			conditions = append(conditions, "enabled == false")
+pkg/driver/wda/driver.go:960:			conditions = append(conditions, "selected == true")
+pkg/driver/wda/driver.go:962:			conditions = append(conditions, "selected == false")
+pkg/driver/wda/driver.go:965:	if sel.Focused != nil {
+pkg/driver/wda/driver.go:966:		if *sel.Focused {
+pkg/driver/wda/driver.go:967:			conditions = append(conditions, "hasFocus == true")
+pkg/driver/wda/driver.go:969:			conditions = append(conditions, "hasFocus == false")
+pkg/driver/wda/driver.go:1191:			visible = append(visible, info)
+pkg/driver/wda/driver.go:1313:		Focused:   sel.Focused,
+pkg/driver/devicelab_ios/device_lifecycle.go:26:	out, err := exec.CommandContext(ctx, "xcrun", append([]string{"devicectl"}, args...)...).CombinedOutput()
+pkg/driver/devicelab_ios/device_signing.go:279:				nested = append(nested, path)
+pkg/driver/devicelab_ios/device_signing.go:283:				nested = append(nested, path)
+pkg/driver/devicelab_ios/actions.go:519:func (d *Driver) inputText(s *flow.InputTextStep) *core.CommandResult {
+pkg/driver/devicelab_ios/actions.go:532:	// (the usual "tapOn field, inputText" pair). Tap it once more and type.
+pkg/driver/devicelab_ios/actions.go:538:		logger.Debug("[devicelab-ios] inputText: no field has focus; re-tapping (%.0f,%.0f)", retry.x, retry.y)
+pkg/driver/devicelab_ios/actions.go:545:		return core.ErrorResult(err, fmt.Sprintf("inputText failed: %v", err))
+pkg/driver/devicelab_ios/actions.go:656:	return d.inputText(&flow.InputTextStep{Text: out})
+pkg/driver/appium/commands.go:62:	// On iOS, store the element ID so inputText can use ElementSendKeys
+pkg/driver/appium/commands.go:523:func (d *Driver) inputText(step *flow.InputTextStep) *core.CommandResult {
+pkg/driver/appium/commands.go:529:	// (flow.InputTextStep.UnmarshalYAML), so a non-empty selector is real.
+pkg/driver/appium/commands.go:560:		// if not focused) and types text — no dependency on prior keyboard state.
+pkg/driver/appium/commands.go:564:			// Find the currently focused element by polling for hasKeyboardFocus.
+pkg/driver/appium/commands.go:565:			elemID = d.findFocusedElementID()
+pkg/driver/appium/commands.go:577:			// Final fallback: use "mobile: keys" which types into currently focused element
+pkg/driver/appium/commands.go:586:		// Android: prefer element-scoped typing into the focused element
+pkg/driver/appium/commands.go:592:		// UiAutomator2 server appends rather than replaces, preserving
+pkg/driver/appium/commands.go:593:		// type-into-focused semantics. Fall back to blind key actions when
+pkg/driver/appium/commands.go:627:// findFocusedElementID finds the element with keyboard focus on iOS.
+pkg/driver/appium/commands.go:629:func (d *Driver) findFocusedElementID() string {
+pkg/driver/appium/commands.go:1456:		byAction[action] = append(byAction[action], names...)
+pkg/driver/devicelab_ios/agent.go:255:			errs = append(errs, "simctl launch: "+err.Error())
+pkg/driver/devicelab_ios/agent.go:269:			errs = append(errs, "xcodebuild: "+err.Error())
+pkg/driver/devicelab_ios/agent.go:281:	cmd.Env = append(os.Environ(), fmt.Sprintf("SIMCTL_CHILD_DL_AGENT_PORT=%d", a.port))
+pkg/driver/devicelab_ios/agent.go:415:	out, err := exec.CommandContext(c, "xcrun", append([]string{"simctl"}, args...)...).CombinedOutput()
+pkg/driver/devicelab/commands.go:72:			strategies = append(allStrategies, clickableStrategies...)
+pkg/driver/devicelab/commands.go:73:			// Remember the label so a following inputText can find+focus the
+pkg/driver/devicelab/commands.go:87:			strategies = append(clickableStrategies, allStrategies...)
+pkg/driver/devicelab/commands.go:152:						pairs = append(pairs, s.Strategy, s.Value)
+pkg/driver/devicelab/commands.go:864:// focusWaitForTyping is how long inputText without a selector waits for a
+pkg/driver/devicelab/commands.go:866:// focus. At 1s, duckduckgo's address bar, focused a little later after
+pkg/driver/devicelab/commands.go:868:// for a URL, where setting the focused field's text takes ~0.1s.
+pkg/driver/devicelab/commands.go:871:// waitForFocused polls for the focused element for up to wait, returning nil
+pkg/driver/devicelab/commands.go:873:func (d *Driver) waitForFocused(wait time.Duration) core.Element {
+pkg/driver/devicelab/commands.go:876:		if focused, err := d.findFocused(); err == nil && focused != nil {
+pkg/driver/devicelab/commands.go:877:			return focused
+pkg/driver/devicelab/commands.go:896:// once more. Without a preceding tap, any focused field will do, as before.
+pkg/driver/devicelab/commands.go:900:		return d.waitForFocused(focusWaitForTyping)
+pkg/driver/devicelab/commands.go:902:	if focused := d.waitForFocusOn(tapped.Bounds, focusOnTappedWait); focused != nil {
+pkg/driver/devicelab/commands.go:903:		return focused
+pkg/driver/devicelab/commands.go:907:		logger.Info("[devicelab] inputText: the tapped field did not take focus; tapping it again")
+pkg/driver/devicelab/commands.go:909:			if focused := d.waitForFocusOn(b, focusOnTappedWait); focused != nil {
+pkg/driver/devicelab/commands.go:910:				return focused
+pkg/driver/devicelab/commands.go:916:	logger.Debug("[devicelab] inputText: focus is not on the tapped element; typing into the focused field")
+pkg/driver/devicelab/commands.go:917:	return d.waitForFocused(focusWaitForTyping)
+pkg/driver/devicelab/commands.go:920:// waitForFocusOn waits for a focused field that lies on the tapped bounds.
+pkg/driver/devicelab/commands.go:924:		if focused, err := d.findFocused(); err == nil && focused != nil && focusIsOn(focused.Info(), tapped) {
+pkg/driver/devicelab/commands.go:925:			return focused
+pkg/driver/devicelab/commands.go:934:// focusIsOn reports whether a focused field is the tapped element or lies
+pkg/driver/devicelab/commands.go:937:func focusIsOn(focused *core.ElementInfo, tapped core.Bounds) bool {
+pkg/driver/devicelab/commands.go:938:	if focused == nil {
+pkg/driver/devicelab/commands.go:941:	f := focused.Bounds
+pkg/driver/devicelab/commands.go:961:func (d *Driver) inputText(step *flow.InputTextStep) *core.CommandResult {
+pkg/driver/devicelab/commands.go:974:		return d.inputTextBrowser(step, text, unicodeWarning)
+pkg/driver/devicelab/commands.go:978:		// Resolve and read the focused field first: after typing, "unchanged"
+pkg/driver/devicelab/commands.go:980:		target, before := d.focusedFieldBefore()
+pkg/driver/devicelab/commands.go:1006:				logger.Warn("inputText: send-keys failed (%v), falling back to key events", err)
+pkg/driver/devicelab/commands.go:1028:		// CDP, appending so a field typed in parts (expiry MM/YY) accumulates.
+pkg/driver/devicelab/commands.go:1044:		// No selector — type into whatever has focus. findFocused prefers
+pkg/driver/devicelab/commands.go:1053:		// dragged a fragile focused=true selector-search fallback with it.
+pkg/driver/devicelab/commands.go:1054:		// This reintroduction is a single findFocused round-trip with a
+pkg/driver/devicelab/commands.go:1059:		// address bar after onboarding) reported nothing focused, the text
+pkg/driver/devicelab/commands.go:1064:		if focused := d.waitForTypingTarget(); focused != nil {
+pkg/driver/devicelab/commands.go:1065:			before, _ := focused.Text()
+pkg/driver/devicelab/commands.go:1066:			if err := focused.Input(text); err == nil {
+pkg/driver/devicelab/commands.go:1068:				typedInto, beforeText = focused, before
+pkg/driver/devicelab/commands.go:1078:			if focused, err := d.findFocused(); err == nil && focused != nil {
+pkg/driver/devicelab/commands.go:1079:				typedInto = focused
+pkg/driver/devicelab/commands.go:1099:// focusedFieldBefore resolves the element that key events will reach and reads
+pkg/driver/devicelab/commands.go:1101:func (d *Driver) focusedFieldBefore() (core.TextField, string) {
+pkg/driver/devicelab/commands.go:1102:	focused, err := d.findFocused()
+pkg/driver/devicelab/commands.go:1103:	if err != nil || focused == nil {
+pkg/driver/devicelab/commands.go:1106:	before, _ := focused.Text()
+pkg/driver/devicelab/commands.go:1107:	return focused, before
+pkg/driver/devicelab/commands.go:1110:// inputTextBrowser handles inputText entirely via CDP for Chrome browser mode.
+pkg/driver/devicelab/commands.go:1112:// one means "type into the focused element". The parser has already stripped
+pkg/driver/devicelab/commands.go:1113:// the `text:` value from the selector (flow.InputTextStep.UnmarshalYAML).
+pkg/driver/devicelab/commands.go:1114:func (d *Driver) inputTextBrowser(step *flow.InputTextStep, text, unicodeWarning string) *core.CommandResult {
+pkg/driver/devicelab/commands.go:1143:	// No real selector: type into focused element via CDP keyboard
+pkg/driver/devicelab/commands.go:1177:	focused, err := d.findFocused()
+pkg/driver/devicelab/commands.go:1179:		currentText, textErr := focused.Text()
+pkg/driver/devicelab/commands.go:1184:				if clearErr := focused.Clear(); clearErr == nil {
+pkg/driver/devicelab/commands.go:1191:				if clearErr := focused.Clear(); clearErr == nil {
+pkg/driver/devicelab/commands.go:1193:						if sendErr := focused.Input(remaining); sendErr == nil {
+pkg/driver/devicelab/commands.go:1282:	focused, err := d.findFocused()
+pkg/driver/devicelab/commands.go:1284:		return errorResult(err, "No focused element to type into")
+pkg/driver/devicelab/commands.go:1286:	if err := focused.Input(text); err != nil {
+pkg/driver/devicelab/commands.go:1887:			toGrant = append(toGrant, d.declaredOf(appID, getAllPermissions())...)
+pkg/driver/devicelab/commands.go:1889:			toGrant = append(toGrant, resolvePermissionShortcut(name)...)
+pkg/driver/devicelab/commands.go:1934:			out = append(out, p)
+pkg/driver/devicelab/commands.go:2317:			toGrant = append(toGrant, perms...)
+pkg/driver/devicelab/commands.go:2319:			toRevoke = append(toRevoke, perms...)
+pkg/driver/devicelab/commands.go:2332:			parts = append(parts, fmt.Sprintf("pm %s %s %s", verb, appID, perm))
+pkg/driver/devicelab/commands.go:2441:	focused, err := d.findFocused()
+pkg/driver/devicelab/commands.go:2443:		return errorResult(err, "No focused element to paste into")
+pkg/driver/devicelab/commands.go:2446:	if err := focused.Input(text); err != nil {
+pkg/driver/devicelab/native_element.go:24:// events typed into the focused field bypass the element, so its cached text
+pkg/driver/devicelab_ios/lifecycle.go:45:	cmd := exec.Command("xcrun", append([]string{"simctl"}, args...)...)
+pkg/driver/devicelab_ios/lifecycle.go:93:	args = append(args, flattenArguments(s.Arguments)...)
+pkg/driver/devicelab_ios/lifecycle.go:106:		keys = append(keys, k)
+pkg/driver/devicelab_ios/lifecycle.go:110:		env = append(env, "SIMCTL_CHILD_"+k+"="+appEnv[k])
+pkg/driver/devicelab_ios/lifecycle.go:125:		keys = append(keys, k)
+pkg/driver/devicelab_ios/lifecycle.go:135:		out = append(out, key, fmt.Sprintf("%v", v))
+pkg/driver/devicelab_ios/lifecycle.go:373:		names = append(names, name)
+pkg/driver/devicelab_ios/lifecycle.go:390:				failures = append(failures, fmt.Sprintf("%s: %v", resolved, err))
+pkg/driver/devicelab_ios/lifecycle.go:534:		if _, err := d.runSimctl(append([]string{"addmedia", d.udid}, media...)...); err != nil {
+pkg/driver/devicelab_ios/lifecycle.go:567:		applied = append(applied, p.why)
+pkg/driver/devicelab_ios/find.go:137:			out = append(out, n)
+pkg/driver/devicelab_ios/find.go:172:	if sel.Focused != nil && n.Focused != *sel.Focused {
+pkg/driver/devicelab_ios/find.go:224:		// "search-bar", the icon comes first, and a tap on it never focused
+pkg/driver/devicelab_ios/find.go:279:				next = append(next, m)
+pkg/driver/devicelab_ios/find.go:382:		Focused:            n.Focused,
+pkg/driver/devicelab_ios/find.go:411:		parts = append(parts, fmt.Sprintf("text=%q", sel.Text))
+pkg/driver/devicelab_ios/find.go:414:		parts = append(parts, fmt.Sprintf("id=%q", sel.ID))
+pkg/driver/devicelab_ios/find.go:417:		parts = append(parts, "index="+sel.Index)
+pkg/driver/devicelab_ios/find.go:420:		parts = append(parts, "relative")
+pkg/driver/devicelab_ios/find.go:440:			out = append(out, m)
+pkg/driver/uiautomator2/driver_test.go:94:	m.clickCalls = append(m.clickCalls, struct{ X, Y int }{x, y})
+pkg/driver/uiautomator2/driver_test.go:99:	m.doubleClickCalls = append(m.doubleClickCalls, struct{ X, Y int }{x, y})
+pkg/driver/uiautomator2/driver_test.go:108:	m.longClickCalls = append(m.longClickCalls, struct{ X, Y, Duration int }{x, y, durationMs})
+pkg/driver/uiautomator2/driver_test.go:117:	m.dragAndDropCalls = append(m.dragAndDropCalls,
+pkg/driver/uiautomator2/driver_test.go:123:	m.scrollCalls = append(m.scrollCalls, area)
+pkg/driver/uiautomator2/driver_test.go:124:	m.scrollDirections = append(m.scrollDirections, direction)
+pkg/driver/uiautomator2/driver_test.go:129:	m.swipeCalls = append(m.swipeCalls, area)
+pkg/driver/uiautomator2/driver_test.go:144:	m.pressKeyCalls = append(m.pressKeyCalls, keyCode)
+pkg/driver/uiautomator2/driver_test.go:179:	m.setOrientationCalls = append(m.setOrientationCalls, orientation)
+pkg/driver/uiautomator2/driver_test.go:188:	m.setClipboardCalls = append(m.setClipboardCalls, text)
+pkg/driver/uiautomator2/driver_test.go:227:	m.commands = append(m.commands, cmd)
+pkg/driver/uiautomator2/driver_test.go:234:	m.pushes = append(m.pushes, [2]string{local, remote})
+pkg/driver/uiautomator2/driver_test.go:307:		for _, s := range append(plain, tap...) {
+pkg/driver/uiautomator2/driver_test.go:537:	focused := true
+pkg/driver/uiautomator2/driver_test.go:543:		Focused:  &focused,
+pkg/driver/uiautomator2/driver_test.go:555:	if !strings.Contains(filters, ".focused(true)") {
+pkg/driver/uiautomator2/driver_test.go:556:		t.Error("missing focused filter")
+pkg/driver/uiautomator2/driver_test.go:1249:func TestInputTextEmpty(t *testing.T) {
+pkg/driver/uiautomator2/driver_test.go:1253:	step := &flow.InputTextStep{Text: ""}
+pkg/driver/uiautomator2/driver_test.go:1297:		{"InputTextStep_empty", &flow.InputTextStep{Text: ""}, true},
+pkg/driver/uiautomator2/driver_test.go:1813:func TestInputTextWithElement(t *testing.T) {
+pkg/driver/uiautomator2/driver_test.go:1843:	step := &flow.InputTextStep{
+pkg/driver/uiautomator2/driver_test.go:1854:func TestInputTextSendKeysError(t *testing.T) {
+pkg/driver/uiautomator2/driver_test.go:1885:	step := &flow.InputTextStep{
+pkg/driver/uiautomator2/driver_test.go:1896:func TestInputTextNoSelector(t *testing.T) {
+pkg/driver/uiautomator2/driver_test.go:1897:	// No selector: the text goes to the focused field as key events, and the
+pkg/driver/uiautomator2/driver_test.go:1898:	// field reads back with it — no set-value round trip.
+pkg/driver/uiautomator2/driver_test.go:1899:	got, f, _ := runInputText(t, &fakeTextField{value: ""}, "Hello")
+pkg/driver/uiautomator2/driver_test.go:1904:		t.Errorf("key action calls = %d, set-value calls = %d; want 1 and 0", f.actionsCalls, f.valueCalls)
+pkg/driver/uiautomator2/driver_test.go:1908:func TestInputTextNoSelectorError(t *testing.T) {
+pkg/driver/uiautomator2/driver_test.go:1909:	// No-selector inputText routes through the W3C /actions endpoint
+pkg/driver/uiautomator2/driver_test.go:1922:	step := &flow.InputTextStep{Text: "Hello"}
+pkg/driver/uiautomator2/driver_test.go:3405:// TestKeyPressAppliesTypingDelay verifies keyPress-mode inputText forwards the
+pkg/driver/uiautomator2/driver_test.go:3413:	step := &flow.InputTextStep{Text: "hi", KeyPress: true}
+pkg/driver/uiautomator2/driver_test.go:3414:	if r := d.inputText(step); !r.Success {
+pkg/driver/uiautomator2/driver_test.go:3415:		t.Fatalf("inputText failed: %v", r.Error)
+pkg/driver/uiautomator2/driver_test.go:3423:	if r := d2.inputText(&flow.InputTextStep{Text: "hi", KeyPress: true}); !r.Success {
+pkg/driver/uiautomator2/driver_test.go:3424:		t.Fatalf("inputText failed: %v", r.Error)
+pkg/driver/wda/runner_lifecycle_test.go:120:	helper.Env = append(os.Environ(),
+pkg/driver/wda/scroll_find_test.go:43:			f.queries = append(f.queries, r.URL.RawQuery)
+pkg/driver/appium/client_test.go:190:			scriptCalls = append(scriptCalls, body.Script)
+pkg/driver/appium/client_test.go:227:			scriptCalls = append(scriptCalls, body.Script)
+pkg/driver/browser/cdp/commands.go:382://   - state filters (Enabled / Checked / Focused / Selected) — the Go finder
+pkg/driver/browser/cdp/commands.go:449:	if sel.Enabled != nil || sel.Checked != nil || sel.Focused != nil || sel.Selected != nil {
+pkg/driver/browser/cdp/commands.go:450:		err := fmt.Errorf("assertVisible count with state filters (enabled/checked/focused/selected) is not supported on web")
+pkg/driver/browser/cdp/commands.go:486:	if sel.Enabled != nil || sel.Checked != nil || sel.Focused != nil || sel.Selected != nil {
+pkg/driver/browser/cdp/commands.go:581:// inputText types text into an element. Rod's Input() handles focus+waitEnabled+waitWritable+events.
+pkg/driver/browser/cdp/commands.go:582:func (d *Driver) inputText(step *flow.InputTextStep) *core.CommandResult {
+pkg/driver/browser/cdp/commands.go:595:		// Type into the currently focused element via keyboard
+pkg/driver/browser/cdp/commands.go:1016:			modifiers = append(modifiers, m)
+pkg/driver/browser/cdp/commands.go:1135:// pasteText pastes clipboard text into the focused element.
+pkg/driver/browser/cdp/commands.go:1453:		keys = append(keys, input.Key(ch))
+pkg/driver/browser/cdp/commands.go:1584:			errors = append(errors, fmt.Sprintf("[%s] %s", entry.Level, entry.Message))
+pkg/driver/browser/cdp/commands.go:1771:		paths = append([]string{step.Path}, paths...)
+pkg/driver/browser/cdp/commands.go:2071:	d.networkMocks = append(d.networkMocks, mock)
+pkg/driver/browser/cdp/commands.go:2088:	d.networkBlocks = append(d.networkBlocks, step.Patterns...)
+pkg/driver/browser/cdp/commands.go:2164:			headers = append(headers, &proto.FetchHeaderEntry{Name: k, Value: v})
+pkg/driver/browser/cdp/commands.go:2287:// (tapOn at present; doubleTapOn / longPressOn / inputText to follow).
+pkg/driver/uiautomator2/tap_keyboard_test.go:47:    <android.widget.EditText index="0" package="com.kylebrowning.landmarks" class="android.widget.EditText" text="Golden Gate Bridge Renamed" clickable="true" enabled="true" focused="true" bounds="[42,474][1038,642]" displayed="true" window-id="24" />
+pkg/driver/uiautomator2/tap_keyboard_test.go:110:			f.clicks = append(f.clicks, [2]int{993, 348})
+pkg/driver/uiautomator2/tap_keyboard_test.go:123:			f.clicks = append(f.clicks, [2]int{body.Offset.X, body.Offset.Y})
+pkg/driver/wda/commands.go:108:			// A text field must end up focused; if the touch missed it,
+pkg/driver/wda/commands.go:448:func (d *Driver) inputText(step *flow.InputTextStep) *core.CommandResult {
+pkg/driver/wda/commands.go:471:		// inside it types perfectly well once focused. So fall through to the
+pkg/driver/wda/commands.go:498:	// Maestro's InputTextRouteHandler.swift.
+pkg/driver/wda/commands.go:506:		return errorResult(err, "inputText: "+err.Error()+
+pkg/driver/wda/commands.go:507:			" — the text would have been typed with nothing focused; check that the preceding tap focused a text field")
+pkg/driver/wda/commands.go:532:// genuinely focused and SendKeys reaches it. Requiring an active element
+pkg/driver/wda/commands.go:538:// errored looks exactly like one that legitimately reported nothing focused —
+pkg/driver/wda/commands.go:548:		// GetActiveElement reports "nothing is focused" as an error rather than
+pkg/driver/wda/commands.go:1123:						applyList = append(applyList, struct{ perm, action string }{perm, lower})
+pkg/driver/wda/commands.go:1127:						applyList = append(applyList, struct{ perm, action string }{perm, lower})
+pkg/driver/wda/commands.go:1168:					applyList = append(applyList, struct{ perm, action string }{perm, lower})
+pkg/driver/wda/commands.go:1172:					applyList = append(applyList, struct{ perm, action string }{perm, lower})
+pkg/driver/wda/commands.go:1224:				launchArgs = append(launchArgs, flow.LaunchArgKey(key))
+pkg/driver/wda/commands.go:1227:			launchArgs = append(launchArgs, flow.LaunchArgKey(key), flow.LaunchArgValue(value))
+pkg/driver/wda/commands.go:2041:					errors = append(errors, fmt.Sprintf("%s: %v", perm, err))
+pkg/driver/wda/commands.go:2043:					applied = append(applied, perm)
+pkg/driver/wda/commands.go:2049:					errors = append(errors, fmt.Sprintf("%s: %v", perm, err))
+pkg/driver/wda/commands.go:2051:					applied = append(applied, perm)
+pkg/driver/wda/pagesource_test.go:591:  <XCUIElementTypeTextField name="myField" label="My Field" value="Current Value" placeholderValue="Placeholder" enabled="true" visible="true" selected="false" focused="true" x="10" y="20" width="200" height="44"/>
+pkg/driver/wda/pagesource_test.go:625:	if !elem.Focused {
+pkg/driver/wda/pagesource_test.go:626:		t.Error("Expected focused=true")
+pkg/driver/wda/falsegreen_test.go:51:			s.queries = append(s.queries, body)
+pkg/driver/wda/falsegreen_test.go:354:		argv = append(argv, a.(string))
+pkg/driver/devicelab/launch_timeout_test.go:18:	s.commands = append(s.commands, cmd)
+pkg/driver/devicelab/fresh_text_test.go:23:	f.writes = append(f.writes, text)
+pkg/driver/devicelab/fresh_text_test.go:54:func TestInputText_RetypesDroppedCharacters(t *testing.T) {
+pkg/driver/devicelab/fresh_text_test.go:62:			return New(client, &core.PlatformInfo{}, &mockShell{}).inputText(&flow.InputTextStep{
+pkg/driver/devicelab/fresh_text_test.go:66:		{"focused field", func(field *droppingField) *core.CommandResult {
+pkg/driver/devicelab/fresh_text_test.go:69:			return New(client, &core.PlatformInfo{}, &mockShell{}).inputText(&flow.InputTextStep{Text: "bob"})
+pkg/driver/devicelab/fresh_text_test.go:74:			return New(client, &core.PlatformInfo{}, &mockShell{}).inputText(&flow.InputTextStep{Text: "bob", KeyPress: true})
+pkg/driver/devicelab/fresh_text_test.go:82:				t.Fatalf("inputText: %v", res.Error)
+pkg/driver/wda/pagesource.go:29:	Focused          bool
+pkg/driver/wda/pagesource.go:42:// - enabled, visible, selected, focused: states
+pkg/driver/wda/pagesource.go:67:						elements = append(elements, flattenElement(child, 0)...)
+pkg/driver/wda/pagesource.go:97:					case "focused":
+pkg/driver/wda/pagesource.go:98:						elem.Focused = attr.Value == "true"
+pkg/driver/wda/pagesource.go:130:					elem.Children = append(elem.Children, child)
+pkg/driver/wda/pagesource.go:152:			elements = append(elements, flattenElement(elem, 0)...)
+pkg/driver/wda/pagesource.go:173:		result = append(result, flattenElement(child, depth+1)...)
+pkg/driver/wda/pagesource.go:185:			result = append(result, e)
+pkg/driver/wda/pagesource.go:229:		result = append(result, elem)
+pkg/driver/wda/pagesource.go:261:			exact = append(exact, elem)
+pkg/driver/wda/pagesource.go:329:	if sel.Focused != nil && elem.Focused != *sel.Focused {
+pkg/driver/wda/pagesource.go:426:			normalized = append(normalized, norm.NFC.String(text))
+pkg/driver/wda/pagesource.go:446:		texts = append(texts, elem.Label, elem.Value, elem.PlaceholderValue)
+pkg/driver/wda/pagesource.go:504:			result = append(result, elem)
+pkg/driver/wda/pagesource.go:520:			result = append(result, elem)
+pkg/driver/wda/pagesource.go:536:			result = append(result, elem)
+pkg/driver/wda/pagesource.go:551:			result = append(result, elem)
+pkg/driver/wda/pagesource.go:566:			result = append(result, elem)
+pkg/driver/wda/pagesource.go:581:				result = append(result, elem)
+pkg/driver/wda/pagesource.go:586:			result = append(result, elem)
+pkg/driver/wda/pagesource.go:617:			result = append(result, elem)
+pkg/driver/wda/pagesource.go:637:			result = append(result, elem)
+pkg/driver/wda/pagesource.go:736:			clickable = append(clickable, elem)
+pkg/driver/wda/pagesource.go:738:			nonClickable = append(nonClickable, elem)
+pkg/driver/wda/pagesource.go:742:	return append(clickable, nonClickable...)
+pkg/driver/wda/pagesource.go:837:			exact = append(exact, e)
+pkg/driver/wda/pagesource.go:839:			rest = append(rest, e)
+pkg/driver/wda/pagesource.go:842:	return append(exact, rest...)
+pkg/driver/wda/launch_stop_test.go:27:			calls = append(calls, "terminate")
+pkg/driver/wda/launch_stop_test.go:29:			calls = append(calls, "launch")
+pkg/driver/wda/launch_stop_test.go:31:			calls = append(calls, "new-session")
+pkg/driver/wda/launch_stop_test.go:44:	return append([]string(nil), calls...)
+pkg/driver/wda/client.go:536:			labels = append(labels, s)
+pkg/driver/wda/client.go:649:					elements = append(elements, id)
+pkg/driver/wda/client.go:654:							elements = append(elements, str)
+pkg/driver/wda/client.go:743:// GetActiveElement returns the currently focused element ID.
+pkg/driver/wda/client.go:747:// make a W3C-shaped response indistinguishable from "nothing is focused", which
+pkg/driver/wda/buildlock_test.go:46:		cmd.Env = append(os.Environ(), "WDA_FAKE_BUILD_DERIVED="+argValue(args, "-derivedDataPath"))
+pkg/driver/wda/header_env_launch_test.go:33:			rec.calls = append(rec.calls, "terminate")
+pkg/driver/wda/header_env_launch_test.go:35:			rec.calls = append(rec.calls, "launch")
+pkg/driver/wda/media.go:43:		args := append([]string{"simctl", "addmedia", d.udid}, media...)
+pkg/driver/uiautomator2/launch_first_frame_test.go:50:	c.cmds = append(c.cmds, cmd)
+pkg/driver/uiautomator2/launch_first_frame_test.go:64:			out = append(out, "10-10 12:00:01.000   563   583 I ActivityTaskManager: Displayed com.example.app/.MainActivity for user 0: +1s36ms")
+pkg/driver/uiautomator2/launch_first_frame_test.go:68:				out = append(out, "10-10 12:00:01.500   563  1256 I am_crash: [42,0,com.example.app,552091206,java.lang.RuntimeException,CRASH_AFTER_LAUNCH,App.kt,15,0]")
+pkg/driver/uiautomator2/launch_first_frame_test.go:71:				out = append(out, strings.Split(strings.TrimSpace(crashAfterLaunch), "\n")...)
+pkg/driver/uiautomator2/launch_first_frame_test.go:334:			out = append(out, "10-10 12:00:00.600   563  1256 I am_crash: [42,0,com.example.app,552091206,java.lang.RuntimeException,CRASH_AFTER_LAUNCH,App.kt,15,0]")
+pkg/driver/uiautomator2/launch_first_frame_test.go:337:			out = append(out, strings.Split(strings.TrimSpace(crashAfterLaunch), "\n")...)
+pkg/driver/uiautomator2/launch_first_frame_test.go:394:			out = append(out, "10-10 12:00:00.100   563   583 I ActivityTaskManager: Displayed com.example.app/.MainActivity for user 0: +100ms")
+pkg/driver/uiautomator2/launch_first_frame_test.go:398:				out = append(out, "10-10 12:00:05.000   563  1256 I am_crash: [42,0,com.example.app,552091206,java.lang.RuntimeException,CRASH_AFTER_LAUNCH,App.kt,15,0]")
+pkg/driver/uiautomator2/launch_first_frame_test.go:401:				out = append(out, strings.Split(strings.TrimSpace(crashAfterLaunch), "\n")...)
+pkg/driver/appium/erase_fallback_test.go:57:// source (no element id), inputText on iOS must not type into the first
+pkg/driver/appium/erase_fallback_test.go:59:func TestIOSInputTextForgetsAnEarlierTappedField(t *testing.T) {
+pkg/driver/appium/erase_fallback_test.go:67:		t.Errorf("a tap kept %q; inputText would re-focus that field", d.lastTappedElementID)
+pkg/driver/appium/erase_fallback_test.go:70:	d.forgetTappedElementUnlessTyping(&flow.InputTextStep{})
+pkg/driver/appium/erase_fallback_test.go:72:		t.Error("inputText itself must keep the tapped element")
+pkg/driver/wda/runner.go:238:		args = append(args, fmt.Sprintf("PRODUCT_BUNDLE_IDENTIFIER=%s", r.wdaBundleID))
+pkg/driver/wda/runner.go:303:			// captures the full retry history. Use append mode so we
+pkg/driver/wda/runner.go:305:			if f, ferr := os.OpenFile(logPath, os.O_APPEND|os.O_WRONLY, 0o644); ferr == nil {
+pkg/driver/wda/runner.go:374:	// Truncate on first attempt, append on retries so the log captures
+pkg/driver/wda/runner.go:380:		flags |= os.O_APPEND
+pkg/driver/wda/stop_tree.go:38:		procs = append(procs, procEntry{pid: pid, ppid: ppid, command: strings.Join(f[2:], " ")})
+pkg/driver/wda/stop_tree.go:50:		children[p.ppid] = append(children[p.ppid], p)
+pkg/driver/wda/stop_tree.go:56:			out = append(out, c.pid)
+pkg/driver/wda/stop_tree.go:57:			out = append(out, subtree(c.pid)...)
+pkg/driver/wda/stop_tree.go:66:				found = append(found, c.pid)
+pkg/driver/wda/stop_tree.go:67:				found = append(found, subtree(c.pid)...)
+pkg/driver/devicelab/keyboard.go:140:// margin — was swallowed by the keyboard, leaving the field unfocused while the
+pkg/driver/devicelab/keyboard.go:189:// `inputText` — which injects global key events — typed into whatever element
+pkg/driver/appium/client.go:174:		//   own window) are found; the server default only reads the focused
+pkg/driver/appium/client.go:335:				ids = append(ids, id)
+pkg/driver/appium/client.go:342:// GetActiveElement returns the currently focused element. W3C defines this as
+pkg/driver/appium/client.go:344:// 404'd and every caller fell back as if nothing were focused.
+pkg/driver/appium/client.go:510:		actions = append(actions, map[string]interface{}{
+pkg/driver/appium/client.go:517:	actions = append(actions,
+pkg/driver/appium/client.go:541:		keyActions = append(keyActions,
+pkg/driver/appium/client.go:849:			out = append(out, s)
+pkg/driver/devicelab/pagesource.go:25:	Focused     bool
+pkg/driver/devicelab/pagesource.go:93:					case "focused":
+pkg/driver/devicelab/pagesource.go:94:						elem.Focused = attr.Value == "true"
+pkg/driver/devicelab/pagesource.go:110:					elem.Children = append(elem.Children, child)
+pkg/driver/devicelab/pagesource.go:133:			elements = append(elements, flattenElement(elem, 0)...)
+pkg/driver/devicelab/pagesource.go:156:		result = append(result, flattenElement(child, depth+1)...)
+pkg/driver/devicelab/pagesource.go:209:		result = append(result, elem)
+pkg/driver/devicelab/pagesource.go:235:			exact = append(exact, e)
+pkg/driver/devicelab/pagesource.go:264:			exact = append(exact, elem)
+pkg/driver/devicelab/pagesource.go:324:	if sel.Focused != nil && elem.Focused != *sel.Focused {
+pkg/driver/devicelab/pagesource.go:372:			result = append(result, elem)
+pkg/driver/devicelab/pagesource.go:390:			result = append(result, elem)
+pkg/driver/devicelab/pagesource.go:408:			result = append(result, elem)
+pkg/driver/devicelab/pagesource.go:424:			result = append(result, elem)
+pkg/driver/devicelab/pagesource.go:439:			result = append(result, elem)
+pkg/driver/devicelab/pagesource.go:454:				result = append(result, elem)
+pkg/driver/devicelab/pagesource.go:459:			result = append(result, elem)
+pkg/driver/devicelab/pagesource.go:490:			result = append(result, elem)
+pkg/driver/devicelab/pagesource.go:560:			result = append(result, elem)
+pkg/driver/devicelab/pagesource.go:631:			clickable = append(clickable, elem)
+pkg/driver/devicelab/pagesource.go:633:			nonClickable = append(nonClickable, elem)
+pkg/driver/devicelab/pagesource.go:637:	return append(clickable, nonClickable...)
+pkg/driver/devicelab/pagesource.go:646:			result = append(result, elem)
+pkg/driver/devicelab/pagesource.go:716:			exact = append(exact, e)
+pkg/driver/devicelab/pagesource.go:718:			rest = append(rest, e)
+pkg/driver/devicelab/pagesource.go:721:	return append(exact, rest...)
+pkg/driver/wda/build_narration_test.go:75:				cmd.Env = append(os.Environ(), "WDA_FAKE_BUILD_DERIVED="+argValue(args, "-derivedDataPath"))
+pkg/driver/wda/alerts_test.go:66:			f.settings = append(f.settings, s)
+pkg/driver/wda/alerts_test.go:98:				f.accepted = append(f.accepted, name)
+pkg/driver/wda/alerts_test.go:100:				f.dismissed = append(f.dismissed, name)
+pkg/driver/wda/alerts_test.go:411:		{&flow.InputTextStep{}, true},
+pkg/driver/appium/pagesource_test.go:16:    <android.widget.EditText hint="Enter name" bounds="[100,400][400,480]" enabled="true" focused="true" />
+pkg/driver/appium/pagesource_test.go:74:	if !editText.Focused {
+pkg/driver/appium/pagesource_test.go:75:		t.Error("EditText should be focused")
+pkg/driver/devicelab/keyboard_test.go:180:// regression. The keyboard can be up because a field auto-focused on screen
+pkg/driver/devicelab/keyboard_test.go:183:// the keyboard and the following inputText — which injects global key events —
+pkg/driver/wda/dragdrop_test.go:30:			capture.bodies = append(capture.bodies, payload)
+pkg/driver/appium/tap_point_test.go:96:		t.Errorf("lastTappedElementID = %q, want it kept for inputText", d.lastTappedElementID)
+pkg/driver/uiautomator2/wait_crash.go:78:		cmds = append(cmds, "logcat -b events -d -s am_crash -t "+since)
+pkg/driver/wda/commands_test.go:62:							parts = append(parts, s)
+pkg/driver/wda/commands_test.go:164:							parts = append(parts, s)
+pkg/driver/wda/commands_test.go:869:// inputText tests
+pkg/driver/wda/commands_test.go:872:// TestInputTextWithSelectorElementIDDirectSend tests inputText when
+pkg/driver/wda/commands_test.go:874:func TestInputTextWithSelectorElementIDDirectSend(t *testing.T) {
+pkg/driver/wda/commands_test.go:929:	step := &flow.InputTextStep{
+pkg/driver/wda/commands_test.go:933:	result := driver.inputText(step)
+pkg/driver/wda/commands_test.go:949:// TestInputTextElementSendKeysError tests inputText when ElementSendKeys fails
+pkg/driver/wda/commands_test.go:951:func TestInputTextElementSendKeysError(t *testing.T) {
+pkg/driver/wda/commands_test.go:995:	step := &flow.InputTextStep{
+pkg/driver/wda/commands_test.go:999:	result := driver.inputText(step)
+pkg/driver/wda/commands_test.go:2943:// inputText additional tests
+pkg/driver/wda/commands_test.go:2946:// TestInputTextEmpty tests inputText with empty text.
+pkg/driver/wda/commands_test.go:2947:func TestInputTextEmpty(t *testing.T) {
+pkg/driver/wda/commands_test.go:2955:	step := &flow.InputTextStep{Text: ""}
+pkg/driver/wda/commands_test.go:2956:	result := driver.inputText(step)
+pkg/driver/wda/commands_test.go:2966:// TestInputTextNonASCII tests inputText with non-ASCII characters includes warning.
+pkg/driver/wda/commands_test.go:2967:func TestInputTextNonASCII(t *testing.T) {
+pkg/driver/wda/commands_test.go:2983:	step := &flow.InputTextStep{Text: "Bonjour \u00e0 tous"}
+pkg/driver/wda/commands_test.go:2984:	result := driver.inputText(step)
+pkg/driver/wda/commands_test.go:4879:// Captured invocations are appended to *gotArgs so tests can assert on them.
+pkg/driver/wda/commands_test.go:4884:		*gotArgs = append(*gotArgs, append([]string{name}, args...))
+pkg/driver/wda/commands_test.go:5000:// inputText typing-target gate (#143)
+pkg/driver/wda/commands_test.go:5042:func TestInputTextAcceptsVisibleKeyboardWithoutActiveElement(t *testing.T) {
+pkg/driver/wda/commands_test.go:5048:	result := driver.inputText(&flow.InputTextStep{Text: "1234567"})
+pkg/driver/wda/commands_test.go:5060:// rather than silently type into whatever happens to be focused.
+pkg/driver/wda/commands_test.go:5061:func TestInputTextFailsWithNeitherKeyboardNorActiveElement(t *testing.T) {
+pkg/driver/wda/commands_test.go:5083:	result := driver.inputText(&flow.InputTextStep{Text: "hello"})
+pkg/driver/wda/commands_test.go:5104:// A focused element alone is still sufficient — the original signal must keep
+pkg/driver/wda/commands_test.go:5106:func TestInputTextAcceptsActiveElementWithoutKeyboardQuery(t *testing.T) {
+pkg/driver/wda/commands_test.go:5131:	if result := driver.inputText(&flow.InputTextStep{Text: "hello"}); !result.Success {
+pkg/driver/wda/commands_test.go:5140:// a W3C-shaped response look identical to "nothing is focused".
+pkg/driver/wda/commands_test.go:5168:// still types once focused, so the step must fall through to tap-and-type
+pkg/driver/wda/commands_test.go:5170:func TestInputTextFallsBackWhenElementRejectsSendKeys(t *testing.T) {
+pkg/driver/wda/commands_test.go:5225:	result := driver.inputText(&flow.InputTextStep{
+pkg/driver/wda/tap_issue179_test.go:210:		paths = append(paths, r.URL.Path)
+pkg/driver/wda/tap_issue179_test.go:239:		kinds = append(kinds, a["type"].(string))
+pkg/driver/devicelab/pagesource_exacttext_test.go:55:	elements = append(elements, &ParsedElement{Text: "open", Displayed: true})
+pkg/driver/devicelab/idtext_and_test.go:100:		for _, s := range append(clickable, all...) {
+pkg/driver/uiautomator2/bare_scroll_verify_test.go:38:	l.drags = append(l.drags, fromY-toY)
+pkg/driver/appium/commands_test.go:1064:			scripts = append(scripts, body.Script)
+pkg/driver/appium/commands_test.go:1105:			scripts = append(scripts, body.Script)
+pkg/driver/wda/runner_isolation_test.go:110:		l.launches = append(l.launches, launchRecord{udid: udid, args: append([]string{name}, args...)})
+pkg/driver/wda/runner_isolation_test.go:113:		cmd.Env = append(append(os.Environ(), "WDA_FAKE_XCODEBUILD=1"), extraEnv...)
+pkg/driver/devicelab/commands_helpers_test.go:26:	m.commands = append(m.commands, cmd)
+pkg/driver/devicelab/commands_helpers_test.go:374:	t.addMediaNames = append(t.addMediaNames, name)
+pkg/driver/devicelab/commands_helpers_test.go:397:	t.pressKeyCodes = append(t.pressKeyCodes, keyCode)
+pkg/driver/devicelab/commands_helpers_test.go:929:	c.clicks = append(c.clicks, [2]int{x, y})
+pkg/driver/devicelab/commands_helpers_test.go:1246:	f.commands = append(f.commands, cmd)
+pkg/driver/devicelab/commands_helpers_test.go:1392:		{"focused=true", flow.Selector{Focused: &tr}, ".focused(true)"},
+pkg/driver/devicelab/commands_helpers_test.go:1458:	c.clicks = append(c.clicks, [2]int{x, y})
+pkg/driver/devicelab/commands_helpers_test.go:1462:	c.longClicks = append(c.longClicks, longClickArgs{x, y, duration})
+pkg/driver/devicelab/commands_helpers_test.go:1644:	r.settleCalls = append(r.settleCalls, [2]int{timeoutMs, quietMs})
+pkg/driver/devicelab/commands_helpers_test.go:1792:		&flow.InputTextStep{}, &flow.HideKeyboardStep{}, &flow.LaunchAppStep{}} {
+pkg/driver/devicelab/commands_helpers_test.go:1881:	s.sendKeyActionsCalls = append(s.sendKeyActionsCalls, text)
+pkg/driver/devicelab/commands_helpers_test.go:1960:	s.clicks = append(s.clicks, [2]int{x, y})
+pkg/driver/devicelab/commands_helpers_test.go:1964:	s.doubleClicks = append(s.doubleClicks, [2]int{x, y})
+pkg/driver/devicelab/commands_helpers_test.go:1968:	s.longClicks = append(s.longClicks, longClickArgs{x, y, duration})
+pkg/driver/devicelab/commands_helpers_test.go:2085:// inputText — no-selector path prefers focused element, falls back to keys
+pkg/driver/devicelab/commands_helpers_test.go:2088:// TestInputText_NoSelector_PrefersFocusedElement locks in the #122 fix:
+pkg/driver/devicelab/commands_helpers_test.go:2089:// with a focused element available, typing is element-scoped (reaches
+pkg/driver/devicelab/commands_helpers_test.go:2091:func TestInputText_NoSelector_PrefersFocusedElement(t *testing.T) {
+pkg/driver/devicelab/commands_helpers_test.go:2094:	client.activeElementReturn = makeFocusedElement("", &typed, nil, nil)
+pkg/driver/devicelab/commands_helpers_test.go:2097:	res := driver.inputText(&flow.InputTextStep{Text: "hello"})
+pkg/driver/devicelab/commands_helpers_test.go:2099:		t.Fatalf("inputText no-selector: %v", res.Error)
+pkg/driver/devicelab/commands_helpers_test.go:2109:// TestInputText_NoSelector_FallsBackOnElementError verifies blind key events
+pkg/driver/devicelab/commands_helpers_test.go:2111:func TestInputText_NoSelector_FallsBackOnElementError(t *testing.T) {
+pkg/driver/devicelab/commands_helpers_test.go:2114:	client.activeElementReturn = makeFocusedElement("", &typed, nil, fmt.Errorf("setText rejected"))
+pkg/driver/devicelab/commands_helpers_test.go:2117:	res := driver.inputText(&flow.InputTextStep{Text: "hello"})
+pkg/driver/devicelab/commands_helpers_test.go:2119:		t.Fatalf("inputText no-selector: %v", res.Error)
+pkg/driver/devicelab/commands_helpers_test.go:2126:func TestInputText_NoSelector_SendsKeyActions(t *testing.T) {
+pkg/driver/devicelab/commands_helpers_test.go:2127:	// No focused element at all — key events are the last resort.
+pkg/driver/devicelab/commands_helpers_test.go:2131:	res := driver.inputText(&flow.InputTextStep{Text: "hello"})
+pkg/driver/devicelab/commands_helpers_test.go:2133:		t.Fatalf("inputText no-selector: %v", res.Error)
+pkg/driver/devicelab/commands_helpers_test.go:2140:func TestInputText_KeyPress(t *testing.T) {
+pkg/driver/devicelab/commands_helpers_test.go:2144:	res := driver.inputText(&flow.InputTextStep{Text: "abc", KeyPress: true})
+pkg/driver/devicelab/commands_helpers_test.go:2146:		t.Fatalf("inputText keyPress: %v", res.Error)
+pkg/driver/devicelab/commands_helpers_test.go:2153:func TestInputText_EmptyText(t *testing.T) {
+pkg/driver/devicelab/commands_helpers_test.go:2156:	if res := driver.inputText(&flow.InputTextStep{Text: ""}); res.Success {
+pkg/driver/devicelab/commands_helpers_test.go:2157:		t.Error("inputText with empty text should fail")
+pkg/driver/devicelab/commands_helpers_test.go:2161:func TestInputText_WithSelector_UsesElementSendKeys(t *testing.T) {
+pkg/driver/devicelab/commands_helpers_test.go:2172:	res := driver.inputText(&flow.InputTextStep{
+pkg/driver/devicelab/commands_helpers_test.go:2177:		t.Fatalf("inputText with selector: %v", res.Error)
+pkg/driver/devicelab/commands_helpers_test.go:2185:// eraseText — focused element absent → falls through to PressKeyCode loop
+pkg/driver/devicelab/commands_helpers_test.go:2190:	// ActiveElement errors → findFocused returns no element → fallback path.
+pkg/driver/devicelab/commands_helpers_test.go:2191:	client.activeElementErr = errors.New("no focused element")
+pkg/driver/devicelab/commands_helpers_test.go:2206:	client.activeElementErr = errors.New("no focused element")
+pkg/driver/devicelab/commands_helpers_test.go:2276:		{"InputTextStep empty", &flow.InputTextStep{Text: ""}, false},
+pkg/driver/devicelab/commands_helpers_test.go:2344:	a.launches = append(a.launches, id)
+pkg/driver/devicelab/commands_helpers_test.go:2348:	a.forceStops = append(a.forceStops, id)
+pkg/driver/devicelab/commands_helpers_test.go:2352:	a.clearAppDatas = append(a.clearAppDatas, id)
+pkg/driver/devicelab/commands_helpers_test.go:2994:// makeFocusedElement constructs a uiautomator2.Element with SendKeys and
+pkg/driver/devicelab/commands_helpers_test.go:2996:func makeFocusedElement(text string, sendKeysOut *string, clearCount *int, sendKeysErr error) *uiautomator2.Element {
+pkg/driver/devicelab/commands_helpers_test.go:2997:	elem := uiautomator2.NewCachedElement("focused", text, uiautomator2.ElementRect{X: 0, Y: 0, Width: 100, Height: 50})
+pkg/driver/devicelab/commands_helpers_test.go:3016:	client.activeElementReturn = makeFocusedElement("", &typed, nil, nil)
+pkg/driver/devicelab/commands_helpers_test.go:3031:	client.activeElementReturn = makeFocusedElement("", &typed, nil, nil)
+pkg/driver/devicelab/commands_helpers_test.go:3046:	client.activeElementReturn = makeFocusedElement("", &typed, nil, nil)
+pkg/driver/devicelab/commands_helpers_test.go:3064:	client.activeElementReturn = makeFocusedElement("", &typed, nil, nil)
+pkg/driver/devicelab/commands_helpers_test.go:3076:func TestInputRandom_NoFocusedElement(t *testing.T) {
+pkg/driver/devicelab/commands_helpers_test.go:3078:	client.activeElementErr = errors.New("no focused element")
+pkg/driver/devicelab/commands_helpers_test.go:3082:		t.Error("inputRandom without focused element should fail")
+pkg/driver/devicelab/commands_helpers_test.go:3087:// pasteText — GetClipboard + findFocused
+pkg/driver/devicelab/commands_helpers_test.go:3093:	client.activeElementReturn = makeFocusedElement("", &typed, nil, nil)
+pkg/driver/devicelab/commands_helpers_test.go:3126:func TestPasteText_NoFocusedElement(t *testing.T) {
+pkg/driver/devicelab/commands_helpers_test.go:3128:	client.activeElementErr = errors.New("no focused element")
+pkg/driver/devicelab/commands_helpers_test.go:3132:		t.Error("pasteText without focused element should fail")
+pkg/driver/devicelab/commands_helpers_test.go:3137:// eraseText — focused-element happy path (covers the Clear branch)
+pkg/driver/devicelab/commands_helpers_test.go:3143:	client.activeElementReturn = makeFocusedElement("Hello", nil, &clearCount, nil)
+pkg/driver/devicelab/commands_helpers_test.go:3159:	client.activeElementReturn = makeFocusedElement("Hello", &typed, &clearCount, nil)
+pkg/driver/devicelab/commands_helpers_test.go:3397:	p.pushes = append(p.pushes, [2]string{local, remote})
+pkg/driver/devicelab/commands_helpers_test.go:3440:	r.commands = append(r.commands, cmd)
+pkg/driver/wda/alerts.go:125:	d.stepNotes = append(d.stepNotes, fmt.Sprintf("%s system alert %q (%s)", verb, title, pressed))
+pkg/driver/appium/native_miss_test.go:46:		s.queries = append(s.queries, body.Using+": "+body.Value)
+pkg/driver/uiautomator2/retry_deadline_test.go:15:func (c *deadlineClient) SetRetryDeadline(t time.Time) { c.deadlines = append(c.deadlines, t) }
+pkg/driver/uiautomator2/recording_test.go:19:	s.commands = append(s.commands, cmd)
+pkg/driver/uiautomator2/checked_state_test.go:9:// A Switch that is on but not focused has checked="true" selected="false", so
+pkg/driver/uiautomator2/process_test.go:21:	s.calls = append(s.calls, cmd)
+pkg/driver/uiautomator2/tap_plain_first_test.go:57:			f.requests = append(f.requests, r.Method+" "+path)
+pkg/driver/uiautomator2/tap_plain_first_test.go:93:				list = append(list, map[string]string{"ELEMENT": id})
+pkg/driver/uiautomator2/tap_plain_first_test.go:124:			f.clicks = append(f.clicks, [2]int{body.Offset.X, body.Offset.Y})
+pkg/driver/uiautomator2/tap_plain_first_test.go:129:			f.clicks = append(f.clicks, centres[strings.Split(path, "/")[2]])
+pkg/driver/uiautomator2/exact_test.go:78:			got = append(got, e.ResourceID)
+pkg/driver/uiautomator2/pagesource_test.go:17:      <node index="1" text="" resource-id="com.app:id/input" class="android.widget.EditText" bounds="[50,470][500,530]" clickable="true" enabled="true" focused="true"/>
+pkg/driver/uiautomator2/pagesource_test.go:448:		Focused:  true,
+pkg/driver/uiautomator2/pagesource_test.go:461:	focused := true
+pkg/driver/uiautomator2/pagesource_test.go:462:	if !matchesSelector(elem, flow.Selector{Focused: &focused}) {
+pkg/driver/uiautomator2/pagesource_test.go:463:		t.Error("expected match for focused=true")
+pkg/driver/uiautomator2/input_append_test.go:17:// fakeTextField is a uiautomator2 server holding one focused text field. It
+pkg/driver/uiautomator2/input_append_test.go:20:// set-value, whose behaviour each test chooses.
+pkg/driver/uiautomator2/input_append_test.go:35:	// source still carries showing-hint for the focused node.
+pkg/driver/uiautomator2/input_append_test.go:37:	// class is what the server reports for the focused element; the
+pkg/driver/uiautomator2/input_append_test.go:43:	// appends, as the server does when it can read the current text.
+pkg/driver/uiautomator2/input_append_test.go:102:				`<hierarchy rotation="0"><android.widget.FrameLayout package="com.example" class="android.widget.FrameLayout" text="" bounds="[0,0][1080,2400]"><android.widget.EditText package="com.example" class="android.widget.EditText" text=%q focused="true"%s bounds="[42,474][1038,642]" /></android.widget.FrameLayout></hierarchy>`,
+pkg/driver/uiautomator2/input_append_test.go:172:			f.keysTyped = append(f.keysTyped, typed.String())
+pkg/driver/uiautomator2/input_append_test.go:192:func runInputText(t *testing.T, f *fakeTextField, text string) (string, *fakeTextField, string) {
+pkg/driver/uiautomator2/input_append_test.go:194:	got, f, result := runInputTextResult(t, f, text)
+pkg/driver/uiautomator2/input_append_test.go:198:func runInputTextResult(t *testing.T, f *fakeTextField, text string) (string, *fakeTextField, *core.CommandResult) {
+pkg/driver/uiautomator2/input_append_test.go:206:	result := driver.Execute(&flow.InputTextStep{Text: text})
+pkg/driver/uiautomator2/input_append_test.go:208:		t.Fatalf("inputText failed: %v (%s)", result.Error, result.Message)
+pkg/driver/uiautomator2/input_append_test.go:215:// R01: on a field that already holds text, inputText with no selector types
+pkg/driver/uiautomator2/input_append_test.go:216:// after that text. The server here replaces on set-value, as it did on the
+pkg/driver/uiautomator2/input_append_test.go:219:func TestInputTextNoSelectorAppendsToFocusedField(t *testing.T) {
+pkg/driver/uiautomator2/input_append_test.go:220:	got, f, msg := runInputText(t, &fakeTextField{value: "Golden Gate Bridge", setValueReplaces: true}, " Renamed")
+pkg/driver/uiautomator2/input_append_test.go:222:		t.Fatalf("field = %q, want %q (set-value calls %d, key action calls %d)", got, "Golden Gate Bridge Renamed", f.valueCalls, f.actionsCalls)
+pkg/driver/uiautomator2/input_append_test.go:225:		t.Errorf("set-value was called %d times; typing into the focused field must go through key events", f.valueCalls)
+pkg/driver/uiautomator2/input_append_test.go:233:func TestInputTextNoSelectorAppendsAbc(t *testing.T) {
+pkg/driver/uiautomator2/input_append_test.go:234:	got, _, _ := runInputText(t, &fakeTextField{value: "abc", setValueReplaces: true}, "def")
+pkg/driver/uiautomator2/input_append_test.go:241:// missed: falling back to set-value then would type the text twice.
+pkg/driver/uiautomator2/input_append_test.go:242:func TestInputTextNoSelectorLaggingReadDoesNotTypeTwice(t *testing.T) {
+pkg/driver/uiautomator2/input_append_test.go:243:	got, f, _ := runInputText(t, &fakeTextField{value: "abc", staleReads: 2}, "def")
+pkg/driver/uiautomator2/input_append_test.go:245:		t.Fatalf("field = %q, want %q (set-value calls %d)", got, "abcdef", f.valueCalls)
+pkg/driver/uiautomator2/input_append_test.go:250:// driver falls back to element set-value so the text still lands.
+pkg/driver/uiautomator2/input_append_test.go:251:func TestInputTextNoSelectorFallsBackWhenKeyEventsMiss(t *testing.T) {
+pkg/driver/uiautomator2/input_append_test.go:252:	got, f, _ := runInputText(t, &fakeTextField{value: "", keyActionsIgnored: true}, "hello")
+pkg/driver/uiautomator2/input_append_test.go:257:		t.Errorf("set-value calls = %d, want 1", f.valueCalls)
+pkg/driver/uiautomator2/input_append_test.go:264:func TestInputTextNoSelectorReportsReplacedText(t *testing.T) {
+pkg/driver/uiautomator2/input_append_test.go:265:	got, _, result := runInputTextResult(t, &fakeTextField{value: "Golden Gate Bridge", hint: "Name", keyActionsReplace: true, setValueReplaces: true}, " Renamed")
+pkg/driver/uiautomator2/input_append_test.go:278:func TestInputTextNoSelectorHintIsNotReportedAsReplaced(t *testing.T) {
+pkg/driver/uiautomator2/input_append_test.go:279:	got, _, result := runInputTextResult(t, &fakeTextField{value: "Search", showingHint: true, hint: "Search"}, "maps")
+pkg/driver/uiautomator2/input_append_test.go:293:// set-value: the fallback is for editable fields only.
+pkg/driver/uiautomator2/input_append_test.go:294:func TestInputTextNoSelectorStaticReadOnNonEditableSkipsFallback(t *testing.T) {
+pkg/driver/uiautomator2/input_append_test.go:296:	_, f, _ := runInputText(t, &fakeTextField{value: "abc", class: "android.webkit.WebView", keyActionsUnreadable: true, readable: "abc"}, "def")
+pkg/driver/uiautomator2/input_append_test.go:298:		t.Fatalf("set-value calls = %d, want 0 (the keys landed; typing again would double them)", f.valueCalls)
+pkg/driver/uiautomator2/input_append_test.go:311:// held: set-value is asked to replace with the earlier text plus the new.
+pkg/driver/uiautomator2/input_append_test.go:312:func TestInputTextNoSelectorNonASCIIAppendsWhole(t *testing.T) {
+pkg/driver/uiautomator2/input_append_test.go:313:	got, f, _ := runInputText(t, &fakeTextField{value: "Golden Gate Bridge", setValueReplaces: true}, " Café")
+pkg/driver/uiautomator2/input_append_test.go:321:		t.Errorf("replace set-value calls = %d, want 1", f.replaceCalls)
+pkg/driver/uiautomator2/input_append_test.go:325:func TestInputTextNoSelectorZWJEmojiStaysWhole(t *testing.T) {
+pkg/driver/uiautomator2/input_append_test.go:327:	got, f, _ := runInputText(t, &fakeTextField{value: ""}, emoji)
+pkg/driver/uiautomator2/input_append_test.go:337:func TestInputTextNoSelectorNonASCIIReplacesHint(t *testing.T) {
+pkg/driver/uiautomator2/input_append_test.go:338:	got, _, _ := runInputText(t, &fakeTextField{value: "Search", showingHint: true}, "café")
+pkg/driver/uiautomator2/input_append_test.go:347:func TestInputTextNoSelectorNewlineIsAKeyEvent(t *testing.T) {
+pkg/driver/uiautomator2/input_append_test.go:348:	_, f, _ := runInputText(t, &fakeTextField{value: "a"}, "b\nc")
+pkg/driver/uiautomator2/input_append_test.go:350:		t.Fatalf("set-value calls = %d, key action calls = %d; want 0 and 1", f.valueCalls, f.actionsCalls)
+pkg/driver/uiautomator2/input_append_test.go:358:// field; the driver then reads the focused node's showing-hint from the page
+pkg/driver/uiautomator2/input_append_test.go:361:func TestInputTextNoSelectorHintFromPageSourceWhenAttributeUnsupported(t *testing.T) {
+pkg/driver/uiautomator2/input_append_test.go:362:	got, f, _ := runInputText(t, &fakeTextField{value: "Golden Gate Bridge", setValueReplaces: true, hintAttrUnsupported: true}, " Café")
+pkg/driver/uiautomator2/input_append_test.go:364:		t.Fatalf("field = %q, want %q (replace calls %d, set-value calls %d)", got, "Golden Gate Bridge Café", f.replaceCalls, f.valueCalls)
+pkg/driver/uiautomator2/input_append_test.go:367:	_, _, result := runInputTextResult(t, &fakeTextField{value: "Golden Gate Bridge", hint: "Name", keyActionsReplace: true, setValueReplaces: true, hintAttrUnsupported: true}, " Renamed")
+pkg/driver/uiautomator2/input_append_test.go:372:	got, _, result = runInputTextResult(t, &fakeTextField{value: "Search", showingHint: true, hint: "Search", hintAttrUnsupported: true}, "café")
+pkg/driver/uiautomator2/input_append_test.go:380:func TestInputTextNoSelectorASCIIAppendFetchesNoSource(t *testing.T) {
+pkg/driver/uiautomator2/input_append_test.go:381:	got, f, _ := runInputText(t, &fakeTextField{value: "Golden Gate Bridge", hintAttrUnsupported: true}, " Renamed")
+pkg/driver/uiautomator2/input_append_test.go:386:		t.Errorf("page source fetched %d times on a plain append, want 0", f.sourceCalls)
+pkg/driver/uiautomator2/input_append_test.go:392:func TestInputTextNoSelectorMaskedFieldKeepsKeyEvents(t *testing.T) {
+pkg/driver/uiautomator2/input_append_test.go:393:	got, f, _ := runInputText(t, &fakeTextField{value: "••••"}, "é")
+pkg/driver/uiautomator2/input_append_test.go:395:		t.Fatalf("set-value calls = %d, key action calls = %d; want 0 and 1", f.valueCalls, f.actionsCalls)
+pkg/driver/uiautomator2/input_append_test.go:406:func TestInputTextNoSelectorPlaceholderAsTextIsNotReported(t *testing.T) {
+pkg/driver/uiautomator2/input_append_test.go:407:	got, _, result := runInputTextResult(t, &fakeTextField{value: "Enter a name", keyActionsReplace: true}, "Bridge")
+pkg/driver/uiautomator2/input_append_test.go:416:func TestInputTextNoSelectorUnsupportedHintIsNotReported(t *testing.T) {
+pkg/driver/uiautomator2/input_append_test.go:417:	_, _, result := runInputTextResult(t, &fakeTextField{value: "Golden Gate Bridge", hintUnsupported: true, keyActionsReplace: true}, " Renamed")
+pkg/driver/uiautomator2/input_append_test.go:426:func TestInputTextNoSelectorNonASCIIReplacedTextIsReported(t *testing.T) {
+pkg/driver/uiautomator2/input_append_test.go:428:	// both silent), so typeWhole uses the server's append, which this server
+pkg/driver/uiautomator2/input_append_test.go:430:	got, f, result := runInputTextResult(t, &fakeTextField{value: "Golden Gate Bridge", hint: "Name", setValueReplaces: true, hintAttrUnsupported: true, sourceOmitsHint: true}, " Café")
+pkg/driver/uiautomator2/input_append_test.go:432:		t.Fatalf("fixture: field = %q, want the replaced value (set-value calls %d)", got, f.valueCalls)
+pkg/driver/uiautomator2/input_timeout_test.go:39:func runSlowInputText(t *testing.T, f *fakeTextField, typeBeforeHang bool, stepTimeoutMs int) (*core.CommandResult, time.Duration) {
+pkg/driver/uiautomator2/input_timeout_test.go:47:	r := d.Execute(&flow.InputTextStep{Text: " Renamed", BaseStep: flow.BaseStep{TimeoutMs: stepTimeoutMs}})
+pkg/driver/uiautomator2/input_timeout_test.go:61:func TestInputTextKeyActionsTimeoutButFieldHoldsTextPasses(t *testing.T) {
+pkg/driver/uiautomator2/input_timeout_test.go:63:	r, elapsed := runSlowInputText(t, f, true, 600)
+pkg/driver/uiautomator2/input_timeout_test.go:74:		t.Errorf("set-value called %d times; a late answer must not type the text again", f.valueCalls)
+pkg/driver/uiautomator2/input_timeout_test.go:80:func TestInputTextKeyActionsTimeoutFieldUnchangedFails(t *testing.T) {
+pkg/driver/uiautomator2/input_timeout_test.go:82:	r, elapsed := runSlowInputText(t, f, false, 600)
+pkg/driver/uiautomator2/input_timeout_test.go:101:// L01: an inputText step without its own timeout gets a typing budget sized
+pkg/driver/uiautomator2/input_timeout_test.go:103:func TestInputTextDeadlineSizedFromText(t *testing.T) {
+pkg/driver/uiautomator2/input_timeout_test.go:115:// inputText without its own timeout run under the typing budget.
+pkg/driver/uiautomator2/input_timeout_test.go:124:	d.Execute(&flow.InputTextStep{Text: " Renamed"})
+pkg/driver/uiautomator2/input_timeout_test.go:130:		t.Fatal("inputText request context has no deadline")
+pkg/driver/appium/pagesource.go:23:	Focused   bool
+pkg/driver/appium/pagesource.go:117:					case "focused":
+pkg/driver/appium/pagesource.go:118:						elem.Focused = attr.Value == "true"
+pkg/driver/appium/pagesource.go:134:					elem.Children = append(elem.Children, child)
+pkg/driver/appium/pagesource.go:156:			elements = append(elements, flattenElement(elem, 0)...)
+pkg/driver/appium/pagesource.go:194:						elements = append(elements, flattenElement(child, 0)...)
+pkg/driver/appium/pagesource.go:221:					case "focused":
+pkg/driver/appium/pagesource.go:222:						elem.Focused = attr.Value == "true"
+pkg/driver/appium/pagesource.go:250:					elem.Children = append(elem.Children, child)
+pkg/driver/appium/pagesource.go:272:			elements = append(elements, flattenElement(elem, 0)...)
+pkg/driver/appium/pagesource.go:293:		result = append(result, flattenElement(child, depth+1)...)
+pkg/driver/appium/pagesource.go:328:		result = append(result, elem)
+pkg/driver/appium/pagesource.go:356:				exact = append(exact, elem)
+pkg/driver/appium/pagesource.go:359:			exact = append(exact, elem)
+pkg/driver/appium/pagesource.go:432:	if sel.Focused != nil && elem.Focused != *sel.Focused {
+pkg/driver/appium/pagesource.go:521:			result = append(result, elem)
+pkg/driver/appium/pagesource.go:537:			result = append(result, elem)
+pkg/driver/appium/pagesource.go:553:			result = append(result, elem)
+pkg/driver/appium/pagesource.go:568:			result = append(result, elem)
+pkg/driver/appium/pagesource.go:583:			result = append(result, elem)
+pkg/driver/appium/pagesource.go:598:				result = append(result, elem)
+pkg/driver/appium/pagesource.go:603:			result = append(result, elem)
+pkg/driver/appium/pagesource.go:633:			result = append(result, elem)
+pkg/driver/appium/pagesource.go:653:			result = append(result, elem)
+pkg/driver/appium/pagesource.go:721:			clickable = append(clickable, elem)
+pkg/driver/appium/pagesource.go:723:			nonClickable = append(nonClickable, elem)
+pkg/driver/appium/pagesource.go:727:	return append(clickable, nonClickable...)
+pkg/driver/appium/pagesource.go:832:			exact = append(exact, e)
+pkg/driver/appium/pagesource.go:834:			rest = append(rest, e)
+pkg/driver/appium/pagesource.go:837:	return append(exact, rest...)
+pkg/driver/uiautomator2/keyboard_hide_test.go:27:	s.commands = append(s.commands, cmd)
+pkg/driver/appium/tap_selector_fields_test.go:73:			order = append(order, string(b))
+pkg/driver/uiautomator2/driver.go:112:	case *flow.InputTextStep:
+pkg/driver/uiautomator2/driver.go:131:// typingBudgetBase and typingBudgetPerChar size an inputText's deadline from
+pkg/driver/uiautomator2/driver.go:145:// typingBudget is how long an inputText without its own timeout may take.
+pkg/driver/uiautomator2/driver.go:181:	// Keyboard auto-dismiss: set after inputText/inputRandom, checked on next tap/assert
+pkg/driver/uiautomator2/driver.go:185:	// inputText (0 = type as fast as the device accepts). Set from an explicit
+pkg/driver/uiautomator2/driver.go:290:// keyPress-mode inputText so apps that drop fast key events still receive every
+pkg/driver/uiautomator2/driver.go:384:	case *flow.InputTextStep:
+pkg/driver/uiautomator2/driver.go:385:		result = d.inputText(s)
+pkg/driver/uiautomator2/driver.go:489:	case *flow.InputTextStep, *flow.InputRandomStep:
+pkg/driver/uiautomator2/driver.go:563:	pids := append([]string(nil), d.watchPIDs...)
+pkg/driver/uiautomator2/driver.go:565:		pids = append(pids, d.launchPIDs...)
+pkg/driver/uiautomator2/driver.go:1229:		Focused:   sel.Focused,
+pkg/driver/uiautomator2/driver.go:1349:		Focused:   sel.Focused,
+pkg/driver/uiautomator2/driver.go:1689:					strategies = append(strategies, LocatorStrategy{
+pkg/driver/uiautomator2/driver.go:1696:				strategies = append(strategies, LocatorStrategy{
+pkg/driver/uiautomator2/driver.go:1733:						tier = append(tier, id+text)
+pkg/driver/uiautomator2/driver.go:1736:				combined = append(combined, tier)
+pkg/driver/uiautomator2/driver.go:1748:		strategies = append(strategies, LocatorStrategy{
+pkg/driver/uiautomator2/driver.go:1837:	if sel.Focused != nil {
+pkg/driver/uiautomator2/driver.go:1838:		filters.WriteString(fmt.Sprintf(".focused(%t)", *sel.Focused))
+pkg/driver/uiautomator2/pagesource.go:37:	Focused     bool
+pkg/driver/uiautomator2/pagesource.go:104:					case "focused":
+pkg/driver/uiautomator2/pagesource.go:105:						elem.Focused = attr.Value == "true"
+pkg/driver/uiautomator2/pagesource.go:121:					elem.Children = append(elem.Children, child)
+pkg/driver/uiautomator2/pagesource.go:144:			elements = append(elements, flattenElement(elem, 0)...)
+pkg/driver/uiautomator2/pagesource.go:167:		result = append(result, flattenElement(child, depth+1)...)
+pkg/driver/uiautomator2/pagesource.go:202:			result = append(result, e)
+pkg/driver/uiautomator2/pagesource.go:230:		result = append(result, elem)
+pkg/driver/uiautomator2/pagesource.go:256:			exact = append(exact, e)
+pkg/driver/uiautomator2/pagesource.go:285:			exact = append(exact, elem)
+pkg/driver/uiautomator2/pagesource.go:353:	if sel.Focused != nil && elem.Focused != *sel.Focused {
+pkg/driver/uiautomator2/pagesource.go:412:			result = append(result, elem)
+pkg/driver/uiautomator2/pagesource.go:430:			result = append(result, elem)
+pkg/driver/uiautomator2/pagesource.go:448:			result = append(result, elem)
+pkg/driver/uiautomator2/pagesource.go:464:			result = append(result, elem)
+pkg/driver/uiautomator2/pagesource.go:479:			result = append(result, elem)
+pkg/driver/uiautomator2/pagesource.go:494:				result = append(result, elem)
+pkg/driver/uiautomator2/pagesource.go:499:			result = append(result, elem)
+pkg/driver/uiautomator2/pagesource.go:530:			result = append(result, elem)
+pkg/driver/uiautomator2/pagesource.go:600:			result = append(result, elem)
+pkg/driver/uiautomator2/pagesource.go:678:			outside = append(outside, e)
+pkg/driver/uiautomator2/pagesource.go:694:			clickable = append(clickable, elem)
+pkg/driver/uiautomator2/pagesource.go:696:			nonClickable = append(nonClickable, elem)
+pkg/driver/uiautomator2/pagesource.go:700:	return append(clickable, nonClickable...)
+pkg/driver/uiautomator2/pagesource.go:709:			result = append(result, elem)
+pkg/driver/uiautomator2/pagesource.go:811:			exact = append(exact, e)
+pkg/driver/uiautomator2/pagesource.go:813:			rest = append(rest, e)
+pkg/driver/uiautomator2/pagesource.go:816:	return append(exact, rest...)
+pkg/driver/appium/launch_permissions_test.go:33:			calls = append(calls, c)
+pkg/driver/appium/launch_permissions_test.go:70:				out = append(out, s)
+pkg/driver/uiautomator2/visibility_wait.go:78:		texts = append(texts, e.Text, e.ContentDesc)
+pkg/driver/uiautomator2/deterministic_gestures_test.go:70:			p.actions = append(p.actions, seq)
+pkg/driver/uiautomator2/deterministic_gestures_test.go:91:			taps = append(taps, tap{down: now})
+pkg/driver/uiautomator2/deterministic_gestures_test.go:129:	s.calls = append(s.calls, cmd)
+pkg/driver/uiautomator2/deterministic_gestures_test.go:154:			seq = append(seq, map[string]interface{}{"type": "pause", "duration": s.cmdMs})
+pkg/driver/uiautomator2/deterministic_gestures_test.go:156:				seq = append(seq, map[string]interface{}{"type": "pointerDown"})
+pkg/driver/uiautomator2/deterministic_gestures_test.go:158:				s.points = append(s.points, [2]int{x, y})
+pkg/driver/uiautomator2/deterministic_gestures_test.go:161:				seq = append(seq, map[string]interface{}{"type": "pointerUp"})
+pkg/driver/uiautomator2/deterministic_gestures_test.go:165:			seq = append(seq, map[string]interface{}{"type": "pause", "duration": sec * 1000})
+pkg/driver/uiautomator2/deterministic_gestures_test.go:183:			out = append(out, c)
+pkg/driver/uiautomator2/deterministic_gestures_test.go:447:			*actions = append(*actions, req.Actions[0].Actions)
+pkg/driver/uiautomator2/active_element_bound_test.go:41:// L47: the focused-element lookup has its own bound. One that blocks for 40
+pkg/driver/uiautomator2/active_element_bound_test.go:44:func TestInputTextBoundsFocusedElementLookup(t *testing.T) {
+pkg/driver/uiautomator2/active_element_bound_test.go:61:	r := d.Execute(&flow.InputTextStep{Text: " Renamed", BaseStep: flow.BaseStep{TimeoutMs: 45000}})
+pkg/driver/uiautomator2/active_element_bound_test.go:64:		t.Fatalf("inputText failed: %q", r.Message)
+pkg/driver/uiautomator2/active_element_bound_test.go:73:		t.Errorf("inputText took %v; the focused-element lookup was not bounded", elapsed)
+pkg/driver/uiautomator2/active_element_bound_test.go:77:// L47: a focused-element lookup that answers 404 at once still types via
+pkg/driver/uiautomator2/active_element_bound_test.go:79:func TestInputTextTypesWhenNoFocusedElement(t *testing.T) {
+pkg/driver/uiautomator2/active_element_bound_test.go:86:	if r := d.Execute(&flow.InputTextStep{Text: " Renamed"}); !r.Success {
+pkg/driver/uiautomator2/active_element_bound_test.go:87:		t.Fatalf("inputText failed: %q", r.Message)
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:60:			out = append(out, "10-10 12:00:00.300   563   583 I ActivityTaskManager: Displayed com.example.app/.MainActivity for user 0: +300ms")
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:67:				out = append(out, "10-10 12:00:00.600   563  1256 I am_crash: [42,0,com.example.app,552091206,java.lang.RuntimeException,CRASH_AFTER_LAUNCH,App.kt,15,0]")
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:70:				out = append(out, strings.Split(strings.TrimSpace(crashAfterLaunch), "\n")...)
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:144:			grantShells = append(grantShells, c)
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:166:	r.cmds = append(r.cmds, cmd)
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:174:	return append([]string(nil), r.cmds...)
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:187:	b.calls = append(b.calls, cmd)
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:199:		outs = append(outs, out)
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:207:	return append([]string(nil), b.calls...)
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:526:	s.calls = append(s.calls, cmd)
+pkg/driver/uiautomator2/wait_crash_test.go:42:	s.cmds = append(s.cmds, cmd)
+pkg/driver/uiautomator2/wait_crash_test.go:73:				kept = append(kept, line)
+pkg/driver/uiautomator2/keyboard_test.go:192:	t.Run("inputText sets flag on success", func(t *testing.T) {
+pkg/driver/uiautomator2/keyboard_test.go:208:		step := &flow.InputTextStep{Text: "hello"}
+pkg/driver/uiautomator2/keyboard_test.go:211:			t.Fatalf("inputText failed: %s", result.Message)
+pkg/driver/uiautomator2/keyboard_test.go:214:			t.Error("expected lastStepWasInput to be true after inputText")
+pkg/driver/uiautomator2/keyboard_test.go:258:	t.Run("inputText failure does not set flag", func(t *testing.T) {
+pkg/driver/uiautomator2/keyboard_test.go:262:		step := &flow.InputTextStep{Text: ""}
+pkg/driver/uiautomator2/keyboard_test.go:268:			t.Error("expected lastStepWasInput to be false after failed inputText")
+pkg/driver/uiautomator2/keyboard_test.go:338:	t.Run("keyboard covering element after inputText shows hint", func(t *testing.T) {
+pkg/driver/uiautomator2/keyboard_test.go:408:	// inputText typed into whatever still held focus. A keyboard raised by an
+pkg/driver/uiautomator2/keyboard_test.go:436:	t.Run("keyboard covering element after inputText shows hint", func(t *testing.T) {
+pkg/driver/uiautomator2/keyboard_test.go:484:// keyboard can be up because a field auto-focused on screen entry, not because
+pkg/driver/uiautomator2/commands_test.go:120:	m.commands = append(m.commands, cmd)
+pkg/driver/uiautomator2/commands_test.go:464:	m.commands = append(m.commands, cmd)
+pkg/driver/uiautomator2/commands_test.go:555:func TestInputTextNoText(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:557:	step := &flow.InputTextStep{Text: ""}
+pkg/driver/uiautomator2/commands_test.go:559:	result := driver.inputText(step)
+pkg/driver/uiautomator2/commands_test.go:1753:// InputText Additional Tests (HTTP Mock)
+pkg/driver/uiautomator2/commands_test.go:1756:func TestInputTextWithUnicodeWarning(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:1787:	step := &flow.InputTextStep{
+pkg/driver/uiautomator2/commands_test.go:1801:func TestInputTextNoSelectorNoActiveElement(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:1802:	// No selector — inputText now sends W3C key actions directly to the OS-focused
+pkg/driver/uiautomator2/commands_test.go:1807:			writeJSON(w, map[string]interface{}{"value": "no focused element"})
+pkg/driver/uiautomator2/commands_test.go:1816:	step := &flow.InputTextStep{Text: "Hello"}
+pkg/driver/uiautomator2/commands_test.go:1824:func TestInputTextNoSelectorActiveElementSuccess(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:1825:	// A focused element is found: the key events land in it, it reads back
+pkg/driver/uiautomator2/commands_test.go:1827:	got, f, msg := runInputText(t, &fakeTextField{value: ""}, "Hello via active element")
+pkg/driver/uiautomator2/commands_test.go:1832:		t.Errorf("set-value calls = %d, want 0", f.valueCalls)
+pkg/driver/uiautomator2/commands_test.go:3565:	s.commands = append(s.commands, cmd)
+pkg/driver/uiautomator2/commands_test.go:3760:		{"focused target", "mCurrentFocus=Window{abc u0 com.example.app/com.example.MainActivity}", true},
+pkg/driver/uiautomator2/commands_test.go:3882:// InputText keyPress Mode Tests
+pkg/driver/uiautomator2/commands_test.go:3885:func TestInputTextKeyPressSuccess(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:3897:	step := &flow.InputTextStep{
+pkg/driver/uiautomator2/commands_test.go:3901:	result := driver.inputText(step)
+pkg/driver/uiautomator2/commands_test.go:3917:func TestInputTextKeyPressError(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:3924:	step := &flow.InputTextStep{
+pkg/driver/uiautomator2/commands_test.go:3928:	result := driver.inputText(step)
+pkg/driver/uiautomator2/commands_test.go:3938:func TestInputTextKeyPressWithUnicode(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:3945:	step := &flow.InputTextStep{
+pkg/driver/uiautomator2/commands_test.go:3949:	result := driver.inputText(step)
+pkg/driver/uiautomator2/commands_test.go:3959:func TestInputTextKeyPressEmptyText(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:3963:	step := &flow.InputTextStep{
+pkg/driver/uiautomator2/commands_test.go:3967:	result := driver.inputText(step)
+pkg/driver/uiautomator2/commands_test.go:5189:		*drags = append(*drags, heldDrag{
+pkg/driver/uiautomator2/bare_scroll.go:164:		shifts = append(shifts, s)
+pkg/driver/uiautomator2/keyboard.go:170:// `inputText` — which injects global key events — typed into whatever element
+pkg/driver/uiautomator2/commands.go:647:func (d *Driver) inputText(step *flow.InputTextStep) *core.CommandResult {
+pkg/driver/uiautomator2/commands.go:662:		// Resolve and read the focused field first: after typing, "unchanged"
+pkg/driver/uiautomator2/commands.go:664:		target, before := d.focusedFieldBefore()
+pkg/driver/uiautomator2/commands.go:689:		// already held: `inputText: " Renamed"` after tapping a field holding
+pkg/driver/uiautomator2/commands.go:695:		// action in a single-line one. Plain element set-value is not a
+pkg/driver/uiautomator2/commands.go:696:		// substitute: the server appends only when it can read the field's
+pkg/driver/uiautomator2/commands.go:700:		// Non-ASCII text goes in whole through set-value (see typeWhole), so
+pkg/driver/uiautomator2/commands.go:703:		active, err := d.focusedElement()
+pkg/driver/uiautomator2/commands.go:714:		// so writing them back with set-value would corrupt it. Masked fields
+pkg/driver/uiautomator2/commands.go:740:				logger.Warn("inputText: %v; the field already holds the typed text", err)
+pkg/driver/uiautomator2/commands.go:748:					// Set-value is the fallback for text fields key events
+pkg/driver/uiautomator2/commands.go:759:					// Any other focused view gets the benefit of the doubt:
+pkg/driver/uiautomator2/commands.go:780:		logger.Warn("inputText: %s", warning)
+pkg/driver/uiautomator2/commands.go:786:// focusedElementBound is how long inputText looks for the focused field
+pkg/driver/uiautomator2/commands.go:792:const focusedElementBound = 3 * time.Second
+pkg/driver/uiautomator2/commands.go:794:// contextActiveFinder is implemented by a client whose focused-element
+pkg/driver/uiautomator2/commands.go:800:// focusedElement looks up the element holding focus within
+pkg/driver/uiautomator2/commands.go:801:// focusedElementBound.
+pkg/driver/uiautomator2/commands.go:802:func (d *Driver) focusedElement() (*uiautomator2.Element, error) {
+pkg/driver/uiautomator2/commands.go:804:	elem, err := boundedCall(d.parentContext(), focusedElementBound, func(ctx context.Context) (*uiautomator2.Element, error) {
+pkg/driver/uiautomator2/commands.go:811:	case err != nil && time.Since(start) >= focusedElementBound:
+pkg/driver/uiautomator2/commands.go:812:		logger.Warn("inputText: no focused-element answer within %v; typing as key events without reading the field first", focusedElementBound)
+pkg/driver/uiautomator2/commands.go:814:		logger.Info("inputText: no focused element (%v); typing as key events without reading the field first", err)
+pkg/driver/uiautomator2/commands.go:823:func (d *Driver) renewTypingBudget(step *flow.InputTextStep, text string) context.CancelFunc {
+pkg/driver/uiautomator2/commands.go:840:// typedDespiteTimeout reads the focused field after a key-actions request
+pkg/driver/uiautomator2/commands.go:902:// typeWhole sets the focused field to its earlier text plus text in one
+pkg/driver/uiautomator2/commands.go:903:// set-value, with the server told to replace rather than append, so the
+pkg/driver/uiautomator2/commands.go:906:// text is a hint, the server's append is used instead, since it checks for a
+pkg/driver/uiautomator2/commands.go:919:// isEditableField reports whether the focused element is a text field —
+pkg/driver/uiautomator2/commands.go:934:// keyEventsSettle bounds how long inputText waits for the focused field to
+pkg/driver/uiautomator2/commands.go:937:// would fall back to set-value and type the text twice.
+pkg/driver/uiautomator2/commands.go:971:// readShowingHint asks whether the focused field's text is its hint. The
+pkg/driver/uiautomator2/commands.go:973:// a Compose field, so the page source's showing-hint for the focused node
+pkg/driver/uiautomator2/commands.go:986:// hintStateInSource reads showing-hint for the focused node whose text is
+pkg/driver/uiautomator2/commands.go:995:		if !e.Focused || e.Text != text {
+pkg/driver/uiautomator2/commands.go:1000:			return hintUnknown // two focused nodes disagree
+pkg/driver/uiautomator2/commands.go:1019:// than appended to. Only a field whose hint attribute positively shows the
+pkg/driver/uiautomator2/commands.go:1027:	return fmt.Sprintf("the field held %q and now holds only the typed text; it was replaced, not appended to", before)
+pkg/driver/uiautomator2/commands.go:1030:// focusedFieldBefore resolves the element that key events will reach and reads
+pkg/driver/uiautomator2/commands.go:1032:func (d *Driver) focusedFieldBefore() (core.TextField, string) {
+pkg/driver/uiautomator2/commands.go:1087:	// - Can't find focused element
+pkg/driver/uiautomator2/commands.go:1156:	// Type into focused element
+pkg/driver/uiautomator2/commands.go:1159:		return errorResult(err, "No focused element to type into")
+pkg/driver/uiautomator2/commands.go:2145:				pids = append(pids, p)
+pkg/driver/uiautomator2/commands.go:2607:// appForegroundState reports whether Android's current resumed/focused
+pkg/driver/uiautomator2/commands.go:2619:			!strings.Contains(line, "mFocusedApp") {
+pkg/driver/uiautomator2/commands.go:2711:				ops = append(ops, permissionOp{perm: perm, value: value, fromAll: true})
+pkg/driver/uiautomator2/commands.go:2716:			ops = append(ops, permissionOp{perm: perm, value: value})
+pkg/driver/uiautomator2/commands.go:2731:				undeclared = append(undeclared, op.perm)
+pkg/driver/uiautomator2/commands.go:2736:			errors = append(errors, fmt.Sprintf("%s: %v", op.perm, err))
+pkg/driver/uiautomator2/commands.go:2738:			granted = append(granted, op.perm)
+pkg/driver/uiautomator2/commands.go:2740:			revoked = append(revoked, op.perm)
+pkg/driver/uiautomator2/commands.go:2791:		script = append(script, fmt.Sprintf(
+pkg/driver/uiautomator2/commands.go:2794:		batched = append(batched, i)
+pkg/driver/uiautomator2/commands.go:2960:		return errorResult(err, "No focused element to paste into")

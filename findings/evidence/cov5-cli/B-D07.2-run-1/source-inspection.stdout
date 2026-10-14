@@ -1,0 +1,12 @@
+Tests/GrantivaCLITests/AndroidCommandTests.swift:114:    /// `build install` still boots the configured AVD (the platform logs
+Tests/GrantivaCLITests/RunCommandTests.swift:544:    /// an empty `device=` or `Booting emulator: `.
+Tests/GrantivaCLITests/RunCommandTests.swift:557:            "No emulator named; using the running emulator or the only AVD"
+Tests/GrantivaCLITests/RunCommandTests.swift:559:        XCTAssertEqual(RunCommand.bootNarration(platform: .android, target: "Pixel_8_API_35"), "Booting emulator: Pixel_8_API_35")
+Sources/GrantivaCLI/RunCommand.swift:117:    /// only AVD, so it says that instead of printing an empty name. A target
+Sources/GrantivaCLI/RunCommand.swift:124:                : "No emulator named; using the running emulator or the only AVD"
+Sources/GrantivaMCP/Tools/ContextTool.swift:156:    /// The session's serial; else the configured AVD's serial if it is
+Sources/GrantivaCore/Android/EmulatorManager.swift:256:    /// With a configured AVD name, the running emulator with that name is
+Sources/GrantivaCore/Android/EmulatorManager.swift:258:    /// a single booting emulator (waited on), else the only existing AVD is
+Sources/GrantivaCore/Android/EmulatorManager.swift:270:        // A booting emulator answers on its console (so its name is known)
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:35:    /// L45: the configured AVD is already running as emulator-5554, so the
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:237:            return DoctorCheck(name: "Running Emulator", status: .warning, message: "No emulator running", fix: "Grantiva boots the configured AVD on demand; or run: emulator -avd \(DefaultEmulator.name)", section: .advisory)

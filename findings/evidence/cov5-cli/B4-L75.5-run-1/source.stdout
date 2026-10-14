@@ -1,0 +1,53 @@
+Tests/GrantivaCLITests/InstallCommandTests.swift:37:        let path = "/private/tmp/Grantiva Runs/Tien Len DerivedData"
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:525:            projectDirectory: "/private/tmp/project", platform: .ios, ownerPid: 4163, detached: false
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:552:                projectDirectory: "/private/tmp/project", platform: .ios, ownerPid: Int32(pid - 100), detached: false
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:612:            projectDirectory: "/private/tmp/elsewhere", platform: .ios, ownerPid: 4163, detached: false
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:927:            projectDirectory: "/private/tmp/project", platform: .ios, ownerPid: 4163, detached: false, appId: "com.example"
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1168:            currentDirectory: { "/private/tmp/project" }
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:186:        XCTAssertEqual(RunnerManager.resolveBaseDir(environment: ["GRANTIVA_RUNNER_HOME": "/tmp/x/"]), "/private/tmp/x")
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:215:        XCTAssertEqual(RunnerManager.canonicalPath("/tmp/does/not/exist"), "/private/tmp/does/not/exist")
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:216:        XCTAssertEqual(RunnerManager.canonicalPath("/tmp"), "/private/tmp")
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:69:        XCTAssertEqual(SimulatorCapacity.defaultDirectory(environment: ["GRANTIVA_RUNNER_HOME": "/tmp/qa/runner/"]), "/private/tmp/qa/runner/simulator-capacity",
+Tests/GrantivaMCPTests/MCPServerTests.swift:269:    /// A 2.1.0 sidecar recorded `/tmp/...`; a server for `/private/tmp/...`
+Tests/GrantivaCoreTests/OutputRewriterTests.swift:62:        let input = "  - ../shared/b.yaml: circular dependency detected: /stage/a.yaml -> /project/shared/b.yaml -> ../flows/a.yaml -> ../shared/b.yaml\n"
+Tests/GrantivaCoreTests/OutputRewriterTests.swift:63:        let expected = "  - ../shared/b.yaml: circular dependency detected: flows/a.yaml -> shared/b.yaml -> flows/a.yaml -> shared/b.yaml\n"
+Tests/GrantivaCoreTests/OutputRewriterTests.swift:78:        let unknown = "circular dependency detected: flows/a.yaml -> ../other/missing.yaml"
+Tests/GrantivaCoreTests/OutputRewriterTests.swift:80:        let escaping = "circular dependency detected: a.yaml -> ../flows/a.yaml"
+Tests/GrantivaCoreTests/OutputRewriterTests.swift:82:        let absolute = "circular dependency detected: /elsewhere/a.yaml -> ../flows/a.yaml"
+Tests/GrantivaCoreTests/OutputRewriterTests.swift:87:        let absolute = "/private/tmp/project/a.yaml"
+Tests/GrantivaCoreTests/OutputRewriterTests.swift:88:        let input = "circular dependency detected: /var/folders/test/grantiva-staged/0/a.yaml -> b.yaml -> a.yaml -> b.yaml\n"
+Tests/GrantivaCoreTests/OutputRewriterTests.swift:89:        let expected = "circular dependency detected: \(absolute) -> b.yaml -> a.yaml -> b.yaml\n"
+Sources/GrantivaMCP/MCPServer.swift:136:        // resolves to `/private/tmp/x` (`standardizedFileURL` would strip the
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:7:final class RunnerSessionOutputTests: XCTestCase {
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:316:        echo "circular dependency detected: $flow -> /x/a.yaml" >&2
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:328:            XCTAssertTrue(message.contains("circular dependency detected: grantiva.yml -> /x/a.yaml"), message)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:471:        let map = RunnerSession.expandedPathMap(FlowReferenceResolver.reachableFlowDisplayMap(
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:481:        let line = "  - b.yaml: circular dependency detected: a.yaml -> \(other)/b.yaml -> \(root)/a.yaml -> b.yaml"
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:484:            "  - b.yaml: circular dependency detected: a.yaml -> b.yaml -> a.yaml -> b.yaml"
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:500:        echo "  - b.yaml: circular dependency detected: $flow -> \(root)/b.yaml -> \(root)/a.yaml -> \(root)/b.yaml" >&2
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:514:            XCTAssertTrue(text.contains("circular dependency detected: a.yaml -> b.yaml -> a.yaml -> b.yaml"), text)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:535:            echo "  - ../shared/b.yaml: circular dependency detected: $flow -> \(root)/shared/b.yaml -> ../flows/a.yaml -> ../shared/b.yaml" >&2
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:549:                XCTAssertTrue(text.contains("circular dependency detected: flows/a.yaml -> shared/b.yaml -> flows/a.yaml -> shared/b.yaml"), text)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:616:extension RunnerSessionOutputTests {
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:144:        XCTAssertEqual(KeepAliveOwner.canonicalDirectory("/tmp"), KeepAliveOwner.canonicalDirectory("/private/tmp"))
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:145:        // K104: resolved, not undone: realpath(3) spells /tmp as /private/tmp.
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:146:        XCTAssertEqual(KeepAliveOwner.canonicalDirectory("/tmp"), "/private/tmp")
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:147:        XCTAssertEqual(KeepAliveOwner.canonicalDirectory("/private/tmp"), "/private/tmp")
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:153:    /// matches a project canonicalised to `/private/tmp`.
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:159:        XCTAssertEqual(sessions.first?.projectDirectory, "/private/tmp")
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:167:        XCTAssertEqual(owner.projectDirectory, "/private/tmp")
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:300:            udid: "emulator-5554", runnerPid: 400, projectDirectory: "/private/tmp/p", platform: .android, detached: true
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:303:            udid: "emulator-5556", runnerPid: 401, projectDirectory: "/private/tmp/p", platform: .android, detached: true
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:306:        try write(KeepAliveOwner(udid: "emulator-5558", runnerPid: 402, projectDirectory: "/private/tmp/p", platform: .android, detached: true))
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:314:            udid: "emulator-5554", runnerPid: 400, grantivaPid: 77, projectDirectory: "/private/tmp/p", platform: .android, detached: false
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:324:        try write(KeepAliveOwner(udid: "emulator-5554", runnerPid: 500, grantivaPid: 50, projectDirectory: "/private/tmp/p",
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:326:        try write(KeepAliveOwner(udid: "emulator-5556", runnerPid: 501, grantivaPid: 51, projectDirectory: "/private/tmp/p",
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:336:        XCTAssertEqual(starting.projectDirectory, "/private/tmp/p")
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:143:    /// `/private/tmp/x` both become `/private/tmp/x`. (Foundation's
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:334:                    // `/tmp` spelling of a `/private/tmp` directory.
+Sources/GrantivaCore/Runner/FlowReferenceResolver.swift:147:    static func reachableFlowDisplayMap(roots: [String], cwd: String) -> [String: String] {
+Sources/GrantivaCore/Runner/RunnerSession.swift:113:        let reachablePathMap = FlowReferenceResolver.reachableFlowDisplayMap(
+Sources/GrantivaCore/Runner/RunnerSession.swift:462:        let reachablePathMap = FlowReferenceResolver.reachableFlowDisplayMap(
+Sources/GrantivaCore/Runner/OutputRewriter.swift:19:    private static let cycleMarker = "circular dependency detected: "
+Sources/GrantivaCore/Runner/OutputRewriter.swift:37:        // contain another source alias (/tmp inside /private/tmp).
+Sources/GrantivaCore/Runner/RunnerManager.swift:234:    /// way realpath(3) resolves it (`/tmp/x` becomes `/private/tmp/x`) and

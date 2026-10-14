@@ -1,0 +1,352 @@
+pkg/flow/step_test.go:276:		VisibilityPercentage:  80,
+pkg/flow/step_test.go:293:	if s.VisibilityPercentage != 80 {
+pkg/flow/step_test.go:294:		t.Errorf("VisibilityPercentage=%d, want 80", s.VisibilityPercentage)
+pkg/flow/parser.go:1064:			s.ThresholdPercentage = f
+pkg/flow/parser.go:1066:		if _, isStr := s.ThresholdRaw.(string); !isStr && s.ThresholdPercentage == 0 {
+pkg/flow/parser.go:1067:			s.ThresholdPercentage = 95.0
+pkg/flow/parser.go:1347:// ThresholdAsFloat coerces a raw YAML `thresholdPercentage:` value into a
+pkg/flow/swipe_coords_test.go:11:		{"plain pixels", "- swipe:\n    start: 900, 520\n    end: 100, 520\n", "900, 520", "100, 520"},
+pkg/flow/swipe_coords_test.go:12:		{"quoted pixels", "- swipe:\n    start: \"900, 520\"\n    end: \"100, 520\"\n", "900, 520", "100, 520"},
+pkg/flow/swipe_coords_test.go:13:		{"percentages", "- swipe:\n    start: 60%, 22%\n    end: 5%, 22%\n", "60%, 22%", "5%, 22%"},
+pkg/flow/step.go:264:// through to a screen-percentage swipe that ignores the anchor element.
+pkg/flow/step.go:320:	VisibilityPercentage  int      `yaml:"visibilityPercentage"`
+pkg/flow/step.go:970:// ThresholdRaw captures the raw `thresholdPercentage:` value (a number, or a
+pkg/flow/step.go:971:// string like "${VAR}"), while ThresholdPercentage holds the resolved float.
+pkg/flow/step.go:978:	ThresholdPercentage float64   `yaml:"-"`
+pkg/flow/step.go:979:	ThresholdRaw        any       `yaml:"thresholdPercentage,omitempty"`
+pkg/executor/scripting_test.go:1342:		if s.ThresholdPercentage != 87.5 {
+pkg/executor/scripting_test.go:1343:			t.Errorf("ThresholdPercentage = %v, want 87.5", s.ThresholdPercentage)
+pkg/executor/scripting_test.go:1350:		if s.ThresholdPercentage != 95.0 {
+pkg/executor/scripting_test.go:1351:			t.Errorf("ThresholdPercentage = %v, want 95.0 (default)", s.ThresholdPercentage)
+pkg/executor/scripting_test.go:1356:		s := &flow.AssertScreenshotStep{Path: "b.png", ThresholdPercentage: 92.0}
+pkg/executor/scripting_test.go:1358:		if s.ThresholdPercentage != 92.0 {
+pkg/executor/scripting_test.go:1359:			t.Errorf("ThresholdPercentage = %v, want 92.0", s.ThresholdPercentage)
+pkg/flow/parser_test.go:217:    thresholdPercentage: 98.5
+pkg/flow/parser_test.go:235:	if step.ThresholdPercentage != 98.5 {
+pkg/flow/parser_test.go:236:		t.Errorf("ThresholdPercentage = %v, want 98.5", step.ThresholdPercentage)
+pkg/flow/parser_test.go:250:	if step.ThresholdPercentage != 95 {
+pkg/flow/parser_test.go:251:		t.Errorf("ThresholdPercentage = %v, want 95", step.ThresholdPercentage)
+pkg/flow/parser_test.go:294:    thresholdPercentage: ${THRESH}
+pkg/flow/parser_test.go:307:	if step.ThresholdPercentage != 0 {
+pkg/flow/parser_test.go:308:		t.Errorf("ThresholdPercentage = %v, want 0 (unresolved)", step.ThresholdPercentage)
+pkg/flow/parser_test.go:1075:// to a screen-percentage swipe.
+pkg/flow/parser_test.go:1147:    visibilityPercentage: 80
+pkg/flow/parser_test.go:1176:	if scroll.VisibilityPercentage != 80 {
+pkg/flow/parser_test.go:1177:		t.Errorf("VisibilityPercentage=%d, want 80", scroll.VisibilityPercentage)
+pkg/executor/runner_test.go:2665:					ThresholdPercentage: 100,
+pkg/executor/runner_test.go:2729:			ThresholdPercentage: 100,
+pkg/executor/runner_test.go:2777:			ThresholdPercentage: 100,
+pkg/executor/runner_test.go:2836:			ThresholdPercentage: 100,
+pkg/executor/runner_test.go:2999:			ThresholdPercentage: 100,
+pkg/cli/cli_test.go:665:		{90000, "1m 30s"},
+pkg/driver/appium/driver_test.go:48:    <android.widget.EditText resource-id="com.app:id/emailField" text="" content-desc="Email" enabled="true" bounds="[100,300][900,380]"/>
+pkg/driver/appium/driver_test.go:253:// TestExecuteTapOnPointWithPercentage tests tap with percentage
+pkg/driver/appium/driver_test.go:254:func TestExecuteAppiumTapOnPointWithPercentage(t *testing.T) {
+pkg/driver/appium/driver_test.go:301:// TestExecuteTapOnWithPercentagePoint tests tapOn with percentage point and no selector
+pkg/driver/appium/driver_test.go:302:func TestExecuteAppiumTapOnWithPercentagePoint(t *testing.T) {
+pkg/driver/appium/driver_test.go:961:// TestParsePercentageCoords tests coordinate parsing
+pkg/driver/appium/driver_test.go:962:func TestAppiumParsePercentageCoords(t *testing.T) {
+pkg/driver/appium/driver_test.go:963:	x, y, err := parsePercentageCoords("50%, 75%")
+pkg/driver/appium/driver_test.go:965:		t.Fatalf("parsePercentageCoords failed: %v", err)
+pkg/driver/appium/driver_test.go:972:	_, _, err = parsePercentageCoords("invalid")
+pkg/driver/appium/driver_test.go:2300:// TestParsePercentageCoordsErrors tests parsePercentageCoords error cases
+pkg/driver/appium/driver_test.go:2301:func TestParsePercentageCoordsErrors(t *testing.T) {
+pkg/driver/appium/driver_test.go:2303:	_, _, err := parsePercentageCoords("invalid")
+pkg/driver/appium/driver_test.go:2309:	_, _, err = parsePercentageCoords("abc%, 50%")
+pkg/driver/appium/driver_test.go:2315:	_, _, err = parsePercentageCoords("50%, xyz%")
+pkg/driver/appium/driver_test.go:2415:// TestSwipeStartEndCoords tests swipe with start/end percentage strings
+pkg/executor/parallel_test.go:50:		{"under 1min", 59000, "59.0s"},
+pkg/executor/parallel_test.go:52:		{"1min 30s", 90000, "1m30s"},
+pkg/driver/appium/driver.go:687:		if e.Bounds.VisiblePercentage(w, h) >= 0.1 {
+pkg/executor/scripting.go:846:				s.ThresholdPercentage = f
+pkg/executor/scripting.go:848:				s.ThresholdPercentage = 95.0
+pkg/driver/appium/commands.go:144:	// Handle Point field (percentage or absolute coordinates)
+pkg/driver/appium/commands.go:178:		// "x%, y%" is a percentage of the screen, "x, y" (no %) is pixels.
+pkg/driver/appium/commands.go:259:		sx, sy, ex, ey, derr := core.DirectionSwipeScreenCoords(direction, w, h, step.Distance)
+pkg/driver/appium/commands.go:266:		return successResult(fmt.Sprintf("Swiped %s %.0f%% of the screen", direction, step.Distance*100), nil)
+pkg/driver/appium/commands.go:426:			if core.MeetsVisibility(info.Bounds, w, h, step.VisibilityPercentage) {
+pkg/driver/appium/commands.go:751:		if w, h := d.client.ScreenSize(); w > 0 && h > 0 && info.Bounds.VisiblePercentage(w, h) < 0.1 {
+pkg/driver/appium/commands.go:1334:func parsePercentageCoords(coord string) (float64, float64, error) {
+pkg/driver/appium/commands.go:1335:	return core.ParsePercentageCoords(coord)
+pkg/executor/flow_runner.go:950:	matchPercentage := stats.MatchPercentage
+pkg/executor/flow_runner.go:952:	if matchPercentage < step.ThresholdPercentage {
+pkg/executor/flow_runner.go:963:		decimals := core.MatchDecimals(matchPercentage, step.ThresholdPercentage)
+pkg/executor/flow_runner.go:971:			decimals, matchPercentage,
+pkg/executor/flow_runner.go:972:			decimals, step.ThresholdPercentage,
+pkg/executor/flow_runner.go:980:				decimals, matchPercentage,
+pkg/executor/flow_runner.go:981:				decimals, step.ThresholdPercentage,
+pkg/executor/flow_runner.go:992:			matchPercentage,
+pkg/executor/flow_runner.go:993:			step.ThresholdPercentage,
+pkg/driver/appium/drag_scroll_test.go:179:func TestScrollUntilVisible_HonorsVisibilityPercentage(t *testing.T) {
+pkg/driver/appium/drag_scroll_test.go:186:		VisibilityPercentage: 50,
+pkg/driver/appium/drag_scroll_test.go:192:		t.Fatalf("50%% visible must satisfy visibilityPercentage: 50, got: %v - %s", result.Error, result.Message)
+pkg/driver/appium/drag_scroll_test.go:214:      <android.widget.TextView text="Target" bounds="[0,1900][1080,2026]" enabled="true" displayed="true" />
+pkg/uiautomator2/gestures_test.go:348:		if seq[0]["type"] != "pointerMove" || seq[0]["x"].(float64) != 100 || seq[0]["y"].(float64) != 900 {
+pkg/uiautomator2/gestures_test.go:392:	if err := client.DragAndDrop(100, 900, 100, 300, 800, 1000); err != nil {
+pkg/cli/narration_test.go:126:		{Type: "launchApp", YAML: "launchApp", Status: report.StatusPassed, Duration: ms(900)},
+pkg/cli/narration_test.go:231:		{name: "slow, no warning", durationMs: 5200, wantLine: "✓ " + desc + " (5.2s, slow)"},
+pkg/cli/narration_test.go:233:		{name: "slow with warning", durationMs: 5200, warning: "typed text replaced", wantLine: "⚠ " + desc + " (5.2s, slow)", wantWarn: true},
+pkg/core/gesture.go:68:// a `swipe:` specifies an explicit `distance:` so callers control travel.
+pkg/core/gesture.go:69:func DirectionSwipeScreenCoords(direction string, w, h int, distance float64) (startX, startY, endX, endY int, err error) {
+pkg/core/gesture.go:108:func SwipeCoordsFromBounds(direction string, b Bounds, screenW, screenH int, distance float64) (startX, startY, endX, endY int, err error) {
+pkg/core/gesture.go:203://     (SwipeCoordsToScreenEdge), or distance × the screen once one is given.
+pkg/core/gesture.go:217:			return SwipeCoordsFromBounds(direction, b, screenW, screenH, distance)
+pkg/core/gesture.go:228:	travel, terr := swipeTravel(direction, b, screenW, screenH, distance)
+pkg/core/gesture.go:238:func swipeTravel(direction string, b Bounds, screenW, screenH int, distance float64) (int, error) {
+pkg/core/gesture_test.go:278:		{"percentages resolve inside the element", "20%, 50%", b, 180, 240, false},
+pkg/core/gesture_test.go:312:	list := Bounds{X: 0, Y: 300, Width: 1080, Height: 1900} // bottom edge at 2200
+pkg/core/gesture_test.go:367:		{"down from anchor near bottom", "down", Bounds{X: 0, Y: 1900, Width: 1080, Height: 200}, 540, 1920, 540, 2160},
+pkg/core/gesture_test.go:384:	// SwipeCoordsForElement with no point and no distance is the same swipe.
+pkg/executor/schedule_test.go:25:		got := longestFirst(flows, map[string]int64{"a.yaml": 100, "b.yaml": 9000, "c.yaml": 500})
+pkg/executor/schedule_test.go:26:		want := []int{1, 2, 0} // b (9000), c (500), a (100)
+pkg/executor/schedule_test.go:67:		// Weights: short=100, long=9000, unknown=median. Whatever the median
+pkg/executor/schedule_test.go:71:		got := longestFirst(f, map[string]int64{"short.yaml": 100, "long.yaml": 9000})
+pkg/driver/devicelab_ios_legacy/commands.go:265:// handleTapOnPoint taps explicit coordinates — x/y, or a percentage/absolute
+pkg/driver/devicelab_ios_legacy/commands.go:828:			if node := d.scrollTargetIn(nodes, s.Element, s.VisibilityPercentage); node != nil {
+pkg/driver/devicelab_ios_legacy/commands.go:1068:// percentages first, then absolute StartX/Y/EndX/Y, then direction +
+pkg/driver/devicelab_ios_legacy/commands.go:1073:		sx, sy, err := parsePercentageCoords(s.Start)
+pkg/driver/devicelab_ios_legacy/commands.go:1077:		ex, ey, err := parsePercentageCoords(s.End)
+pkg/driver/devicelab_ios_legacy/commands.go:1146:func parsePercentageCoords(s string) (float64, float64, error) {
+pkg/driver/devicelab/driver.go:1372:// per-strategy RPCs produce 6 fresh tree snapshots spread across ~900ms,
+pkg/report/html_test.go:545:	// Check duration percentage
+pkg/device/devicelab_driver_test.go:160:			log: "devicelab-driver-start 1758599000000000000\n" + processCrashed, wantState: driverStarting,
+pkg/core/imagediff.go:103:// percentage plus the raw pixel counts behind it. The counts matter because a
+pkg/core/imagediff.go:108:	MatchPercentage float64
+pkg/core/imagediff.go:113:// CompareImages returns the percentage of pixels whose RGB color distance is
+pkg/core/imagediff.go:141:		return ImageMatchStats{MatchPercentage: 100}, nil
+pkg/core/imagediff.go:153:		MatchPercentage: 100 - float64(differing)/float64(total)*100,
+pkg/core/imagediff.go:159:// CheckImageMatchPercentage returns just the match percentage of CompareImages.
+pkg/core/imagediff.go:160:func CheckImageMatchPercentage(expectedData, actualData []byte) (float64, error) {
+pkg/core/imagediff.go:165:	return stats.MatchPercentage, nil
+pkg/core/imagediff.go:168:// MatchDecimals returns how many decimal places a match percentage needs so it
+pkg/core/imagediff_test.go:93:func TestCheckImageMatchPercentage_UsesMaestroColorTolerance(t *testing.T) {
+pkg/core/imagediff_test.go:97:	match, err := CheckImageMatchPercentage(expected, withinTolerance)
+pkg/core/imagediff_test.go:99:		t.Fatalf("CheckImageMatchPercentage() error = %v", err)
+pkg/core/imagediff_test.go:106:func TestCheckImageMatchPercentage_CountsPixelsOutsideTolerance(t *testing.T) {
+pkg/core/imagediff_test.go:110:	match, err := CheckImageMatchPercentage(expected, outsideTolerance)
+pkg/core/imagediff_test.go:112:		t.Fatalf("CheckImageMatchPercentage() error = %v", err)
+pkg/core/imagediff_test.go:119:func TestCheckImageMatchPercentage_ReportsSizeMismatch(t *testing.T) {
+pkg/core/imagediff_test.go:123:	_, err := CheckImageMatchPercentage(expected, actual)
+pkg/core/imagediff_test.go:154:	if stats.MatchPercentage != 99.99 {
+pkg/core/imagediff_test.go:155:		t.Errorf("MatchPercentage = %v, want 99.99", stats.MatchPercentage)
+pkg/core/imagediff_test.go:166:	if stats.MatchPercentage != 100 || stats.DifferingPixels != 0 {
+pkg/core/point_test.go:17:		// Percentage coordinates
+pkg/core/point_test.go:19:			name:    "percentage 50%, 50%",
+pkg/core/point_test.go:25:			name:    "percentage 0%, 0%",
+pkg/core/point_test.go:32:			name:    "percentage 100%, 100%",
+pkg/core/point_test.go:38:			name:    "percentage with spaces",
+pkg/core/point_test.go:44:			name:    "percentage 25%, 75%",
+pkg/core/point_test.go:115:			name:    "invalid x percentage",
+pkg/core/point_test.go:121:			name:    "invalid y percentage",
+pkg/core/point_test.go:171:		// Bounds validation: percentage out of range
+pkg/core/point_test.go:173:			name:    "x percentage over 100",
+pkg/core/point_test.go:179:			name:    "y percentage over 100",
+pkg/core/point_test.go:185:			name:    "negative x percentage",
+pkg/core/point_test.go:191:			name:    "negative y percentage",
+pkg/core/point_test.go:205:			name:    "zero screen with percentage",
+pkg/core/point_test.go:211:		// Mixed notation (one percentage, one absolute) - should error
+pkg/core/point_test.go:216:			wantErr: true, // enters percentage mode, 123 > 100 range
+pkg/core/point_test.go:222:			wantErr: true, // enters percentage mode, 123 parsed as pct > 100
+pkg/core/point_test.go:259:func TestParsePercentageCoords(t *testing.T) {
+pkg/core/point_test.go:299:			name:  "fractional percentages",
+pkg/core/point_test.go:334:			x, y, err := ParsePercentageCoords(tt.coord)
+pkg/core/point_test.go:337:					t.Errorf("ParsePercentageCoords(%q) expected error, got (%f, %f)", tt.coord, x, y)
+pkg/core/point_test.go:342:				t.Fatalf("ParsePercentageCoords(%q) unexpected error: %v", tt.coord, err)
+pkg/core/point_test.go:346:				t.Errorf("ParsePercentageCoords(%q) x = %f, want %f", tt.coord, x, tt.wantX)
+pkg/core/point_test.go:349:				t.Errorf("ParsePercentageCoords(%q) y = %f, want %f", tt.coord, y, tt.wantY)
+pkg/core/visibility_test.go:13:		{"half below the fold", Bounds{X: 0, Y: 1900, Width: 100, Height: 200}, 0.5},
+pkg/core/visibility_test.go:33:	half := Bounds{X: 0, Y: 1900, Width: 100, Height: 200} // 50% visible
+pkg/core/visibility_test.go:37:		t.Error("unset percentage must default to fully-visible and reject 50%")
+pkg/core/visibility_test.go:43:		t.Error("50% visible must satisfy visibilityPercentage: 50")
+pkg/core/visibility_test.go:46:		t.Error("50% visible must not satisfy visibilityPercentage: 51")
+pkg/core/visibility_test.go:49:		t.Error("out-of-range percentage must fall back to the fully-visible default")
+pkg/core/point.go:11:// If the string contains '%', values are treated as percentages of screenW/screenH.
+pkg/core/point.go:36:		// Percentage mode
+pkg/core/point.go:42:			return 0, 0, fmt.Errorf("invalid x percentage: %s", parts[0])
+pkg/core/point.go:47:			return 0, 0, fmt.Errorf("invalid y percentage: %s", parts[1])
+pkg/core/point.go:51:			return 0, 0, fmt.Errorf("x percentage out of range (0-100): %.1f", xPct)
+pkg/core/point.go:54:			return 0, 0, fmt.Errorf("y percentage out of range (0-100): %.1f", yPct)
+pkg/core/point.go:85:// ParsePercentageCoords parses a "x%, y%" coordinate string into decimal fractions (0.0-1.0).
+pkg/core/point.go:92:func ParsePercentageCoords(coord string) (float64, float64, error) {
+pkg/core/driver.go:157:// VisiblePercentage returns the fraction of the element's area that overlaps
+pkg/core/driver.go:160:func (b Bounds) VisiblePercentage(screenWidth, screenHeight int) float64 {
+pkg/driver/devicelab/settle_after_tap_test.go:132:	if got := d.remainingTimeoutMs(start, true, 7000); got < 4900 || got > 5000 {
+pkg/driver/devicelab/typing_focus_test.go:13:	field := core.Bounds{X: 40, Y: 900, Width: 1000, Height: 120}
+pkg/driver/devicelab/typing_focus_test.go:21:		{"input inside a tapped wrapper", &core.ElementInfo{Bounds: core.Bounds{X: 60, Y: 920, Width: 900, Height: 80}}, core.Bounds{X: 0, Y: 880, Width: 1080, Height: 160}, true},
+pkg/driver/devicelab/commands_test.go:206:// requires the flow's visibility percentage (default: fully inside the
+pkg/driver/devicelab/commands_test.go:213:		percentage int // 0 = flow didn't set one → fully visible required
+pkg/driver/devicelab/commands_test.go:237:			if got := core.MeetsVisibility(tt.bounds, 1080, 2400, tt.percentage); got != tt.want {
+pkg/driver/devicelab/commands_test.go:238:				t.Errorf("MeetsVisibility(%v, pct=%d) = %v, want %v", tt.bounds, tt.percentage, got, tt.want)
+pkg/driver/devicelab/swipe_geometry_test.go:74:// R02: `start:`/`end:` without `%` are pixels; `N%` stays a percentage.
+pkg/driver/devicelab/swipe_geometry_test.go:79:		{"pixels", "900, 520", "100, 520", "input swipe 900 520 100 520 300"},
+pkg/driver/devicelab/swipe_geometry_test.go:80:		{"percentages", "60%, 22%", "5%, 22%", "input swipe 648 528 54 528 300"},
+pkg/driver/devicelab/commands.go:428:// tapOnPointWithCoords handles point-based tap with either percentage or absolute coordinates.
+pkg/driver/devicelab/commands.go:475:// same percentage/absolute rules as tapOn.
+pkg/driver/devicelab/commands.go:1409:			if core.MeetsVisibility(info.Bounds, width, height, step.VisibilityPercentage) {
+pkg/driver/devicelab/commands.go:1460:// percent controls the swipe distance as a fraction of screen dimension.
+pkg/driver/devicelab/commands.go:1474:// percent is the swipe distance as a fraction of the screen dimension along
+pkg/driver/devicelab/commands.go:1549:	// used by screen-percentage swipes. `SwipeInArea` (the previous path) does
+pkg/driver/devicelab/commands.go:1580:		sx, sy, ex, ey, derr := core.DirectionSwipeScreenCoords(direction, width, height, step.Distance)
+pkg/driver/devicelab/commands.go:1682:	// "x%, y%" is a percentage of the screen, "x, y" (no %) is device pixels.
+pkg/driver/appium/tap_point_test.go:159:// swipe distance: 0.2 travels 20% of the screen height; it was ignored.
+pkg/driver/appium/tap_point_test.go:160:func TestSwipeHonoursDistance(t *testing.T) {
+pkg/driver/appium/tap_point_test.go:162:	if res := d.swipe(&flow.SwipeStep{Direction: "UP", Distance: 0.2}); !res.Success {
+pkg/driver/devicelab/commands_helpers_test.go:883:	// Percentage coords resolve to absolute via screen size.
+pkg/driver/devicelab/commands_helpers_test.go:1070:		{"left", "input swipe 900 1000 100 1000 300"},
+pkg/driver/devicelab/commands_helpers_test.go:1072:		{"right", "input swipe 100 1000 900 1000 300"},
+pkg/driver/devicelab/commands_helpers_test.go:1479:func TestTapOnPoint_PercentageString(t *testing.T) {
+pkg/driver/devicelab/commands_helpers_test.go:1523:	// Bad percentage string
+pkg/driver/devicelab/commands_helpers_test.go:1544:	// No screen size for percentage point
+pkg/driver/devicelab/commands_helpers_test.go:1548:		t.Error("tapOnPoint percentage without screen size should fail")
+pkg/driver/devicelab/commands_helpers_test.go:3215:// swipe` always lifts the pointer at speed, so the view flings and the distance
+pkg/core/visibility.go:30:// MeetsVisibility reports whether the element satisfies a visibilityPercentage
+pkg/core/visibility.go:31:// requirement (1-100). A percentage outside that range means the caller didn't
+pkg/core/visibility.go:35:func MeetsVisibility(b Bounds, screenW, screenH, percentage int) bool {
+pkg/core/visibility.go:36:	if percentage < 1 || percentage > 100 {
+pkg/core/visibility.go:37:		percentage = 100
+pkg/core/visibility.go:40:	return int(VisibleFraction(b, screenW, screenH)*100+0.5) >= percentage
+pkg/driver/browser/cdp/driver_test.go:984:	// Percentage-based point
+pkg/driver/browser/cdp/driver_test.go:987:		t.Errorf("tapOnPoint with percentage should succeed: %s", result.Message)
+pkg/driver/browser/cdp/driver_test.go:1071:func TestParsePercentageCoords(t *testing.T) {
+pkg/driver/browser/cdp/driver_test.go:1085:		x, y, err := parsePercentageCoords(tt.input)
+pkg/driver/browser/cdp/driver_test.go:1088:				t.Errorf("parsePercentageCoords(%q) should fail", tt.input)
+pkg/driver/browser/cdp/driver_test.go:1093:			t.Errorf("parsePercentageCoords(%q) failed: %v", tt.input, err)
+pkg/driver/browser/cdp/driver_test.go:1097:			t.Errorf("parsePercentageCoords(%q) = (%f, %f), want (%f, %f)", tt.input, x, y, tt.x, tt.y)
+pkg/driver/browser/cdp/driver_test.go:2379:func TestParsePercentageCoordsInvalidY(t *testing.T) {
+pkg/driver/browser/cdp/driver_test.go:2381:	_, _, err := parsePercentageCoords("50%, abc")
+pkg/driver/browser/cdp/driver_test.go:2383:		t.Error("parsePercentageCoords with invalid Y should fail")
+pkg/driver/browser/cdp/driver_test.go:2578:func TestTapOnPointInvalidPercentage(t *testing.T) {
+pkg/driver/browser/cdp/driver_test.go:2587:		t.Error("tapOnPoint with invalid percentage should fail")
+pkg/driver/browser/cdp/commands.go:356:	// Handle percentage-based point
+pkg/driver/browser/cdp/commands.go:358:		px, py, err := parsePercentageCoords(step.Point)
+pkg/driver/browser/cdp/commands.go:744:				core.MeetsVisibility(info.Bounds, d.viewportW, d.viewportH, step.VisibilityPercentage) {
+pkg/driver/browser/cdp/commands.go:1393:// parsePercentageCoords parses "x%, y%" format coordinates.
+pkg/driver/browser/cdp/commands.go:1394:func parsePercentageCoords(point string) (float64, float64, error) {
+pkg/driver/wda/driver_test.go:193:// TestExecuteTapOnWithPoint tests tap with percentage coordinates
+pkg/driver/wda/driver_test.go:258:// TestExecuteTapOnPointWithPercentage tests tap with percentage
+pkg/driver/wda/driver_test.go:259:func TestExecuteTapOnPointWithPercentage(t *testing.T) {
+pkg/driver/wda/driver_test.go:507:// TestExecuteSwipeWithCoordinates tests swipe with percentage coordinates
+pkg/driver/wda/driver_test.go:1016:// TestParsePercentageCoords tests percentage coordinate parsing
+pkg/driver/wda/driver_test.go:1017:func TestParsePercentageCoords(t *testing.T) {
+pkg/driver/wda/driver_test.go:1033:		x, y, err := parsePercentageCoords(tc.input)
+pkg/driver/wda/driver_test.go:3255:// TestTapOnPointWithPercentageError tests tapOnPointWithCoords with invalid percentage
+pkg/driver/wda/driver_test.go:3256:func TestTapOnPointWithPercentageInvalidX(t *testing.T) {
+pkg/driver/wda/driver_test.go:3265:		t.Error("Expected failure for invalid x percentage")
+pkg/driver/wda/driver_test.go:3269:// TestTapOnPointWithPercentageInvalidY tests tapOnPointWithCoords with invalid y percentage
+pkg/driver/wda/driver_test.go:3270:func TestTapOnPointWithPercentageInvalidY(t *testing.T) {
+pkg/driver/wda/driver_test.go:3279:		t.Error("Expected failure for invalid y percentage")
+pkg/driver/wda/driver_test.go:3314:// TestSwipeStartEndCoords tests swipe with start/end percentage strings
+pkg/driver/wda/driver_test.go:4337:// TestTapOnWithPoint tests tapOn with percentage-based Point
+pkg/driver/wda/driver_test.go:4444:// TestTapOnPointWithPercentageTapFails tests tapOnPointWithCoords when tap fails
+pkg/driver/wda/driver_test.go:4445:func TestTapOnPointWithPercentageTapFails(t *testing.T) {
+pkg/driver/wda/driver_test.go:4695:// TestTapOnPointWithPercentageWindowSizeError tests when screen size is not cached
+pkg/driver/wda/driver_test.go:4696:func TestTapOnPointWithPercentageWindowSizeError(t *testing.T) {
+pkg/driver/devicelab_ios_legacy/dragdrop_test.go:173:func TestScrollUntilVisible_HonorsVisibilityPercentage(t *testing.T) {
+pkg/driver/devicelab_ios_legacy/dragdrop_test.go:186:		VisibilityPercentage: 50,
+pkg/driver/devicelab_ios_legacy/dragdrop_test.go:189:		t.Fatalf("50%% visible must satisfy visibilityPercentage: 50, got: %s", res.Message)
+pkg/driver/devicelab_ios/actions.go:215:		x1, y1, x2, y2, err = core.SwipeCoordsForElement(dir, bounds(*node), w, h, s.Distance, s.Selector.Point)
+pkg/driver/devicelab_ios/actions.go:221:		x1, y1, x2, y2, err = core.DirectionSwipeScreenCoords(dir, w, h, s.Distance)
+pkg/driver/devicelab_ios/actions.go:317:					if core.MeetsVisibility(b, w, h, s.VisibilityPercentage) {
+pkg/driver/devicelab_ios/actions.go:320:				} else if core.MeetsVisibility(b, w, h, s.VisibilityPercentage) {
+pkg/report/builder_test.go:302:			step:    &flow.ScrollUntilVisibleStep{BaseStep: flow.BaseStep{StepType: flow.StepScrollUntilVisible, TimeoutMs: 900}},
+pkg/report/builder_test.go:304:			wantTO:  900,
+pkg/driver/wda/driver.go:1125:		if info.Bounds.VisiblePercentage(screenW, screenH) < 0.1 {
+pkg/core/driver_test.go:255:func TestBounds_VisiblePercentage(t *testing.T) {
+pkg/core/driver_test.go:280:			got := tt.bounds.VisiblePercentage(screenW, screenH)
+pkg/core/driver_test.go:283:				t.Errorf("Bounds%+v.VisiblePercentage(%d, %d) = %f, want %f",
+pkg/driver/wda/commands.go:219:// tapOnPointWithCoords handles point-based tap with either percentage ("85%, 50%") or absolute ("123, 456") coordinates.
+pkg/driver/wda/commands.go:284:	// Handle Point field (percentage or absolute coordinates)
+pkg/driver/wda/commands.go:805:		info, sig, err := d.lookOnceForScroll(step.Element, w, h, sizeErr, step.VisibilityPercentage)
+pkg/driver/wda/commands.go:894:	// Handle coordinate-based swipe: "x%, y%" is a percentage of the screen,
+pkg/driver/wda/commands.go:896:	// percentages, sending the swipe off screen).
+pkg/driver/wda/commands.go:931:		sx, sy, ex, ey, err := core.SwipeCoordsForElement(dir, info.Bounds, width, height, step.Distance, step.Selector.Point)
+pkg/driver/wda/commands.go:1884:func parsePercentageCoords(coord string) (float64, float64, error) {
+pkg/driver/wda/commands.go:1885:	return core.ParsePercentageCoords(coord)
+pkg/driver/wda/dragdrop_test.go:176:// TestScrollUntilVisible_ThresholdAccepted: visibilityPercentage lowers the bar.
+pkg/driver/wda/dragdrop_test.go:210:		VisibilityPercentage: 40,
+pkg/driver/wda/dragdrop_test.go:214:		t.Fatalf("a 50%%-visible element must satisfy visibilityPercentage: 40, got: %s", result.Message)
+pkg/driver/wda/client_test.go:1276:		fmt.Errorf("WDA error: some failure (-25202)"):    true,
+pkg/driver/uiautomator2/launch_first_frame_test.go:68:				out = append(out, "10-10 12:00:01.500   563  1256 I am_crash: [42,0,com.example.app,552091206,java.lang.RuntimeException,CRASH_AFTER_LAUNCH,App.kt,15,0]")
+pkg/driver/uiautomator2/launch_first_frame_test.go:220:		out = "10-10 12:00:00.400   563  1256 I am_crash: [41,0,com.example.app,552091206,java.lang.RuntimeException,EARLIER_RUN,App.kt,15,0]\n" + out
+pkg/driver/uiautomator2/launch_first_frame_test.go:260:		out = "10-10 12:00:00.400   563  1256 I am_crash: [42,0,com.example.app,552091206,java.lang.RuntimeException,CRASH_AFTER_LAUNCH,App.kt,15,0]\n" + out
+pkg/driver/uiautomator2/launch_first_frame_test.go:334:			out = append(out, "10-10 12:00:00.600   563  1256 I am_crash: [42,0,com.example.app,552091206,java.lang.RuntimeException,CRASH_AFTER_LAUNCH,App.kt,15,0]")
+pkg/driver/uiautomator2/launch_first_frame_test.go:398:				out = append(out, "10-10 12:00:05.000   563  1256 I am_crash: [42,0,com.example.app,552091206,java.lang.RuntimeException,CRASH_AFTER_LAUNCH,App.kt,15,0]")
+pkg/driver/wda/commands_test.go:2391:// TestSwipeStartEndCoordinates tests swipe with percentage-based start/end coordinates.
+pkg/driver/wda/commands_test.go:2829:// TestTapOnPointPercentageScreenSizeNotAvailable tests tapOnPointWithCoords when screen size not cached.
+pkg/driver/wda/commands_test.go:2830:func TestTapOnPointPercentageWindowSizeFails(t *testing.T) {
+pkg/driver/wda/commands_test.go:2845:// TestTapOnPointPercentageInvalidFormat tests tapOnPointWithCoords with invalid format.
+pkg/driver/wda/commands_test.go:2846:func TestTapOnPointPercentageInvalidFormat(t *testing.T) {
+pkg/driver/wda/commands_test.go:3468:// tapOnPoint percentage with Point field test
+pkg/driver/wda/commands_test.go:3471:// TestTapOnPointPercentageCoords tests tapOnPoint with percentage-based coordinates via Point field.
+pkg/driver/wda/commands_test.go:3472:func TestTapOnPointPercentageCoords(t *testing.T) {
+pkg/driver/wda/commands_test.go:3518:// parsePercentageCoords tests
+pkg/driver/wda/commands_test.go:3521:// TestParsePercentageCoordsTableDriven tests the parsePercentageCoords helper function with table-driven cases.
+pkg/driver/wda/commands_test.go:3522:func TestParsePercentageCoordsTableDriven(t *testing.T) {
+pkg/driver/wda/commands_test.go:3542:			x, y, err := parsePercentageCoords(tc.input)
+pkg/driver/wda/commands_test.go:4974:	want := []string{"xcrun", "simctl", "location", "SIM-UDID", "set", "37.774900,-122.419400"}
+pkg/driver/wda/client.go:403:		// with a transient kAXErrorInvalidUIElement (-25202): an element ref
+pkg/driver/wda/client.go:444:// kAXErrorInvalidUIElement (-25202) raised when the accessibility tree mutates
+pkg/driver/wda/client.go:451:	return strings.Contains(m, "kAXErrorInvalidUIElement") || strings.Contains(m, "-25202")
+pkg/driver/wda/pagesource_test.go:669:		{Label: "off-screen-below", Bounds: core.Bounds{X: 50, Y: 900, Width: 200, Height: 50}},
+pkg/driver/wda/pagesource_test.go:686:			t.Logf("  kept: %s (visible=%.2f)", e.Label, e.Bounds.VisiblePercentage(screenW, screenH))
+pkg/driver/wda/pagesource_test.go:742:      <XCUIElementTypeButton type="XCUIElementTypeButton" label="NORTHERN AMERICA (10), ` + "\U000F0140" + `" enabled="true" visible="true" x="12" y="520" width="378" height="80"/>
+pkg/driver/wda/pagesource.go:184:		if e.Bounds.VisiblePercentage(screenWidth, screenHeight) >= 0.1 {
+pkg/driver/uiautomator2/pagesource_test.go:757:			t.Logf("  kept: %s (visible=%.2f)", e.Text, e.Bounds.VisiblePercentage(screenW, screenH))
+pkg/driver/uiautomator2/swipe_geometry_test.go:11:// percentages, so `900, 520` became 900% of the screen and the swipe landed
+pkg/driver/uiautomator2/swipe_geometry_test.go:17:		{"pixels", "900, 520", "100, 520", "input swipe 900 520 100 520 300"},
+pkg/driver/uiautomator2/swipe_geometry_test.go:18:		{"pixels without spaces", "900,520", "100,520", "input swipe 900 520 100 520 300"},
+pkg/driver/uiautomator2/swipe_geometry_test.go:19:		{"percentages", "60%, 22%", "5%, 22%", "input swipe 648 528 54 528 300"},
+pkg/driver/uiautomator2/swipe_geometry_test.go:40:	result := driver.swipe(&flow.SwipeStep{Start: "9000, 520", End: "100, 520"})
+pkg/driver/uiautomator2/visibility_wait.go:205:		return sizeErr != nil || b.VisiblePercentage(w, h) > 0
+pkg/driver/uiautomator2/deterministic_gestures_test.go:374:// L33: absolute pixels work as well as percentages.
+pkg/driver/uiautomator2/deterministic_gestures_test.go:557:	if r := d.Execute(&flow.SwipeStep{StartX: 900, StartY: 500, EndX: 100, EndY: 500, Duration: 300}); !r.Success {
+pkg/driver/uiautomator2/deterministic_gestures_test.go:611:	if r := d.Execute(&flow.SwipeStep{StartX: 900, StartY: 500, EndX: 100, EndY: 500, Duration: 300}); !r.Success {
+pkg/driver/uiautomator2/deterministic_gestures_test.go:659:	if r := d.Execute(&flow.SwipeStep{StartX: 900, StartY: 500, EndX: 100, EndY: 500}); !r.Success {
+pkg/driver/uiautomator2/deterministic_gestures_test.go:720:	if r := d.Execute(&flow.SwipeStep{StartX: 900, StartY: 500, EndX: 100, EndY: 500}); !r.Success {
+pkg/driver/uiautomator2/deterministic_gestures_test.go:784:	if r := d.Execute(&flow.SwipeStep{StartX: 900, StartY: 500, EndX: 100, EndY: 500}); !r.Success {
+pkg/driver/wda/swipe_geometry_test.go:34:// not percentages; `N%` stays a percentage of the screen.
+pkg/driver/wda/swipe_geometry_test.go:40:		{"points", "300, 520", "100, 520", 300, 520, 100, 520},
+pkg/driver/wda/swipe_geometry_test.go:41:		{"percentages", "60%, 22%", "5%, 22%", 234, 185.68, 19.5, 185.68},
+pkg/driver/wda/swipe_geometry_test.go:72:	if result := driver.swipe(&flow.SwipeStep{Start: "900, 520", End: "100, 520"}); result.Success {
+pkg/driver/uiautomator2/pagesource.go:201:		if e.Bounds.VisiblePercentage(screenWidth, screenHeight) >= 0.1 {
+pkg/driver/appium/swipe_geometry_test.go:82:// R02: `start:`/`end:` without `%` are pixels; `N%` stays a percentage.
+pkg/driver/appium/swipe_geometry_test.go:88:		{"pixels", "900, 520", "100, 520", []string{`"x":900,"y":520`, `"x":100,"y":520`}},
+pkg/driver/appium/swipe_geometry_test.go:89:		{"percentages", "60%, 22%", "5%, 22%", []string{`"x":648,"y":514`, `"x":54,"y":514`}},
+pkg/driver/devicelab/pagesource_helpers_test.go:420:	keyboard := core.Bounds{X: 0, Y: 1500, Width: 1080, Height: 900}
+pkg/driver/uiautomator2/commands_test.go:1883:// ParsePercentageCoords Tests
+pkg/driver/uiautomator2/commands_test.go:1886:func TestParsePercentageCoords(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:1906:			x, y, err := parsePercentageCoords(tt.input)
+pkg/driver/uiautomator2/commands_test.go:1918:				t.Errorf("parsePercentageCoords(%q) = (%f, %f), want (%f, %f)", tt.input, x, y, tt.xPct, tt.yPct)
+pkg/driver/uiautomator2/commands_test.go:2186:func TestTapOnPointWithPercentageSuccess(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:2206:func TestTapOnPointWithPercentageCorners(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:2225:func TestTapOnPointWithPercentageNoDevice(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:2238:func TestTapOnPointWithPercentageInvalidCoords(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:2250:func TestTapOnPointWithPercentageClickError(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:2305:func TestTapOnPointWithPercentagePoint(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:2306:	// Test tapOnPoint with a percentage-based Point string
+pkg/driver/uiautomator2/commands_test.go:2326:func TestTapOnPointWithPercentagePointNoDevice(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:2337:func TestTapOnPointWithPercentagePointInvalid(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:2346:		t.Error("expected failure for invalid percentage coords")
+pkg/driver/uiautomator2/commands_test.go:2447:func TestSwipeWithStartEndPercentages(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:2939:	if info.Bounds.Width != 1080 || info.Bounds.Height != 1900 {
+pkg/driver/uiautomator2/commands_test.go:2940:		t.Errorf("expected bounds 1080x1900, got %dx%d", info.Bounds.Width, info.Bounds.Height)
+pkg/driver/uiautomator2/commands_test.go:3389:// tapOn with percentage Point (no selector) Tests
+pkg/driver/uiautomator2/commands_test.go:3392:func TestTapOnWithPercentagePoint(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:3870:func TestTapOnPointWithPercentageScreenSizeError(t *testing.T) {
+pkg/driver/uiautomator2/commands_test.go:4519:		percentage int // 0 = flow didn't set one → fully visible required
+pkg/driver/uiautomator2/commands_test.go:4537:			if got := core.MeetsVisibility(tt.bounds, 1080, 2400, tt.percentage); got != tt.want {
+pkg/driver/uiautomator2/commands_test.go:4538:				t.Errorf("MeetsVisibility(%v, pct=%d) = %v, want %v", tt.bounds, tt.percentage, got, tt.want)
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:67:				out = append(out, "10-10 12:00:00.600   563  1256 I am_crash: [42,0,com.example.app,552091206,java.lang.RuntimeException,CRASH_AFTER_LAUNCH,App.kt,15,0]")
+pkg/report/html.go:82:	// Find max duration for percentage bars
+pkg/driver/uiautomator2/commands.go:214:// tapOnPointWithCoords handles point-based tap with either percentage ("85%, 50%") or absolute ("123, 456") coordinates.
+pkg/driver/uiautomator2/commands.go:251:// percentage/absolute rules as tapOn apply: a bare point is relative to the
+pkg/driver/uiautomator2/commands.go:1374:			if core.MeetsVisibility(info.Bounds, width, height, step.VisibilityPercentage) {
+pkg/driver/uiautomator2/commands.go:1507:// percent controls the swipe distance as a fraction of screen dimension —
+pkg/driver/uiautomator2/commands.go:1541:// percent is the swipe distance as a fraction of the screen dimension along
+pkg/driver/uiautomator2/commands.go:1612:	// Check if coordinate-based swipe (percentage or absolute)
+pkg/driver/uiautomator2/commands.go:1676:		sx, sy, ex, ey, derr := core.DirectionSwipeScreenCoords(direction, width, height, step.Distance)
+pkg/driver/uiautomator2/commands.go:1779:// percentage of the screen; "900, 520" (no %) is device pixels (R02: plain
+pkg/driver/uiautomator2/commands.go:1780:// integers used to be read as percentages, sending the swipe off screen).
+pkg/driver/uiautomator2/commands.go:1824:// parsePercentageCoords parses "x%, y%" format into decimal fractions (0.0-1.0)
+pkg/driver/uiautomator2/commands.go:1825:func parsePercentageCoords(coord string) (float64, float64, error) {
+pkg/driver/uiautomator2/commands.go:1826:	return core.ParsePercentageCoords(coord)

@@ -1,0 +1,59 @@
+Tests/GrantivaCLITests/AndroidCommandTests.swift:40:        var command = try RunCommand.parse(["--no-build", "--scheme", "Demo"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:48:            XCTAssertTrue("\(error)".contains("--scheme"), "\(error)")
+Tests/GrantivaCLITests/AndroidCommandTests.swift:62:            XCTAssertTrue("\(error)".contains("--application-id"), "\(error)")
+Tests/GrantivaCLITests/AndroidCommandTests.swift:69:        var command = try RunCommand.parse(["--no-build", "--application-id", "com.fake", "--logs", "--logs-tag", "Fake", "--timeout", "30"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:276:    /// Review round 1: `--application-id` picks the test target, but the APK
+Tests/GrantivaCLITests/AndroidCommandTests.swift:279:        var command = try InstallCommand.parse(["--variant", "paidDebug", "--application-id", "com.fake.flag"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:288:        var command = try RunCommand.parse(["--application-id", "com.fake.flag", "--timeout", "30"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:314:        var command = try CICommand.CIRunCommand.parse(["--no-build", "--application-id", "com.fake"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:327:        var command = try RunCommand.parse(["--no-build", "--application-id", "com.fake", "--timeout", "30"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:391:        var command = try InstallCommand.parse(["--no-launch", "--no-build", "--application-id", "com.fake.app"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:400:        var command = try InstallCommand.parse(["--no-launch", "--no-build", "--application-id", "com.fake.app", "--json"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:411:        var command = try InstallCommand.parse(["--no-build", "--application-id", "com.fake.app"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:428:        var command = try InstallCommand.parse(["--no-build", "--application-id", "com.fake.app"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:440:        var command = try RunCommand.parse(["--no-build", "--application-id", "com.fake.app", "--timeout", "30"])
+Tests/GrantivaCLITests/InitIOSTests.swift:7:    private let placeholderScheme = "No Xcode project found; scheme \"MyApp\" is a placeholder. Edit grantiva.yml or pass --scheme."
+Tests/GrantivaCLITests/InitIOSTests.swift:66:        XCTAssertEqual(warnings, ["Several schemes found: Landmarks, Landmarks (UI Testing). Set scheme in grantiva.yml or pass --scheme."])
+Sources/GrantivaCLI/DriverCommand.swift:255:            if applicationId != nil { throw TargetOptions.otherPlatformFlagError("--application-id", platform: .ios) }
+Sources/GrantivaCLI/DriverCommand.swift:263:                throw GrantivaError.invalidArgument("No application ID. Pass --application-id or set application_id in grantiva-android.yml.")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:395:            XCTAssertTrue("\($0)".contains("--application-id"), "\($0)")
+Tests/GrantivaCLITests/TargetOptionsTests.swift:18:        let scheme = try TargetOptions.parse(["--scheme", "Demo"])
+Tests/GrantivaCLITests/TargetOptionsTests.swift:20:            XCTAssertTrue("\(error)".contains("--scheme"), "\(error)")
+Tests/GrantivaCLITests/TargetOptionsTests.swift:60:        let flags = try TargetOptions.parse(["--module", "app", "--variant", "debug", "--application-id", "com.flag", "--device", "emulator-5556"])
+Tests/GrantivaCLITests/TargetOptionsTests.swift:98:        XCTAssertEqual(overridden.id, free, "--application-id still overrides")
+Tests/GrantivaCLITests/TargetOptionsTests.swift:99:        XCTAssertTrue(overridden.warning?.contains("--application-id \(free) differs") == true, "\(overridden)")
+Tests/GrantivaCLITests/TargetOptionsTests.swift:142:            _ = try await TargetOptions.parse(["--application-id", "bad id"]).resolve(platform: .android, config: nil, skipBuild: true, appID: nil)
+Tests/GrantivaCLITests/TargetOptionsTests.swift:170:        XCTAssertTrue(TargetOptions.appIDMessage(for: .android).contains("--application-id"))
+Sources/GrantivaCLI/InitCommand.swift:133:            warnings.append("Several schemes found: \(found). Set scheme in grantiva.yml or pass --scheme.")
+Sources/GrantivaCLI/InitCommand.swift:137:                "Could not list the schemes of the Xcode project; scheme \"\(schemeName)\" is a guess. Edit grantiva.yml or pass --scheme."
+Sources/GrantivaCLI/InitCommand.swift:141:            warnings.append("No Xcode project found; scheme \"MyApp\" is a placeholder. Edit grantiva.yml or pass --scheme.")
+Sources/GrantivaCLI/InitCommand.swift:218:            ? [("--application-id", applicationId != nil)]
+Sources/GrantivaCLI/InitCommand.swift:219:            : [("--scheme", scheme != nil), ("--bundle-id", bundleId != nil)]
+Tests/GrantivaCLITests/RunSessionContractTests.swift:160:        let flagged = try TargetOptions.parse(["--application-id", "com.flag"])
+Tests/GrantivaCLITests/RunSessionContractTests.swift:250:            var arguments = ["--json", "--no-build", "--application-id", "com.fake", "--device", Self.fakeSerial()]
+Tests/GrantivaCLITests/InitAndroidTests.swift:7:final class InitAndroidTests: XCTestCase {
+Tests/GrantivaCLITests/InitAndroidTests.swift:41:        try await InitCommand.parse(["--platform", "android", "--application-id", "com.example.app"]).run()
+Tests/GrantivaCLITests/InitAndroidTests.swift:81:        await assertInitFails(["--platform", "android", "--scheme", "X"], mentioning: "--scheme is an iOS option, but this is an Android project")
+Tests/GrantivaCLITests/InitAndroidTests.swift:90:        await assertInitFails(["--platform", "ios", "--application-id", "a.b"], mentioning: "--application-id is an Android option, but this is an iOS project")
+Tests/GrantivaCLITests/RunCommandTests.swift:287:                "--json", "--no-build", "--application-id", "com.fake", "--timeout", "30", "--report-dir", "rep",
+Tests/GrantivaCLITests/RunCommandTests.swift:323:            var command = try RunCommand.parse(["--quiet", "--no-build", "--application-id", "com.fake", "--timeout", "30"])
+Tests/GrantivaCLITests/RunCommandTests.swift:369:            var command = try RunCommand.parse(["--json", "--application-id", "com.fake", "--timeout", "30"])
+Sources/GrantivaCLI/TargetOptions.swift:79:            ("--scheme", scheme != nil), ("--simulator", simulator != nil), ("--bundle-id", bundleId != nil),
+Sources/GrantivaCLI/TargetOptions.swift:83:            ("--module", module != nil), ("--variant", variant != nil), ("--application-id", applicationId != nil),
+Sources/GrantivaCLI/TargetOptions.swift:189:    /// on Android the app's own ID, even when `--application-id` names
+Sources/GrantivaCLI/TargetOptions.swift:205:            return "Application ID is required. Pass --application-id, set application_id in grantiva-android.yml, build from source, or pass --app-file <apk>."
+Sources/GrantivaCLI/RunCommand.swift:609:    /// `--flow` without `--bundle-id`/`--application-id` or a configured ID
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:79:                "Invalid argument: No scheme specified. Pass --scheme, set it in grantiva.yml, or use --app-file to provide a pre-built binary. Found: Landmarks, Landmarks (UI Testing)."
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:142:                XCTAssertTrue(message.contains("Pass --scheme"), message)
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:146:        XCTAssertEqual(ResolvedProject.noSchemeMessage(acceptsAppFile: false), "No scheme specified. Pass --scheme or set it in grantiva.yml.")
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:132:            "'/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(apk))",
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:309:            "JAVA_HOME='/jdk' '/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(apk))",
+Tests/GrantivaCLITests/PlatformOptionTests.swift:93:        let iosAppID = TargetOptions.otherPlatformFlagError("--application-id", platform: .ios).errorDescription
+Sources/GrantivaCore/Android/AndroidPlatform.swift:170:        let id = try? await execute("\(prefix)\(shellQuoted(sdk.apkanalyzer)) manifest application-id \(shellQuoted(absolute))")
+Sources/GrantivaCore/Android/AndroidPlatform.swift:213:            throw GrantivaError.invalidArgument("--logs on Android needs the application ID to filter logcat; pass --application-id.")
+Sources/GrantivaCore/Config/ProjectResolver.swift:60:            ? "No scheme specified. Pass --scheme, set it in grantiva.yml, or use --app-file to provide a pre-built binary."
+Sources/GrantivaCore/Config/ProjectResolver.swift:61:            : "No scheme specified. Pass --scheme or set it in grantiva.yml."
+Sources/GrantivaCore/Config/AndroidProject.swift:32:    /// override (`--application-id`) still wins; a disagreement either way is
+Sources/GrantivaCore/Config/AndroidProject.swift:40:                return (override, "--application-id \(override) differs from the app's own application ID \(binary); testing \(override). Drop --application-id to test \(binary).")
+Sources/GrantivaCore/Config/AndroidProject.swift:43:                return (override, "--application-id \(override) differs from the app's own application ID \(binary); installing \(binary) and launching \(override). Drop --application-id to launch \(binary).")
+Sources/GrantivaCore/Config/AndroidProject.swift:50:                return (binary, "application_id \(configured) in grantiva-android.yml differs from the app's own application ID \(binary); testing \(binary). Update application_id or pass --application-id to override.")

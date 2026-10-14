@@ -1,0 +1,690 @@
+Tests/GrantivaCLITests/AndroidCommandTests.swift:91:    /// and no device is resolved or booted.
+Tests/GrantivaCLITests/AndroidCommandTests.swift:103:    /// never booted or resolved through the emulator path.
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:60:            stopSessions: { [home, started] udid, _, _ in
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:73:        let result = await SimulatorCommand.Teardown.stopRunnerSessions(udids: [udid]) { await sessions.stop(udid: $0) }
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:90:            "Stopped runner session (pid \(runnerPid)) for \(udid).",
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:186:            stopSessions: { udid, _, deadline in
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:204:        let outcomes = await sessions.stop(udid: udid)
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:241:            stopSessions: { udid, _, _ in udid == "emulator-5554" ? [.terminated(runnerPid: 9, udid: udid, killed: false)] : [] },
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:244:        _ = await sessions.stop(udid: "emulator-5554")
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:245:        _ = await sessions.stop(udid: udid)
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:254:        let result = await SimulatorCommand.Teardown.stopRunnerSessions(udids: [lower]) { udid in
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:273:        let outcome = RunnerSessionStopper.Outcome.terminated(runnerPid: 1, udid: udid, killed: false, reaped: [first])
+Sources/GrantivaCLI/RecordCommand.swift:226:        let booted = try await platformDevice.bootDevice(named: targetName)
+Sources/GrantivaCLI/RecordCommand.swift:233:        try await platformDevice.recordVideo(deviceID: booted.udid, to: outputPath, seconds: duration)
+Sources/GrantivaCLI/RecordCommand.swift:253:        let geometry = try await platformDevice.displayGeometry(deviceID: booted.udid)
+Sources/GrantivaCLI/RecordCommand.swift:260:            simulator: booted.name,
+Sources/GrantivaCLI/RecordCommand.swift:261:            udid: booted.udid,
+Sources/GrantivaCLI/RecordCommand.swift:262:            emulator: platform == .android ? booted.name : nil,
+Sources/GrantivaCLI/RecordCommand.swift:263:            serial: platform == .android ? booted.udid : nil,
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:94:/// L08's `--no-build` twin: the capture's fallback (the sole booted
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:97:    private func platform(booted udid: String, name: String, created: [String]) throws -> IOSPlatform {
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:102:        let list = #"{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-26-0":[{"name":"\#(name)","udid":"\#(udid)","state":"Booted","isAvailable":true}]}}"#
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:114:    func testTheSoleBootedSimulatorIsRefusedUnlessGrantivaCreatedIt() async throws {
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:115:        let theirs = try platform(booted: "USER-3", name: "Mine", created: [])
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:117:            _ = try await DiffCommand.noBuildDevice(platform: .ios, explicit: nil, config: nil, sessionUDID: { nil }, device: theirs)
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:121:            XCTAssertTrue(text.hasPrefix("Invalid argument: Simulator \"Mine\" (USER-3) was not created by Grantiva. It is the only booted simulator, "), text)
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:124:        let ours = try platform(booted: "OURS-3", name: "qa", created: ["OURS-3"])
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:125:        let device = try await DiffCommand.noBuildDevice(platform: .ios, explicit: nil, config: nil, sessionUDID: { nil }, device: ours)
+Sources/GrantivaCLI/DriverCommand.swift:192:        let booted = platform == .ios && simulator == nil && config?.simulator == nil
+Sources/GrantivaCLI/DriverCommand.swift:198:        let simulatorLease = try SimulatorLease.acquire(udid: booted.udid, platform: platform)
+Sources/GrantivaCLI/DriverCommand.swift:205:        options.note("  \(deviceNoun): \(booted.name) (\(booted.udid))")
+Sources/GrantivaCLI/DriverCommand.swift:228:            platform: platformDevice, deviceID: booted.udid, flowPath: flowPath,
+Sources/GrantivaCLI/DriverCommand.swift:231:        let environment = platformDevice.runnerEnvironment(runnerHome: runnerDir, deviceID: booted.udid)
+Sources/GrantivaCLI/DriverCommand.swift:235:            appID: resolvedAppID, device: booted, platform: platform, platformDevice: platformDevice, reportDir: reportDir
+Sources/GrantivaCLI/DriverCommand.swift:240:        launch.staleSessionID = await Self.currentDriverSession(platformDevice, deviceID: booted.udid)
+Sources/GrantivaCLI/DriverCommand.swift:411:        let device: BootedDevice
+Sources/GrantivaCLI/DriverCommand.swift:1148:                    runnerPid: session.pid, udid: session.udid
+Sources/GrantivaCLI/DriverCommand.swift:1150:                outcome = .stopped(pid: session.pid, udid: session.udid, killed: termination == .killed, reaped: reaped, details: details)
+Sources/GrantivaCLI/DriverCommand.swift:1154:            let reaped = await dependencies.helperReaper.sweep(exitedRunnerPid: session.pid, udid: session.udid)
+Sources/GrantivaCLI/DriverCommand.swift:1155:            outcome = .exited(pid: session.pid, udid: session.udid, reaped: reaped, details: details)
+Sources/GrantivaCLI/DriverCommand.swift:1162:        if DeviceID.isAndroidSerial(session.udid) {
+Sources/GrantivaCLI/DriverCommand.swift:1164:                session.udid, session.isReady ? Int(session.wdaPort) : nil
+Sources/GrantivaCLI/DriverCommand.swift:1171:        dependencies.releaseLease(session.udid)
+Sources/GrantivaCLI/DriverCommand.swift:1172:        return outcome ?? .exited(pid: session.pid, udid: session.udid, details: details)
+Sources/GrantivaCLI/DriverCommand.swift:1185:            return (["No running runner (pid \(pid) had exited); cleaned up its session."] + reapedLines(reaped, udid: udid))
+Sources/GrantivaCLI/DriverCommand.swift:1191:                    return ["Stopped keep-alive session (pid \(grantivaPid), \(udid))"] + reapedLines(reaped, udid: udid)
+Sources/GrantivaCLI/DriverCommand.swift:1193:                    return ["Stopped keep-alive session (pid \(runnerPid), \(udid))"] + reapedLines(reaped, udid: udid)
+Sources/GrantivaCLI/DriverCommand.swift:1353:                    platform: runnerSession.platform ?? (DeviceID.isAndroidSerial(runnerSession.udid) ? .android : .ios)
+Sources/GrantivaCLI/DriverCommand.swift:1356:            return Target(udid: runnerSession.udid, port: runnerSession.wdaPort)
+Sources/GrantivaCLI/DriverCommand.swift:1371:        let keepAlive = try? KeepAliveSessionStore().locateIncludingStarting(udid: udid)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:340:        let session = makeSession(udid: "emulator-5554")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:367:            snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device \(session.udid)"
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:434:        XCTAssertEqual(result, .exited(pid: 1234, udid: makeSession().udid, details: .init(port: 8430, appID: "com.example")))
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:443:        XCTAssertEqual(json["udid"] as? String, makeSession().udid)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:458:        XCTAssertEqual(result, .stopped(pid: 1234, udid: session.udid, killed: true, details: .init(port: 8430, appID: "com.example")))
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:471:        let udid = session.udid
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:479:        var dependencies = dependencies(session: session, events: events, snapshot: "1234 1234 /tmp/grantiva-runner --device \(udid)")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:513:        let result = RunnerStopCommand.Result.stopped(pid: 1234, udid: makeSession().udid, killed: false)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:524:            sessionId: "s", port: 8100, pid: 4267, udid: makeSession().udid, path: "/tmp/grantiva-sessions/4267-1.grantiva",
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:532:            return .released(grantivaPid: 4163, runnerPid: 4267, udid: session.udid ?? "")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:539:            "Stopped keep-alive session (pid 4163, \(keepAlive.udid!))"
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:551:                sessionId: "s\(pid)", port: 8100, pid: Int32(pid), udid: makeSession().udid, path: "/x",
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:560:            return .released(grantivaPid: session.ownerPid!, runnerPid: session.pid, udid: session.udid ?? "")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:579:        let udid = makeSession().udid
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:596:            return .released(grantivaPid: session.ownerPid ?? 0, runnerPid: session.pid, udid: session.udid ?? "")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:600:        XCTAssertEqual(RunnerStopCommand.render(result), "Stopped keep-alive session (pid 4163, \(udid))")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:611:            sessionId: "s", port: 8100, pid: 4267, udid: makeSession().udid, path: "/x",
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:876:        let iosUDID = makeSession().udid
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:926:            sessionId: "s", port: 8100, pid: 4267, udid: makeSession().udid, path: "/x",
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1028:        let starting = RunnerSessionInfo.starting(pid: 5, bundleId: "a.b", udid: "emulator-5554", startedAt: Date(), platform: .android)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1152:    private func makeSession(udid: String = "921A0945-7157-4533-BA1F-21E8132D3E40") -> RunnerSessionInfo {
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1153:        RunnerSessionInfo(pid: 1234, wdaPort: 8430, bundleId: "com.example", udid: udid, startedAt: Date())
+Sources/GrantivaCLI/SimulatorCommand.swift:53:        /// Booted" where they expected an identifier, and the failure surfaced
+Sources/GrantivaCLI/SimulatorCommand.swift:94:                    Output.line("  \(session.name) (\(session.udid)) — \(session.sessionId) [\(session.state.rawValue)]")
+Sources/GrantivaCLI/SimulatorCommand.swift:102:            abstract: "End a managed session, or reclaim one simulator by UDID when no ledger entry exists.",
+Sources/GrantivaCLI/SimulatorCommand.swift:117:            switch (sessionId, udid) {
+Sources/GrantivaCLI/SimulatorCommand.swift:119:                throw ValidationError("Pass --session-id <id> or --udid <UDID>.")
+Sources/GrantivaCLI/SimulatorCommand.swift:121:                throw ValidationError(ExclusiveFlags.message("--session-id", "--udid"))
+Sources/GrantivaCLI/SimulatorCommand.swift:131:                if let sessionId { _ = try SimulatorUDID.validateSessionID(sessionId) }
+Sources/GrantivaCLI/SimulatorCommand.swift:145:            let stopped = await Self.stopRunnerSessions(udids: udids) { await DeviceRunnerSessions.live.stop(udid: $0) }
+Sources/GrantivaCLI/SimulatorCommand.swift:209:            return managed.filter { $0.sessionId == sessionId }.map(\.udid)
+Sources/GrantivaCLI/SimulatorCommand.swift:212:        /// Stops the runner sessions on each of `udids`; returns the devices
+Sources/GrantivaCLI/SimulatorCommand.swift:239:                outcome.runnerSessionStopped = stopped.contains(outcome.udid)
+Sources/GrantivaCLI/SimulatorCommand.swift:258:                        "No Grantiva-managed simulators for session \(sessionId). Pass --udid <UDID> to reclaim a specific simulator."
+Sources/GrantivaCLI/SimulatorCommand.swift:279:                result.runnerSessionStopped = stopped.contains { $0.caseInsensitiveCompare(result.udid) == .orderedSame }
+Sources/GrantivaCLI/SimulatorCommand.swift:304:                    lines.append("Cleared \(result.capacityRecordsCleared) session record(s) for \(result.udid).")
+Sources/GrantivaCLI/SimulatorCommand.swift:307:                    lines.append("Kept the session record for \(kept.udid) under \(kept.sessionId): \(kept.reason).")
+Sources/GrantivaCLI/SimulatorCommand.swift:344:                        Output.line("No Grantiva session held \(outcome.udid); the simulator was left as it is.")
+Sources/GrantivaCLI/SimulatorCommand.swift:351:                    Output.line("\(action) \(session.name) (\(session.udid)) and released session \(session.sessionId).")
+Sources/GrantivaCLI/HierarchyCommand.swift:11:        abstract: "Dump the UI hierarchy of a booted simulator or emulator without relaunching the app.",
+Sources/GrantivaCLI/HierarchyCommand.swift:14:        /tmp/grantiva-sessions, with the simulator UDID or adb serial recorded by \
+Sources/GrantivaCLI/HierarchyCommand.swift:75:        if let serial = session.udid, DeviceID.isAndroidSerial(serial) {
+Sources/GrantivaCLI/HierarchyCommand.swift:83:                "The keep-alive session (pid \(session.pid)) records no device and no port. Pass --udid <serial> for an Android session, or use `grantiva runner dump-hierarchy`."
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:14:    var bootedName = "Fake"
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:15:    var bootedID = "emulator-5598"
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:27:    func bootDevice(named nameOrID: String) async throws -> BootedDevice {
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:30:        return BootedDevice(udid: bootedID, name: bootedName)
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:39:    func bootDefaultDevice(named name: String, override: String) async throws -> BootedDevice {
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:42:        return BootedDevice(udid: bootedID, name: bootedName)
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:49:    func attachedDevice(serial: String) async throws -> BootedDevice {
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:50:        record("attachedDevice(\(serial))"); return BootedDevice(udid: serial, name: bootedName)
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:74:    func defaultDevice() async throws -> BootedDevice { record("defaultDevice"); return BootedDevice(udid: bootedID, name: bootedName) }
+Sources/GrantivaCLI/CICommand.swift:291:                let booted = try await device.bootDevice(for: resolved)
+Sources/GrantivaCLI/CICommand.swift:292:                rlog("\(deviceNoun.capitalized) booted: \(booted.name) (\(booted.udid))")
+Sources/GrantivaCLI/CICommand.swift:312:                        deviceID: booted.udid,
+Sources/GrantivaCLI/CICommand.swift:336:                        try await device.install(appID: installID, productPath: productPath, deviceID: booted.udid)
+Sources/GrantivaCLI/CICommand.swift:339:                    try await device.launch(appID: bid, deviceID: booted.udid)
+Sources/GrantivaCLI/CICommand.swift:350:                let geometry = try await device.displayGeometry(deviceID: booted.udid)
+Sources/GrantivaCLI/CICommand.swift:356:                    udid: booted.udid,
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:19:        let booted = EmulatorCommand.Ensure.render(EmulatorProvisionResult(name: "Pixel_8_API_35", serial: "emulator-5554", created: true, state: "Booted"))
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:20:        XCTAssertEqual(booted.stdout, "emulator-5554")
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:21:        XCTAssertEqual(booted.stderr, "Created Pixel_8_API_35 (emulator-5554) — Booted")
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:144:            DeviceRunnerSessions.render(.terminated(runnerPid: 27331, udid: "emulator-5598", killed: false)),
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:165:        let file = RunnerSessionInfo(pid: 27331, wdaPort: 53095, bundleId: "b", udid: "emulator-5556", startedAt: Date(), platform: .android)
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:169:            stopSessions: { udid, runnerStart, _ in
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:174:        let outcomes = await sessions.stop(udid: "emulator-5556")
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:178:        let other = await sessions.stop(udid: "emulator-5554")
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:188:        let file = RunnerSessionInfo(pid: 27331, wdaPort: 53095, bundleId: "b", udid: "emulator-5556", startedAt: Date(), platform: .android)
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:192:            stopSessions: { udid, _, _ in events.append("stop"); return [.terminated(runnerPid: 27331, udid: udid, killed: false)] }
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:194:        _ = await sessions.stop(udid: "emulator-5556")
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:205:        sessions.markStops = { udid in events.append("mark \(udid)"); return [77] }
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:206:        _ = await sessions.stop(udid: "emulator-5556")
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:267:        let stopped = await sessions.stop(udid: "emulator-5556")
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:270:        let running = await sessions.stop(udid: "emulator-5556")
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:307:            markStops: { DeviceRunnerSessions.markLive(udid: $0, store: store) },
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:338:                markStops: { DeviceRunnerSessions.markLive(udid: $0, store: store) },
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:362:            stopSessions: { udid, _, _ in events.append("stop \(udid)"); return [] },
+Sources/GrantivaCLI/DeviceRunnerSessions.swift:12:    var stopSessions: @Sendable (_ udid: String, _ runnerStart: RunnerSessionInfo?, _ deadline: Date) async -> [RunnerSessionStopper.Outcome]
+Sources/GrantivaCLI/DeviceRunnerSessions.swift:34:        stopSessions: { udid, runnerStart, deadline in
+Sources/GrantivaCLI/DeviceRunnerSessions.swift:35:            await RunnerSessionStopper.live().stopSessions(udid: udid, runnerStartSession: runnerStart, deadline: deadline)
+Sources/GrantivaCLI/DeviceRunnerSessions.swift:99:        var outcomes = await stopSessions(udid, file, deadline)
+Sources/GrantivaCLI/DeviceRunnerSessions.swift:116:        "Stopped runner session (pid \(outcome.runnerPid)) for \(outcome.udid)."
+Tests/GrantivaCLITests/DumpHierarchyCommandTests.swift:17:        let session = RunnerSessionInfo(pid: 1, wdaPort: 61211, bundleId: "x", udid: "emulator-5554", startedAt: Date())
+Tests/GrantivaCLITests/DumpHierarchyCommandTests.swift:24:        let keepAlive = KeepAliveSession(sessionId: "s", port: 0, pid: 1, udid: "emulator-5554", path: "/tmp/x")
+Tests/GrantivaCLITests/DumpHierarchyCommandTests.swift:31:        let keepAlive = KeepAliveSession(sessionId: "s", port: 8430, pid: 1, udid: simulator, path: "/tmp/x")
+Tests/GrantivaCLITests/DumpHierarchyCommandTests.swift:40:            sessionId: "", port: 0, pid: 1, udid: simulator, path: "/tmp/1.owner.json", platform: .ios, isPublished: false
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:36:            ownerPID: 42, acquiredAt: date, state: .active, bootedByGrantiva: true, ephemeral: false
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:56:                simulator: CaptureSimulatorTarget(name: "fix2-4-ios", udid: session.udid, geometry: geometry)
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:72:                [:], to: [ForceTeardownResult(udid: session.udid, processes: [], leaseReleased: false, capacityRecordsCleared: 0)],
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:73:                stopped: [session.udid]
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:77:                name: "fix2-4-android", serial: "emulator-5554", created: true, state: "booted"
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:84:                name: "fix2-4-ios", udid: session.udid, deviceType: "iPhone 17", runtime: "iOS 26.0", created: true,
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:85:                state: "Booted", pointWidth: 402, pointHeight: 874, pixelWidth: 1206, pixelHeight: 2622, displayScale: 3
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:89:                simulator: .init(name: "fix2-4-ios", udid: session.udid), appPath: "/b/Landmarks.app", dataContainerPath: "/d"
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:97:                simulator: .init(name: "fix2-4-ios", udid: session.udid), appPath: nil, dataContainerPath: nil
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:105:                deviceID: session.udid, platform: .ios, log: "/tmp/grantiva-runner.log"
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:112:                .stopped(pid: 64253, udid: session.udid, killed: false, details: .init(port: 8235, appID: "com.kylebrowning.Landmarks"))
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:118:                pid: 64253, wdaPort: 8235, bundleId: "com.kylebrowning.Landmarks", udid: session.udid, startedAt: date, platform: .ios
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:130:                .released(grantivaPid: 4163, runnerPid: 4267, udid: session.udid),
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:131:                .terminated(runnerPid: 4300, udid: session.udid, killed: true),
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:138:                simulator: "fix2-4-ios", udid: session.udid, emulator: nil, serial: nil, video: "out.mp4",
+Sources/GrantivaCLI/DiffCommand.swift:79:            var booted: BootedDevice
+Sources/GrantivaCLI/DiffCommand.swift:88:                booted = try await device.bootDevice(for: resolved)
+Sources/GrantivaCLI/DiffCommand.swift:106:                        deviceID: booted.udid,
+Sources/GrantivaCLI/DiffCommand.swift:128:                        try await device.install(appID: TargetOptions.installAppID(platform: platform, testID: bid, binaryID: builtAppID ?? appBundleId), productPath: productPath, deviceID: booted.udid)
+Sources/GrantivaCLI/DiffCommand.swift:130:                    try await device.launch(appID: bid, deviceID: booted.udid)
+Sources/GrantivaCLI/DiffCommand.swift:136:                // several booted simulators. The session is looked up at most
+Sources/GrantivaCLI/DiffCommand.swift:142:                booted = try await DiffCommand.noBuildDevice(
+Sources/GrantivaCLI/DiffCommand.swift:146:                    sessionUDID: { DiffCommand.sessionUDID(await session.value()?.udid, for: platform) },
+Sources/GrantivaCLI/DiffCommand.swift:149:                holdingSession = DiffCommand.session(await session.value(), holding: booted.udid)
+Sources/GrantivaCLI/DiffCommand.swift:159:            let geometry = try await device.displayGeometry(deviceID: booted.udid)
+Sources/GrantivaCLI/DiffCommand.swift:161:                name: booted.name,
+Sources/GrantivaCLI/DiffCommand.swift:162:                udid: booted.udid,
+Sources/GrantivaCLI/DiffCommand.swift:174:                let attachment = try await device.attachDriver(deviceID: booted.udid, port: port)
+Sources/GrantivaCLI/DiffCommand.swift:177:                        screens: resolved.screens, appID: bid, udid: booted.udid, platform: platform,
+Sources/GrantivaCLI/DiffCommand.swift:191:                    udid: booted.udid,
+Sources/GrantivaCLI/DiffCommand.swift:240:        sessionUDID: () async -> String?, device: any DevicePlatform
+Sources/GrantivaCLI/DiffCommand.swift:241:    ) async throws -> BootedDevice {
+Sources/GrantivaCLI/DiffCommand.swift:247:        if let session = await sessionUDID() {
+Sources/GrantivaCLI/DiffCommand.swift:281:    /// `session`, when the device it holds is `udid`.
+Sources/GrantivaCLI/DiffCommand.swift:282:    static func session(_ session: RunnerSessionInfo?, holding udid: String) -> RunnerSessionInfo? {
+Sources/GrantivaCLI/DiffCommand.swift:283:        guard let session, !session.udid.isEmpty, session.udid == udid else { return nil }
+Sources/GrantivaCLI/DiffCommand.swift:287:    static func sessionUDID(_ udid: String?, for platform: Platform) -> String? {
+Sources/GrantivaCLI/DiffCommand.swift:349:                let booted = try await device.bootDevice(for: resolved)
+Sources/GrantivaCLI/DiffCommand.swift:369:                            deviceID: booted.udid,
+Sources/GrantivaCLI/DiffCommand.swift:390:                            try await device.install(appID: TargetOptions.installAppID(platform: platform, testID: bid, binaryID: builtAppID ?? appBundleId), productPath: productPath, deviceID: booted.udid)
+Sources/GrantivaCLI/DiffCommand.swift:392:                        try await device.launch(appID: bid, deviceID: booted.udid)
+Sources/GrantivaCLI/DiffCommand.swift:407:                let geometry = try await device.displayGeometry(deviceID: booted.udid)
+Sources/GrantivaCLI/DiffCommand.swift:413:                    udid: booted.udid,
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:70:    // It shipped in 1.7.0 printing "Created iPhone 17 (UDID) — Booted" on stdout,
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:77:            deviceType: "iPhone 17", runtime: "iOS 27.0", created: true, state: "Booted",
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:89:        XCTAssertTrue(rendered.stderr.contains("Booted"))
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:137:            try SimulatorCommand.Teardown.parse(["--session-id", "APP-652", "--udid", "SIM-1"])
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:146:                String(describing: error).contains("--session-id <id> or --udid <UDID>"),
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:186:        // created, booted, and waited for bootstatus.
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:198:            runtime: "iOS 18.0", created: true, state: "Booted",
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:322:        let lines = await SimulatorCommand.Teardown.stopRunnerSessions(udids: ["A", "B"]) { udid in
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:335:        let record = ManagedSimulatorSession(udid: "MANAGED", name: "n", sessionId: "S1", ownerPID: 1, acquiredAt: Date(), state: .active)
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:375:        let record = ManagedSimulatorSession(udid: "MANAGED", name: "n", sessionId: "S1", ownerPID: 1, acquiredAt: Date(), state: .active)
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:432:            stopSessions: { udid, file, _ in await stopper.stopSessions(udid: udid, runnerStartSession: file) }
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:434:        let (stopped, lines, _) = await SimulatorCommand.Teardown.stopRunnerSessions(udids: [udid]) { await sessions.stop(udid: $0) }
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:436:        XCTAssertEqual(lines, ["Stopped runner session (pid 701) for \(udid)."])
+Tests/GrantivaCLITests/RunSessionContractTests.swift:35:    // MARK: - K12: a running device is used, not booted
+Tests/GrantivaCLITests/RunSessionContractTests.swift:47:        fake.bootedName = "cov-android"
+Tests/GrantivaCLITests/RunSessionContractTests.swift:62:        fake.bootedName = "Pixel_8"
+Tests/GrantivaCLITests/RunSessionContractTests.swift:72:        fake.bootedName = "qa-ios-1"
+Tests/GrantivaCLITests/RunSessionContractTests.swift:73:        fake.bootedID = "UDID-1"
+Tests/GrantivaCLITests/RunSessionContractTests.swift:76:        XCTAssertEqual(lines, ["Booting simulator: qa-ios-1", "Simulator booted: qa-ios-1 (UDID-1)"])
+Tests/GrantivaCLITests/RunSessionContractTests.swift:126:            XCTAssertEqual(fake.calls, [], "nothing may be booted, built or installed: \(fake.calls)")
+Sources/GrantivaCLI/BuildCommand.swift:48:        // config's `emulator:` is irrelevant and nothing is booted; an
+Sources/GrantivaCLI/BuildCommand.swift:54:            let booted = try await device.bootDevice(for: resolved)
+Sources/GrantivaCLI/BuildCommand.swift:55:            deviceID = booted.udid
+Sources/GrantivaCLI/BuildCommand.swift:56:            deviceName = booted.name
+Sources/GrantivaCLI/BuildCommand.swift:58:            let attached = if let serial = target.device { try await device.attachedDevice(serial: serial) } else { nil as BootedDevice? }
+Sources/GrantivaCLI/BuildCommand.swift:132:        let booted = try await device.bootDevice(for: resolved)
+Sources/GrantivaCLI/BuildCommand.swift:146:                options.note("[grantiva] Building \(buildScheme) for \(booted.name)...")
+Sources/GrantivaCLI/BuildCommand.swift:152:                deviceID: booted.udid,
+Sources/GrantivaCLI/BuildCommand.swift:191:            try await device.install(appID: installID, productPath: productPath, deviceID: booted.udid)
+Sources/GrantivaCLI/BuildCommand.swift:197:        if !installed, !noLaunch, await device.isInstalled(appID: bid, deviceID: booted.udid) == false {
+Sources/GrantivaCLI/BuildCommand.swift:198:            throw GrantivaError.unavailable(Self.notInstalledMessage(appID: bid, deviceName: booted.name, serial: booted.udid))
+Sources/GrantivaCLI/BuildCommand.swift:203:            try await device.launch(appID: bid, deviceID: booted.udid)
+Sources/GrantivaCLI/BuildCommand.swift:208:        let absentSkippedApp = if status == .skipped { await device.isInstalled(appID: bid, deviceID: booted.udid) == false } else { false }
+Sources/GrantivaCLI/BuildCommand.swift:209:        let dataContainerPath = absentSkippedApp ? nil : try await containerLookup.call(platform, bid, booted.udid)
+Sources/GrantivaCLI/BuildCommand.swift:215:                device: .init(name: booted.name, serial: booted.udid),
+Sources/GrantivaCLI/BuildCommand.swift:223:                simulator: .init(name: booted.name, udid: booted.udid),
+Sources/GrantivaCLI/BuildCommand.swift:232:                deviceName: booted.name,
+Sources/GrantivaCLI/EmulatorCommand.swift:252:                    let stopped = await DeviceRunnerSessions.live.stop(udid: serial)
+Sources/GrantivaCLI/EmulatorCommand.swift:256:                removeDeadSessions: { KeepAliveSessionStore().removeSessions(udid: $0) },
+Sources/GrantivaCLI/EmulatorCommand.swift:257:                markStops: { DeviceRunnerSessions.markLive(udid: $0) },
+Tests/GrantivaCLITests/RunCommandTests.swift:989:        fake.bootedName = "qa-ios-1"
+Tests/GrantivaCLITests/DiffCommandTests.swift:453:    /// Two booted devices and config `simulator: B`: the --no-build path uses B, never the platform default.
+Tests/GrantivaCLITests/DiffCommandTests.swift:454:    func testNoBuildUsesConfiguredSimulatorNotFirstBooted() async throws {
+Tests/GrantivaCLITests/DiffCommandTests.swift:456:        fake.bootedID = "B-UDID"; fake.bootedName = "B"
+Tests/GrantivaCLITests/DiffCommandTests.swift:457:        let booted = try await DiffCommand.noBuildDevice(
+Tests/GrantivaCLITests/DiffCommandTests.swift:458:            platform: .ios, explicit: nil, config: GrantivaConfig(simulator: "B"), sessionUDID: { "SESSION-UDID" }, device: fake
+Tests/GrantivaCLITests/DiffCommandTests.swift:460:        XCTAssertEqual(booted.udid, "B-UDID")
+Tests/GrantivaCLITests/DiffCommandTests.swift:535:            fake.bootedID = "HELD-UDID"; fake.bootedName = "Held"
+Tests/GrantivaCLITests/DiffCommandTests.swift:539:                return RunnerSessionInfo(pid: 4242, wdaPort: 8123, bundleId: "com.example.app", udid: "HELD-UDID", startedAt: Date(), platform: .ios)
+Tests/GrantivaCLITests/DiffCommandTests.swift:563:            fake.bootedID = "B27D7D31-0000-4000-8000-00000000F1A6"; fake.bootedName = "Held"
+Tests/GrantivaCLITests/DiffCommandTests.swift:568:                return RunnerSessionInfo(pid: 4242, wdaPort: 8123, bundleId: "com.example.app", udid: "B27D7D31-0000-4000-8000-00000000F1A6", startedAt: Date(), platform: .ios)
+Tests/GrantivaCLITests/DiffCommandTests.swift:583:        let session = RunnerSessionInfo(pid: 4242, wdaPort: 8123, bundleId: "b", udid: "HELD-UDID", startedAt: Date(), platform: .ios)
+Tests/GrantivaCLITests/DiffCommandTests.swift:584:        XCTAssertNotNil(DiffCommand.session(session, holding: "HELD-UDID"))
+Tests/GrantivaCLITests/DiffCommandTests.swift:585:        XCTAssertNil(DiffCommand.session(session, holding: "OTHER-UDID"))
+Tests/GrantivaCLITests/DiffCommandTests.swift:586:        XCTAssertNil(DiffCommand.session(nil, holding: "HELD-UDID"))
+Tests/GrantivaCLITests/DiffCommandTests.swift:596:            sessionUDID: { XCTFail("session looked up"); return nil }, device: fake
+Tests/GrantivaCLITests/DiffCommandTests.swift:604:            platform: .ios, explicit: "A", config: GrantivaConfig(simulator: "B"), sessionUDID: { "SESSION-UDID" }, device: fake
+Tests/GrantivaCLITests/DiffCommandTests.swift:612:            platform: .ios, explicit: nil, config: GrantivaConfig(), sessionUDID: { "SESSION-UDID" }, device: fake
+Tests/GrantivaCLITests/DiffCommandTests.swift:614:        XCTAssertEqual(fake.calls, ["bootDevice(SESSION-UDID)"])
+Tests/GrantivaCLITests/DiffCommandTests.swift:619:        _ = try await DiffCommand.noBuildDevice(platform: .ios, explicit: nil, config: nil, sessionUDID: { nil }, device: fake)
+Tests/GrantivaCLITests/DiffCommandTests.swift:626:        _ = try await DiffCommand.noBuildDevice(platform: .android, explicit: nil, config: config, sessionUDID: { nil }, device: fake)
+Tests/GrantivaCLITests/DiffCommandTests.swift:631:        XCTAssertEqual(DiffCommand.sessionUDID("B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C", for: .ios), "B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C")
+Tests/GrantivaCLITests/DiffCommandTests.swift:632:        XCTAssertNil(DiffCommand.sessionUDID("emulator-5554", for: .ios))
+Tests/GrantivaCLITests/DiffCommandTests.swift:633:        XCTAssertEqual(DiffCommand.sessionUDID("emulator-5554", for: .android), "emulator-5554")
+Tests/GrantivaCLITests/DiffCommandTests.swift:634:        XCTAssertNil(DiffCommand.sessionUDID("B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C", for: .android))
+Tests/GrantivaCLITests/DiffCommandTests.swift:635:        XCTAssertNil(DiffCommand.sessionUDID(nil, for: .ios))
+Sources/GrantivaCLI/TargetOptions.swift:62:    @Flag(name: .long, help: ArgumentHelp("Boot an emulator without a window (Android). GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the same; otherwise a booted emulator gets a window, even when stdout is not a terminal.", visibility: Boot.visibility))
+Sources/GrantivaMCP/Tools/SessionCapture.swift:62:        guard !session.udid.isEmpty else {
+Sources/GrantivaMCP/Tools/SessionCapture.swift:86:        let udid = session.udid
+Sources/GrantivaMCP/Tools/SessionCapture.swift:92:            let booted = try await device.bootDevice(named: udid)
+Sources/GrantivaMCP/Tools/SessionCapture.swift:94:                name: booted.name, udid: udid,
+Sources/GrantivaCLI/RunCommand.swift:118:    /// that is already running is used, not booted, and says so.
+Sources/GrantivaCLI/RunCommand.swift:131:    /// never booted (an unknown serial is an error naming what is attached);
+Sources/GrantivaCLI/RunCommand.swift:132:    /// an AVD name is used if running and booted otherwise, and the boot
+Sources/GrantivaCLI/RunCommand.swift:137:    ) async throws -> BootedDevice {
+Sources/GrantivaCLI/RunCommand.swift:139:            let attached: BootedDevice
+Sources/GrantivaCLI/RunCommand.swift:149:            let booted = try await device.bootDevice(named: target)
+Sources/GrantivaCLI/RunCommand.swift:150:            log(bootNarration(platform: platform, target: "\(booted.name) (\(booted.udid))", running: true))
+Sources/GrantivaCLI/RunCommand.swift:151:            return booted
+Sources/GrantivaCLI/RunCommand.swift:154:        let booted = targetIsDefault
+Sources/GrantivaCLI/RunCommand.swift:157:        log("\(platform == .ios ? "Simulator" : "Emulator") booted: \(booted.name) (\(booted.udid))")
+Sources/GrantivaCLI/RunCommand.swift:158:        return booted
+Sources/GrantivaCLI/RunCommand.swift:417:        let booted = try await Self.targetDevice(
+Sources/GrantivaCLI/RunCommand.swift:421:        let geometry = try await device.displayGeometry(deviceID: booted.udid)
+Sources/GrantivaCLI/RunCommand.swift:438:                    deviceID: booted.udid, appID: appID,
+Sources/GrantivaCLI/RunCommand.swift:454:           await device.isInstalled(appID: appID, deviceID: booted.udid) == false {
+Sources/GrantivaCLI/RunCommand.swift:455:            throw GrantivaError.unavailable(Self.notInstalledMessage(appID: appID, device: booted.name))
+Sources/GrantivaCLI/RunCommand.swift:480:                deviceID: booted.udid,
+Sources/GrantivaCLI/RunCommand.swift:508:            try await device.install(appID: installID, productPath: productPath, deviceID: booted.udid)
+Sources/GrantivaCLI/RunCommand.swift:536:                        udid: booted.udid,
+Sources/GrantivaCLI/RunCommand.swift:563:                        udid: booted.udid,
+Sources/GrantivaCLI/RunCommand.swift:583:                error: error, report: failureReport, device: device, deviceID: booted.udid, captureDir: captureDir,
+Sources/GrantivaCore/Doctor/DoctorCheck.swift:18:        /// Checks that can never fail doctor: device state (a booted
+Sources/GrantivaMCP/MCPServer.swift:56:                if platform == .android, session.udid.isEmpty {
+Sources/GrantivaMCP/MCPServer.swift:61:                return try await device.attachDriver(deviceID: session.udid, port: Self.driverPort(for: session))
+Sources/GrantivaMCP/MCPServer.swift:170:            _ = try DeviceID.validate(session.udid, flag: "session UDID")
+Sources/GrantivaMCP/Tools/SimTools.swift:20:                        "description": .string("Filter by state: 'booted', 'shutdown', or 'all' (default: 'all')"),
+Sources/GrantivaMCP/Tools/SimTools.swift:21:                        "enum": .array([.string("all"), .string("booted"), .string("shutdown")]),
+Sources/GrantivaMCP/Tools/SimTools.swift:29:            description: "Boot an iOS simulator by name or UDID. Returns the booted device info.",
+Sources/GrantivaMCP/Tools/SimTools.swift:86:                case "booted": return device.isBooted
+Sources/GrantivaMCP/Tools/SimTools.swift:106:        // Unnamed, only a default-named simulator Grantiva created is booted (L08).
+Sources/GrantivaMCP/Tools/SimTools.swift:116:                    text: "Simulator booted: \(device.name) (\(device.udid))\nRuntime: \(runtimeName(device.runtime))",
+Sources/GrantivaMCP/Tools/SessionScreenCapture.swift:32:                        "Screen \"\(screen.name)\" step \(index + 1) is \(kind), which only grantiva-runner can run, and a `grantiva runner start` session holds \(udid). "
+Sources/GrantivaCore/ExclusiveFlags.swift:4:/// every such pair (`--device`/`--emulator`, `--session-id`/`--udid`,
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:83:            boot: { _ in BootedDevice(udid: "", name: "") },
+Tests/GrantivaMCPTests/ContextToolTests.swift:8:final class ContextToolTests: XCTestCase {
+Tests/GrantivaMCPTests/ContextToolTests.swift:9:    private static let first = SimulatorDevice(name: "iPhone 17 Pro", udid: "B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C", state: "Booted", runtime: "iOS-26-0", isAvailable: true)
+Tests/GrantivaMCPTests/ContextToolTests.swift:10:    private static let second = SimulatorDevice(name: "qa-c06", udid: "D3E7E498-2E80-469C-A465-4757C8995ACC", state: "Booted", runtime: "iOS-26-0", isAvailable: true)
+Tests/GrantivaMCPTests/ContextToolTests.swift:13:    private func session(_ udid: String) -> RunnerSessionInfo {
+Tests/GrantivaMCPTests/ContextToolTests.swift:14:        RunnerSessionInfo(pid: 55313, wdaPort: 8400, bundleId: "com.apple.Preferences", udid: udid, startedAt: Date())
+Tests/GrantivaMCPTests/ContextToolTests.swift:25:            boot: { BootedDevice(udid: "emulator-5554", name: $0) },
+Tests/GrantivaMCPTests/ContextToolTests.swift:40:    /// C06: with two booted simulators and the session on the second,
+Tests/GrantivaMCPTests/ContextToolTests.swift:42:    func testSimulatorSectionNamesTheSessionDeviceNotTheFirstBooted() async throws {
+Tests/GrantivaMCPTests/ContextToolTests.swift:45:            session: session(Self.second.udid), listSimulators: { [Self.first, Self.second] }, emulators: nil
+Tests/GrantivaMCPTests/ContextToolTests.swift:52:        XCTAssertTrue(section("Runner Session", in: text).contains("udid: \(Self.second.udid)"), text)
+Tests/GrantivaMCPTests/ContextToolTests.swift:55:    func testWithoutASessionTheConfiguredBootedSimulatorIsShown() async throws {
+Tests/GrantivaMCPTests/ContextToolTests.swift:67:    func testWithoutASessionAConfiguredSimulatorThatIsNotBootedIsSaidSo() async throws {
+Tests/GrantivaMCPTests/ContextToolTests.swift:73:        XCTAssertTrue(simulator.contains("Configured simulator \"qa-ios-1\" is not booted"), simulator)
+Tests/GrantivaMCPTests/ContextToolTests.swift:78:    /// device; booted simulators are listed as a hint, never as "the device".
+Tests/GrantivaMCPTests/ContextToolTests.swift:87:              Booted (a hint only; the UI tools use only a runner session's device): iPhone 17 Pro (\(Self.first.udid)), qa-c06 (\(Self.second.udid))
+Tests/GrantivaMCPTests/ContextToolTests.swift:190:        let ios = RunnerSessionInfo(pid: 4267, wdaPort: 8235, bundleId: "com.kylebrowning.Landmarks", udid: Self.first.udid, startedAt: Date())
+Tests/GrantivaMCPTests/ContextToolTests.swift:194:        let android = RunnerSessionInfo(pid: 79748, wdaPort: 0, bundleId: "com.kylebrowning.landmarks", udid: "emulator-5554", startedAt: Date())
+Tests/GrantivaMCPTests/ContextToolTests.swift:207:        let legacy = RunnerSessionInfo(pid: 4267, wdaPort: 8235, bundleId: "", udid: Self.first.udid, startedAt: Date())
+Sources/GrantivaMCP/Tools/BuildTools.swift:162:        // iOS builds for a booted simulator destination. Android only
+Sources/GrantivaMCP/Tools/BuildTools.swift:163:        // compiles, like `grantiva build build`: nothing is booted.
+Sources/GrantivaMCP/Tools/BuildTools.swift:165:        let booted = platform == .ios ? try await device.bootDevice(for: resolved, override: simulatorOverride) : nil
+Sources/GrantivaMCP/Tools/BuildTools.swift:167:            config: config ?? GrantivaConfig(), resolved: resolved, deviceID: booted?.udid ?? "", extraBuildSettings: resolved.buildSettings
+Sources/GrantivaMCP/Tools/BuildTools.swift:170:        let target = booted.map { "Scheme: \(result.scheme ?? "(none)")\nSimulator: \($0.name) (\($0.udid))" }
+Sources/GrantivaMCP/Tools/BuildTools.swift:207:        let booted = try await device.bootDevice(for: resolved, override: simulatorOverride)
+Sources/GrantivaMCP/Tools/BuildTools.swift:209:            config: config ?? GrantivaConfig(), resolved: resolved, deviceID: booted.udid, extraBuildSettings: resolved.buildSettings
+Sources/GrantivaMCP/Tools/BuildTools.swift:214:                    text: "Error: Build failed:\n\(buildResult.errors.joined(separator: "\n"))\n\(platform == .ios ? "Simulator" : "Device"): \(booted.name) (\(booted.udid))",
+Sources/GrantivaMCP/Tools/BuildTools.swift:237:            try await device.install(appID: appID, productPath: productPath, deviceID: booted.udid)
+Sources/GrantivaMCP/Tools/BuildTools.swift:239:        try await device.launch(appID: appID, deviceID: booted.udid)
+Sources/GrantivaMCP/Tools/BuildTools.swift:244:            text = "App built and launched.\nScheme: \(resolved.scheme ?? "")\nBundle ID: \(appID)\nSimulator: \(booted.name) (\(booted.udid))"
+Sources/GrantivaMCP/Tools/BuildTools.swift:247:            text = "App built and launched.\nModule: \(android.module) (\(android.variant))\nApplication ID: \(appID)\nDevice: \(booted.name) (\(booted.udid))"
+Tests/GrantivaMCPTests/ToolSchemaTests.swift:106:        XCTAssertEqual(try enumValues("grantiva_sim_list", "filter"), ["all", "booted", "shutdown"])
+Sources/GrantivaCore/Android/AndroidPlatform.swift:73:    public func bootDevice(named nameOrID: String) async throws -> BootedDevice {
+Sources/GrantivaCore/Android/AndroidPlatform.swift:82:            return BootedDevice(udid: match.serial, name: name)
+Sources/GrantivaCore/Android/AndroidPlatform.swift:99:    public func attachedDevice(serial: String) async throws -> BootedDevice {
+Sources/GrantivaCore/Android/AndroidPlatform.swift:109:        return BootedDevice(udid: match.serial, name: name)
+Sources/GrantivaCore/Android/AndroidPlatform.swift:112:    public func defaultDevice() async throws -> BootedDevice {
+Sources/GrantivaMCP/Tools/UITools.swift:115:        if !session.udid.isEmpty {
+Sources/GrantivaMCP/Tools/UITools.swift:119:            try await device.screenshot(deviceID: session.udid, to: tmpPath)
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:21:        for state in ["Shutdown", "Booted"] {
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:96:        let table = TableFormatter().formatDevices([SimulatorDevice(name: "a", udid: "U", state: "Booted", runtime: "iOS-26-0", isAvailable: true)])
+Tests/GrantivaMCPTests/SimToolsTests.swift:13:        SimulatorDevice(name: "fix2-10-ios", udid: "A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF", state: "Booted", runtime: "iOS-26-0", isAvailable: true),
+Tests/GrantivaMCPTests/SimToolsTests.swift:28:            fix2-10-ios | A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF | Booted | iOS 26.0 | yes
+Tests/GrantivaMCPTests/SimToolsTests.swift:34:    func testBootedAndShutdownFilters() {
+Tests/GrantivaMCPTests/SimToolsTests.swift:35:        XCTAssertEqual(SimTools.render(devices: devices, filter: "booted"), """
+Tests/GrantivaMCPTests/SimToolsTests.swift:37:            fix2-10-ios | A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF | Booted | iOS 26.0 | yes
+Tests/GrantivaMCPTests/SimToolsTests.swift:43:        XCTAssertEqual(SimTools.render(devices: [], filter: "booted"), "No iOS simulators found matching filter 'booted'.")
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:22:            checks.append(await checkBootedSimulator())
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:49:    /// counts: the optional checks (no booted simulator, no `grantiva.yml`, not
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:91:    /// "No simulator booted" only when simctl answered and listed none
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:92:    /// booted. A list that could not be read says so: the same broken
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:94:    func checkBootedSimulator(
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:105:                name: "Booted Simulator", status: .warning,
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:111:        guard let device = devices.first(where: \.isBooted) else {
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:112:            return Self.noBootedSimulatorCheck(
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:124:            name: "Booted Simulator", status: .ok,
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:133:    static func noBootedSimulatorCheck(
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:144:            name: "Booted Simulator", status: .warning,
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:145:            message: "No simulator booted",
+Sources/GrantivaMCP/Tools/ContextTool.swift:5:/// Context tool: returns project configuration, the booted simulator or running
+Sources/GrantivaMCP/Tools/ContextTool.swift:95:                  udid: \(session.udid.isEmpty ? "(unknown)" : session.udid)
+Sources/GrantivaMCP/Tools/ContextTool.swift:120:    /// booted simulators listed as a hint (the UI tools act only on a runner
+Sources/GrantivaMCP/Tools/ContextTool.swift:133:        if let session, !session.udid.isEmpty {
+Sources/GrantivaMCP/Tools/ContextTool.swift:134:            if let device = devices.first(where: { $0.udid == session.udid }) {
+Sources/GrantivaMCP/Tools/ContextTool.swift:137:            return "[Simulator]\n  udid: \(session.udid)\n  source: runner session (not in `xcrun simctl list devices`)"
+Sources/GrantivaMCP/Tools/ContextTool.swift:141:            if let booted = matches.first(where: \.isBooted) {
+Sources/GrantivaMCP/Tools/ContextTool.swift:142:                return describe(booted, source: "simulator in grantiva.yml (no runner session)")
+Sources/GrantivaMCP/Tools/ContextTool.swift:147:            return "[Simulator]\n  Configured simulator \"\(configured)\" is not booted. No runner session."
+Sources/GrantivaMCP/Tools/ContextTool.swift:149:        let booted = devices.filter(\.isBooted)
+Sources/GrantivaMCP/Tools/ContextTool.swift:150:        guard !booted.isEmpty else { return "[Simulator]\n  No runner session and no simulator in grantiva.yml. No simulator booted." }
+Sources/GrantivaMCP/Tools/ContextTool.swift:151:        let hint = booted.map { "\($0.name) (\($0.udid))" }.joined(separator: ", ")
+Sources/GrantivaMCP/Tools/ContextTool.swift:153:            + "  Booted (a hint only; the UI tools use only a runner session's device): \(hint)"
+Sources/GrantivaMCP/Tools/ContextTool.swift:165:            if let session, !session.udid.isEmpty {
+Sources/GrantivaMCP/Tools/ContextTool.swift:166:                return "[Emulator]\n  serial: \(session.udid)\n  source: runner session"
+Sources/GrantivaMCP/Tools/ContextTool.swift:173:        if let session, !session.udid.isEmpty {
+Sources/GrantivaMCP/Tools/ContextTool.swift:174:            return "[Emulator]\n  name: \(await name(session.udid))\n  serial: \(session.udid)\n  source: runner session"
+Sources/GrantivaCore/Output/TableOutput.swift:15:            let state = device.isBooted ? "Booted  " : "Shutdown"
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:21:            boot: { name in log.add("boot(\(name))"); return BootedDevice(udid: "emulator-5554", name: name.isEmpty ? "Pixel_8_API_35" : name) },
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:22:            ensure: { name, image, boot in log.add("ensure(\(name),\(image ?? "-"),\(boot))"); return EmulatorProvisionResult(name: name, serial: boot ? "emulator-5556" : nil, created: true, state: boot ? "Booted" : "Shutdown") },
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:31:        XCTAssertEqual(text, "Name | Serial | State\nPixel_8_API_35 | emulator-5554 | Booted\nPixel_7_API_34 | - | Shutdown")
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:36:    /// tool says it reused it rather than booted it.
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:45:    func testBootOfAShutDownAVDSaysBooted() async throws {
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:51:            XCTAssertEqual(try textContent(of: result), "Emulator booted: Pixel_8_API_35 (emulator-5554)")
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:93:            config: nil, session: MCPTestSupport.sessionWithoutUDID(), simulatorManager: .live, buildRunner: XcodeBuildRunner(), emulators: deps(log)
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:16:    public var bootedByGrantiva: Bool?
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:30:        bootedByGrantiva: Bool? = nil,
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:39:        self.bootedByGrantiva = bootedByGrantiva
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:44:    var isSessionless: Bool { sessionId == SimulatorCapacity.sessionlessOwner(udid: udid) }
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:60:/// Host-wide admission control for simulators booted by Grantiva.
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:132:        let owner = sessionId ?? Self.sessionlessOwner(udid: device.udid)
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:202:    /// Marks the reservation active. `bootedByGrantiva` records that this
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:204:    public func activate(udid: String, bootedByGrantiva: Bool = false) throws {
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:208:            if bootedByGrantiva { records[index].bootedByGrantiva = true }
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:223:                udid: udid, name: name, sessionId: sessionId ?? Self.sessionlessOwner(udid: udid),
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:268:    /// never stale while its device is booted, whatever its owner pid: the
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:387:            if state == "Booted" { return false }
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:394:    static func sessionlessOwner(udid: String) -> String { "simulator:\(udid)" }
+Sources/GrantivaMCP/Tools/EmulatorTools.swift:12:    var boot: @Sendable (String) async throws -> BootedDevice
+Sources/GrantivaMCP/Tools/EmulatorTools.swift:94:        let lines = avds.map { "\($0) | \(running[$0] ?? "-") | \(running[$0] == nil ? "Shutdown" : "Booted")" }
+Sources/GrantivaMCP/Tools/EmulatorTools.swift:108:            : "Emulator booted: \(device.name) (\(device.udid))"
+Tests/GrantivaMCPTests/MCPTestSupport.swift:59:    /// A session with no UDID, which forces the screenshot tool down the driver path
+Tests/GrantivaMCPTests/MCPTestSupport.swift:61:    static func sessionWithoutUDID() -> RunnerSessionInfo {
+Tests/GrantivaMCPTests/MCPTestSupport.swift:62:        RunnerSessionInfo(pid: 0, wdaPort: 8100, bundleId: "", udid: "", startedAt: Date())
+Tests/GrantivaMCPTests/MCPTestSupport.swift:77:            session: session ?? sessionWithoutUDID(),
+Tests/GrantivaMCPTests/MCPTestSupport.swift:133:    var bootedID = "emulator-5598"
+Tests/GrantivaMCPTests/MCPTestSupport.swift:134:    var bootedName = "Fake"
+Tests/GrantivaMCPTests/MCPTestSupport.swift:143:    func bootDevice(named nameOrID: String) async throws -> BootedDevice {
+Tests/GrantivaMCPTests/MCPTestSupport.swift:146:        return BootedDevice(udid: bootedID, name: bootedName)
+Tests/GrantivaMCPTests/MCPTestSupport.swift:166:    func defaultDevice() async throws -> BootedDevice { record("defaultDevice"); return BootedDevice(udid: bootedID, name: bootedName) }
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:127:        let session = RunnerSessionInfo(pid: getpid(), wdaPort: port, bundleId: "", udid: "", startedAt: Date())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:277:        device.bootedID = udid
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:321:            if platform == .ios { device.bootedID = udid }
+Sources/GrantivaCore/Android/AndroidCaptureSettings.swift:40:    /// restore (a freshly booted emulator's adbd restarts once shortly after
+Tests/GrantivaMCPTests/BuildToolsTests.swift:165:        XCTAssertEqual(device.calls, ["build(scheme=-,module=app,variant=debug)"], "nothing is booted")
+Sources/GrantivaCore/Simulator/SimulatorDevice.swift:11:    public var isBooted: Bool { state == "Booted" }
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:47:        self.init(udid: session.udid, session: session, deleted: deleted,
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:75:        udid = try container.decodeIfPresent(String.self, forKey: .udid) ?? session?.udid ?? ""
+Tests/GrantivaMCPTests/MCPServerTests.swift:52:    func testSessionRejectsMalformedUDIDBeforeToolsConsumeIt() throws {
+Tests/GrantivaMCPTests/MCPServerTests.swift:70:            XCTAssertTrue(String(describing: error).contains("session UDID"))
+Tests/GrantivaMCPTests/MCPServerTests.swift:138:        XCTAssertEqual(store.liveSessions().first?.udid, "921A0945-7157-4533-BA1F-21E8132D3E40")
+Tests/GrantivaMCPTests/MCPServerTests.swift:215:            let starting = RunnerSessionInfo.starting(pid: getpid(), bundleId: "a.b", udid: udid, startedAt: Date(), platform: platform)
+Tests/GrantivaMCPTests/MCPServerTests.swift:332:        let session = RunnerSessionInfo(pid: getpid(), wdaPort: 61211, bundleId: "dev.grantiva.example", udid: "emulator-5554", startedAt: Date())
+Tests/GrantivaMCPTests/MCPServerTests.swift:342:        XCTAssertNil(GrantivaMCPServer.driverPort(for: RunnerSessionInfo(pid: 1, wdaPort: 0, bundleId: "", udid: "emulator-5554", startedAt: Date())))
+Tests/GrantivaMCPTests/MCPServerTests.swift:343:        XCTAssertEqual(GrantivaMCPServer.driverPort(for: RunnerSessionInfo(pid: 1, wdaPort: 8100, bundleId: "", udid: "", startedAt: Date())), 8100)
+Tests/GrantivaMCPTests/MCPServerTests.swift:447:        let session = RunnerSessionInfo(pid: 10, wdaPort: 8100, bundleId: "", udid: "emulator-5554", startedAt: Date())
+Tests/GrantivaMCPTests/MCPServerTests.swift:475:        let session = RunnerSessionInfo(pid: 10, wdaPort: 8100, bundleId: "", udid: "emulator-5554", startedAt: Date())
+Tests/GrantivaMCPTests/MCPServerTests.swift:507:        let session = RunnerSessionInfo(pid: 10, wdaPort: 8100, bundleId: "", udid: "emulator-5554", startedAt: Date())
+Tests/GrantivaMCPTests/MCPServerTests.swift:537:        let recorded = RunnerSessionInfo(pid: getpid(), wdaPort: 8201, bundleId: "a", udid: "921A0945-7157-4533-BA1F-21E8132D3E40", startedAt: Date(), platform: .ios)
+Tests/GrantivaMCPTests/MCPServerTests.swift:546:        XCTAssertEqual(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .android, keepAliveSessions: emptyKeepAliveStore()).udid, "emulator-5554")
+Tests/GrantivaMCPTests/MCPServerTests.swift:580:        state.lock.withLock { state.session = RunnerSessionInfo(pid: 10, wdaPort: 8100, bundleId: "", udid: "921A0945-7157-4533-BA1F-21E8132D3E40", startedAt: Date()) }
+Tests/GrantivaMCPTests/MCPServerTests.swift:585:        state.lock.withLock { state.session = RunnerSessionInfo(pid: 11, wdaPort: 8200, bundleId: "", udid: "921A0945-7157-4533-BA1F-21E8132D3E40", startedAt: Date()) }
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:25:        let session = KeepAliveSession(sessionId: "s", port: 8100, pid: 701, udid: udid, path: "/x", ownerPid: 700, detached: false)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:38:        let session = KeepAliveSession(sessionId: "s", port: 8100, pid: 701, udid: udid, path: "/x", ownerPid: 700, detached: false)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:53:        let session = KeepAliveSession(sessionId: "s", port: 8100, pid: 701, udid: udid, path: "/x", ownerPid: 700, detached: false)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:66:        let session = KeepAliveSession(sessionId: "s", port: 8100, pid: 701, udid: udid, path: "/x", ownerPid: 700, detached: false)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:78:        let session = KeepAliveSession(sessionId: "s", port: 8100, pid: 701, udid: udid, path: "/x", ownerPid: 700, detached: false)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:90:        let session = KeepAliveSession(sessionId: "s", port: 0, pid: 701, udid: "emulator-5554", path: "/x", ownerPid: 9, detached: true)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:107:            sessionId: "s", port: 61211, pid: 701, udid: "emulator-5554",
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:141:        let session = KeepAliveSession(sessionId: "s", port: 8100, pid: 701, udid: udid, path: "/x", ownerPid: 9, detached: true)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:161:        let outcomes = await stopper.stopSessions(udid: udid, runnerStartSession: nil)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:174:        let file = RunnerSessionInfo(pid: 701, wdaPort: 8100, bundleId: "b", udid: udid, startedAt: Date())
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:176:        let outcomes = await stopper.stopSessions(udid: udid, runnerStartSession: file)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:179:        let other = RunnerSessionInfo(pid: 702, wdaPort: 8100, bundleId: "b", udid: udid, startedAt: Date())
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:183:        let fromFile = await stopper.stopSessions(udid: udid, runnerStartSession: other)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:185:        let elsewhere = await stopper.stopSessions(udid: "emulator-5554", runnerStartSession: other)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:207:        let outcomes = await stopper.stopSessions(udid: udid, runnerStartSession: nil)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:231:        let outcomes = await stopper.stopSessions(udid: udid, runnerStartSession: nil)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:248:        let recycled = await stopper.stopSessions(udid: udid, runnerStartSession: nil)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:254:        _ = await stopper.stopSessions(udid: udid, runnerStartSession: nil)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:272:        let outcomes = await stopper.stopSessions(udid: udid, runnerStartSession: nil)
+Tests/GrantivaMCPTests/UIToolsTests.swift:270:            session: MCPTestSupport.sessionWithoutUDID(),
+Tests/GrantivaMCPTests/UIToolsTests.swift:283:            session: MCPTestSupport.sessionWithoutUDID(),
+Tests/GrantivaMCPTests/UIToolsTests.swift:292:        let session = RunnerSessionInfo(pid: 0, wdaPort: 0, bundleId: "", udid: "emulator-5554", startedAt: Date())
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:42:    public func bootedDevice() async throws -> SimulatorDevice {
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:44:        guard let booted = devices.first(where: { $0.isBooted }) else {
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:47:        return booted
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:50:    /// The only booted simulator. With several booted this is an error naming
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:51:    /// them, never a guess: the first booted device may be one the user is
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:53:    public func soleBootedDevice() async throws -> SimulatorDevice {
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:54:        try Self.soleBooted(in: try await listDevices())
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:57:    static func soleBooted(in devices: [SimulatorDevice]) throws -> SimulatorDevice {
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:58:        let booted = devices.filter(\.isBooted)
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:59:        guard let first = booted.first else { throw GrantivaError.simulatorNotRunning }
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:60:        guard booted.count == 1 else {
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:61:            let names = booted.map { "\($0.name) (\($0.udid))" }.joined(separator: ", ")
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:63:                "\(booted.count) simulators are booted: \(names). Pass --simulator <name|UDID> or set simulator: in grantiva.yml."
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:69:    public func bootedUDID() async throws -> String {
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:70:        try await bootedDevice().udid
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:104:    /// already booted with no Grantiva record was booted by someone else (Xcode,
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:113:        if device.isBooted {
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:115:            guard try capacity.sessions(snapshot: snapshot).contains(where: { $0.udid == device.udid }) else {
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:127:            // booting a Booted device fails (CoreSimulator code 405).
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:129:            if !current.isBooted {
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:133:            try capacity.activate(udid: device.udid, bootedByGrantiva: !current.isBooted)
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:143:    /// of that name the user created is refused, booted or not, before any
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:164:    /// The only booted simulator, as the `--no-build` capture's default
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:167:    public func soleBootedDefault(override: String = "--simulator") async throws -> SimulatorDevice {
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:168:        let device = try await soleBootedDevice()
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:171:                name: device.name, udid: device.udid, override: override, soleBooted: true
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:182:    /// Resolves only the requested name or UDID. It never substitutes an arbitrary booted device.
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:308:            if (try? await exactDevice(nameOrUDID: udid))?.isBooted == true {
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:355:    /// pre-existing devices the session merely booted are only shut down.
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:361:    /// Ends whatever session owns `udid`. Used by
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:364:    /// A device with no record (booted outside Grantiva, then run on) still
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:370:        let records = try capacity.sessions(snapshot: snapshot).filter { $0.udid == udid }
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:392:    /// Releases each record. A booted device is shut down, and then deleted
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:393:    /// if Grantiva created it, only when Grantiva itself booted it
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:394:    /// (`bootedByGrantiva == true`). A device someone else booted, including
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:399:            let booted = devices.first(where: { $0.udid == record.udid })?.isBooted == true
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:400:            let ours = record.bootedByGrantiva == true
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:401:            if booted && ours {
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:404:            let created = try provenance.contains(udid: record.udid) && (!booted || ours)
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:426:        let active = Set(try capacity.sessions(snapshot: snapshot).map(\.udid))
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:433:            guard !device.isBooted, !active.contains(record.udid) else { continue }
+Sources/GrantivaCore/Android/AndroidProvenance.swift:23:/// Which emulators Grantiva itself booted. `emulator teardown` (Plan 3)
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:9:/// user created (not in the created-simulator ledger) is never booted or
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:35:                    if let index = devices.firstIndex(where: { $0.udid == udid }) { devices[index].state = "Booted" }
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:119:    /// The `--no-build` capture's default (the sole booted simulator) follows
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:121:    func testTheSoleBootedDefaultIsRefusedUnlessGrantivaCreatedIt() async throws {
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:122:        let user = Host([.init(name: "Mine", udid: "USER-0002", state: "Booted")])
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:127:            "Invalid argument: Simulator \"Mine\" (USER-0002) was not created by Grantiva. It is the only booted simulator, "
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:131:        let ours = Host([.init(name: "qa", udid: "OURS-2", state: "Booted")])
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:160:        device.bootedID = "UDID-9"
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:161:        device.bootedName = "qa-ios"
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:228:        // would hide a booted device from `teardown --session-id`.
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:233:        let removedFiles = sessions.removeSessions(udid: udid, runnerPids: runnerPids)
+Sources/GrantivaCore/Platform/IOSPlatform.swift:26:    public func bootDevice(named nameOrID: String) async throws -> BootedDevice {
+Sources/GrantivaCore/Platform/IOSPlatform.swift:28:        return BootedDevice(udid: device.udid, name: device.name)
+Sources/GrantivaCore/Platform/IOSPlatform.swift:35:    public func bootDefaultDevice(named name: String, override: String) async throws -> BootedDevice {
+Sources/GrantivaCore/Platform/IOSPlatform.swift:37:        return BootedDevice(udid: device.udid, name: device.name)
+Sources/GrantivaCore/Platform/IOSPlatform.swift:117:    public func defaultDevice() async throws -> BootedDevice {
+Sources/GrantivaCore/Platform/IOSPlatform.swift:118:        // Only one Grantiva created: the sole booted simulator may be the user's (L08).
+Sources/GrantivaCore/Platform/IOSPlatform.swift:119:        let device = try await simulators.soleBootedDefault()
+Sources/GrantivaCore/Platform/IOSPlatform.swift:120:        return BootedDevice(udid: device.udid, name: device.name)
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:67:        let booted = try await platform(shell).bootDevice(named: "emulator-5556")
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:68:        XCTAssertEqual(booted, BootedDevice(udid: "emulator-5556", name: "Pixel_8_API_35"))
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:272:        XCTAssertEqual(device, BootedDevice(udid: "emulator-5554", name: "Pixel_8_API_35"))
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:40:    /// tool's argument) in MCP. `soleBooted` is the `--no-build` capture's
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:41:    /// default, the only booted simulator, rather than the default name.
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:43:        name: String, udid: String, override: String = "--simulator", soleBooted: Bool = false
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:46:            + (soleBooted ? "It is the only booted simulator, " : "It has the default simulator's name, ")
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:25:    func testSimulatorDeviceIsBooted() {
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:26:        let booted = SimulatorDevice(name: "iPhone 16", udid: "ABC-123", state: "Booted", runtime: "iOS-18-1", isAvailable: true)
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:27:        XCTAssertTrue(booted.isBooted)
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:30:        XCTAssertFalse(shutdown.isBooted)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:176:        ManagedSimulatorSession(udid: udid, name: "Sim \(udid.prefix(4))", sessionId: session, ownerPID: 4242, acquiredAt: Date(), state: state)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:179:    private func booted(_ udids: String...) -> [SimulatorDevice] {
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:180:        udids.map { SimulatorDevice(name: "Sim", udid: $0, state: "Booted", runtime: "iOS-26-0", isAvailable: true) }
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:196:    // A named session outlives the CLI process that booted its device, so a
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:197:    // forced reclaim never drops its record while the device is booted.
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:222:        let devices = booted(udid)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:238:        try writeRecords([record(udid, session: "simulator:\(udid)")], to: directory)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:246:        try writeRecords([record(udid, session: "simulator:\(udid)")], to: directory)
+Sources/GrantivaCore/Android/EmulatorManager.swift:257:    /// used, else it is booted. Without one: a single running emulator, else
+Sources/GrantivaCore/Android/EmulatorManager.swift:259:    /// booted, else an error lists the AVDs.
+Sources/GrantivaCore/Android/EmulatorManager.swift:260:    public func selectDevice(configured: String?) async throws -> BootedDevice {
+Sources/GrantivaCore/Android/EmulatorManager.swift:265:        // still booting shows as `offline` and must not be booted a second time.
+Sources/GrantivaCore/Android/EmulatorManager.swift:277:                return BootedDevice(udid: match.serial, name: configured)
+Sources/GrantivaCore/Android/EmulatorManager.swift:294:            return BootedDevice(udid: running[0].serial, name: names[running[0].serial] ?? running[0].serial)
+Sources/GrantivaCore/Android/EmulatorManager.swift:322:    private func waitForBooting(_ serial: String, name: String) async throws -> BootedDevice {
+Sources/GrantivaCore/Android/EmulatorManager.swift:325:        return BootedDevice(udid: serial, name: name)
+Sources/GrantivaCore/Android/EmulatorManager.swift:329:    public func boot(avd: String) async throws -> BootedDevice {
+Sources/GrantivaCore/Android/EmulatorManager.swift:340:        return BootedDevice(udid: serial, name: avd)
+Sources/GrantivaCore/Android/EmulatorManager.swift:453:        return EmulatorProvisionResult(name: avd, serial: device.udid, created: created, state: "Booted")
+Sources/GrantivaCore/Android/EmulatorManager.swift:456:    /// The emulator running `avd`, if any: `Booted` when adb can use it,
+Sources/GrantivaCore/Android/EmulatorManager.swift:463:            return (device.serial, device.isUsable ? "Booted" : "Booting")
+Sources/GrantivaCore/Platform/DevicePlatform.swift:19:public struct BootedDevice: Sendable, Equatable {
+Sources/GrantivaCore/Platform/DevicePlatform.swift:94:    func bootDevice(named nameOrID: String) async throws -> BootedDevice
+Sources/GrantivaCore/Platform/DevicePlatform.swift:99:    func bootDefaultDevice(named name: String, override: String) async throws -> BootedDevice
+Sources/GrantivaCore/Platform/DevicePlatform.swift:105:    func attachedDevice(serial: String) async throws -> BootedDevice
+Sources/GrantivaCore/Platform/DevicePlatform.swift:127:    /// config, or runner session. On iOS this is the only booted simulator;
+Sources/GrantivaCore/Platform/DevicePlatform.swift:128:    /// several booted is an error, never "the first one".
+Sources/GrantivaCore/Platform/DevicePlatform.swift:129:    func defaultDevice() async throws -> BootedDevice
+Sources/GrantivaCore/Platform/DevicePlatform.swift:153:    public func attachedDevice(serial: String) async throws -> BootedDevice {
+Sources/GrantivaCore/Platform/DevicePlatform.swift:154:        BootedDevice(udid: serial, name: serial)
+Sources/GrantivaCore/Platform/DevicePlatform.swift:159:    public func bootDefaultDevice(named name: String, override: String) async throws -> BootedDevice {
+Sources/GrantivaCore/Platform/DevicePlatform.swift:174:    public func bootDevice(for resolved: ResolvedProject, override: String = "--simulator") async throws -> BootedDevice {
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:285:    func bootDevice(named: String) async throws -> BootedDevice { fatalError() }
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:297:    func defaultDevice() async throws -> BootedDevice { fatalError() }
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:5:    // MARK: - I02: never guess among several booted simulators
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:7:    private func device(_ name: String, _ udid: String, _ state: String = "Booted") -> SimulatorDevice {
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:11:    func testSoleBootedReturnsTheOnlyBootedSimulator() throws {
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:13:        XCTAssertEqual(try SimulatorManager.soleBooted(in: devices).udid, "QA-1")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:16:    func testSoleBootedRefusesToPickAmongSeveralAndNamesThem() {
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:18:        XCTAssertThrowsError(try SimulatorManager.soleBooted(in: devices)) { error in
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:27:    func testSoleBootedWithNoneBootedIsSimulatorNotRunning() {
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:28:        XCTAssertThrowsError(try SimulatorManager.soleBooted(in: [device("Off", "OFF", "Shutdown")])) { error in
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:204:    // MARK: - I08: pre-booted devices are not Grantiva's
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:206:    func testBootingAnAlreadyBootedDeviceTakesNoSlotAndTeardownNeverShutsItDown() async throws {
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:208:            .init(name: "Manual", udid: "MANUAL-1", state: "Booted", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:223:        XCTAssertEqual(simctl.device("MANUAL-1")?.state, "Booted")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:235:        XCTAssertEqual(try capacity.sessions(snapshot: snapshot).map(\.udid), ["MINE-1"])
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:247:    // A record 2.0.1 wrote for a hand-booted device has no bootedByGrantiva
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:252:            .init(name: "Legacy", udid: "LEGACY-1", state: "Booted", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:266:        XCTAssertEqual(simctl.device("LEGACY-1")?.state, "Booted")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:285:        XCTAssertEqual(a?.bootedByGrantiva, true)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:287:        XCTAssertEqual(b?.bootedByGrantiva, true)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:379:        let other = SimulatorDevice(name: "Other", udid: "OTHER-1", state: "Booted", runtime: "iOS-26-0", isAvailable: true)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:380:        simctl.add(.init(name: "Other", udid: "OTHER-1", state: "Booted", runtime: "iOS-26-0", type: FakeSimctl.iPhone17))
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:486:                    try capacity.activate(udid: "RACE-1", bootedByGrantiva: true)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:505:        XCTAssertEqual(device.state, "Booted")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:507:        XCTAssertEqual(boots.count, 1, "only the twin booted the device: \(simctl.commands)")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:510:        XCTAssertEqual(record.bootedByGrantiva, true)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:536:            .init(name: "Manual", udid: "MANUAL-1", state: "Booted", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:559:            .init(name: "Manual", udid: "MANUAL-1", state: "Booted", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:584:            .init(name: "Manual", udid: "MANUAL-1", state: "Booted", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:614:            .init(name: "Manual", udid: "MANUAL-1", state: "Booted", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:684:                setState(words[3], "Booted")
+Tests/GrantivaCoreTests/TableFormatterTests.swift:103:            state: "Booted",
+Tests/GrantivaCoreTests/CLILogHandlerTests.swift:59:            "[debug] \(stamp) com.grantiva.cli: session port=8430 udid=EXACT-UDID"
+Sources/GrantivaCore/Config/ProjectResolver.swift:13:    /// argument, or config named one: it is then booted only if Grantiva
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:24:            try capacity.activate(udid: shutdown.udid, bootedByGrantiva: true)
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:27:        XCTAssertEqual(acquired.bootedByGrantiva, true)
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:39:                try capacity.activate(udid: shutdown.udid, bootedByGrantiva: true)
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:43:            XCTAssertEqual(records.first?.bootedByGrantiva, true)
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:58:        XCTAssertEqual(try capacity.sessions(snapshot: snapshot).map(\.udid), [shutdown.udid])
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:63:        let devices = (1...5).map { device($0, state: "Booted") }
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:80:        let first = device(1, state: "Booted")
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:81:        let second = device(2, state: "Booted")
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:92:        XCTAssertEqual(try capacity.sessions(snapshot: snapshot).map(\.udid), [second.udid])
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:97:        let booted = device(1, state: "Booted")
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:98:        _ = try await capacity.reserve(device: booted, devices: { [booted] })
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:99:        try capacity.activate(udid: booted.udid)
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:106:    func testBootedPendingReservationWithDeadOwnerIsPruned() {
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:107:        let simulator = device(1, state: "Booted")
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:122:    // A run without GRANTIVA_SESSION_ID owns its record as `simulator:<udid>`.
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:126:        let simulator = device(1, state: "Booted")
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:127:        var records = [record(simulator, sessionId: "simulator:\(simulator.udid)", pid: 4242)]
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:135:        let simulator = device(1, state: "Booted")
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:136:        var records = [record(simulator, sessionId: "simulator:\(simulator.udid)", pid: 4242, ephemeral: true)]
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:145:    func testDurableSessionlessRecordOutlivesItsOwnerWhileBooted() {
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:146:        let simulator = device(1, state: "Booted")
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:147:        var records = [record(simulator, sessionId: "simulator:\(simulator.udid)", pid: 4242, ephemeral: false)]
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:159:        XCTAssertNil(records[0].bootedByGrantiva)
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:164:        let simulator = device(1, state: "Booted")
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:165:        var records = [record(simulator, sessionId: "simulator:\(simulator.udid)", pid: 4242)]
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:172:    // A named ticket session outlives the CLI process that booted its device.
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:174:        let simulator = device(1, state: "Booted")
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:184:        let simulator = device(1, state: "Booted")
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:196:        let first = device(1, state: "Booted")
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:197:        let second = device(2, state: "Booted")
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:217:        let owner = capacity.sessionId ?? "simulator:\(simulator.udid)"
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:243:        let simulator = device(1, state: "Booted")
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:46:        sessionId: String, port: Int, pid: Int32, udid: String?, path: String,
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:70:            sessionId: "", port: 0, pid: owner.runnerPid, udid: owner.udid, path: path,
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:261:    /// Deletes the session files of keep-alive runners that held `udid` and are
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:271:    public func removeSessions(udid: String, runnerPids: [Int32] = []) -> [String] {
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:386:    /// The live foreground `runner start` sessions recorded for `udid`, whose
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:412:    /// The newest live session, or the live session for `udid` when given.
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:416:        let session = try locateIncludingStarting(udid: udid)
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:435:            "No keep-alive session for udid \(udid). Live sessions: \(available)"
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:236:    func bootDevice(named: String) async throws -> BootedDevice { fatalError() }
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:251:    func defaultDevice() async throws -> BootedDevice { fatalError() }
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:594:    func bootDevice(named: String) async throws -> BootedDevice { fatalError() }
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:606:    func defaultDevice() async throws -> BootedDevice { fatalError() }
+Tests/GrantivaCoreTests/DoctorTests.swift:102:    // developer machine with no simulator booted and no grantiva.yml is fine.
+Tests/GrantivaCoreTests/DoctorTests.swift:105:            DoctorCheck(name: "Booted Simulator", status: .warning, message: "No simulator booted", fix: nil),
+Tests/GrantivaCoreTests/DoctorTests.swift:152:        DoctorCheck(name: "Booted Simulator", status: .warning, message: "No simulator booted", fix: nil),
+Tests/GrantivaCoreTests/DoctorTests.swift:236:    func testNoBootedSimulatorFixNamesTheSharedDefaultSimulator() {
+Tests/GrantivaCoreTests/DoctorTests.swift:237:        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck(name: "iPhone 18 Pro").fix, "Run: grantiva simulator ensure --name \"iPhone 18 Pro\"")
+Tests/GrantivaCoreTests/DoctorTests.swift:238:        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck().fix, "Run: grantiva simulator ensure --name \"\(DefaultSimulator.name)\"")
+Tests/GrantivaCoreTests/DoctorTests.swift:241:    // MARK: - K36: a list failure is not "nothing booted"
+Tests/GrantivaCoreTests/DoctorTests.swift:243:    func testBootedSimulatorCheckSaysWhenTheSimulatorListCannotBeRead() async {
+Tests/GrantivaCoreTests/DoctorTests.swift:247:        let check = await DoctorRunner().checkBootedSimulator(simulators: simulators)
+Tests/GrantivaCoreTests/DoctorTests.swift:248:        XCTAssertEqual(check.name, "Booted Simulator")
+Tests/GrantivaCoreTests/DoctorTests.swift:251:        XCTAssertFalse(check.message.contains("No simulator booted"), check.message)
+Tests/GrantivaCoreTests/DoctorTests.swift:258:    func testNoBootedSimulatorFixAvoidsAUserSimulatorWithTheDefaultName() {
+Tests/GrantivaCoreTests/DoctorTests.swift:261:            DoctorRunner.noBootedSimulatorCheck(name: "iPhone 18 Pro", devices: [mine], createdByGrantiva: []).fix,
+Tests/GrantivaCoreTests/DoctorTests.swift:266:            DoctorRunner.noBootedSimulatorCheck(name: "iPhone 18 Pro", devices: [mine], createdByGrantiva: ["USER-1"]).fix,
+Tests/GrantivaCoreTests/DoctorTests.swift:271:    func testBootedSimulatorCheckWithNothingBootedIsUnchanged() async {
+Tests/GrantivaCoreTests/DoctorTests.swift:273:        let check = await DoctorRunner().checkBootedSimulator(simulators: simulators)
+Tests/GrantivaCoreTests/DoctorTests.swift:275:        XCTAssertEqual(check.message, "No simulator booted")
+Tests/GrantivaCoreTests/DoctorTests.swift:279:    func testBootedSimulatorCheckNamesTheBootedDevice() async {
+Tests/GrantivaCoreTests/DoctorTests.swift:280:        let list = #"{"devices": {"com.apple.CoreSimulator.SimRuntime.iOS-26-0": [{"name": "Mine", "udid": "U-1", "state": "Booted", "isAvailable": true}]}}"#
+Tests/GrantivaCoreTests/DoctorTests.swift:281:        let check = await DoctorRunner().checkBootedSimulator(simulators: SimulatorManager(execute: { _ in list }))
+Tests/GrantivaCoreTests/DoctorTests.swift:286:    func testBootedSimulatorCheckReportsUnownedDefaultRegardlessOfListOrder() async throws {
+Tests/GrantivaCoreTests/DoctorTests.swift:287:        let booted = #"{"name":"iPhone 17 Pro","udid":"BOOTED","state":"Booted","isAvailable":true}"#
+Tests/GrantivaCoreTests/DoctorTests.swift:291:        for devices in ["\(booted),\(userDefault)", "\(userDefault),\(booted)"] {
+Tests/GrantivaCoreTests/DoctorTests.swift:293:            let check = await DoctorRunner().checkBootedSimulator(
+Tests/GrantivaCoreTests/DoctorTests.swift:308:    func testBootedSimulatorOwnershipNoteHasAbsentAndOwnedNegativeControls() async throws {
+Tests/GrantivaCoreTests/DoctorTests.swift:309:        let booted = #"{"name":"iPhone 17 Pro","udid":"BOOTED","state":"Booted","isAvailable":true}"#
+Tests/GrantivaCoreTests/DoctorTests.swift:310:        let noDefault = #"{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-26-0":["# + booted + "]}}"
+Tests/GrantivaCoreTests/DoctorTests.swift:311:        let ordinary = await DoctorRunner().checkBootedSimulator(
+Tests/GrantivaCoreTests/DoctorTests.swift:320:        let list = #"{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-26-0":["# + booted + "," + ownedDefault + "]}}"
+Tests/GrantivaCoreTests/DoctorTests.swift:321:        let owned = await DoctorRunner().checkBootedSimulator(
+Tests/GrantivaCoreTests/DoctorTests.swift:329:    func testBootedSimulatorCheckCanExerciseBothSupportedDefaultNamesDeterministically() async {
+Tests/GrantivaCoreTests/DoctorTests.swift:331:            let booted = #"{"name":"Other","udid":"BOOTED","state":"Booted","isAvailable":true}"#
+Tests/GrantivaCoreTests/DoctorTests.swift:333:            let list = #"{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-26-0":["# + booted + "," + defaultDevice + "]}}"
+Tests/GrantivaCoreTests/DoctorTests.swift:334:            let check = await DoctorRunner().checkBootedSimulator(
+Tests/GrantivaCoreTests/DoctorTests.swift:387:        for name in ["Xcode", "Xcode Version", "Booted Simulator"] {
+Tests/GrantivaCoreTests/DoctorTests.swift:393:    func testBootedSimulatorIsAdvisoryEvenForARequiredProject() async {
+Tests/GrantivaCoreTests/DoctorTests.swift:395:        XCTAssertEqual(checks.first { $0.name == "Booted Simulator" }?.section, .advisory)
+Tests/GrantivaCoreTests/DoctorTests.swift:397:        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck().section, .advisory)
+Tests/GrantivaCoreTests/DoctorTests.swift:430:            DoctorRunner.noBootedSimulatorCheck(),
+Tests/GrantivaCoreTests/DoctorTests.swift:441:        XCTAssertEqual(Set(checks.map(\.name)), ["Runner", "Android AVDs", "Running Emulator", "Booted Simulator"])
+Sources/GrantivaCore/Runner/RunnerSessionInfo.swift:49:        RunnerSessionInfo(pid: pid, wdaPort: 0, bundleId: bundleId, udid: udid, startedAt: startedAt, platform: platform, state: .starting)
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:36:    func testNewestLiveSessionIsSelectedWhenNoUDIDIsGiven() throws {
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:44:        XCTAssertNil(session.udid)
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:56:        let session = try store.locate(udid: wanted)
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:58:        XCTAssertEqual(session.udid, wanted)
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:62:            XCTAssertTrue(message.contains("No keep-alive session for udid"), message)
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:117:        XCTAssertEqual(KeepAliveSessionStore.loadOwner(path: path)?.udid, udid)
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:283:        let removed = store(live: [300]).removeSessions(udid: "7E846901-F93F-4220-A153-7043061033D7")
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:291:        let removed = store(live: []).removeSessions(udid: "7E846901-F93F-4220-A153-7043061033D7")
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:52:    /// Live children standing in for emulators Grantiva booted: each exits
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:307:        XCTAssertEqual(device, BootedDevice(udid: "emulator-5556", name: "Pixel_8_API_35"))
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:344:        XCTAssertEqual(device, BootedDevice(udid: "emulator-5554", name: "Pixel_8_API_35"))
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:406:    func testConfiguredAVDThatIsStillBootingIsWaitedOnNotBootedAgain() async throws {
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:416:        XCTAssertEqual(device, BootedDevice(udid: "emulator-5554", name: "Pixel_8_API_35"))
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:429:        XCTAssertEqual(device, BootedDevice(udid: "emulator-5554", name: "Only_One"))
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:502:        XCTAssertEqual(result, EmulatorProvisionResult(name: "Pixel_8_API_35", serial: "emulator-5554", created: true, state: "Booted"))
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:522:        XCTAssertEqual(shell.commands, ["'/sdk/emulator/emulator' -list-avds", "'/sdk/platform-tools/adb' devices -l"], "a stopped AVD is looked for among the running emulators, not booted")
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:676:    /// C02 / AND-F03: the emulator Grantiva booted died and the user started
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:992:    func testEnsureWithoutBootReportsARunningAVDAsBootedWithItsSerial() async throws {
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:1001:        XCTAssertEqual(result, EmulatorProvisionResult(name: "Pixel_8_API_35", serial: "emulator-5556", created: false, state: "Booted"))
+Tests/GrantivaCoreTests/RunnerSessionAppIdTests.swift:114:            func bootDevice(named: String) async throws -> BootedDevice { fatalError() }
+Tests/GrantivaCoreTests/RunnerSessionAppIdTests.swift:126:            func defaultDevice() async throws -> BootedDevice { fatalError() }
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:151:        let udid = session.udid ?? ""
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:167:            let (exited, reaped) = await helperReaper.stopping(runnerPid: session.pid, udid: udid) { [self] in
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:182:                    "The grantiva process holding the keep-alive session (pid \(owner), \(udid)) did not exit \(when) \(how). "
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:187:            return .released(grantivaPid: owner, runnerPid: session.pid, udid: udid, reaped: reaped)
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:190:            runnerPid: session.pid, udid: udid, recordedStartTime: session.runnerStartTime,
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:240:    /// Every session on `udid`, orphans included and whether or not its
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:242:    /// start` session file's runner when it names `udid` and is not among
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:246:    public func stopSessions(udid: String, runnerStartSession: RunnerSessionInfo?, deadline: Date? = nil) async -> [Outcome] {
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:257:        if let file = runnerStartSession, file.udid.caseInsensitiveCompare(udid) == .orderedSame,
+Sources/GrantivaCore/Runner/RunnerSession.swift:68:    /// Run the embedded runner against a booted simulator.

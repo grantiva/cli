@@ -1,0 +1,570 @@
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:7:/// L63: tearing down a simulator whose foreground `runner start` is mid-run
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:31:    /// writes under the device home), it ignores SIGINT, SIGTERM and SIGHUP,
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:113:    /// The run's xcodebuild takes SIGKILL at once (SIGINT is what makes it
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:114:    /// start a diagnose); a diagnose found in the first round gets SIGINT
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:124:                signals.value.append("\(sig == SIGKILL ? "KILL" : sig == SIGINT ? "INT" : "\(sig)") \(pid)")
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:127:                if sig == SIGKILL || sig == SIGINT { alive.value.remove(abs(pid)); if pid == 600 { alive.value.insert(602) } }
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:143:    /// xcodebuild at once; `runner stop` (the default) still sends SIGINT.
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:155:                    signals.value.append("\(sig == SIGKILL ? "KILL" : sig == SIGINT ? "INT" : "\(sig)") \(pid)")
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:179:            signal: { pid, sig in signals.value.append("\(sig == SIGKILL ? "KILL" : sig == SIGINT ? "INT" : "\(sig)") \(pid)") },
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:16:        XCTAssertNil(result.attachment, "A discovered WDA port cannot make a failed launch ready")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:22:        XCTAssertNil(result.attachment)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:41:        XCTAssertEqual(result.attachment?.port, 8834)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:52:            XCTAssertNil(result.attachment)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:74:        let detached = LockedValue(false)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:76:            attach: { DriverAttachment(client: .failing, port: 61211, sessionID: "new", detach: { detached.set(true) }) },
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:79:        XCTAssertNil(result.attachment)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:81:        XCTAssertTrue(detached.value)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:85:        let detached = LockedValue(0)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:87:            attach: { DriverAttachment(client: .failing, port: 61211, sessionID: "new", detach: { detached.set(detached.value + 1) }) },
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:90:        XCTAssertNil(result.attachment)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:92:        XCTAssertEqual(detached.value, 1)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:98:            attach: { DriverAttachment(client: .failing, port: 61211, sessionID: "new", detach: {}) },
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:103:        XCTAssertEqual(result.attachment?.sessionID, "new")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:104:        XCTAssertGreaterThanOrEqual(polls.value, 3, "driver attachment alone is not app readiness")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:128:                       "the signal caller must not exit while foreground session removal is still running")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:149:            let error = RunnerStartCommand.foregroundStartupError(result)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:153:        XCTAssertTrue(RunnerStartCommand.foregroundStartupError(nil).localizedDescription.contains("Timed out"))
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:404:        let attachment = await RunnerStartCommand.waitForUIAutomator2(
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:408:                return DriverAttachment(client: .failing, port: 61211, detach: {})
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:413:        XCTAssertEqual(attachment.attachment?.port, 61211)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:418:        let attachment = await RunnerStartCommand.waitForUIAutomator2(
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:423:        XCTAssertNil(attachment.attachment)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:424:        XCTAssertNil(attachment.exitStatus)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:452:    func testStopOfARunnerThatIgnoresSIGINTRemovesItsSessionFileAndSaysItKilled() async throws {
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:460:        XCTAssertEqual(RunnerStopCommand.render(result), "Runner stopped (pid 1234; it ignored SIGINT and SIGTERM and was killed)")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:497:        XCTAssertEqual(signals.value.first, "\(SIGINT) 1250")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:525:            projectDirectory: "/private/tmp/project", platform: .ios, ownerPid: 4163, detached: false
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:552:                projectDirectory: "/private/tmp/project", platform: .ios, ownerPid: Int32(pid - 100), detached: false
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:582:            projectDirectory: KeepAliveOwner.canonicalDirectory(project.path), platform: .ios, detached: false, appId: "com.example"
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:612:            projectDirectory: "/private/tmp/elsewhere", platform: .ios, ownerPid: 4163, detached: false
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:635:        XCTAssertTrue(help.contains("SIGINT"), help)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:679:    // MARK: - K88: foreground `runner start` stays attached
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:716:        exit.yield(Int32(SIGINT))
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:726:            let attachment = DriverAttachment(
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:728:                detach: { releases.set(releases.value + 1) }
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:732:                detach: { unrelatedReleases.set(unrelatedReleases.value + 1) }
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:735:            XCTAssertEqual(RunnerStartCommand.retainForegroundAttachment(attachment, in: owned), 61211)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:749:            XCTAssertEqual(releases.value, 0, "the live session must retain its forward")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:751:            exit.yield(interrupted ? Int32(SIGINT) : 0)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:755:            XCTAssertEqual(releases.value, 1, "foreground cleanup must release the attachment exactly once")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:756:            XCTAssertEqual(unrelatedReleases.value, 0, "foreground cleanup must not release an attachment it does not own")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:763:        let detachStarted = DispatchSemaphore(value: 0)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:764:        let (detachGate, allowDetach) = AsyncStream<Void>.makeStream()
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:768:        let attachment = DriverAttachment(
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:770:            detach: {
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:771:                detachStarted.signal()
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:772:                for await _ in detachGate { break }
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:782:            accepted.set(owner.retain(attachment, timeout: 2))
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:785:        XCTAssertEqual(detachStarted.wait(timeout: .now() + 1), .success)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:788:                       "the signal cleanup must wait for the rejected attachment's detach")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:799:        let detachStarted = DispatchSemaphore(value: 0)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:800:        let (detachGate, allowDetach) = AsyncStream<Void>.makeStream()
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:802:        let attachment = DriverAttachment(
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:804:            detach: {
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:805:                detachStarted.signal()
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:806:                for await _ in detachGate { break }
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:809:        XCTAssertTrue(owner.retain(attachment))
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:815:        XCTAssertEqual(detachStarted.wait(timeout: .now() + 1), .success)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:817:                       "the signal cleanup must not return while owned detach is running")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:844:        XCTAssertTrue(help.contains("Driver port: WDA on iOS, the forwarded UIAutomator2 port on Android"), help)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:927:            projectDirectory: "/private/tmp/project", platform: .ios, ownerPid: 4163, detached: false, appId: "com.example"
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:939:    // MARK: - L36: `runner stop` of a foreground `runner start` is orderly
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:956:            try RunnerStartCommand.foregroundEnding(status: 1, pid: 1234, stopRequested: true),
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:962:        for status in [SIGKILL, SIGTERM, SIGINT, 128 + SIGINT] {
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:963:            XCTAssertThrowsError(try RunnerStartCommand.foregroundEnding(status: status, pid: 1234, stopRequested: false), "status \(status)") {
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:967:        XCTAssertEqual(try? RunnerStartCommand.foregroundEnding(status: SIGKILL, pid: 1234, stopRequested: true),
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:971:    /// L36 fix round 2: a foreground `runner start` in directory A torn down
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:986:            try RunnerStartCommand.foregroundEnding(status: SIGTERM, pid: 1234, stop: request),
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1000:        XCTAssertThrowsError(try RunnerStartCommand.foregroundEnding(status: SIGTERM, pid: 1234, stop: request))
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1004:        XCTAssertThrowsError(try RunnerStartCommand.foregroundEnding(status: 1, pid: 1234, stopRequested: false)) {
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1007:        XCTAssertEqual(try? RunnerStartCommand.foregroundEnding(status: 0, pid: 1234, stopRequested: false),
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1041:        let detached = LockedValue(0)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1046:                return DriverAttachment(client: .failing, port: 61000 + polls.value, sessionID: id, detach: { detached.set(detached.value + 1) })
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1052:        XCTAssertEqual(result.attachment?.sessionID, "new")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1054:        XCTAssertEqual(detached.value, 3, "each rejected attachment's forward is removed")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1059:            attach: { DriverAttachment(client: .failing, port: 61211, sessionID: "only", detach: {}) },
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1062:        XCTAssertEqual(result.attachment?.sessionID, "only")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1096:        XCTAssertNil(result.attachment)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1222:        let forwarder = RunnerOutputForwarder(narrate: { narrated.append($0) })
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1224:        forwarder.attachOutput(pipe.fileHandleForReading)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1231:        for await chunk in forwarder.chunks { received.append(chunk) }
+Sources/GrantivaCLI/DriverCommand.swift:106:        Without --detach the command stays in the foreground, streams the runner's \
+Sources/GrantivaCLI/DriverCommand.swift:109:        files and releases the device. Interrupted, it exits 130; ended by \
+Sources/GrantivaCLI/DriverCommand.swift:111:        With --detach it returns once the driver is up and the runner keeps the \
+Sources/GrantivaCLI/DriverCommand.swift:118:        and "log" with --detach}. "bundle_id" (and "udid" on Android) are kept \
+Sources/GrantivaCLI/DriverCommand.swift:146:    var detach: Bool = false
+Sources/GrantivaCLI/DriverCommand.swift:241:        if detach {
+Sources/GrantivaCLI/DriverCommand.swift:283:    /// success. `--keep-alive` holds the session until SIGINT, which is what
+Sources/GrantivaCLI/DriverCommand.swift:293:        var attachment: DriverAttachment?
+Sources/GrantivaCLI/DriverCommand.swift:300:    /// The successful attachment is returned un-detached: its forward is the
+Sources/GrantivaCLI/DriverCommand.swift:318:            if let attachment = try? await attach() {
+Sources/GrantivaCLI/DriverCommand.swift:319:                if let stale = staleSessionID, attachment.sessionID == stale {
+Sources/GrantivaCLI/DriverCommand.swift:320:                    await attachment.detach()
+Sources/GrantivaCLI/DriverCommand.swift:322:                    if status == "passed" { return UIAutomator2Wait(attachment: attachment) }
+Sources/GrantivaCLI/DriverCommand.swift:323:                    await attachment.detach()
+Sources/GrantivaCLI/DriverCommand.swift:326:                    await attachment.detach()
+Sources/GrantivaCLI/DriverCommand.swift:341:            attach: { DriverAttachment(client: .wda(port: port), port: Int(port), detach: {}) },
+Sources/GrantivaCLI/DriverCommand.swift:419:    /// The local end of the forward to the runner's UIAutomator2 session. The
+Sources/GrantivaCLI/DriverCommand.swift:420:    /// forward is left in place: it is the port the session records.
+Sources/GrantivaCLI/DriverCommand.swift:421:    private static func waitForUIAutomator2Port(_ launch: Launch, child: ChildProcess) async -> (attachment: DriverAttachment?, exitStatus: Int32?, launchFailed: Bool) {
+Sources/GrantivaCLI/DriverCommand.swift:431:        return (wait.attachment, wait.exitStatus, wait.launchFailed)
+Sources/GrantivaCLI/DriverCommand.swift:436:    /// forward is removed again.
+Sources/GrantivaCLI/DriverCommand.swift:439:              let attachment = try? await platform.attachDriver(deviceID: deviceID, port: nil) else { return nil }
+Sources/GrantivaCLI/DriverCommand.swift:440:        await attachment.detach()
+Sources/GrantivaCLI/DriverCommand.swift:441:        return attachment.sessionID
+Sources/GrantivaCLI/DriverCommand.swift:444:    /// Transfers a successful Android readiness attachment to the foreground
+Sources/GrantivaCLI/DriverCommand.swift:447:        _ attachment: DriverAttachment, in owner: ForegroundDriverAttachment
+Sources/GrantivaCLI/DriverCommand.swift:449:        owner.retain(attachment) ? UInt16(clamping: attachment.port) : nil
+Sources/GrantivaCLI/DriverCommand.swift:478:    /// The stop request read when the foreground runner exits.
+Sources/GrantivaCLI/DriverCommand.swift:513:    /// The foreground command's last line, or its failure: a runner that
+Sources/GrantivaCLI/DriverCommand.swift:516:    static func foregroundEnding(status: Int32, pid: Int32, stop: StopRequest?) throws -> String {
+Sources/GrantivaCLI/DriverCommand.swift:530:    static func foregroundEnding(status: Int32, pid: Int32, stopRequested: Bool) throws -> String {
+Sources/GrantivaCLI/DriverCommand.swift:531:        try foregroundEnding(status: status, pid: pid, stop: stopRequested ? .runnerStop : nil)
+Sources/GrantivaCLI/DriverCommand.swift:543:    private static func recordKeepAliveOwner(_ launch: Launch, runnerPid: Int32, detached: Bool) {
+Sources/GrantivaCLI/DriverCommand.swift:545:            udid: launch.device.udid, runnerPid: runnerPid, platform: launch.platform, detached: detached, appID: launch.appID,
+Sources/GrantivaCLI/DriverCommand.swift:581:        Self.recordKeepAliveOwner(launch, runnerPid: runnerPid, detached: true)
+Sources/GrantivaCLI/DriverCommand.swift:605:            guard let attachment = wait.attachment else {
+Sources/GrantivaCLI/DriverCommand.swift:609:            port = UInt16(clamping: attachment.port)
+Sources/GrantivaCLI/DriverCommand.swift:618:            guard launchWait.attachment != nil else {
+Sources/GrantivaCLI/DriverCommand.swift:645:            Output.line("Runner started (detached)")
+Sources/GrantivaCLI/DriverCommand.swift:661:    /// cleanup and exits 130), `runner stop` from another shell, or the runner
+Sources/GrantivaCLI/DriverCommand.swift:680:        Self.recordKeepAliveOwner(launch, runnerPid: child.pid, detached: false)
+Sources/GrantivaCLI/DriverCommand.swift:687:        let foregroundAttachment = ForegroundDriverAttachment()
+Sources/GrantivaCLI/DriverCommand.swift:689:            foregroundAttachment.release()
+Sources/GrantivaCLI/DriverCommand.swift:712:            foregroundAttachment.finishAcquiring()
+Sources/GrantivaCLI/DriverCommand.swift:716:        if launch.platform != .android { foregroundAttachment.finishAcquiring() }
+Sources/GrantivaCLI/DriverCommand.swift:719:            // The port comes from the forward, not the output.
+Sources/GrantivaCLI/DriverCommand.swift:722:            let found = wait.attachment.flatMap {
+Sources/GrantivaCLI/DriverCommand.swift:723:                Self.retainForegroundAttachment($0, in: foregroundAttachment)
+Sources/GrantivaCLI/DriverCommand.swift:725:            if wait.attachment == nil { foregroundAttachment.finishAcquiring() }
+Sources/GrantivaCLI/DriverCommand.swift:738:                    let ending = try Self.foregroundEnding(status: status, pid: runnerPid, stop: requested)
+Sources/GrantivaCLI/DriverCommand.swift:756:                timeout: Self.foregroundWDATimeout,
+Sources/GrantivaCLI/DriverCommand.swift:766:                if SignalRelay.shared.isTerminating { throw Self.foregroundStartupError(startup) }
+Sources/GrantivaCLI/DriverCommand.swift:768:                    let ending = try Self.foregroundEnding(status: child.wait(), pid: runnerPid, stop: requested)
+Sources/GrantivaCLI/DriverCommand.swift:772:                throw Self.foregroundStartupError(startup)
+Sources/GrantivaCLI/DriverCommand.swift:775:            guard launchWait.attachment != nil else {
+Sources/GrantivaCLI/DriverCommand.swift:782:                    let ending = try Self.foregroundEnding(status: status, pid: runnerPid, stop: requested)
+Sources/GrantivaCLI/DriverCommand.swift:829:        let markerWatch = Task.detached(priority: .utility) {
+Sources/GrantivaCLI/DriverCommand.swift:854:            // Ctrl-C: the relay is reaping and exits 130 once its cleanups
+Sources/GrantivaCLI/DriverCommand.swift:859:        let ending = try Self.foregroundEnding(status: status, pid: child.pid, stop: stopRequested.value)
+Sources/GrantivaCLI/DriverCommand.swift:907:    static func foregroundWDATimeout(isBuilding: @escaping @Sendable () -> Bool) async {
+Sources/GrantivaCLI/DriverCommand.swift:948:    static func foregroundStartupError(_ startup: WDAStartup?) -> Error {
+Sources/GrantivaCLI/DriverCommand.swift:1055:        the runner gets SIGINT, then SIGTERM and SIGKILL if it does not exit, and \
+Sources/GrantivaCLI/DriverCommand.swift:1060:        forwards and UIAutomator2 server are cleared. Without one, it releases a \
+Sources/GrantivaCLI/DriverCommand.swift:1063:        process SIGINT, and waits for it to exit. A run whose flows had already \
+Sources/GrantivaCLI/DriverCommand.swift:1139:                // Before the signal: a foreground `runner start` holding this
+Sources/GrantivaCLI/DriverCommand.swift:1160:        // The runner's own teardown clears its forwards and the UIA2 server
+Sources/GrantivaCLI/DriverCommand.swift:1181:                ? "Runner stopped (pid \(pid); it ignored SIGINT and SIGTERM and was killed)"
+Sources/GrantivaCLI/DriverCommand.swift:1308:    @Option(name: .shortAndLong, help: "Driver port: WDA on iOS, the forwarded UIAutomator2 port on Android (auto-detected from the active session if omitted)")
+Sources/GrantivaCLI/DriverCommand.swift:1347:    /// A keep-alive port of 0 (Android) becomes nil: the platform forwards one.
+Sources/GrantivaCLI/DriverCommand.swift:1379:            let attachment = try await device.attachDriver(deviceID: target.udid, port: target.port)
+Sources/GrantivaCLI/DriverCommand.swift:1381:                try await render(client: attachment.client)
+Sources/GrantivaCLI/DriverCommand.swift:1383:                await attachment.detach()
+Sources/GrantivaCLI/DriverCommand.swift:1386:            await attachment.detach()
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:95:        return DriverAttachment(client: client, port: Int(port ?? 7000), detach: { self.record("detach") })
+Sources/GrantivaCLI/HierarchyCommand.swift:80:        // is neither a device to forward to nor a port to read from.
+Sources/GrantivaCLI/HierarchyCommand.swift:151:    /// is needed: the platform forwards a port and finds the held session.
+Sources/GrantivaCLI/HierarchyCommand.swift:154:        let attachment = try await device.attachDriver(deviceID: serial, port: nil)
+Sources/GrantivaCLI/HierarchyCommand.swift:159:                text = try await attachment.client.hierarchyXML()
+Sources/GrantivaCLI/HierarchyCommand.swift:161:                text = try Self.jsonText(try await attachment.client.hierarchy())
+Sources/GrantivaCLI/HierarchyCommand.swift:164:            await attachment.detach()
+Sources/GrantivaCLI/HierarchyCommand.swift:167:        await attachment.detach()
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:185:    /// as `runner stop` does, so a foreground `runner start` ends in order.
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:232:    /// L54: a foreground `runner start` marked before the kill may be gone
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:288:    /// A foreground `runner start` under runner home A, torn down by a
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:299:            udid: "emulator-5556", runnerPid: runner.processIdentifier, platform: .android, detached: false,
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:318:            try RunnerStartCommand.foregroundEnding(status: SIGTERM, pid: runner.processIdentifier, stop: request),
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:328:        let detached = try sleeper()
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:330:        defer { detached.terminate(); keepAlive.terminate() }
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:332:        store.recordOwner(udid: "emulator-5556", runnerPid: detached.processIdentifier, platform: .android, detached: true,
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:334:        store.recordOwner(udid: "emulator-5558", runnerPid: keepAlive.processIdentifier, platform: .android, detached: false)
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:354:        store.recordOwner(udid: "emulator-5556", runnerPid: runner.processIdentifier, platform: .android, detached: false,
+Tests/GrantivaCLITests/RunCommandTests.swift:733:        XCTAssertFalse(SignalRelay.shared.simulateSignalForTesting(SIGINT, release: { _ in }))
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:19:        // when the foreground task is already removing the session and lease.
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:32:/// Owns the driver attachment discovered during foreground startup until the
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:33:/// foreground session ends. SignalRelay cleanups are synchronous, so release
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:34:/// waits briefly for the attachment's asynchronous platform cleanup.
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:37:    private var attachment: DriverAttachment?
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:42:    /// reject and release the late attachment before waking that cleanup.
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:43:    func retain(_ attachment: DriverAttachment, timeout: TimeInterval = 15) -> Bool {
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:46:            self.attachment = attachment
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:54:        detach(attachment, timeout: timeout)
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:62:    /// Completes startup when no attachment was acquired, so an interrupt
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:79:        let owned = attachment
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:80:        attachment = nil
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:83:            detach(owned, timeout: max(0, deadline.timeIntervalSinceNow))
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:87:    private func detach(_ owned: DriverAttachment, timeout: TimeInterval) {
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:89:        Task.detached {
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:90:            await owned.detach()
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:97:/// The foreground runner's output. Both streams go to the terminal through
+Sources/GrantivaCLI/DeviceRunnerSessions.swift:57:    /// Marks the foreground `runner start` runners recorded for `udid`
+Sources/GrantivaCLI/DeviceRunnerSessions.swift:69:        for owner in store.foregroundRunnerStarts(udid: udid) {
+Sources/GrantivaCLI/DeviceRunnerSessions.swift:80:    /// foreground `runner start` in any directory reads them and ends in
+Sources/GrantivaCLI/DeviceRunnerSessions.swift:85:    /// A marked foreground `runner start` also stops its runner itself when
+Tests/GrantivaCLITests/HierarchyCommandTests.swift:52:        store.recordOwner(udid: "emulator-5554", runnerPid: 100, platform: .android, detached: false)
+Tests/GrantivaCLITests/HierarchyCommandTests.swift:76:        XCTAssertEqual(fake.calls, ["attachDriver(emulator-5554,-)", "detach"])
+Tests/GrantivaCLITests/HierarchyCommandTests.swift:104:        XCTAssertEqual(fake.calls, ["attachDriver(emulator-5554,-)", "detach"])
+Tests/GrantivaCLITests/DumpHierarchyCommandTests.swift:59:        XCTAssertEqual(fake.calls, ["attachDriver(emulator-5554,61211)", "detach"])
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:394:    /// L54: a foreground `runner start` torn down while its session flow
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:404:            udid: udid, runnerPid: 701, grantivaPid: 700, detached: false, command: KeepAliveOwner.runnerStartCommand
+Sources/GrantivaCLI/DiffCommand.swift:174:                let attachment = try await device.attachDriver(deviceID: booted.udid, port: port)
+Sources/GrantivaCLI/DiffCommand.swift:178:                        driver: attachment.client, device: device, outputDir: outputDir,
+Sources/GrantivaCLI/DiffCommand.swift:183:                    await attachment.detach()
+Sources/GrantivaCLI/DiffCommand.swift:186:                await attachment.detach()
+Sources/GrantivaCLI/ConsoleFlagsCommand.swift:568:            signal(SIGINT, SIG_IGN)
+Sources/GrantivaCLI/ConsoleFlagsCommand.swift:569:            let sigint = DispatchSource.makeSignalSource(signal: SIGINT, queue: .main)
+Sources/GrantivaCLI/EmulatorCommand.swift:119:            abstract: "Kill emulators Grantiva started: one by serial, or all of them. Stops the UIAutomator2 server and removes the serial's adb forwards first.",
+Sources/GrantivaCLI/EmulatorCommand.swift:151:            // `stopRunners` gets to them: mark them first so a foreground
+Sources/GrantivaMCP/ValidatingTransport.swift:8:    case forward
+Sources/GrantivaMCP/ValidatingTransport.swift:15:    /// (`forward`), the transport answers the malformed ones (`reply`).
+Sources/GrantivaMCP/ValidatingTransport.swift:16:    case split(forward: Data, reply: Data?)
+Sources/GrantivaMCP/ValidatingTransport.swift:31:            case .valid: return .forward
+Sources/GrantivaMCP/ValidatingTransport.swift:48:        if valid.count == batch.count { return .forward }
+Sources/GrantivaMCP/ValidatingTransport.swift:50:        return .split(forward: encode(valid), reply: errors.isEmpty ? nil : encode(errors))
+Sources/GrantivaMCP/ValidatingTransport.swift:193:    /// Notes `data`, then forwards it; a cancel for an unanswered request is
+Sources/GrantivaMCP/ValidatingTransport.swift:194:    /// forwarded again on `cancelRetries` while that request is unanswered.
+Sources/GrantivaMCP/ValidatingTransport.swift:195:    private func forward(_ data: Data, to continuation: AsyncThrowingStream<Data, Swift.Error>.Continuation) {
+Sources/GrantivaMCP/ValidatingTransport.swift:225:                        case .forward: self.forward(data, to: continuation)
+Sources/GrantivaMCP/ValidatingTransport.swift:229:                            self.forward(valid, to: continuation)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:49:        // SIGINT was ignored, still holding the lease with an empty session
+Tests/GrantivaCoreTests/CLILogHandlerTests.swift:14:    private func render(_ level: Logger.Level, _ message: String = "Runner started (detached)") -> String {
+Tests/GrantivaCoreTests/CLILogHandlerTests.swift:23:        XCTAssertEqual(render(.info), "Runner started (detached)")
+Tests/GrantivaCoreTests/CLILogHandlerTests.swift:24:        XCTAssertEqual(render(.notice), "Runner started (detached)")
+Sources/GrantivaCore/Shell.swift:6:/// speaks JSON-RPC on stdin, and a child such as `adb shell` forwards whatever
+Sources/GrantivaMCP/Tools/ContextTool.swift:86:            // port is forwarded when the tools attach. A session from an
+Sources/GrantivaMCP/Tools/ContextTool.swift:88:            let port = session.wdaPort > 0 ? "\(session.wdaPort)" : driverPort.map(String.init) ?? "(forwarded on attach)"
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:80:        let interrupter = Task.detached {
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:113:        let interrupter = Task.detached {
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:135:        let interrupter = Task.detached {
+Sources/GrantivaCore/Android/AndroidPlatform.swift:280:    /// Removes a forward whose local port was recorded by the session being
+Sources/GrantivaCore/Android/AndroidPlatform.swift:299:        let forwarded: Bool
+Sources/GrantivaCore/Android/AndroidPlatform.swift:303:            forwarded = false
+Sources/GrantivaCore/Android/AndroidPlatform.swift:305:            // No recorded port, or its forward is gone (an adb restart drops
+Sources/GrantivaCore/Android/AndroidPlatform.swift:306:            // every forward): make a fresh one.
+Sources/GrantivaCore/Android/AndroidPlatform.swift:308:            forwarded = true
+Sources/GrantivaCore/Android/AndroidPlatform.swift:314:            if forwarded { _ = try? await adb.removeForward(serial: deviceID, localPort: endpoint.localPort) }
+Sources/GrantivaCore/Android/AndroidPlatform.swift:322:            detach: { if forwarded { _ = try? await adb.removeForward(serial: deviceID, localPort: endpoint.localPort) } }
+Tests/GrantivaCoreTests/SignalRelayTests.swift:31:        // commands in a script with SIGINT set to SIG_IGN, and children inherit
+Tests/GrantivaCoreTests/SignalRelayTests.swift:52:            SignalRelay.announcement(signalName: "SIGINT", deviceNoun: SignalRelay.deviceNoun(for: .android)),
+Tests/GrantivaCoreTests/SignalRelayTests.swift:53:            "\n[grantiva] received SIGINT — releasing emulator and reaping child processes\n"
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:17:/// A forwarded local port and the session the runner holds on the device.
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:32:/// CLI forwards a local port to it and reuses the runner's session.
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:37:    /// failure the forward is removed again so nothing leaks.
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:41:        let port = try await adb.forward(serial: serial, devicePort: devicePort)
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:50:    /// For a port forwarded earlier (`runner start` records it).
+Sources/GrantivaMCP/MCPServer.swift:21:        // Detach on both paths: on Android the attachment owns an adb forward.
+Sources/GrantivaMCP/MCPServer.swift:27:            await connection.detach()
+Sources/GrantivaMCP/MCPServer.swift:30:        await connection.detach()
+Sources/GrantivaMCP/MCPServer.swift:149:    /// runner does not proxy UIAutomator2); nil tells the platform to forward one.
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:250:    func testASimulatedSIGINTDuringARunningFlowPublishesInterrupted() async throws {
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:261:        let interrupter = Task.detached {
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:356:    /// report (`flowStatus`), publishes its session file and holds; SIGINT
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:371:        Task.detached {
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:376:            return SignalRelay.shared.simulateSignalForTesting(SIGINT, release: release)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:397:        XCTAssertFalse(wouldExit, "a release must not exit 130")
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:427:    /// A released runner that exits 130, or is killed by the release's
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:431:        let cases: [(String, Int?)] = [("exit-130", 130), ("killed", nil)]
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:440:            // The runner that ignores SIGINT stands in for one the
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:484:        for signal in [SIGINT, SIGTERM, SIGKILL] {
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:496:    /// as today: the outcome is `interrupted` and the relay would exit 130.
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:503:        let signal = Task.detached {
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:507:            return SignalRelay.shared.simulateSignalForTesting(SIGINT)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:518:    /// A second signal while a release is under way interrupts (exit 130).
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:525:        XCTAssertFalse(SignalRelay.shared.simulateSignalForTesting(SIGINT, release: { released.append($0) }))
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:528:        XCTAssertTrue(SignalRelay.shared.simulateSignalForTesting(SIGINT, release: { released.append($0) }))
+Tests/GrantivaCoreTests/UIAutomator2ClientTests.swift:37:        XCTAssertEqual(shell.commands, ["'/sdk/platform-tools/adb' -s 'emulator-5554' forward tcp:0 tcp:6790"])
+Tests/GrantivaCoreTests/UIAutomator2ClientTests.swift:52:        XCTAssertEqual(shell.commands.last, "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove tcp:61211")
+Tests/GrantivaCoreTests/RunnerHelperReaperTests.swift:28:                signals.append("\(signal == SIGKILL ? "KILL" : signal == SIGINT ? "INT" : "\(signal)") \(pid)")
+Tests/GrantivaCoreTests/RunnerHelperReaperTests.swift:29:                if signal == SIGINT || signal == SIGKILL { alive.mutate { $0.remove(abs(pid)) } }
+Tests/GrantivaCoreTests/RunnerHelperReaperTests.swift:39:    /// starts `simctl diagnose` in a group of its own after SIGINT, then dies,
+Tests/GrantivaCoreTests/RunnerHelperReaperTests.swift:146:    /// A helper that ignores SIGINT gets SIGKILL once the grace period ends,
+Tests/GrantivaCoreTests/RunnerHelperReaperTests.swift:154:            signals.append("\(signal == SIGKILL ? "KILL" : signal == SIGINT ? "INT" : "\(signal)") \(pid)")
+Sources/GrantivaCore/Android/ADB.swift:189:    /// `adb forward tcp:0 tcp:<devicePort>` prints the local port it chose.
+Sources/GrantivaCore/Android/ADB.swift:190:    public func forward(serial: String, devicePort: Int) async throws -> Int {
+Sources/GrantivaCore/Android/ADB.swift:191:        let output = try await execute(line(serial, "forward tcp:0 tcp:\(devicePort)"))
+Sources/GrantivaCore/Android/ADB.swift:193:            throw GrantivaError.commandFailed("Could not forward a local port to \(serial):\(devicePort): \(output)", 1)
+Sources/GrantivaCore/Android/ADB.swift:199:        _ = try await execute(line(serial, "forward --remove tcp:\(localPort)"))
+Sources/GrantivaCore/Android/ADB.swift:202:    /// Local tcp ports forwarded for `serial`, from `adb forward --list`.
+Sources/GrantivaCore/Android/ADB.swift:203:    public func forwards(serial: String) async throws -> [Int] {
+Sources/GrantivaCore/Android/ADB.swift:204:        Self.parseForwards(try await execute(line(serial, "forward --list")), serial: serial)
+Sources/GrantivaCore/Android/ADB.swift:218:        for port in try await forwards(serial: serial) {
+Sources/GrantivaCore/Output/CLILogHandler.swift:29:/// message, so `Runner started (detached)` looks exactly as it did when it was
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:135:        let attachment = try await platform.attachDriver(deviceID: "921A0945-7157-4533-BA1F-21E8132D3E40", port: 8100)
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:136:        XCTAssertEqual(attachment.port, 8100)
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:137:        await attachment.detach()
+Sources/GrantivaCLI/RunCommand.swift:323:    /// True after an interrupt: the relay exits 130 once its cleanups run.
+Sources/GrantivaCLI/RunCommand.swift:331:    /// A released hold whose runner then ended as an interrupt (exit 130 or
+Sources/GrantivaCLI/RunCommand.swift:332:    /// a signal, classified `interrupted`) exits 130, as an interrupt does.
+Sources/GrantivaCLI/RunCommand.swift:341:    /// them short and report exit 1 instead of 130; the relay exits for us.
+Sources/GrantivaCLI/RunCommand.swift:345:        Darwin.exit(130)
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:28:            SubprocessLog.ended(executable: "/bin/x", arguments: ["a"], status: 0, signal: SIGINT)
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:31:        XCTAssertEqual(lines, ["exit 0: /bin/x a", "exit 1: /bin/x a", "stopped by SIGINT: /bin/x a", "stopped by SIGKILL: /bin/x a"])
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:259:        XCTAssertTrue(SignalRelay.announcement(signalName: "SIGINT", deviceNoun: "emulator").contains("releasing emulator"))
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:260:        XCTAssertTrue(SignalRelay.announcement(signalName: "SIGINT", deviceNoun: "simulator").contains("releasing simulator"))
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:238:                try write("shot-\(index)-\(kind)", to: "allure-results/hash\(index)\(kind)-attachment.png")
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:243:        {"name":"02-exact-negative","attachments":[{"name":"s","source":"hash0before-attachment.png","type":"image/png"},{"name":"s","source":"hash2after-attachment.png","type":"image/png"}],
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:244:         "steps":[{"name":"launchApp","attachments":[{"name":"after","source":"hash0after-attachment.png","type":"image/png"}]}]}
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:253:        XCTAssertEqual(allure, ["hash1after-attachment.png", "hash2after-attachment.png", "hash2before-attachment.png"])
+Sources/GrantivaMCP/RunnerConnection.swift:17:    private var attached: (session: RunnerSessionInfo, attachment: DriverAttachment)?
+Sources/GrantivaMCP/RunnerConnection.swift:20:    /// one attach instead of each attaching (and leaking an adb forward).
+Sources/GrantivaMCP/RunnerConnection.swift:22:    /// Attaches that `detach()` took over while they were in flight; their
+Sources/GrantivaMCP/RunnerConnection.swift:38:            attach: { _ in DriverAttachment(client: driver, port: Int(session.wdaPort), detach: {}) }
+Sources/GrantivaMCP/RunnerConnection.swift:48:    /// Android, the port forwarded on attach).
+Sources/GrantivaMCP/RunnerConnection.swift:50:        attached?.attachment.port
+Sources/GrantivaMCP/RunnerConnection.swift:60:            await detach()
+Sources/GrantivaMCP/RunnerConnection.swift:64:            return Current(driver: attached.attachment.client, session: attached.session)
+Sources/GrantivaMCP/RunnerConnection.swift:73:        let attachment: DriverAttachment
+Sources/GrantivaMCP/RunnerConnection.swift:75:            attachment = try await task.value
+Sources/GrantivaMCP/RunnerConnection.swift:83:            // detach() ran while this attach was in flight and released it.
+Sources/GrantivaMCP/RunnerConnection.swift:87:        attached = (session, attachment)
+Sources/GrantivaMCP/RunnerConnection.swift:88:        if let stale { await stale.attachment.detach() }
+Sources/GrantivaMCP/RunnerConnection.swift:89:        return Current(driver: attachment.client, session: session)
+Sources/GrantivaMCP/RunnerConnection.swift:92:    /// Releases the attachment, including one still being attached.
+Sources/GrantivaMCP/RunnerConnection.swift:93:    func detach() async {
+Sources/GrantivaMCP/RunnerConnection.swift:97:            if let attachment = try? await pending.task.value {
+Sources/GrantivaMCP/RunnerConnection.swift:98:                await attachment.detach()
+Sources/GrantivaMCP/RunnerConnection.swift:103:        await attached.attachment.detach()
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:771:            .success(""),                                            // forward --list
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:782:            "'/sdk/platform-tools/adb' -s 'emulator-5556' forward --list",
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:793:            .success(""), .success(""), .success(""),                     // force-stop x2, forward --list
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:811:            .success(""), .success(""), .success(""),                     // force-stop x2, forward --list
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:879:            .success(""), .success(""), .success(""),                    // force-stop x2, forward --list
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:909:            .success(""), .success(""), .success(""),                    // force-stop x2, forward --list
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:1149:            .success(""), .success(""), .success(""),                    // force-stop x2, forward --list
+Tests/GrantivaCoreTests/ADBTests.swift:108:        let port = try await adb.forward(serial: "emulator-5554", devicePort: 6790)
+Tests/GrantivaCoreTests/ADBTests.swift:110:        XCTAssertEqual(shell.commands, ["'/sdk/platform-tools/adb' -s 'emulator-5554' forward tcp:0 tcp:6790"])
+Tests/GrantivaCoreTests/ADBTests.swift:117:            _ = try await adb.forward(serial: "emulator-5554", devicePort: 6790)
+Tests/GrantivaCoreTests/ADBTests.swift:120:            XCTAssertTrue("\(error)".contains("Could not forward a local port to emulator-5554:6790"), "\(error)")
+Tests/GrantivaCoreTests/ADBTests.swift:139:            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --list",
+Tests/GrantivaCoreTests/ADBTests.swift:140:            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove tcp:61211",
+Tests/GrantivaCoreTests/ADBTests.swift:141:            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove tcp:7000",
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:175:        let owner = KeepAliveOwner(udid: "921A0945-7157-4533-BA1F-21E8132D3E40", runnerPid: 100, grantivaPid: 4163, detached: false)
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:185:        try writeRunnerSession(pid: 100, nanos: 1, port: 8100, sessionId: "detached")
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:187:        try write(KeepAliveOwner(udid: "921A0945-7157-4533-BA1F-21E8132D3E40", runnerPid: 100, grantivaPid: 4163, detached: true))
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:190:        XCTAssertEqual(sessions.map(\.sessionId), ["detached"])
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:192:        XCTAssertEqual(sessions.first?.detached, true)
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:197:        try write(KeepAliveOwner(udid: "921A0945-7157-4533-BA1F-21E8132D3E40", runnerPid: 100, grantivaPid: 4163, detached: false))
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:203:        let owner = try XCTUnwrap(store.recordOwner(udid: "emulator-5554", runnerPid: 100, detached: true))
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:204:        XCTAssertEqual(owner.detached, true)
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:206:        XCTAssertEqual(KeepAliveSessionStore.loadOwner(path: path)?.detached, true)
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:300:            udid: "emulator-5554", runnerPid: 400, projectDirectory: "/private/tmp/p", platform: .android, detached: true
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:303:            udid: "emulator-5556", runnerPid: 401, projectDirectory: "/private/tmp/p", platform: .android, detached: true
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:306:        try write(KeepAliveOwner(udid: "emulator-5558", runnerPid: 402, projectDirectory: "/private/tmp/p", platform: .android, detached: true))
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:314:            udid: "emulator-5554", runnerPid: 400, grantivaPid: 77, projectDirectory: "/private/tmp/p", platform: .android, detached: false
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:325:                                 platform: .android, detached: false))
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:327:                                 platform: .android, detached: false, appId: "com.example", command: KeepAliveOwner.runnerStartCommand))
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:346:        try write(KeepAliveOwner(udid: "emulator-5554", runnerPid: 600, grantivaPid: 60, detached: false))
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:347:        try write(KeepAliveOwner(udid: "emulator-5556", runnerPid: 601, grantivaPid: 61, detached: false))
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:356:        try write(KeepAliveOwner(udid: udid, runnerPid: 700, grantivaPid: 70, platform: .ios, detached: false))
+Tests/GrantivaMCPTests/ContextToolTests.swift:195:        let forwarded = section("Runner Session", in: try await context(platform: .android, session: android))
+Tests/GrantivaMCPTests/ContextToolTests.swift:196:        XCTAssertTrue(forwarded.contains("driver_port: (forwarded on attach)"), forwarded)
+Tests/GrantivaMCPTests/ContextToolTests.swift:197:        XCTAssertTrue(forwarded.contains("application_id: com.kylebrowning.landmarks"), forwarded)
+Tests/GrantivaMCPTests/ContextToolTests.swift:201:        for text in [iosSession, forwarded, attached] {
+Tests/GrantivaMCPTests/MCPTestSupport.swift:176:        return DriverAttachment(client: .failing, port: Int(port ?? 7000), detach: {})
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:25:        let session = KeepAliveSession(sessionId: "s", port: 8100, pid: 701, udid: udid, path: "/x", ownerPid: 700, detached: false)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:38:        let session = KeepAliveSession(sessionId: "s", port: 8100, pid: 701, udid: udid, path: "/x", ownerPid: 700, detached: false)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:53:        let session = KeepAliveSession(sessionId: "s", port: 8100, pid: 701, udid: udid, path: "/x", ownerPid: 700, detached: false)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:66:        let session = KeepAliveSession(sessionId: "s", port: 8100, pid: 701, udid: udid, path: "/x", ownerPid: 700, detached: false)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:78:        let session = KeepAliveSession(sessionId: "s", port: 8100, pid: 701, udid: udid, path: "/x", ownerPid: 700, detached: false)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:90:        let session = KeepAliveSession(sessionId: "s", port: 0, pid: 701, udid: "emulator-5554", path: "/x", ownerPid: 9, detached: true)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:108:            path: "/x", ownerPid: 9, detached: true
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:114:            "terminate 701", "files 701", "orphans emulator-5554", "forward emulator-5554 61211", "lease emulator-5554",
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:118:    /// L04: a detached session's runner group is stopped while its helpers
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:141:        let session = KeepAliveSession(sessionId: "s", port: 8100, pid: 701, udid: udid, path: "/x", ownerPid: 9, detached: true)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:155:        store.recordOwner(udid: udid, runnerPid: 701, detached: true)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:156:        store.recordOwner(udid: "11111111-2222-3333-4444-555555555555", runnerPid: 801, detached: true)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:170:        store.recordOwner(udid: udid, runnerPid: 701, detached: true)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:197:        try overwriteOwner(KeepAliveOwner(udid: udid, runnerPid: 701, grantivaPid: 700, detached: false))
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:199:            udid: "11111111-2222-3333-4444-555555555555", runnerPid: 801, grantivaPid: 800, detached: false
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:212:    /// A foreground `runner start` whose session flow has not armed the hold:
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:215:    /// holder interrupted (which would exit 130).
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:220:            udid: udid, runnerPid: 701, grantivaPid: 700, detached: false, command: KeepAliveOwner.runnerStartCommand
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:242:        try overwriteOwner(KeepAliveOwner(udid: udid, runnerPid: 701, grantivaPid: 700, detached: false, runnerStartTime: 1_000))
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:262:        let legacy = #"{"udid":"\#(udid)","runnerPid":701,"grantivaPid":700,"createdAt":"2026-10-07T10:00:00Z","detached":false}"#
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:309:            cleanupOwnedForward: { serial, port in events.append("forward \(serial) \(port)") },
+Tests/GrantivaCoreTests/ChildProcessTests.swift:121:    /// CI hands the test process SIGINT/SIGTERM blocked; posix_spawn would
+Tests/GrantivaCoreTests/ChildProcessTests.swift:128:        sigaddset(&blocked, SIGINT)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:140:        child.signalGroup(SIGINT)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:141:        XCTAssertEqual(child.wait(), SIGINT)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:164:        XCTAssertEqual(status, SIGINT)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:194:    /// A runner that ignores SIGINT and SIGTERM is SIGKILLed, and its files
+Tests/GrantivaCoreTests/ChildProcessTests.swift:289:            child.signalGroup(SIGINT)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:292:        XCTAssertEqual(lines, ["$ /bin/sleep 30", "stopped by SIGINT: /bin/sleep 30"])
+Tests/GrantivaCoreTests/ChildProcessTests.swift:352:        for signalNumber in [SIGINT, SIGTERM] {
+Tests/GrantivaCoreTests/ChildProcessTests.swift:363:        XCTAssertEqual(ChildProcess.signalsToReset(isIgnored: { _ in false }), [SIGINT, SIGTERM, SIGHUP, SIGQUIT, SIGPIPE])
+Tests/GrantivaCoreTests/ChildProcessTests.swift:364:        XCTAssertEqual(ChildProcess.signalsToReset(isIgnored: { _ in true }), [SIGINT, SIGTERM])
+Tests/GrantivaCoreTests/ChildProcessTests.swift:365:        XCTAssertEqual(ChildProcess.signalsToReset(isIgnored: { $0 == SIGHUP }), [SIGINT, SIGTERM, SIGQUIT, SIGPIPE])
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:7:/// On iOS the runner forwards `launchApp: environment:` to the app as process
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:88:/// (or whose SIGINT was ignored) leaves grantiva-runner, WebDriverAgent's
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:273:    /// SIGINT each target (and its process group, unless it is ours), wait up
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:280:            // SIGINT first so grantiva-runner gets the chance to release
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:282:            kill(target.pid, SIGINT)
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:284:                kill(-target.processGroup, SIGINT)
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:26:    /// True for a `runner start --detach` hand-off, false for a session a
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:27:    /// grantiva process holds (`run --keep-alive`, foreground `runner start`),
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:29:    public let detached: Bool?
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:48:        ownerPid: Int32? = nil, detached: Bool? = nil, appId: String? = nil,
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:59:        self.detached = detached
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:72:            platform: owner.platform, ownerPid: owner.grantivaPid, detached: owner.detached, appId: owner.appId,
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:77:    /// A foreground `runner start`: its holder reads a teardown's stop marker
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:80:        command == KeepAliveOwner.runnerStartCommand && detached == false
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:100:    /// True when `runner start --detach` handed the runner off: the session
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:102:    /// session (`run --keep-alive`, foreground `runner start`), so the session
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:104:    public let detached: Bool?
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:120:        projectDirectory: String? = nil, platform: Platform? = nil, detached: Bool? = nil, appId: String? = nil,
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:129:        self.detached = detached
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:135:    /// A foreground `runner start`: the grantiva process holding it reads a
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:138:        command == Self.runnerStartCommand && detached == false
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:198:        detached: Bool? = nil,
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:206:            detached: detached,
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:303:    /// A session a grantiva process holds (`run --keep-alive`, foreground
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:304:    /// `runner start`; owner `detached == false`) whose grantiva process is
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:327:                if !includingOrphans, let owner, owner.detached == false, !isProcessAlive(owner.grantivaPid) {
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:337:                    ownerPid: owner?.grantivaPid, detached: owner?.detached, appId: owner?.appId,
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:369:                    && (includingOrphans || !(owner.detached == false && !isProcessAlive(owner.grantivaPid)))
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:386:    /// The live foreground `runner start` sessions recorded for `udid`, whose
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:390:    public func foregroundRunnerStarts(udid: String) -> [KeepAliveOwner] {
+Sources/GrantivaCore/Platform/DevicePlatform.swift:70:/// the platform set up to reach it (a port forward on Android, nothing on iOS).
+Sources/GrantivaCore/Platform/DevicePlatform.swift:75:    public let detach: @Sendable () async -> Void
+Sources/GrantivaCore/Platform/DevicePlatform.swift:80:    public init(client: DriverClient, port: Int, sessionID: String? = nil, detach: @escaping @Sendable () async -> Void) {
+Sources/GrantivaCore/Platform/DevicePlatform.swift:84:        self.detach = detach
+Sources/GrantivaCore/Platform/DevicePlatform.swift:143:    /// means "find it", which on Android forwards a new one.
+Sources/GrantivaCore/Platform/IOSPlatform.swift:187:        return DriverAttachment(client: .wda(port: port), port: Int(port), detach: {})
+Sources/GrantivaCore/Platform/IOSPlatform.swift:215:    /// `simctl io recordVideo`, stopped with SIGINT so simctl finalizes the file.
+Sources/GrantivaCLI/Options.swift:143:/// forwards to `GlobalOptions.note`; made with `init()` in a test, it keeps
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:9:/// `runner start --detach` returns while WDA has no session yet (R05), a
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:80:                    client: .wda(port: session.wdaPort, transport: transport), port: Int(session.wdaPort), detach: {}
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:132:                DriverAttachment(client: .wda(port: session.wdaPort, transport: transport), port: Int(session.wdaPort), detach: {})
+Tests/GrantivaMCPTests/MCPServerTests.swift:172:        store.recordOwner(udid: "emulator-5554", runnerPid: runnerPid, projectDirectory: project, platform: platform, detached: true)
+Tests/GrantivaMCPTests/MCPServerTests.swift:380:            await connection.detach()
+Tests/GrantivaMCPTests/MCPServerTests.swift:385:        await connection.detach()
+Tests/GrantivaMCPTests/MCPServerTests.swift:436:    // MARK: - Lazy attachment (C11)
+Tests/GrantivaMCPTests/MCPServerTests.swift:439:    /// after detach.
+Tests/GrantivaMCPTests/MCPServerTests.swift:444:            var detaches = 0
+Tests/GrantivaMCPTests/MCPServerTests.swift:453:                return DriverAttachment(client: .failing, port: 8100, detach: {
+Tests/GrantivaMCPTests/MCPServerTests.swift:454:                    counter.lock.withLock { counter.detaches += 1 }
+Tests/GrantivaMCPTests/MCPServerTests.swift:463:        await connection.detach()
+Tests/GrantivaMCPTests/MCPServerTests.swift:464:        XCTAssertEqual(counter.detaches, 1)
+Tests/GrantivaMCPTests/MCPServerTests.swift:467:    /// Shutdown while an attach is in flight releases that attachment.
+Tests/GrantivaMCPTests/MCPServerTests.swift:472:            var detaches = 0
+Tests/GrantivaMCPTests/MCPServerTests.swift:481:                return DriverAttachment(client: .failing, port: 8100, detach: {
+Tests/GrantivaMCPTests/MCPServerTests.swift:482:                    counter.lock.withLock { counter.detaches += 1 }
+Tests/GrantivaMCPTests/MCPServerTests.swift:488:        await connection.detach()
+Tests/GrantivaMCPTests/MCPServerTests.swift:489:        XCTAssertEqual(counter.detaches, 1, "The in-flight attachment is released by detach()")
+Tests/GrantivaMCPTests/MCPServerTests.swift:496:        await connection.detach()
+Tests/GrantivaMCPTests/MCPServerTests.swift:497:        XCTAssertEqual(counter.detaches, 1, "Nothing is detached twice")
+Tests/GrantivaMCPTests/MCPServerTests.swift:512:                if n == 1 { throw GrantivaError.commandFailed("adb forward", 1) }
+Tests/GrantivaMCPTests/MCPServerTests.swift:513:                return DriverAttachment(client: .failing, port: 8100, detach: {})
+Tests/GrantivaMCPTests/MCPServerTests.swift:520:            XCTAssertTrue(String(describing: error).contains("adb forward"), "\(error)")
+Tests/GrantivaMCPTests/MCPServerTests.swift:526:        XCTAssertEqual(counter.attaches, 2, "The successful attachment is reused")
+Tests/GrantivaMCPTests/MCPServerTests.swift:554:            var detaches = 0
+Tests/GrantivaMCPTests/MCPServerTests.swift:566:                return DriverAttachment(client: .failing, port: Int(session.wdaPort), detach: {
+Tests/GrantivaMCPTests/MCPServerTests.swift:567:                    state.lock.withLock { state.detaches += 1 }
+Tests/GrantivaMCPTests/MCPServerTests.swift:589:        XCTAssertEqual(state.detaches, 1, "The stale attachment is released")
+Tests/GrantivaMCPTests/MCPServerTests.swift:591:        await connection.detach()
+Tests/GrantivaMCPTests/MCPServerTests.swift:592:        XCTAssertEqual(state.detaches, 2)
+Sources/GrantivaCore/Runner/ChildProcess.swift:69:        // The child starts with no signal blocked and SIGINT and SIGTERM at
+Sources/GrantivaCore/Runner/ChildProcess.swift:71:        // script's `&` can hand grantiva SIGINT blocked or ignored). Without
+Sources/GrantivaCore/Runner/ChildProcess.swift:148:    /// SIGINT and SIGTERM always (`runner stop`, Ctrl-C and the watchdog rely
+Sources/GrantivaCore/Runner/ChildProcess.swift:152:        [SIGINT, SIGTERM] + [SIGHUP, SIGQUIT, SIGPIPE].filter { !isIgnored($0) }
+Sources/GrantivaCore/Runner/ChildProcess.swift:276:        /// The group exited after SIGINT.
+Sources/GrantivaCore/Runner/ChildProcess.swift:278:        /// The group ignored SIGINT and exited after SIGTERM.
+Sources/GrantivaCore/Runner/ChildProcess.swift:280:        /// The group ignored SIGINT and SIGTERM and was sent SIGKILL.
+Sources/GrantivaCore/Runner/ChildProcess.swift:284:    /// Escalating shutdown: SIGINT (so the runner can release WebDriverAgent
+Sources/GrantivaCore/Runner/ChildProcess.swift:294:        guard kill(-pgid, SIGINT) == 0 else { return .alreadyGone }
+Sources/GrantivaCore/Runner/ChildProcess.swift:315:    /// `kill -9` included. While it waits, a SIGINT, SIGTERM or SIGHUP (from
+Sources/GrantivaCore/Runner/SubprocessLog.swift:7:/// `exit N: <command line>` (or `stopped by SIGINT: <command line>`) when it
+Sources/GrantivaCore/Runner/SubprocessLog.swift:93:        case SIGINT: return "SIGINT"
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:6:/// when it receives SIGINT. SIGTERM can leave the requested output empty while
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:65:            await Task.detached {
+Sources/GrantivaCore/Runner/RunnerExecution.swift:6:/// process-group, signal-forwarding and readiness behaviour that a `--keep-alive`
+Sources/GrantivaCore/Runner/RunnerExecution.swift:14:        /// True when grantiva received SIGINT/SIGTERM and reaped the runner.
+Sources/GrantivaCore/Runner/RunnerExecution.swift:105:                udid: request.lease.udid, runnerPid: child.pid, platform: request.platform, detached: false,
+Sources/GrantivaCore/Runner/RunnerExecution.swift:196:        let watcher: Task<Void, Never>? = (readyFile.path != nil || request.keepAlive) ? Task.detached(priority: .utility) {
+Sources/GrantivaCore/Runner/RunnerExecution.swift:235:        let timeoutTask = Task.detached(priority: .utility) {
+Sources/GrantivaCore/Runner/RunnerExecution.swift:254:        // its flows earned; one that exits 130, or dies by the release's
+Sources/GrantivaCore/Runner/RunnerExecution.swift:255:        // SIGINT/SIGTERM/SIGKILL, was interrupted (a crash or our own
+Sources/GrantivaCore/Runner/LogStreamer.swift:14:    /// forwarded at all (for example the log tool's own banners).
+Sources/GrantivaCore/Runner/LogStreamer.swift:78:/// Line-atomic: the underlying subprocess writes whole lines and we forward
+Sources/GrantivaCore/Runner/LogStreamer.swift:252:        let forward: @Sendable (FileHandle, PrefixedLineDecoder) -> Void = { [output] handle, decoder in
+Sources/GrantivaCore/Runner/LogStreamer.swift:264:        forward(outPipe.fileHandleForReading, outDecoder)
+Sources/GrantivaCore/Runner/LogStreamer.swift:265:        forward(errPipe.fileHandleForReading, errDecoder)
+Sources/GrantivaCore/Runner/LogStreamer.swift:424:    /// dropped instead of being forwarded as `[log]` lines.
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:7:///   foreground `runner start`) is released the way a person would: SIGINT
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:10:/// - A `runner start --detach` session, or an orphan whose grantiva process is
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:12:///   its session files, forwards (Android) and lease are cleaned up here.
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:15:        /// The grantiva process holding the session got SIGINT and exited.
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:70:    /// How long a grantiva process gets to exit after SIGINT. Its own
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:119:            interrupt: { _ = kill($0, SIGINT) },
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:138:    /// A `run --keep-alive` holder gets SIGINT, as Ctrl-C would send it. A
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:139:    /// foreground `runner start` holder is not signalled: its runner's group
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:163:        if let owner = session.ownerPid, owner > 1, owner != getpid(), session.detached != true,
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:166:            let foregroundStart = session.isForegroundRunnerStart
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:168:                if foregroundStart {
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:176:                let how = foregroundStart ? "its runner was stopped" : "SIGINT"
+Sources/GrantivaCore/Runner/SignalRelay.swift:5:/// Forwards SIGINT/SIGTERM from grantiva to the process groups it spawned, then
+Sources/GrantivaCore/Runner/SignalRelay.swift:11:///    script starts asynchronous commands (`grantiva run … &`) with SIGINT and
+Sources/GrantivaCore/Runner/SignalRelay.swift:64:    /// Installs handlers for SIGINT and SIGTERM. Safe to call repeatedly.
+Sources/GrantivaCore/Runner/SignalRelay.swift:74:        for signalNumber in [SIGINT, SIGTERM] {
+Sources/GrantivaCore/Runner/SignalRelay.swift:126:    /// True once a SIGINT/SIGTERM has been received. Set before the runner's
+Sources/GrantivaCore/Runner/SignalRelay.swift:167:    /// The first SIGINT or SIGTERM after that is a release, not an
+Sources/GrantivaCore/Runner/SignalRelay.swift:168:    /// interrupt: it is forwarded to the runner, nothing else runs, and the
+Sources/GrantivaCore/Runner/SignalRelay.swift:171:    /// release is under way interrupts as before (exit 130).
+Sources/GrantivaCore/Runner/SignalRelay.swift:192:    /// flows earned (0 or 1), or as an interrupt when it exited 130 or was
+Sources/GrantivaCore/Runner/SignalRelay.swift:193:    /// killed by SIGINT, SIGTERM or SIGKILL (the release and its
+Sources/GrantivaCore/Runner/SignalRelay.swift:198:        if let signal { return [SIGINT, SIGTERM, SIGKILL].contains(signal) }
+Sources/GrantivaCore/Runner/SignalRelay.swift:206:    /// How a released runner is asked to end: SIGINT to its group, which the
+Sources/GrantivaCore/Runner/SignalRelay.swift:217:        let signalName = signalNumber == SIGINT ? "SIGINT" : "SIGTERM"
+Sources/GrantivaCore/Runner/SignalRelay.swift:241:        // a different signal gets here (SIGTERM after SIGINT): a repeat of the
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:52:    /// assets in `reportDir`, the matching Allure attachments, and every
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:98:    /// Allure copies each shot to `<hash>-attachment.png`; the copies of the
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:104:        for name in names where name.hasSuffix("-attachment.png") {
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:123:                if key == "attachments", let list = child as? [[String: Any]] {
+Sources/GrantivaCLI/TargetOptions.swift:219:/// Reject explicitly supplied empty targets before device resolution or forwarding.
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:204:            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove tcp:61211",
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:315:            .success("61211"),                       // forward
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:318:            .success(""),                            // forward --remove
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:322:        let attachment = try await p.attachDriver(deviceID: "emulator-5554", port: nil, transport: transport)
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:323:        XCTAssertEqual(attachment.port, 61211)
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:324:        await attachment.detach()
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:326:            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward tcp:0 tcp:6790",
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:329:            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove tcp:61211",
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:336:        let attachment = try await platform(shell).attachDriver(deviceID: "emulator-5554", port: 7000, transport: transport)
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:337:        XCTAssertEqual(attachment.port, 7000)
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:338:        await attachment.detach()
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:342:    /// An adb restart drops the forward `runner start` recorded; attach makes
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:346:            .success("61211"),                       // forward
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:354:        let attachment = try await platform(shell).attachDriver(deviceID: "emulator-5554", port: 7000, transport: transport)
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:355:        XCTAssertEqual(attachment.port, 61211)
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:356:        XCTAssertEqual(shell.commands.first, "'/sdk/platform-tools/adb' -s 'emulator-5554' forward tcp:0 tcp:6790")
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:109:    /// How long a helper gets after SIGINT before SIGKILL.
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:116:    /// run's `xcodebuild test-without-building` at once instead of SIGINT,
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:200:    /// run's `xcodebuild test-without-building` takes SIGKILL at once (SIGINT
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:201:    /// is what makes it start a diagnose). A diagnose gets SIGINT, then
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:284:    /// SIGINT each target (and its group, when it leads one of its own),
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:286:    /// Targets `killAtOnce` picks take SIGKILL without the SIGINT and grace.
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:302:            send(now ? SIGKILL : SIGINT, targets[index])
+Sources/GrantivaCore/Runner/RunnerSession.swift:193:        // Keep-alive sessions block waiting for SIGINT; a normal cap would
+Sources/GrantivaCore/Runner/RunnerSession.swift:270:                // An interrupt is exit 130 however the runner ended (L56).
+Sources/GrantivaCore/Runner/RunnerSession.swift:544:        // Keep-alive sessions block waiting for SIGINT; a normal cap would
+Sources/GrantivaCore/Runner/RunnerSession.swift:633:                // An interrupt is exit 130 however the runner ended (L56).
+Sources/GrantivaCore/Runner/RunnerSession.swift:670:            Task.detached {
+Sources/GrantivaCore/Android/EmulatorManager.swift:143:        spawn: @escaping Spawn = EmulatorManager.detachedSpawn,
+Sources/GrantivaCore/Android/EmulatorManager.swift:221:    public static let detachedSpawn: Spawn = { executable, arguments in
+Sources/GrantivaCore/Android/EmulatorManager.swift:610:    /// Stops the UIAutomator2 server, drops this serial's forwards, flushes
+Sources/GrantivaCore/WDA/WDAClient.swift:359:    /// The session WDA holds. Between `grantiva runner start --detach`
+Sources/GrantivaCore/Auth/ProjectIdentifier.swift:31:    /// GitHub Actions checks out in detached HEAD, so git rev-parse returns "HEAD".
+Tests/GrantivaMCPTests/MCPTransportTests.swift:19:        XCTAssertEqual(JSONRPCScreen.screen(Data(#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#.utf8)), .forward)
+Tests/GrantivaMCPTests/MCPTransportTests.swift:20:        XCTAssertEqual(JSONRPCScreen.screen(Data(#"{"jsonrpc":"2.0","id":2,"method":"tools/list"}"#.utf8)), .forward)
+Tests/GrantivaMCPTests/MCPTransportTests.swift:21:        XCTAssertEqual(JSONRPCScreen.screen(Data(#"{"jsonrpc":"2.0","id":"a","result":{}}"#.utf8)), .forward)
+Tests/GrantivaMCPTests/MCPTransportTests.swift:22:        XCTAssertEqual(JSONRPCScreen.screen(Data(#"[{"jsonrpc":"2.0","id":3,"method":"ping"}]"#.utf8)), .forward)
+Tests/GrantivaMCPTests/MCPTransportTests.swift:229:        let requestSeen = expectation(description: "request forwarded")
+Tests/GrantivaMCPTests/MCPTransportTests.swift:230:        let cancelSeen = expectation(description: "cancel forwarded")
+Tests/GrantivaMCPTests/MCPTransportTests.swift:266:        let requestSeen = expectation(description: "request forwarded")
+Tests/GrantivaMCPTests/MCPTransportTests.swift:267:        let cancelSeen = expectation(description: "cancel forwarded")
+Tests/GrantivaMCPTests/MCPTransportTests.swift:350:        guard case .split(let forward, let reply) = JSONRPCScreen.screen(Data(mixed.utf8)) else { return XCTFail("expected a split") }
+Tests/GrantivaMCPTests/MCPTransportTests.swift:351:        let forwarded = try XCTUnwrap(JSONSerialization.jsonObject(with: forward) as? [[String: Any]])
+Tests/GrantivaMCPTests/MCPTransportTests.swift:352:        XCTAssertEqual(forwarded.map { $0["id"] as? Int }, [1])
+Tests/GrantivaMCPTests/MCPTransportTests.swift:359:        XCTAssertEqual(JSONRPCScreen.screen(Data(#"[{"jsonrpc":"2.0","id":1,"method":"ping"}]"#.utf8)), .forward)
+Sources/GrantivaCore/Runner/RunnerStopMarker.swift:4:/// A teardown's request to stop a foreground `runner start`'s runner,

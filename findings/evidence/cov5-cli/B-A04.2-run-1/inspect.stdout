@@ -1,0 +1,16 @@
+- `launch` — screenshot right after app launch. On Android the first screen first waits (up to 10 s, then
+  continues) until an element with text is on screen inside the app's own content view, so the capture is never the
+  empty window a cold start shows before the app draws; when the app has already drawn this is a single lookup
+- `- tap: "Label"` — tap a button or element by accessibility label
+- `- swipe: up` — swipe in a direction (`up`, `down`, `left`, `right`, any case); any other value is a config error
+- `- type: "text"` — type text into the focused field
+- `- wait: 2` — wait N seconds (always the full N seconds, even if the screen is already still)
+- `- assert_visible: "Label"` — verify an element is visible (fails if not)
+- `- assert_not_visible: "Label"` — verify an element is hidden
+- `- run_flow: "path/to/flow.yaml"` — include steps from another YAML file
+
+A label is a case-insensitive regular expression matched against an element's whole text, on iOS and Android alike:
+`tap: "Open"` matches an element whose text is "Open" or "open", not "Talk · Open" (write `.*Open.*` to match part of
+the text). `tap`, `assert_visible`, and `assert_not_visible` also take `{text: "Landmarks", exact: true}` to require
+the element's text to equal the label exactly as written, or `{id: "clock"}` to select by identifier instead of text
+(the accessibility identifier on iOS, the resource id or Compose test tag on Android). A mapping names `text` or `id`,

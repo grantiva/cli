@@ -1,0 +1,1134 @@
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:177:        // subprocess is logged at debug level.
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:394:        let process = Process()
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:395:        process.executableURL = binary
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:396:        process.arguments = arguments
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:397:        if let directory { process.currentDirectoryURL = directory }
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:400:        var environment = ProcessInfo.processInfo.environment
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:403:        process.environment = environment
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:407:        process.standardOutput = out
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:408:        process.standardError = err
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:411:        process.standardInput = Pipe()
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:412:        try process.run()
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:417:        process.waitUntilExit()
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:422:            status: process.terminationStatus
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:13:    private let started = TeardownReapBox<[Process]>([])
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:22:        // Only the processes this test started.
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:23:        for process in started.value where process.isRunning { kill(process.processIdentifier, SIGKILL) }
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:35:    private static func startFakeDiagnose(home: String, udid: String, runnerPid: Int32, started: TeardownReapBox<[Process]>) throws -> Process {
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:40:        let process = Process()
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:41:        process.executableURL = URL(fileURLWithPath: "/bin/zsh")
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:42:        process.arguments = ["-fc", script]
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:43:        process.standardOutput = FileHandle.nullDevice
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:44:        process.standardError = FileHandle.nullDevice
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:45:        try process.run()
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:46:        started.value.append(process)
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:47:        return process
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:53:        let diagnose = TeardownReapBox<Process?>(nil)
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:77:        let pid = try XCTUnwrap(diagnose.value?.processIdentifier)
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:82:        XCTAssertFalse(KeepAliveSessionStore.processIsAlive(pid), "the diagnose outlived the teardown")
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:95:        let leftovers = SimulatorCommand.Teardown.leftoverProcesses(
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:96:            udids: [udid], psOutput: (try? await SimulatorReaper.processSnapshot()) ?? "", excludingPID: getpid()
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:101:        XCTAssertEqual(marked.first?.reapedProcesses.map(\.pid), [pid])
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:102:        XCTAssertEqual(marked.first?.leftoverProcesses, [])
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:253:        let helper = ReapedProcess(pid: 77, processGroup: 77, kind: .diagnose, command: "simctl diagnose", killed: true)
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:258:        XCTAssertEqual(SimulatorCommand.Teardown.marking([outcome], stopped: [udid], reaped: result.reaped).first?.reapedProcesses, [helper])
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:260:        XCTAssertEqual(SimulatorCommand.Teardown.marking([lowerOutcome], stopped: [lower], reaped: result.reaped).first?.reapedProcesses, [helper])
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:261:        let force = ForceTeardownResult(udid: lower, processes: [], leaseReleased: false, capacityRecordsCleared: 0)
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:263:        XCTAssertEqual(forced?.reapedProcesses, [helper])
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:270:        let first = ReapedProcess(pid: 9, processGroup: 9, kind: .diagnose, command: "a", killed: true)
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:271:        let same = ReapedProcess(pid: 9, processGroup: 9, kind: .diagnose, command: "a", killed: true)
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:272:        let reused = ReapedProcess(pid: 9, processGroup: 9, kind: .webDriverAgent, command: "b", killed: true)
+Tests/GrantivaCLITests/DocsContractTests.swift:140:        let process = Process()
+Tests/GrantivaCLITests/DocsContractTests.swift:141:        process.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
+Tests/GrantivaCLITests/DocsContractTests.swift:142:        process.arguments = ["-tzf", tarball.path]
+Tests/GrantivaCLITests/DocsContractTests.swift:144:        process.standardOutput = pipe
+Tests/GrantivaCLITests/DocsContractTests.swift:145:        try process.run()
+Tests/GrantivaCLITests/DocsContractTests.swift:147:        process.waitUntilExit()
+Tests/GrantivaCLITests/DocsContractTests.swift:198:        for key in ["runnerSessionStopped", "leftoverProcesses", "reapedProcesses"] {
+Sources/GrantivaCLI/DriverCommand.swift:145:    @Flag(name: .long, help: "Detach the runner process from this terminal. Prints the log file path on start.")
+Sources/GrantivaCLI/DriverCommand.swift:160:           let snapshot = try? await SimulatorReaper.processSnapshot(),
+Sources/GrantivaCLI/DriverCommand.swift:161:           existing.ownsRunnerProcess(in: snapshot) {
+Sources/GrantivaCLI/DriverCommand.swift:195:        // Held until the runner is up, then handed to the runner process: this
+Sources/GrantivaCLI/DriverCommand.swift:246:            // Held by this process until the runner ends; the `defer` above
+Sources/GrantivaCLI/DriverCommand.swift:388:            let ended = signal.map { "was killed by \(SubprocessLog.signalName($0))" } ?? "exited (status \(status))"
+Sources/GrantivaCLI/DriverCommand.swift:400:    static func uiAutomator2WaitTimeout(environment: [String: String] = ProcessInfo.processInfo.environment) -> TimeInterval {
+Sources/GrantivaCLI/DriverCommand.swift:421:    private static func waitForUIAutomator2Port(_ launch: Launch, child: ChildProcess) async -> (attachment: DriverAttachment?, exitStatus: Int32?, launchFailed: Bool) {
+Sources/GrantivaCLI/DriverCommand.swift:497:    /// very process (`marked`), or `runner stop`'s removed session file.
+Sources/GrantivaCLI/DriverCommand.swift:564:        let child: ChildProcess
+Sources/GrantivaCLI/DriverCommand.swift:566:            child = try ChildProcess.spawn(
+Sources/GrantivaCLI/DriverCommand.swift:580:        let runnerStartTime = RunnerStopMarker.processStartTime(runnerPid)
+Sources/GrantivaCLI/DriverCommand.swift:659:    /// Starts the runner attached to this process and holds the session until
+Sources/GrantivaCLI/DriverCommand.swift:666:        let child = try ChildProcess.spawn(
+Sources/GrantivaCLI/DriverCommand.swift:677:        let runnerStartTime = RunnerStopMarker.processStartTime(child.pid)
+Sources/GrantivaCLI/DriverCommand.swift:678:        // `kill -9` of this process must not leave the runner holding the device.
+Sources/GrantivaCLI/DriverCommand.swift:695:        Self.trackRunner(group: child.processGroup, platform: launch.platform)
+Sources/GrantivaCLI/DriverCommand.swift:698:            SignalRelay.shared.untrack(group: child.processGroup)
+Sources/GrantivaCLI/DriverCommand.swift:974:        terminate: (Int32) -> Void = { ChildProcess.terminateGroup($0, gracePeriod: 1) }
+Sources/GrantivaCLI/DriverCommand.swift:1063:        process SIGINT, and waits for it to exit. A run whose flows had already \
+Sources/GrantivaCLI/DriverCommand.swift:1097:        case stopped(pid: Int32, udid: String, killed: Bool, reaped: [ReapedProcess] = [], details: SessionDetails = .init())
+Sources/GrantivaCLI/DriverCommand.swift:1100:        case exited(pid: Int32, udid: String, reaped: [ReapedProcess] = [], details: SessionDetails = .init())
+Sources/GrantivaCLI/DriverCommand.swift:1137:            let snapshot = try await dependencies.processSnapshot()
+Sources/GrantivaCLI/DriverCommand.swift:1138:            if session.ownsRunnerProcess(in: snapshot) {
+Sources/GrantivaCLI/DriverCommand.swift:1200:    static func reapedLines(_ reaped: [ReapedProcess], udid: String) -> [String] {
+Sources/GrantivaCLI/DriverCommand.swift:1211:        func stopped(pid: Int32, runnerPid: Int32, udid: String, killed: Bool, reaped: [ReapedProcess], details: SessionDetails?) -> RunnerLifecycleDocument {
+Sources/GrantivaCLI/DriverCommand.swift:1249:    var processSnapshot: @Sendable () async throws -> String
+Sources/GrantivaCLI/DriverCommand.swift:1250:    var terminateGroup: @Sendable (Int32) -> ChildProcess.GroupTermination
+Sources/GrantivaCLI/DriverCommand.swift:1270:        processSnapshot: { try await SimulatorReaper.processSnapshot() },
+Sources/GrantivaCLI/DriverCommand.swift:1272:        terminateGroup: { ChildProcess.terminateGroup($0, gracePeriod: 5) },
+Sources/GrantivaCLI/AuthCommand.swift:99:            let process = Process()
+Sources/GrantivaCLI/AuthCommand.swift:100:            process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
+Sources/GrantivaCLI/AuthCommand.swift:101:            process.arguments = [loginURL.absoluteString]
+Sources/GrantivaCLI/AuthCommand.swift:102:            try process.run()
+Sources/GrantivaCLI/AuthCommand.swift:103:            process.waitUntilExit()
+Sources/GrantivaCLI/AuthCommand.swift:170:            let env = ProcessInfo.processInfo.environment
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:285:    func testStartTerminatesSpawnedProcessWhenSessionCannotBeRecorded() {
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:316:        dependencies.processSnapshot = {
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:465:    /// After `terminateGroup` returns `.interrupted`, the process table still
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:495:        let reaped = ReapedProcess(pid: 1250, processGroup: 1250, kind: .diagnose, command: diagnose, killed: true)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:587:        let store = KeepAliveSessionStore(directory: sessionsDirectory.path, isProcessAlive: { [4267, 4163].contains($0) })
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:978:        let marker = RunnerStopMarker(directory: directory, startTime: { _ in started }, isProcessAlive: { _ in true })
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:994:        let marker = RunnerStopMarker(directory: directory, startTime: { _ in 1_791_600_000 }, isProcessAlive: { _ in true })
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1126:    /// Convert process output into a cancellable stream. `availableData` blocks
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1159:            processSnapshot: { events.append("snapshot"); return snapshot },
+Sources/GrantivaCLI/ConsoleOpenCommand.swift:69:            ?? ProcessInfo.processInfo.environment["GRANTIVA_API_URL"]
+Sources/GrantivaCLI/ConsoleOpenCommand.swift:91:        let process = Process()
+Sources/GrantivaCLI/ConsoleOpenCommand.swift:92:        process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
+Sources/GrantivaCLI/ConsoleOpenCommand.swift:93:        process.arguments = [url]
+Sources/GrantivaCLI/ConsoleOpenCommand.swift:94:        try process.run()
+Sources/GrantivaCLI/ConsoleOpenCommand.swift:95:        process.waitUntilExit()
+Sources/GrantivaCLI/ConsoleOpenCommand.swift:96:        return process.terminationStatus
+Sources/GrantivaCLI/SimulatorCommand.swift:103:            discussion: "A runner session on a torn-down simulator (`grantiva runner start` or `grantiva run --keep-alive`) is stopped first and its session files are removed; --json reports it as runnerSessionStopped. The WebDriverAgent xcodebuild and simctl diagnose the stopped run left writing into the simulator's runner home are then ended (reapedProcesses in --json) before that home is removed. Without --force, a process still holding a simulator the teardown deletes or shuts down that it did not start (a runner, WebDriverAgent's xcodebuild, a simctl diagnose, a grantiva run) is not killed: a warning on stderr names its pid and command, --json lists it in leftoverProcesses, and the teardown goes on. --force reclaims such processes."
+Sources/GrantivaCLI/SimulatorCommand.swift:110:        @Option(name: .long, help: "Simulator UDID to reclaim. Use with --force when a run was killed and left processes owning the device.")
+Sources/GrantivaCLI/SimulatorCommand.swift:113:        @Flag(name: .long, help: "Reclaim by live process inspection instead of the session ledger: kills the grantiva-runner, WebDriverAgent xcodebuild, and simctl diagnose processes holding the simulator, breaks the lease, and reconciles the session registry. Without it, such processes are only named (a stderr warning and leftoverProcesses in --json).")
+Sources/GrantivaCLI/SimulatorCommand.swift:127:            // process, released no lease, and exited 0 — reporting a
+Sources/GrantivaCLI/SimulatorCommand.swift:156:            let leftovers = Self.leftoverProcesses(
+Sources/GrantivaCLI/SimulatorCommand.swift:157:                udids: devices, psOutput: (try? await SimulatorReaper.processSnapshot()) ?? "", excludingPID: getpid()
+Sources/GrantivaCLI/SimulatorCommand.swift:172:        /// The devices a non-force teardown checks for leftover processes:
+Sources/GrantivaCLI/SimulatorCommand.swift:179:        /// Processes holding each of `udids` (the reaper's rules: a runner,
+Sources/GrantivaCLI/SimulatorCommand.swift:181:        static func leftoverProcesses(udids: [String], psOutput: String, excludingPID: Int32 = 0) -> [String: [ReapedProcess]] {
+Sources/GrantivaCLI/SimulatorCommand.swift:182:            var found: [String: [ReapedProcess]] = [:]
+Sources/GrantivaCLI/SimulatorCommand.swift:184:                let processes = SimulatorReaper.processes(owning: udid, psOutput: psOutput, excludingPID: excludingPID)
+Sources/GrantivaCLI/SimulatorCommand.swift:185:                if !processes.isEmpty { found[udid] = processes }
+Sources/GrantivaCLI/SimulatorCommand.swift:190:        /// One line per leftover process, naming its pid and command.
+Sources/GrantivaCLI/SimulatorCommand.swift:191:        static func leftoverWarnings(_ leftovers: [String: [ReapedProcess]]) -> [String] {
+Sources/GrantivaCLI/SimulatorCommand.swift:193:                (leftovers[udid] ?? []).map { process in
+Sources/GrantivaCLI/SimulatorCommand.swift:194:                    "\(udid) is still held by \(process.kind.rawValue) pid \(process.pid), which this teardown did not start: \(process.command). "
+Sources/GrantivaCLI/SimulatorCommand.swift:218:        ) async -> (stopped: [String], lines: [String], reaped: [String: [ReapedProcess]]) {
+Sources/GrantivaCLI/SimulatorCommand.swift:221:            var reaped: [String: [ReapedProcess]] = [:]
+Sources/GrantivaCLI/SimulatorCommand.swift:234:            _ outcomes: [SimulatorTeardownOutcome], stopped: [String], leftovers: [String: [ReapedProcess]] = [:],
+Sources/GrantivaCLI/SimulatorCommand.swift:235:            reaped: [String: [ReapedProcess]] = [:]
+Sources/GrantivaCLI/SimulatorCommand.swift:240:                outcome.leftoverProcesses = leftovers[outcome.udid] ?? []
+Sources/GrantivaCLI/SimulatorCommand.swift:241:                outcome.reapedProcesses = reaped[outcome.udid.uppercased()] ?? []
+Sources/GrantivaCLI/SimulatorCommand.swift:247:        /// device, listed in each result's `reapedProcesses` (L63).
+Sources/GrantivaCLI/SimulatorCommand.swift:248:        private func runForce(reaped: [String: [ReapedProcess]] = [:], stopped: [String] = []) async throws {
+Sources/GrantivaCLI/SimulatorCommand.swift:276:        static func addingReaped(_ reaped: [String: [ReapedProcess]], to results: [ForceTeardownResult], stopped: [String] = []) -> [ForceTeardownResult] {
+Sources/GrantivaCLI/SimulatorCommand.swift:280:                result.reapedProcesses = reaped[result.udid.uppercased()] ?? []
+Sources/GrantivaCLI/SimulatorCommand.swift:281:                if result.runnerSessionStopped || !result.reapedProcesses.isEmpty { result.reclaimed = true }
+Sources/GrantivaCLI/SimulatorCommand.swift:293:                if result.processes.isEmpty {
+Sources/GrantivaCLI/SimulatorCommand.swift:294:                    lines.append("No processes were holding \(result.udid).")
+Sources/GrantivaCLI/SimulatorCommand.swift:296:                    for process in result.processes {
+Sources/GrantivaCLI/SimulatorCommand.swift:297:                        lines.append("Killed \(process.kind.rawValue) pid \(process.pid) holding \(result.udid).")
+Sources/GrantivaCLI/RunnerLifecycleDocument.swift:25:    var reaped: [ReapedProcess]?
+Tests/GrantivaCLITests/Support/LeaseDirectoryGuard.swift:19:    /// hook is belt and braces: when several test bundles share a process
+Sources/GrantivaCLI/HierarchyCommand.swift:7:/// session open in another shell, or on CI as a backgrounded process.
+Sources/GrantivaCLI/CICommand.swift:259:            let trigger = ProcessInfo.processInfo.environment["CI"] != nil ? "ci" : "manual"
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:88:        let record = EmulatorSessionRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: 42, startedAt: Date(), processAlive: true, adbState: "device")
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:276:    private func sleeper() throws -> Process {
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:277:        let process = Process()
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:278:        process.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:279:        process.arguments = ["30"]
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:280:        try process.run()
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:281:        return process
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:297:        // Home A's start records its runner (this test process holds it).
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:299:            udid: "emulator-5556", runnerPid: runner.processIdentifier, platform: .android, detached: false,
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:302:        let startTime = RunnerStopMarker.processStartTime(runner.processIdentifier)
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:313:            runnerPid: runner.processIdentifier, session: nil,
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:314:            marked: store.stopMarkers.isMarked(runnerPid: runner.processIdentifier, runnerStartTime: startTime)
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:318:            try RunnerStartCommand.foregroundEnding(status: SIGTERM, pid: runner.processIdentifier, stop: request),
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:319:            "Runner stopped by teardown (pid \(runner.processIdentifier)); the session has ended."
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:332:        store.recordOwner(udid: "emulator-5556", runnerPid: detached.processIdentifier, platform: .android, detached: true,
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:334:        store.recordOwner(udid: "emulator-5558", runnerPid: keepAlive.processIdentifier, platform: .android, detached: false)
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:354:        store.recordOwner(udid: "emulator-5556", runnerPid: runner.processIdentifier, platform: .android, detached: false,
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:371:        XCTAssertTrue(warnings.values.first?.contains("runner pid \(runner.processIdentifier)") == true, "\(warnings.values)")
+Sources/GrantivaCLI/DoctorCommand.swift:42:        environment: [String: String] = ProcessInfo.processInfo.environment
+Sources/GrantivaCLI/DeviceRunnerSessions.swift:24:    var reapHelpers: @Sendable (_ udid: String, _ deadline: Date) async -> [ReapedProcess] = { _, _ in [] }
+Sources/GrantivaCLI/DeviceRunnerSessions.swift:27:    /// A runner that ignores SIGTERM can overrun it by at most one process
+Sources/GrantivaCLI/DeviceRunnerSessions.swift:50:        while KeepAliveSessionStore.processIsAlive(pid) {
+Sources/GrantivaCLI/InitCommand.swift:24:        try await run(environment: ProcessInfo.processInfo.environment)
+Tests/GrantivaCLITests/DiffCommandTests.swift:690:        let previous = ProcessInfo.processInfo.environment[key]
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:10:/// Each case here returns before touching the simulator, so no `simctl` process runs.
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:334:    /// `grantiva diff` as a subprocess.
+Sources/GrantivaCLI/DiffCommand.swift:254:    /// process that owns it and it drives `platform`.
+Sources/GrantivaCLI/DiffCommand.swift:257:              let snapshot = try? await SimulatorReaper.processSnapshot(),
+Sources/GrantivaCLI/DiffCommand.swift:258:              session.ownsRunnerProcess(in: snapshot) else { return nil }
+Sources/GrantivaCLI/EmulatorCommand.swift:95:                "  \($0.serial) (\($0.avd)) — pid \($0.pid) \($0.processAlive ? "running" : "exited"), adb: \($0.adbState)"
+Tests/GrantivaCLITests/RecordCommandTests.swift:20:    func testStopInterruptsAndWaitsForCaptureProcess() async throws {
+Tests/GrantivaCLITests/RecordCommandTests.swift:21:        let process = Process()
+Tests/GrantivaCLITests/RecordCommandTests.swift:22:        process.executableURL = URL(fileURLWithPath: "/usr/bin/tail")
+Tests/GrantivaCLITests/RecordCommandTests.swift:23:        process.arguments = ["-f", "/dev/null"]
+Tests/GrantivaCLITests/RecordCommandTests.swift:24:        try process.run()
+Tests/GrantivaCLITests/RecordCommandTests.swift:26:        try await RecorderLifecycle.stop(process)
+Tests/GrantivaCLITests/RecordCommandTests.swift:28:        XCTAssertFalse(process.isRunning)
+Tests/GrantivaCLITests/RecordCommandTests.swift:29:        XCTAssertNotEqual(process.terminationReason, .exit)
+Tests/GrantivaCLITests/RecordCommandTests.swift:33:        let process = Process()
+Tests/GrantivaCLITests/RecordCommandTests.swift:34:        process.executableURL = URL(fileURLWithPath: "/bin/sh")
+Tests/GrantivaCLITests/RecordCommandTests.swift:35:        process.arguments = ["-c", "trap '' INT; exec tail -f /dev/null"]
+Tests/GrantivaCLITests/RecordCommandTests.swift:36:        try process.run()
+Tests/GrantivaCLITests/RecordCommandTests.swift:39:            process,
+Tests/GrantivaCLITests/RecordCommandTests.swift:45:        XCTAssertFalse(process.isRunning)
+Tests/GrantivaCLITests/RecordCommandTests.swift:46:        XCTAssertNotEqual(process.terminationStatus, 0)
+Tests/GrantivaCLITests/RecordCommandTests.swift:50:        let process = try makeRunningCaptureProcess()
+Tests/GrantivaCLITests/RecordCommandTests.swift:56:            try await RecorderLifecycle.withCleanup(for: process) {
+Tests/GrantivaCLITests/RecordCommandTests.swift:64:        XCTAssertFalse(process.isRunning)
+Tests/GrantivaCLITests/RecordCommandTests.swift:68:        let process = try makeRunningCaptureProcess()
+Tests/GrantivaCLITests/RecordCommandTests.swift:71:            try await RecorderLifecycle.withCleanup(for: process) {
+Tests/GrantivaCLITests/RecordCommandTests.swift:87:        XCTAssertFalse(process.isRunning)
+Tests/GrantivaCLITests/RecordCommandTests.swift:90:    private func makeRunningCaptureProcess() throws -> Process {
+Tests/GrantivaCLITests/RecordCommandTests.swift:91:        let process = Process()
+Tests/GrantivaCLITests/RecordCommandTests.swift:92:        process.executableURL = URL(fileURLWithPath: "/usr/bin/tail")
+Tests/GrantivaCLITests/RecordCommandTests.swift:93:        process.arguments = ["-f", "/dev/null"]
+Tests/GrantivaCLITests/RecordCommandTests.swift:94:        try process.run()
+Tests/GrantivaCLITests/RecordCommandTests.swift:95:        return process
+Sources/GrantivaCLI/LoggingBootstrap.swift:7:    public static func bootstrap(arguments: [String] = CommandLine.arguments) {
+Tests/GrantivaMCPTests/Support/LeaseDirectoryGuard.swift:19:    /// hook is belt and braces: when several test bundles share a process
+Tests/GrantivaMCPTests/MCPServerTests.swift:171:        let store = KeepAliveSessionStore(directory: sessions.path, isProcessAlive: { alive && $0 == runnerPid })
+Tests/GrantivaMCPTests/MCPServerTests.swift:232:        let store = KeepAliveSessionStore(directory: sessions.path, isProcessAlive: { pids.contains($0) })
+Tests/GrantivaMCPTests/MCPServerTests.swift:282:        let store = KeepAliveSessionStore(directory: sessions.path, isProcessAlive: { _ in true })
+Tests/GrantivaMCPTests/MCPServerTests.swift:307:            isProcessAlive: { _ in false }
+Tests/GrantivaMCPTests/MCPServerTests.swift:603:        let store = KeepAliveSessionStore(directory: sessions.path, isProcessAlive: { $0 == 4242 })
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:179:    func testResourceBundleIsFoundInTheTestProcess() {
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:278:    func testRunnerProcessCheckFindsNothingForAnUnusedInstall() {
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:279:        XCTAssertFalse(RunnerManager.runnerProcessExists(installDir: "/nonexistent/versions/1.0+x"))
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:537:            let process = Process()
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:538:            process.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:539:            process.arguments = ["-czf", resources.appendingPathComponent(name).path, "-C", source.path, "./grantiva-runner"]
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:540:            try process.run()
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:541:            process.waitUntilExit()
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:617:        let process = Process()
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:618:        process.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:619:        process.arguments = ["-tzf", url.path]
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:621:        process.standardOutput = pipe
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:622:        try process.run()
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:624:        process.waitUntilExit()
+Tests/GrantivaCLITests/HierarchyCommandTests.swift:20:        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { _ in true })
+Tests/GrantivaCLITests/HierarchyCommandTests.swift:35:        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { $0 == 100 })
+Tests/GrantivaCLITests/HierarchyCommandTests.swift:41:        let store = KeepAliveSessionStore(directory: missing, isProcessAlive: { _ in true })
+Tests/GrantivaCLITests/HierarchyCommandTests.swift:51:        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { _ in true })
+Tests/GrantivaCLITests/HierarchyCommandTests.swift:60:        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { _ in true })
+Tests/GrantivaCLITests/HierarchyCommandTests.swift:69:        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { _ in true })
+Tests/GrantivaCLITests/HierarchyCommandTests.swift:96:        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { _ in true })
+Tests/GrantivaCLITests/HierarchyCommandTests.swift:112:        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { _ in true })
+Tests/GrantivaCLITests/HierarchyCommandTests.swift:127:        let store = KeepAliveSessionStore(directory: missing, isProcessAlive: { _ in true })
+Tests/GrantivaCLITests/HierarchyCommandTests.swift:198:        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { _ in true })
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:72:                [:], to: [ForceTeardownResult(udid: session.udid, processes: [], leaseReleased: false, capacityRecordsCleared: 0)],
+Tests/GrantivaCoreTests/ShellQuotingTests.swift:11:    func testSubprocessesDoNotInheritStandardInput() async throws {
+Tests/GrantivaCoreTests/ShellQuotingTests.swift:68:    // MARK: - runProcess (argv, no shell)
+Tests/GrantivaCoreTests/ShellQuotingTests.swift:70:    func testRunProcessPassesArgumentsVerbatim() async throws {
+Tests/GrantivaCoreTests/ShellQuotingTests.swift:71:        let marker = FileManager.default.temporaryDirectory.appendingPathComponent("runprocess-\(UUID().uuidString)").path
+Tests/GrantivaCoreTests/ShellQuotingTests.swift:72:        let output = try await runProcess(["/bin/echo", "a; touch \(marker)", "$(touch \(marker))", "it's"])
+Tests/GrantivaCoreTests/ShellQuotingTests.swift:77:    func testRunProcessReportsStderrAndTheExitCode() async {
+Tests/GrantivaCoreTests/ShellQuotingTests.swift:79:            _ = try await runProcess(["/bin/sh", "-c", "echo out; echo oops >&2; exit 3"])
+Tests/GrantivaCoreTests/SignalRelayTests.swift:53:            "\n[grantiva] received SIGINT — releasing emulator and reaping child processes\n"
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:33:        let owners = SimulatorReaper.processes(owning: udid, psOutput: snapshot)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:39:        let found = SimulatorReaper.processes(owning: udid, psOutput: sample)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:51:        let found = SimulatorReaper.processes(owning: udid, psOutput: sample)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:55:    func testIgnoresProcessesForOtherSimulatorsAndUnrelatedWork() {
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:56:        let found = SimulatorReaper.processes(owning: udid, psOutput: sample)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:58:        XCTAssertFalse(pids.contains(505), "unrelated process matched")
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:63:        let found = SimulatorReaper.processes(owning: udid, psOutput: sample)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:67:    func testExcludesTheCallersOwnProcess() {
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:68:        let found = SimulatorReaper.processes(owning: udid, psOutput: sample, excludingPID: 501)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:73:        let found = SimulatorReaper.processes(owning: udid.lowercased(), psOutput: sample)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:77:    func testReportsProcessGroupsSoTheWholeTreeCanBeSignalled() {
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:78:        let found = SimulatorReaper.processes(owning: udid, psOutput: sample)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:79:        XCTAssertEqual(found.first { $0.pid == 502 }?.processGroup, 501)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:82:    func testStaleLeasePIDReusedByUnrelatedProcessIsNotTargeted() async throws {
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:87:        let unrelated = Process()
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:97:        lease.handOff(to: unrelated.processIdentifier)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:98:        let snapshot = "  \(unrelated.processIdentifier)  \(unrelated.processIdentifier) /bin/sleep 30"
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:108:        XCTAssertTrue(result.processes.isEmpty)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:151:        XCTAssertTrue(result.processes.isEmpty)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:189:            sessions: KeepAliveSessionStore(directory: sessionDirectory ?? "\(directory)/sessions", isProcessAlive: { _ in false }),
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:192:            isProcessAlive: { _ in false }
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:196:    // A named session outlives the CLI process that booted its device, so a
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:251:            sessions: KeepAliveSessionStore(directory: "\(directory)/sessions", isProcessAlive: { _ in false }),
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:254:            isProcessAlive: { _ in true }
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:263:        let store = KeepAliveSessionStore(directory: sessionDirectory, isProcessAlive: { _ in false })
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:295:        func sleeper() throws -> Process {
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:296:            let process = Process()
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:297:            process.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:298:            process.arguments = ["30"]
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:299:            try process.run()
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:300:            return process
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:305:            for process in [runner, late] {
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:306:                if process.isRunning { process.terminate() }
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:307:                process.waitUntilExit()
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:310:        let runnerLine = "  \(runner.processIdentifier)  \(runner.processIdentifier) /x/grantiva-runner --platform ios --device \(udid) test"
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:316:        let pid = late.processIdentifier
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:317:        let freshPID = fresh.processIdentifier
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:336:        XCTAssertEqual(result.processes.first { $0.pid == pid }?.kind, .diagnose)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:338:        XCTAssertFalse(result.processes.contains { $0.pid == freshPID })
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:345:    func testForceTeardownWithNoProcessesAndOnlyAStaleLockFileIsNotAReclaim() async throws {
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:353:        XCTAssertEqual(result.processes, [])
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:361:        // `kill -9` of the grantiva process: its claim is left behind naming a
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:363:        let runner = Process()
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:368:        let dead = Process()
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:373:            pid: dead.processIdentifier, udid: udid, startedAt: Date(),
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:374:            runnerPID: runner.processIdentifier, keepAlive: true
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:376:        let line = "  \(runner.processIdentifier)  \(runner.processIdentifier) /x/grantiva-runner --platform ios --device \(udid) test"
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:383:            sessions: KeepAliveSessionStore(directory: "\(directory)/sessions", isProcessAlive: { _ in false }),
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:388:        XCTAssertEqual(result.processes.map(\.pid), [runner.processIdentifier])
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:427:        // The owner is this test process: alive, and never reaped.
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:470:        let found = SimulatorReaper.processes(owning: udid, psOutput: line)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:473:        XCTAssertEqual(found.first?.processGroup, 4806)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:7:        let original = LogStreamer.ProcessIdentity(seconds: 100, microseconds: 1)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:8:        let replacement = LogStreamer.ProcessIdentity(seconds: 100, microseconds: 2)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:29:        let original = LogStreamer.ProcessIdentity(seconds: 100, microseconds: 1)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:30:        let replacement = LogStreamer.ProcessIdentity(seconds: 100, microseconds: 2)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:50:        let original = LogStreamer.ProcessIdentity(seconds: 100, microseconds: 1)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:70:        XCTAssertThrowsError(try LogStreamer.processSnapshot(
+Tests/GrantivaCoreTests/LogStreamerTests.swift:81:        let original = LogStreamer.ProcessIdentity(seconds: 100, microseconds: 1)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:91:                return try LogStreamer.processSnapshot(
+Tests/GrantivaCoreTests/LogStreamerTests.swift:112:        let actual = try LogStreamer.processSnapshot(
+Tests/GrantivaCoreTests/LogStreamerTests.swift:142:        let child = Process()
+Tests/GrantivaCoreTests/LogStreamerTests.swift:146:        let other = Process()
+Tests/GrantivaCoreTests/LogStreamerTests.swift:156:            let owned = child.isRunning ? "\(child.processIdentifier) log stream --predicate grantiva-log-test-owned\n" : ""
+Tests/GrantivaCoreTests/LogStreamerTests.swift:157:            return owned + "\(other.processIdentifier) log stream --predicate grantiva-log-another-run"
+Tests/GrantivaCoreTests/LogStreamerTests.swift:160:        let wrapper = try XCTUnwrap(streamer.processIdentifier)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:230:        let pid = try XCTUnwrap(streamer.processIdentifier)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:231:        XCTAssertEqual(kill(pid, 0), 0, "the stand-in log process should be running")
+Tests/GrantivaCoreTests/LogStreamerTests.swift:236:        XCTAssertNil(streamer.processIdentifier)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:242:        let first = try XCTUnwrap(streamer.processIdentifier)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:250:        let second = try XCTUnwrap(streamer.processIdentifier)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:260:        let lines = try SubprocessLog.capturing {
+Tests/GrantivaCoreTests/LogStreamerTests.swift:281:            // Foundation's Process reaps its child, so ESRCH means it is gone.
+Tests/GrantivaCoreTests/LogStreamerTests.swift:298:            "subsystem BEGINSWITH \"com.kylebrowning.Landmarks\" OR processImagePath CONTAINS \"com.kylebrowning.Landmarks\" OR process == \"Landmarks\""
+Tests/GrantivaCoreTests/LogStreamerTests.swift:307:            "subsystem BEGINSWITH \"com.example\" OR processImagePath CONTAINS \"com.example\""
+Tests/GrantivaCoreTests/LogStreamerTests.swift:313:        XCTAssertTrue(predicate.hasSuffix("OR process == \"My \\\"App\\\"\""), predicate)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:320:        Filtering the log data using "process == \\"Landmarks\\""
+Tests/GrantivaCoreTests/LogStreamerTests.swift:321:        Timestamp               Ty Process[PID:TID]
+Sources/GrantivaMCP/Tools/VRTTools.swift:61:        if let path = Bundle.main.executablePath { return path }
+Sources/GrantivaMCP/Tools/VRTTools.swift:62:        let argv0 = CommandLine.arguments[0]
+Sources/GrantivaMCP/Tools/VRTTools.swift:96:            let output = try await runProcess(captureCommand(platform: platform, executable: executable), environment: environment)
+Sources/GrantivaMCP/Tools/VRTTools.swift:108:            let output = try await runProcess(compareCommand(platform: platform, executable: executable), environment: environment)
+Sources/GrantivaMCP/Tools/VRTTools.swift:132:            let output = try await runProcess(approveCommand(platform: platform, screens: screens, executable: executable), environment: environment)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:7:/// processes it starts) cannot run in a unit test, but everything the CLI side
+Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:97:        let process = Process()
+Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:98:        process.executableURL = URL(fileURLWithPath: "/usr/bin/zip")
+Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:99:        process.currentDirectoryURL = directory
+Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:100:        process.arguments = ["-qr", output.path] + entries
+Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:101:        process.standardOutput = FileHandle.nullDevice
+Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:102:        process.standardError = FileHandle.nullDevice
+Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:103:        try process.run()
+Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:104:        process.waitUntilExit()
+Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:105:        XCTAssertEqual(process.terminationStatus, 0)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:59:            isProcessAlive: { _ in false }
+Sources/GrantivaCLI/RunCommand.swift:23:    @Flag(name: .long, help: "Stream app logs from the simulator or emulator into this terminal, prefixed with [log] (iOS and Android). On iOS the filter defaults to lines whose subsystem starts with the app's bundle ID or whose process is the app's executable; on Android, to lines from the app's uid.")
+Sources/GrantivaCLI/RunCommand.swift:53:    @Option(name: .long, parsing: .unconditional, help: "Max seconds to wait for the runner subprocess before killing it with SIGTERM. Default: 600 (10 min). Minimum 30. Ignored under --keep-alive. Bump this for long multi-flow suites.")
+Sources/GrantivaCLI/RunCommand.swift:343:        // Bounded: a hung cleanup must not wedge the process forever.
+Sources/GrantivaCLI/RunCommand.swift:514:        // A grantiva-side launch creates a process WDA can't control, causing stopApp
+Sources/GrantivaCLI/Options.swift:172:        environment: [String: String] = ProcessInfo.processInfo.environment
+Sources/GrantivaCLI/Options.swift:187:        environment: [String: String] = ProcessInfo.processInfo.environment,
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:403:    // Another process holds a record for the device ensure just created (it
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:405:    func testFailedEnsureLeavesACreatedDeviceAloneWhenAnotherProcessHoldsIt() async throws {
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:426:    // this process holds it, so a concurrent ensure's reserve waits instead
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:492:        // The twin (another live Grantiva process: pid 1 always exists)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:526:        XCTAssertTrue(wait.message.contains("another Grantiva process (pid 4242) is booting it"), wait.message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:55:        // child, and the flock with it — a lease outliving the process that
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:60:    func testClaimNamesTheOwningProcessAndRunner() throws {
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:133:        // Stand in for the runner with a process that is certainly alive and
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:149:        let child = Process()
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:153:        lease.handOff(to: child.processIdentifier)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:173:    /// the lease file from another process, and waits until it does.
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:174:    private func holdLockInChild(udid: String) throws -> Process {
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:176:        let child = Process()
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:205:        let child = Process()
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:209:        lease.handOff(to: child.processIdentifier)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:214:    func testForceReleaseOfAFlockHeldByAnotherProcessReturnsTrue() throws {
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:77:    func testShellFailureWithoutOutputNamesTheSubprocessAndExitCode() async {
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:10:        let empty = ForceTeardownResult(udid: udid, processes: [], leaseReleased: false, capacityRecordsCleared: 0)
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:154:    // satisfied the "pass one selector" check, matched no process, released no
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:155:    // lease, and exited 0 printing "No processes were holding ." — the script
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:247:            sessions: KeepAliveSessionStore(directory: "\(directory)/sessions", isProcessAlive: { _ in false }),
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:250:            isProcessAlive: { _ in false }
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:343:    // MARK: - L04: teardown names a leftover device process it did not start
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:345:    func testTeardownReportsALeftoverDeviceProcessByPidAndCommand() throws {
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:353:        let leftovers = T.leftoverProcesses(udids: [udid], psOutput: ps)
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:366:        let list = try XCTUnwrap(object["leftoverProcesses"] as? [[String: Any]])
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:411:        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { alive.value.contains($0) })
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:414:            isProcessAlive: { alive.value.contains($0) },
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:416:            isRunnerProcess: { $0 == 701 },
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:417:            isGrantivaProcess: { $0 == 700 },
+Tests/GrantivaCoreTests/RunnerSessionInfoTests.swift:14:        XCTAssertTrue(session.ownsRunnerProcess(
+Tests/GrantivaCoreTests/RunnerSessionInfoTests.swift:19:    func testRejectsAReusedPIDBelongingToAnUnrelatedProcess() {
+Tests/GrantivaCoreTests/RunnerSessionInfoTests.swift:20:        XCTAssertFalse(session.ownsRunnerProcess(in: " 4242 4242 /bin/sleep 30"))
+Tests/GrantivaCoreTests/RunnerSessionInfoTests.swift:21:        XCTAssertFalse(session.ownsRunnerProcess(in: " 4242 4242 /usr/bin/grantiva runner version"))
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:19:    private func sleeper() throws -> Process {
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:20:        let process = Process()
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:21:        process.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:22:        process.arguments = ["30"]
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:23:        try process.run()
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:24:        return process
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:40:        let started = RunnerStopMarker.processStartTime(runner.processIdentifier)
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:42:        XCTAssertFalse(marker.isMarked(runnerPid: runner.processIdentifier, runnerStartTime: started))
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:43:        XCTAssertTrue(try marker.mark(runnerPid: runner.processIdentifier, ownerPid: getpid()))
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:44:        XCTAssertTrue(marker.isMarked(runnerPid: runner.processIdentifier, runnerStartTime: started))
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:45:        marker.remove(runnerPid: runner.processIdentifier)
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:46:        XCTAssertFalse(marker.isMarked(runnerPid: runner.processIdentifier, runnerStartTime: started))
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:49:    /// A marker left for an earlier process with the same pid never counts,
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:52:        let marker = RunnerStopMarker(directory: directory, startTime: { _ in 1_791_700_000 }, isProcessAlive: { _ in true })
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:55:        XCTAssertFalse(marker.isMarked(runnerPid: 4242, runnerStartTime: 1_791_799_999), "same pid, another process")
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:56:        let reused = RunnerStopMarker(directory: directory, startTime: { _ in 1_791_799_999 }, isProcessAlive: { _ in true })
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:71:        let marker = RunnerStopMarker(directory: directory, startTime: { $0 == 4242 ? 1_791_700_000 : nil }, isProcessAlive: { alive.contains($0) })
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:73:        let afterRunnerDied = RunnerStopMarker(directory: directory, startTime: { _ in nil }, isProcessAlive: { alive.contains($0) })
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:87:        XCTAssertTrue(try marker.mark(runnerPid: runner.processIdentifier, ownerPid: holder.processIdentifier))
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:88:        for process in [holder, runner] {
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:89:            kill(process.processIdentifier, SIGKILL)
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:91:            _ = waitpid(process.processIdentifier, &status, 0)
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:110:        let store = KeepAliveSessionStore(directory: directory, isProcessAlive: { alive.contains($0) })
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:111:        let marker = RunnerStopMarker(directory: directory, startTime: { $0 == 4242 ? 1 : nil }, isProcessAlive: { alive.contains($0) })
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:6:/// and grantiva's UDID sidecar are written by hand; process liveness is injected.
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:21:        KeepAliveSessionStore(directory: directory.path, isProcessAlive: { live.contains($0) })
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:95:            directory: directory.appendingPathComponent("does-not-exist").path, isProcessAlive: { _ in true }
+Tests/GrantivaCoreTests/ChildProcessTests.swift:9:/// that makes reaping work — one process group per runner, signalled as a unit —
+Tests/GrantivaCoreTests/ChildProcessTests.swift:10:/// is exercised here with a stand-in process tree.
+Tests/GrantivaCoreTests/ChildProcessTests.swift:11:final class ChildProcessTests: XCTestCase {
+Tests/GrantivaCoreTests/ChildProcessTests.swift:30:    func testChildIsLeaderOfItsOwnProcessGroup() throws {
+Tests/GrantivaCoreTests/ChildProcessTests.swift:34:        let child = try ChildProcess.spawn(
+Tests/GrantivaCoreTests/ChildProcessTests.swift:45:        XCTAssertNotEqual(child.processGroup, getpgrp())
+Tests/GrantivaCoreTests/ChildProcessTests.swift:56:        let child = try ChildProcess.spawn(
+Tests/GrantivaCoreTests/ChildProcessTests.swift:90:        let child = try ChildProcess.spawn(
+Tests/GrantivaCoreTests/ChildProcessTests.swift:100:        XCTAssertEqual(ChildProcess.terminationStatus(raw: 7 << 8), 7) // exit(7)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:101:        XCTAssertEqual(ChildProcess.terminationStatus(raw: SIGTERM), SIGTERM) // killed
+Tests/GrantivaCoreTests/ChildProcessTests.swift:110:        let child = try ChildProcess.spawn(
+Tests/GrantivaCoreTests/ChildProcessTests.swift:121:    /// CI hands the test process SIGINT/SIGTERM blocked; posix_spawn would
+Tests/GrantivaCoreTests/ChildProcessTests.swift:131:        let child: ChildProcess
+Tests/GrantivaCoreTests/ChildProcessTests.swift:133:            child = try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:152:        let child = try ChildProcess.spawn(
+Tests/GrantivaCoreTests/ChildProcessTests.swift:172:        let child = try ChildProcess.spawn(
+Tests/GrantivaCoreTests/ChildProcessTests.swift:201:        let child = try ChildProcess.spawn(
+Tests/GrantivaCoreTests/ChildProcessTests.swift:221:        let child = try ChildProcess.spawn(
+Tests/GrantivaCoreTests/ChildProcessTests.swift:233:    func testTheWatchdogJoinsTheRunnersProcessGroup() throws {
+Tests/GrantivaCoreTests/ChildProcessTests.swift:236:        let child = try ChildProcess.spawn(
+Tests/GrantivaCoreTests/ChildProcessTests.swift:255:        let child = try ChildProcess.spawn(
+Tests/GrantivaCoreTests/ChildProcessTests.swift:265:        XCTAssertEqual(ChildProcess.terminateGroup(999_999, gracePeriod: 0.1), .alreadyGone)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:268:    // MARK: - K33: --verbose names every long-running subprocess
+Tests/GrantivaCoreTests/ChildProcessTests.swift:273:        let lines = try SubprocessLog.capturing {
+Tests/GrantivaCoreTests/ChildProcessTests.swift:274:            let child = try ChildProcess.spawn(
+Tests/GrantivaCoreTests/ChildProcessTests.swift:285:        let lines = try SubprocessLog.capturing {
+Tests/GrantivaCoreTests/ChildProcessTests.swift:286:            let child = try ChildProcess.spawn(
+Tests/GrantivaCoreTests/ChildProcessTests.swift:297:    /// Runs `body` with `signalNumber` set to `handler` in this process,
+Tests/GrantivaCoreTests/ChildProcessTests.swift:312:        let child = try ChildProcess.spawn(
+Tests/GrantivaCoreTests/ChildProcessTests.swift:326:            try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:340:            try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:354:                try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:363:        XCTAssertEqual(ChildProcess.signalsToReset(isIgnored: { _ in false }), [SIGINT, SIGTERM, SIGHUP, SIGQUIT, SIGPIPE])
+Tests/GrantivaCoreTests/ChildProcessTests.swift:364:        XCTAssertEqual(ChildProcess.signalsToReset(isIgnored: { _ in true }), [SIGINT, SIGTERM])
+Tests/GrantivaCoreTests/ChildProcessTests.swift:365:        XCTAssertEqual(ChildProcess.signalsToReset(isIgnored: { $0 == SIGHUP }), [SIGINT, SIGTERM, SIGQUIT, SIGPIPE])
+Tests/GrantivaCoreTests/ChildProcessTests.swift:373:        let child = try ChildProcess.spawn(executable: "/bin/sh", arguments: ["-c", "exit 4"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:385:        let sleeper = try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:397:        let child = try ChildProcess.spawn(executable: "/bin/sh", arguments: ["-c", "exit 0"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:400:        XCTAssertEqual(child.wait(), ChildProcess.unknownExitStatus)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:401:        XCTAssertNotEqual(ChildProcess.unknownExitStatus, 0)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:80:    func testNarrateHonoursTheProcessWideSwitch() {
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:40:    func testTheProcessWideNameIsResolvedOrTheFallback() {
+Tests/GrantivaCoreTests/RunnerHelperReaperTests.swift:7:/// process here is a fake row; the reaper's signals are recorded, never sent.
+Tests/GrantivaCoreTests/RunnerHelperReaperTests.swift:110:    /// A descendant's pid reused by an unrelated process that happens to name
+Tests/GrantivaCoreTests/RunnerHelperReaperTests.swift:126:    /// A descendant's pid reused by an unrelated process does not make that
+Tests/GrantivaCoreTests/RunnerHelperReaperTests.swift:127:    /// process's children the runner's: the parent link counts only while
+Tests/GrantivaCoreTests/RunnerHelperReaperTests.swift:167:        let rows = HostProcess.parse("  101   100   100 /usr/bin/xcodebuild test-without-building\nnot a row\n")
+Tests/GrantivaCoreTests/RunnerHelperReaperTests.swift:168:        XCTAssertEqual(rows, [HostProcess(pid: 101, ppid: 100, pgid: 100, command: "/usr/bin/xcodebuild test-without-building")])
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:149:    func testRecordVideoProcessDoesNotInheritStdout() throws {
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:54:    private final class EmulatorProcesses: @unchecked Sendable {
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:55:        private var processes: [String: Process] = [:]
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:62:            let process = Process()
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:63:            process.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:64:            process.arguments = ["30"]
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:65:            try process.run()
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:66:            processes[serial] = process
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:67:            return process.processIdentifier
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:74:            for (serial, process) in processes
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:80:                guard !reaped.contains(process.processIdentifier) else { continue }
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:81:                kill(process.processIdentifier, SIGKILL)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:83:                _ = waitpid(process.processIdentifier, &status, 0)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:84:                reaped.insert(process.processIdentifier)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:90:            processes.values
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:91:                .filter { !reaped.contains($0.processIdentifier) && $0.isRunning }
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:96:    private func manager(_ emulators: EmulatorProcesses) -> EmulatorManager {
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:109:        let process = Process()
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:110:        process.executableURL = URL(fileURLWithPath: "/usr/bin/true")
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:111:        try process.run()
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:112:        process.waitUntilExit()
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:113:        return process.processIdentifier
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:160:        let emulators = EmulatorProcesses(shell)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:179:    /// process owns the console port: not ours.
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:180:    func testBootFailsAndLeavesNoRecordWhenAnotherProcessOwnsTheConsolePort() async throws {
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:181:        let child = Process()
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:192:            execute: shell.execute, spawn: FixedPIDSpawn(pid: child.processIdentifier).spawn,
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:218:        XCTAssertNotNil(records.first?.processStartTime)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:219:        XCTAssertEqual(records.first?.processStartTime, EmulatorManager.processStartTime(getpid()), "the start time is recorded")
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:223:    /// process): the boot cannot be confirmed as ours, so it fails closed.
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:227:        let child = Process()
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:233:        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "P", pid: child.processIdentifier))
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:236:            try await manager(shell, boundPorts: [5554], portOwners: []).waitForBoot(serial: "emulator-5554", pid: child.processIdentifier)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:433:    func testWaitForBootFailsFastWhenTheEmulatorProcessExited() async throws {
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:458:        let child = try ChildProcess.spawn(executable: "/usr/bin/false", arguments: [], stdin: devnull, stdout: devnull, stderr: devnull)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:571:                // Another process creates and registers its AVD mid-listing.
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:671:        XCTAssertEqual(sessions.first?.processAlive, true)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:689:    /// unrelated process) but another process owns the serial's console port:
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:691:    func testALiveReusedPIDWhoseConsolePortAnotherProcessOwnsIsNotOurs() async throws {
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:721:        let actual = try XCTUnwrap(EmulatorManager.processStartTime(getpid()))
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:724:        let reused = StartedEmulatorRecord(serial: "emulator-5554", avd: "P", pid: getpid(), processStartTime: actual - 3600)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:725:        XCTAssertFalse(EmulatorManager.isRecordedProcessAlive(reused))
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:726:        XCTAssertTrue(EmulatorManager.isRecordedProcessAlive(
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:727:            StartedEmulatorRecord(serial: "emulator-5554", avd: "P", pid: getpid(), processStartTime: actual)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:751:        XCTAssertNil(records.first?.processStartTime)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:799:        let emulators = EmulatorProcesses(shell)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:885:        let emulators = EmulatorProcesses(shell)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:912:        let emulators = EmulatorProcesses(shell)
+Tests/GrantivaMCPTests/VRTToolsTests.swift:44:        let running = try XCTUnwrap(Bundle.main.executablePath)
+Tests/GrantivaMCPTests/VRTToolsTests.swift:112:        // PATH is overridden only for the subprocesses, never for this test process.
+Tests/GrantivaMCPTests/VRTToolsTests.swift:113:        let path = ["PATH": "\(stubDir.path):\(ProcessInfo.processInfo.environment["PATH"] ?? "")"]
+Tests/GrantivaCoreTests/SimulatorUDIDTests.swift:10:    // The process-inspection path lowercases before comparing, so a lowercased
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:19:    func testAnAttachedSessionIsReleasedThroughItsGrantivaProcess() async throws {
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:65:        stopper.isGrantivaProcess = { _ in false }
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:77:        stopper.isRunnerProcess = { _ in false }
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:145:            ReapedProcess(pid: 750, processGroup: 750, kind: .diagnose, command: diagnose, killed: true),
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:154:        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { [701, 801].contains($0) })
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:169:        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { $0 == 701 })
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:180:        let none = KeepAliveSessionStore(directory: directory.appendingPathComponent("empty").path, isProcessAlive: { _ in true })
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:182:        stopper.isProcessAlive = { $0 == 702 }
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:196:        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { alive.value.contains($0) })
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:218:        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { alive.value.contains($0) })
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:241:        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { alive.value.contains($0) })
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:246:        stopper.processStartTime = { _ in 2_000 }
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:253:        stopper.processStartTime = { _ in 1_000 }
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:259:    /// nil, and its orphaned runner is still terminated, matched by process
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:270:        stopper.store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { alive.value.contains($0) })
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:271:        stopper.processStartTime = { _ in 2_000 }
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:281:        XCTAssertEqual(owner.runnerStartTime, RunnerStopMarker.processStartTime(getpid()))
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:299:            store: KeepAliveSessionStore(directory: directory.path, isProcessAlive: { alive.value.contains($0) }),
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:300:            isProcessAlive: { alive.value.contains($0) },
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:302:            isRunnerProcess: { alive.value.contains($0) },
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:303:            isGrantivaProcess: { alive.value.contains($0) },
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:5:/// K33: the debug lines `--verbose` prints for long-running subprocesses.
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:6:final class SubprocessLogTests: XCTestCase {
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:9:            SubprocessLog.commandLine(executable: "/usr/bin/xcrun", arguments: ["simctl", "io", "ABC", "recordVideo", "--codec=h264", "/tmp/a b.mp4"], environment: [:]),
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:15:        let line = SubprocessLog.commandLine(
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:25:        let lines = SubprocessLog.capturing {
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:26:            SubprocessLog.ended(executable: "/bin/x", arguments: ["a"], status: 0, signal: nil)
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:27:            SubprocessLog.ended(executable: "/bin/x", arguments: ["a"], status: 1, signal: nil)
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:28:            SubprocessLog.ended(executable: "/bin/x", arguments: ["a"], status: 0, signal: SIGINT)
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:29:            SubprocessLog.ended(executable: "/bin/x", arguments: ["a"], status: 0, signal: SIGKILL)
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:34:    /// The simctl recorder is a Foundation `Process`; its start and end go
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:36:    func testAFoundationProcessIsLoggedWhenItStartsAndEnds() throws {
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:37:        let process = Process()
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:38:        process.executableURL = URL(fileURLWithPath: "/bin/sh")
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:39:        process.arguments = ["-c", "exit 4"]
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:40:        let lines = try SubprocessLog.capturing {
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:41:            try SubprocessLog.run(process)
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:42:            process.waitUntilExit()
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:43:            SubprocessLog.ended(process)
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:52:            SubprocessLog.commandLine(of: recorder),
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:117:        SimulatorCapacity.prune(&records, devices: [simulator], isProcessAlive: { _ in false })
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:124:    // process is gone the record must not hold a slot forever.
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:129:        SimulatorCapacity.prune(&records, devices: [simulator], isProcessAlive: { _ in false })
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:138:        SimulatorCapacity.prune(&records, devices: [simulator], isProcessAlive: { _ in false })
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:149:        SimulatorCapacity.prune(&records, devices: [simulator], isProcessAlive: { _ in false })
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:152:        SimulatorCapacity.prune(&records, devices: [device(1, state: "Shutdown")], isProcessAlive: { _ in false })
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:167:        SimulatorCapacity.prune(&records, devices: [simulator], isProcessAlive: { _ in true })
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:172:    // A named ticket session outlives the CLI process that booted its device.
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:173:    func testActiveNamedSessionRecordOutlivesItsOwnerProcess() {
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:177:        SimulatorCapacity.prune(&records, devices: [simulator], isProcessAlive: { _ in false })
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:214:    func testAPendingRecordOfAnotherLiveProcessUnderTheLimitIsADeviceWait() async throws {
+Tests/GrantivaCoreTests/DoctorTests.swift:24:        let previous = ProcessInfo.processInfo.environment["DEVELOPER_DIR"]
+Tests/GrantivaCoreTests/DoctorTests.swift:129:        let previous = ProcessInfo.processInfo.environment["NO_COLOR"]
+Sources/grantiva/Grantiva.swift:8:        await GrantivaCommand.main(GrantivaCommand.normalizedArguments(Array(CommandLine.arguments.dropFirst())))
+Tests/GrantivaCoreTests/Support/LeaseDirectoryGuard.swift:19:    /// hook is belt and braces: when several test bundles share a process
+Sources/GrantivaCore/Auth/ProjectIdentifier.swift:33:        let env = ProcessInfo.processInfo.environment
+Sources/GrantivaCore/Build/AppBinaryResolver.swift:67:        let process = Process()
+Sources/GrantivaCore/Build/AppBinaryResolver.swift:68:        process.executableURL = URL(fileURLWithPath: "/usr/bin/unzip")
+Sources/GrantivaCore/Build/AppBinaryResolver.swift:69:        process.arguments = ["-q", ipaPath, "-d", tempDir.path]
+Sources/GrantivaCore/Build/AppBinaryResolver.swift:70:        process.standardOutput = FileHandle.nullDevice
+Sources/GrantivaCore/Build/AppBinaryResolver.swift:71:        process.standardError = FileHandle.nullDevice
+Sources/GrantivaCore/Build/AppBinaryResolver.swift:72:        try process.run()
+Sources/GrantivaCore/Build/AppBinaryResolver.swift:73:        process.waitUntilExit()
+Sources/GrantivaCore/Build/AppBinaryResolver.swift:75:        guard process.terminationStatus == 0 else {
+Sources/GrantivaCore/Doctor/DoctorFormatter.swift:15:        if ProcessInfo.processInfo.environment["NO_COLOR"] != nil { return false }
+Sources/GrantivaCore/Auth/AuthStore.swift:148:            environment: ProcessInfo.processInfo.environment,
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:19:    /// lives only as long as its owner process. nil is a record written by
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:62:/// Records persist after an individual CLI process exits because a simulator is
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:79:        let environment = ProcessInfo.processInfo.environment
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:95:    public static func defaultDirectory(environment: [String: String] = ProcessInfo.processInfo.environment) -> String {
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:105:        let value = ProcessInfo.processInfo.environment["GRANTIVA_SESSION_ID"]?
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:114:        /// Another live Grantiva process reserved this same device and is
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:191:                        "Timed out after \(Int(waitTimeout))s waiting for Grantiva process \(holder.ownerPID) "
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:203:    /// process issued the boot; it never clears an earlier `true`.
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:213:    /// process, replaces them with one `pending` record owned by this process
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:235:    /// Removes the records for `udid` owned by process `pid`, leaving any
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:236:    /// other process's record in place.
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:267:    /// session ID and its owner process is dead. A named session's record is
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:269:    /// session outlives the CLI process, and `teardown --session-id` must
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:273:        isProcessAlive: (Int32) -> Bool = KeepAliveSessionStore.processIsAlive
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:280:                guard let reason = Self.keepReason(for: record, isProcessAlive: isProcessAlive) else {
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:293:        isProcessAlive: (Int32) -> Bool
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:297:            guard isProcessAlive(record.ownerPID) else { return nil }
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:375:        isProcessAlive: (Int32) -> Bool = { kill($0, 0) == 0 || errno == EPERM }
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:380:            if record.state == .pending && !isProcessAlive(record.ownerPID) { return true }
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:383:            // process that took it.
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:386:            if record.isSessionless && record.ephemeral != false && !isProcessAlive(record.ownerPID) { return true }
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:184:        environment: [String: String] = ProcessInfo.processInfo.environment
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:311:        environment: [String: String] = ProcessInfo.processInfo.environment,
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:337:        if ProcessInfo.processInfo.environment["GITHUB_APP_ID"] != nil,
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:338:           ProcessInfo.processInfo.environment["GITHUB_APP_PRIVATE_KEY"] != nil {
+Sources/GrantivaCore/Shell.swift:14:    let process = Process()
+Sources/GrantivaCore/Shell.swift:15:    process.executableURL = URL(fileURLWithPath: "/bin/zsh")
+Sources/GrantivaCore/Shell.swift:16:    process.arguments = ["-c", command]
+Sources/GrantivaCore/Shell.swift:18:        process.environment = ProcessInfo.processInfo.environment.merging(environment) { _, new in new }
+Sources/GrantivaCore/Shell.swift:22:    process.standardInput = FileHandle.nullDevice
+Sources/GrantivaCore/Shell.swift:23:    process.standardOutput = pipe
+Sources/GrantivaCore/Shell.swift:24:    process.standardError = errorPipe
+Sources/GrantivaCore/Shell.swift:26:    // Every subprocess Grantiva runs, at debug level: this is what `--verbose`
+Sources/GrantivaCore/Shell.swift:32:    try process.run()
+Sources/GrantivaCore/Shell.swift:40:        process.waitUntilExit()
+Sources/GrantivaCore/Shell.swift:42:        if stopOnCancel, process.isRunning { process.terminate() }
+Sources/GrantivaCore/Shell.swift:45:    GrantivaLog.logger.debug("exit \(process.terminationStatus): \(command)")
+Sources/GrantivaCore/Shell.swift:49:    guard process.terminationStatus == 0 else {
+Sources/GrantivaCore/Shell.swift:52:            errOutput.isEmpty ? (output.isEmpty ? "\(command) exited with code \(process.terminationStatus)" : output) : errOutput,
+Sources/GrantivaCore/Shell.swift:53:            process.terminationStatus
+Sources/GrantivaCore/Shell.swift:77:    let process = Process()
+Sources/GrantivaCore/Shell.swift:78:    process.executableURL = URL(fileURLWithPath: "/usr/bin/which")
+Sources/GrantivaCore/Shell.swift:79:    process.arguments = [tool]
+Sources/GrantivaCore/Shell.swift:80:    process.standardInput = FileHandle.nullDevice
+Sources/GrantivaCore/Shell.swift:82:    process.standardOutput = pipe
+Sources/GrantivaCore/Shell.swift:83:    try? process.run()
+Sources/GrantivaCore/Shell.swift:85:    process.waitUntilExit()
+Sources/GrantivaCore/Shell.swift:86:    guard process.terminationStatus == 0 else { return nil }
+Sources/GrantivaCore/Shell.swift:99:public func runProcess(_ argv: [String], environment: [String: String]? = nil) async throws -> String {
+Sources/GrantivaCore/Shell.swift:100:    precondition(!argv.isEmpty, "runProcess needs an executable")
+Sources/GrantivaCore/Shell.swift:101:    let process = Process()
+Sources/GrantivaCore/Shell.swift:102:    process.executableURL = URL(fileURLWithPath: argv[0])
+Sources/GrantivaCore/Shell.swift:103:    process.arguments = Array(argv.dropFirst())
+Sources/GrantivaCore/Shell.swift:105:        process.environment = ProcessInfo.processInfo.environment.merging(environment) { _, new in new }
+Sources/GrantivaCore/Shell.swift:109:    process.standardInput = FileHandle.nullDevice
+Sources/GrantivaCore/Shell.swift:110:    process.standardOutput = stdout
+Sources/GrantivaCore/Shell.swift:111:    process.standardError = stderr
+Sources/GrantivaCore/Shell.swift:115:        process.terminationHandler = { _ in
+Sources/GrantivaCore/Shell.swift:120:    try process.run()
+Sources/GrantivaCore/Shell.swift:126:    GrantivaLog.logger.debug("exit \(process.terminationStatus): \(command)")
+Sources/GrantivaCore/Shell.swift:128:    guard process.terminationStatus == 0 else {
+Sources/GrantivaCore/Shell.swift:131:            errors.isEmpty ? (output.isEmpty ? "\(command) exited with code \(process.terminationStatus)" : output) : errors,
+Sources/GrantivaCore/Shell.swift:132:            process.terminationStatus
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:31:    /// Processes still holding the device when the teardown began that it
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:34:    public var leftoverProcesses: [ReapedProcess] = []
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:38:    public var reapedProcesses: [ReapedProcess] = []
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:69:        case udid, session, deleted, deviceHomesRemoved, deviceHomeFailures, runnerSessionStopped, leftoverProcesses, reapedProcesses
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:80:        leftoverProcesses = try container.decodeIfPresent([ReapedProcess].self, forKey: .leftoverProcesses) ?? []
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:81:        reapedProcesses = try container.decodeIfPresent([ReapedProcess].self, forKey: .reapedProcesses) ?? []
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:131:    /// Serializes a provisioning critical section across processes. Unlike
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:4:/// A process found to be holding a simulator.
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:5:public struct ReapedProcess: Codable, Equatable, Sendable {
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:6:    /// What the process is, for human-readable output.
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:15:    public let processGroup: Int32
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:20:    public init(pid: Int32, processGroup: Int32, kind: Kind, command: String, killed: Bool = false) {
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:22:        self.processGroup = processGroup
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:31:    public var processes: [ReapedProcess]
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:56:    /// as `processes`, `killed: true`.
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:57:    public var reapedProcesses: [ReapedProcess] = []
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:61:        processes: [ReapedProcess],
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:71:        self.processes = processes
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:79:        self.reclaimed = !processes.isEmpty || leaseReleased || capacityRecordsCleared > 0
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:83:/// Reclaims a simulator by live process inspection, without consulting any
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:91:/// processes the way a human would — by their command lines — and reaps them.
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:93:    /// Parses `ps -axo pid=,pgid=,command=` output and returns the processes
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:97:    public static func processes(
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:101:    ) -> [ReapedProcess] {
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:102:        var found: [ReapedProcess] = []
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:112:            found.append(ReapedProcess(pid: pid, processGroup: pgid, kind: kind, command: command))
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:118:    /// What `command` is when it is a process holding `udid`, or nil. The
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:119:    /// matching rules of `processes(owning:)`, for one command line.
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:120:    static func kind(of command: String, owning udid: String) -> ReapedProcess.Kind? {
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:140:            // run, and it is the process the lease names.
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:146:    /// Snapshot of the host's processes in the format `processes(owning:)` parses.
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:147:    public static func processSnapshot() async throws -> String {
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:153:    static func isGrantivaProcess(pid: Int32, psOutput: String) -> Bool {
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:175:        isProcessAlive: (Int32) -> Bool = KeepAliveSessionStore.processIsAlive
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:179:            return try await processSnapshot()
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:182:        var targets = processes(owning: udid, psOutput: psOutput, excludingPID: getpid())
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:184:        // about the processes that are about to be killed.
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:194:           isGrantivaProcess(pid: claim.pid, psOutput: psOutput),
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:196:            targets.append(ReapedProcess(
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:198:                processGroup: claim.pid,
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:208:        // processes only: a fresh `grantiva run` started in the grace window
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:212:            var late = processes(owning: udid, psOutput: try await takeSnapshot(), excludingPID: getpid())
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:229:        let (cleared, kept) = (try? capacity.removeStale(udid: udid, isProcessAlive: isProcessAlive)) ?? (0, [])
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:240:            processes: targets,
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:251:    /// Removes the temp directories `claim` recorded when neither its process
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:273:    /// SIGINT each target (and its process group, unless it is ours), wait up
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:275:    private static func reap(_ targets: inout [ReapedProcess], gracePeriod: TimeInterval) {
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:283:            if target.processGroup > 1, target.processGroup != ownGroup {
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:284:                kill(-target.processGroup, SIGINT)
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:297:            if target.processGroup > 1, target.processGroup != ownGroup {
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:298:                kill(-target.processGroup, SIGKILL)
+Sources/GrantivaCore/Platform/IOSPlatform.swift:190:    /// The `simctl io recordVideo` process. Both of its streams go to `log`:
+Sources/GrantivaCore/Platform/IOSPlatform.swift:193:    static func makeRecorder(deviceID: String, path: String, log: FileHandle) -> Process {
+Sources/GrantivaCore/Platform/IOSPlatform.swift:194:        let recorder = Process()
+Sources/GrantivaCore/Platform/IOSPlatform.swift:205:    static func logRecorderEnd(_ recorder: Process) {
+Sources/GrantivaCore/Platform/IOSPlatform.swift:209:            GrantivaLog.logger.debug("still running: \(SubprocessLog.commandLine(of: recorder))")
+Sources/GrantivaCore/Platform/IOSPlatform.swift:211:            SubprocessLog.ended(recorder)
+Sources/GrantivaCore/Platform/IOSPlatform.swift:225:            try SubprocessLog.run(recorder)
+Sources/GrantivaCore/Android/AndroidPlatform.swift:32:        environment: [String: String] = ProcessInfo.processInfo.environment
+Sources/GrantivaCore/Output/CLILogHandler.swift:6:/// `GrantivaLog.logger` is created once and lives for the process, so a level
+Sources/GrantivaCore/Output/CLILogHandler.swift:79:    /// Renders one line. Pure, so the contract can be tested without a process.
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:97:            return (.notice, "Waiting for \(holder.name) (\(holder.udid)): another Grantiva process (pid \(holder.ownerPID)) is booting it.")
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:109:    /// `GRANTIVA_SESSION_ID` it is released once this process exits. `ensure`
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:125:            // Look again: the wait may have been for another process that
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:233:        // The look-up/create pair runs under a cross-process lock so two
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:299:    /// off entirely if another process already holds a capacity record for
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:304:            // Atomically confirm no other process holds the device and park a
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:564:        // order from one process to the next.
+Sources/GrantivaCore/Platform/PlatformResolver.swift:16:        environment: [String: String] = ProcessInfo.processInfo.environment,
+Sources/GrantivaCore/Simulator/SimulatorUDID.swift:11:/// process, released no lease, and exited 0 — the script concluded it had
+Sources/GrantivaCore/Simulator/SimulatorUDID.swift:17:    /// process-inspection path already lowercases before comparing, so a
+Sources/GrantivaCore/Simulator/SimulatorUDID.swift:21:    /// simulator (killing the processes it stranded, breaking its lease,
+Sources/GrantivaCore/Android/AndroidProvenance.swift:9:    /// The process's own start time (seconds since 1970, from the kernel), so
+Sources/GrantivaCore/Android/AndroidProvenance.swift:10:    /// a pid the system reused for another process is not mistaken for this
+Sources/GrantivaCore/Android/AndroidProvenance.swift:12:    public let processStartTime: Int64?
+Sources/GrantivaCore/Android/AndroidProvenance.swift:14:    public init(serial: String, avd: String, pid: Int32, startedAt: Date = Date(), processStartTime: Int64? = nil) {
+Sources/GrantivaCore/Android/AndroidProvenance.swift:19:        self.processStartTime = processStartTime
+Sources/GrantivaCore/Android/AndroidProvenance.swift:77:    /// was listed, so a name another process registered after the listing
+Sources/GrantivaCore/GrantivaError.swift:51:            // subprocess exit say so themselves (see `shell`).
+Sources/GrantivaCore/Platform/DevicePlatform.swift:132:    /// The process that streams the app's logs. `filter` is the platform's
+Sources/GrantivaCore/Platform/DevicePlatform.swift:135:    /// Extra environment for the runner process that drives `deviceID`.
+Sources/GrantivaCore/Platform/DevicePlatform.swift:137:    /// Called once the runner process that drove `deviceID` has exited.
+Sources/GrantivaCore/Platform/DevicePlatform.swift:139:    /// Kills driver processes a crashed runner may have left on the device.
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:7:    public let process: String
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:11:    public init(timestamp: String, subsystem: String, category: String, process: String, level: String, message: String) {
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:15:        self.process = process
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:24:    public var process: String?
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:27:    public init(subsystem: String? = nil, category: String? = nil, process: String? = nil, level: String? = nil) {
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:30:        self.process = process
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:42:        if let process {
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:43:            clauses.append("processImagePath ENDSWITH \"\(process)\"")
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:92:            let process = Process()
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:93:            process.executableURL = URL(fileURLWithPath: "/bin/zsh")
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:94:            process.arguments = ["-c", command]
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:96:            process.standardOutput = pipe
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:97:            process.standardError = FileHandle.nullDevice
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:99:            try SubprocessLog.run(process)
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:109:            process.waitUntilExit()
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:110:            SubprocessLog.ended(process)
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:132:                process: raw.processImagePath?.components(separatedBy: "/").last ?? raw.senderImagePath?.components(separatedBy: "/").last ?? "",
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:143:    let processImagePath: String?
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:15:    /// The newest installed iPhone type, read once per process; nil when
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:64:        let process = Process()
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:65:        process.executableURL = URL(fileURLWithPath: executable)
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:66:        process.arguments = arguments
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:68:        process.standardOutput = pipe
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:69:        process.standardError = FileHandle.nullDevice
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:70:        process.standardInput = FileHandle.nullDevice
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:72:        process.terminationHandler = { _ in exited.signal() }
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:73:        do { try process.run() } catch { return nil }
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:81:            process.terminate()
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:82:            if exited.wait(timeout: .now() + 1) != .success { kill(process.processIdentifier, SIGKILL) }
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:86:        return process.terminationStatus == 0 ? output.value : nil
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:7:/// On iOS the runner forwards `launchApp: environment:` to the app as process
+Sources/GrantivaCore/Android/AndroidSDK.swift:25:        environment: [String: String] = ProcessInfo.processInfo.environment,
+Sources/GrantivaCore/Android/AndroidSDK.swift:46:        environment: [String: String] = ProcessInfo.processInfo.environment,
+Sources/GrantivaCore/Android/AndroidSDK.swift:57:        environment: [String: String] = ProcessInfo.processInfo.environment,
+Sources/GrantivaCore/Android/AndroidSDK.swift:70:        environment: [String: String] = ProcessInfo.processInfo.environment,
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:108:        switch process(try Data(contentsOf: url), toSeconds: seconds, dropFramesPastEnd: dropFramesPastEnd) {
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:129:              case .success(.held(let held)) = process(data, toSeconds: seconds, dropFramesPastEnd: dropFramesPastEnd)
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:134:    private enum Processed {
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:141:    private static func process(_ data: Data, toSeconds seconds: Double, dropFramesPastEnd: Bool) -> Result<Processed, Unreadable> {
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:24:    /// The grantiva process that started the runner, when recorded.
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:27:    /// grantiva process holds (`run --keep-alive`, foreground `runner start`),
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:42:    /// never signals another process that reused the pid.
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:90:/// grantiva's sidecar: which simulator a keep-alive runner process owns.
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:112:    /// tell the runner from a process that reused its pid. Absent in
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:135:    /// A foreground `runner start`: the grantiva process holding it reads a
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:164:    let isProcessAlive: @Sendable (Int32) -> Bool
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:168:        isProcessAlive: @escaping @Sendable (Int32) -> Bool = KeepAliveSessionStore.processIsAlive
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:171:        self.isProcessAlive = isProcessAlive
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:174:    /// `kill(pid, 0)` succeeds for a live process we may signal; EPERM means
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:176:    public static func processIsAlive(_ pid: Int32) -> Bool {
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:209:            runnerStartTime: RunnerStopMarker.processStartTime(runnerPid)
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:237:        RunnerStopMarker(directory: directory, isProcessAlive: isProcessAlive)
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:282:        let pids = Set(owners + runnerPids + unclaimed).filter { !isProcessAlive($0) }
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:301:    /// Every session whose runner process is still alive, newest first.
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:303:    /// A session a grantiva process holds (`run --keep-alive`, foreground
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:304:    /// `runner start`; owner `detached == false`) whose grantiva process is
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:306:    /// `ChildProcess.bindLifetimeToParent`), and until then it is excluded
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:325:                guard let raw = Self.loadRunnerSession(path: path), isProcessAlive(raw.pid) else { return nil }
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:327:                if !includingOrphans, let owner, owner.detached == false, !isProcessAlive(owner.grantivaPid) {
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:353:    /// `<pid>-*.grantiva`. A sidecar held by a grantiva process that is gone
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:368:                !published.contains(owner.runnerPid) && isProcessAlive(owner.runnerPid)
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:369:                    && (includingOrphans || !(owner.detached == false && !isProcessAlive(owner.grantivaPid)))
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:397:                    && isProcessAlive($0.runnerPid) && isProcessAlive($0.grantivaPid)
+Sources/GrantivaCore/Android/EmulatorManager.swift:23:    public let processAlive: Bool
+Sources/GrantivaCore/Android/EmulatorManager.swift:27:    public init(serial: String, avd: String, pid: Int32, startedAt: Date, processAlive: Bool, adbState: String) {
+Sources/GrantivaCore/Android/EmulatorManager.swift:32:        self.processAlive = processAlive
+Sources/GrantivaCore/Android/EmulatorManager.swift:148:        environment: [String: String] = ProcessInfo.processInfo.environment,
+Sources/GrantivaCore/Android/EmulatorManager.swift:197:    /// processes.
+Sources/GrantivaCore/Android/EmulatorManager.swift:214:    public static func configuredBootTimeout(environment: [String: String] = ProcessInfo.processInfo.environment) -> TimeInterval {
+Sources/GrantivaCore/Android/EmulatorManager.swift:218:    /// The emulator must outlive this process, so it is spawned into its own
+Sources/GrantivaCore/Android/EmulatorManager.swift:219:    /// process group (ChildProcess does that) and never tracked by SignalRelay.
+Sources/GrantivaCore/Android/EmulatorManager.swift:232:        let child = try ChildProcess.spawn(
+Sources/GrantivaCore/Android/EmulatorManager.swift:338:        try provenance.register(StartedEmulatorRecord(serial: serial, avd: avd, pid: pid, processStartTime: Self.processStartTime(pid)))
+Sources/GrantivaCore/Android/EmulatorManager.swift:345:    /// a process that exits early fails at once and its ledger record is
+Sources/GrantivaCore/Android/EmulatorManager.swift:347:    /// counts when `pid` is still alive and is the process on the console port.
+Sources/GrantivaCore/Android/EmulatorManager.swift:354:                "The emulator process for \(serial) (pid \(pid)) exited before it finished booting. See \(log).",
+Sources/GrantivaCore/Android/EmulatorManager.swift:368:                    // shows no owner (another user's process): we cannot tell
+Sources/GrantivaCore/Android/EmulatorManager.swift:374:                            // The spawned process is our own child and is not
+Sources/GrantivaCore/Android/EmulatorManager.swift:389:                                "\(serial)'s console port \(consolePort) is held by a process lsof cannot see, "
+Sources/GrantivaCore/Android/EmulatorManager.swift:536:    /// `ensure` in another process that registers its AVD meanwhile keeps it.
+Sources/GrantivaCore/Android/EmulatorManager.swift:589:    /// Ledger records with their liveness. A record whose process is gone is
+Sources/GrantivaCore/Android/EmulatorManager.swift:604:                processAlive: alive, adbState: state
+Sources/GrantivaCore/Android/EmulatorManager.swift:612:    /// process and the serial to go. Then removes the temp directories a
+Sources/GrantivaCore/Android/EmulatorManager.swift:617:        // A record whose process is gone (or whose pid now names another
+Sources/GrantivaCore/Android/EmulatorManager.swift:618:        // process, or whose console port another process owns) proves nothing
+Sources/GrantivaCore/Android/EmulatorManager.swift:655:                let processGone = record.map { !Self.isRecordedProcessAlive($0) } ?? true
+Sources/GrantivaCore/Android/EmulatorManager.swift:656:                if !listed, processGone { break }
+Sources/GrantivaCore/Android/EmulatorManager.swift:697:    /// A record is ours while its process lives (the same process, by start
+Sources/GrantivaCore/Android/EmulatorManager.swift:699:    /// process owns that serial's console port. An empty or unreadable owner
+Sources/GrantivaCore/Android/EmulatorManager.swift:702:        guard Self.isRecordedProcessAlive(record) else { return false }
+Sources/GrantivaCore/Android/EmulatorManager.swift:708:    /// `isAlive`, plus: a recorded start time must match the live process's,
+Sources/GrantivaCore/Android/EmulatorManager.swift:710:    static func isRecordedProcessAlive(_ record: StartedEmulatorRecord) -> Bool {
+Sources/GrantivaCore/Android/EmulatorManager.swift:712:        guard let expected = record.processStartTime else { return true }
+Sources/GrantivaCore/Android/EmulatorManager.swift:713:        return processStartTime(record.pid) == expected
+Sources/GrantivaCore/Android/EmulatorManager.swift:717:    static func processStartTime(_ pid: Int32) -> Int64? {
+Sources/GrantivaCore/Android/EmulatorManager.swift:743:    /// written by another process) falls back to `kill(pid, 0)`, where EPERM
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:9:    public static func withCleanup<T>(for process: Process, operation: () async throws -> T) async throws -> T {
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:12:            try await stop(process)
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:15:            try? await stop(process)
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:38:        _ process: Process,
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:43:        if process.isRunning { process.interrupt() }
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:44:        if await waitForExit(process, attempts: gracefulAttempts, pollInterval: pollInterval) { return }
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:46:        if process.isRunning { process.terminate() }
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:47:        if await waitForExit(process, attempts: terminationAttempts, pollInterval: pollInterval) { return }
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:49:        if process.isRunning { kill(process.processIdentifier, SIGKILL) }
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:50:        guard await waitForExit(process, attempts: terminationAttempts, pollInterval: pollInterval) else {
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:56:        _ process: Process,
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:60:        for _ in 0..<attempts where process.isRunning {
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:63:            // poll before Process has observed the signal. Use an unstructured task
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:69:        return !process.isRunning
+Sources/GrantivaCore/Android/ADB.swift:244:    /// bound), and a warning says so once per process.
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:6:/// - A session a live grantiva process holds (`run --keep-alive`, a
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:8:///   to that grantiva process, which reaps its runner, writes its ready file,
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:10:/// - A `runner start --detach` session, or an orphan whose grantiva process is
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:11:///   gone, has no one to ask: the runner's process group is terminated and
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:15:        /// The grantiva process holding the session got SIGINT and exited.
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:17:        case released(grantivaPid: Int32, runnerPid: Int32, udid: String, reaped: [ReapedProcess] = [])
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:19:        case terminated(runnerPid: Int32, udid: String, killed: Bool, reaped: [ReapedProcess] = [])
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:34:        public var reaped: [ReapedProcess] {
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:42:        public func adding(reaped more: [ReapedProcess]) -> Outcome {
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:56:    public var isProcessAlive: @Sendable (Int32) -> Bool
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:58:    /// True when `pid` is a grantiva-runner process (pids are reused).
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:59:    public var isRunnerProcess: @Sendable (Int32) async -> Bool
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:60:    /// True when `pid` is a grantiva process.
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:61:    public var isGrantivaProcess: @Sendable (Int32) async -> Bool
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:63:    public var terminateGroup: @Sendable (Int32) -> ChildProcess.GroupTermination
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:70:    /// How long a grantiva process gets to exit after SIGINT. Its own
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:76:    public var processStartTime: @Sendable (Int32) -> Int64?
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:80:        isProcessAlive: @escaping @Sendable (Int32) -> Bool,
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:82:        isRunnerProcess: @escaping @Sendable (Int32) async -> Bool,
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:83:        isGrantivaProcess: @escaping @Sendable (Int32) async -> Bool,
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:85:        terminateGroup: @escaping @Sendable (Int32) -> ChildProcess.GroupTermination,
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:93:        processStartTime: @escaping @Sendable (Int32) -> Int64? = RunnerStopMarker.processStartTime
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:96:        self.isProcessAlive = isProcessAlive
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:98:        self.isRunnerProcess = isRunnerProcess
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:99:        self.isGrantivaProcess = isGrantivaProcess
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:109:        self.processStartTime = processStartTime
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:115:            isProcessAlive: KeepAliveSessionStore.processIsAlive,
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:116:            parentPid: { ProcessLookup.parentPid(of: $0) },
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:117:            isRunnerProcess: { ProcessLookup.name(of: $0)?.lowercased() == "grantiva-runner" },
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:118:            isGrantivaProcess: { ProcessLookup.name(of: $0)?.lowercased() == "grantiva" },
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:120:            terminateGroup: { ChildProcess.terminateGroup($0, gracePeriod: 5) },
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:135:    /// Stops `session`. Throws when a grantiva process holding it does not
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:146:    /// reap; nil keeps `waitTimeout` and the reaper's own bounds. The process
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:161:        // be a grantiva process and the runner's parent, and the runner must
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:164:           isProcessAlive(owner), parentPid(session.pid) == owner,
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:165:           await isRunnerProcess(session.pid), await isGrantivaProcess(owner) {
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:182:                    "The grantiva process holding the keep-alive session (pid \(owner), \(udid)) did not exit \(when) \(how). "
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:186:            if !isProcessAlive(session.pid) { removeSessionFiles(session.pid) }
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:218:        var reaped: [ReapedProcess] = []
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:219:        let sameProcess = recordedStartTime.map { processStartTime(runnerPid) == $0 } ?? true
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:220:        if isProcessAlive(runnerPid), sameProcess, await isRunnerProcess(runnerPid) {
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:258:           !sessions.contains(where: { $0.pid == file.pid }), isProcessAlive(file.pid) {
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:260:            // matched by process name only.
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:271:        while isProcessAlive(pid) {
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:279:/// Reads a process's parent and short name from the kernel.
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:280:public enum ProcessLookup {
+Sources/GrantivaCore/Runner/SignalRelay.swift:5:/// Forwards SIGINT/SIGTERM from grantiva to the process groups it spawned, then
+Sources/GrantivaCore/Runner/SignalRelay.swift:22:///    process group (see `ChildProcess`) so the tree goes down together.
+Sources/GrantivaCore/Runner/SignalRelay.swift:61:        "\n[grantiva] received \(signalName) — releasing \(deviceNoun) and reaping child processes\n"
+Sources/GrantivaCore/Runner/SignalRelay.swift:76:            // suppressed first or the process dies before cleanups can run.
+Sources/GrantivaCore/Runner/SignalRelay.swift:90:    /// Tracks a process group to be signalled when grantiva is interrupted;
+Sources/GrantivaCore/Runner/SignalRelay.swift:135:    /// Test seam: runs the registered cleanups without exiting the process.
+Sources/GrantivaCore/Runner/SignalRelay.swift:210:        DispatchQueue.global(qos: .userInitiated).async { _ = ChildProcess.terminateGroup(pgid, gracePeriod: 15) }
+Sources/GrantivaCore/Runner/SignalRelay.swift:214:    /// process goes on), or run the interrupt sequence (returns true: the
+Sources/GrantivaCore/Runner/SignalRelay.swift:271:            ChildProcess.terminateGroup(pgid, gracePeriod: 5)
+Sources/GrantivaCore/Runner/RunnerExecution.swift:6:/// process-group, signal-forwarding and readiness behaviour that a `--keep-alive`
+Sources/GrantivaCore/Runner/RunnerExecution.swift:23:        if let signal = outcome.terminatingSignal { return "killed by \(SubprocessLog.signalName(signal))" }
+Sources/GrantivaCore/Runner/RunnerExecution.swift:46:        /// Extra environment for the runner process; empty inherits ours unchanged.
+Sources/GrantivaCore/Runner/RunnerExecution.swift:72:        let child: ChildProcess
+Sources/GrantivaCore/Runner/RunnerExecution.swift:74:            child = try ChildProcess.spawn(
+Sources/GrantivaCore/Runner/RunnerExecution.swift:119:        // Ctrl-C (or `kill -INT`) now reaps the runner's whole process group —
+Sources/GrantivaCore/Runner/RunnerExecution.swift:123:        SignalRelay.shared.track(group: child.processGroup, deviceNoun: SignalRelay.deviceNoun(for: request.platform ?? .ios))
+Sources/GrantivaCore/Runner/RunnerExecution.swift:135:            SignalRelay.shared.disarmHold(group: child.processGroup)
+Sources/GrantivaCore/Runner/RunnerExecution.swift:136:            SignalRelay.shared.untrack(group: child.processGroup)
+Sources/GrantivaCore/Runner/RunnerExecution.swift:181:        // flows finish, so process exit is not the completion signal. Poll the
+Sources/GrantivaCore/Runner/RunnerExecution.swift:195:        let group = child.processGroup
+Sources/GrantivaCore/Runner/RunnerExecution.swift:250:        SignalRelay.shared.disarmHold(group: child.processGroup)
+Sources/GrantivaCore/Runner/RunnerExecution.swift:258:            || (SignalRelay.shared.wasReleased(group: child.processGroup)
+Sources/GrantivaCore/Runner/RunnerSessionInfo.swift:134:    /// Check if the session process is still alive.
+Sources/GrantivaCore/Runner/RunnerSessionInfo.swift:139:    /// PIDs are reusable; confirm the current process is still the runner that
+Sources/GrantivaCore/Runner/RunnerSessionInfo.swift:141:    public func ownsRunnerProcess(in psOutput: String) -> Bool {
+Sources/GrantivaCore/Runner/RunnerStopMarker.swift:13:/// pid, its kernel start time and the grantiva process holding it. That
+Sources/GrantivaCore/Runner/RunnerStopMarker.swift:18:/// or whose pid now names another process; and the session-file sweeps
+Sources/GrantivaCore/Runner/RunnerStopMarker.swift:24:    let isProcessAlive: @Sendable (Int32) -> Bool
+Sources/GrantivaCore/Runner/RunnerStopMarker.swift:30:        startTime: @escaping @Sendable (Int32) -> Int64? = RunnerStopMarker.processStartTime,
+Sources/GrantivaCore/Runner/RunnerStopMarker.swift:31:        isProcessAlive: @escaping @Sendable (Int32) -> Bool = KeepAliveSessionStore.processIsAlive
+Sources/GrantivaCore/Runner/RunnerStopMarker.swift:35:        self.isProcessAlive = isProcessAlive
+Sources/GrantivaCore/Runner/RunnerStopMarker.swift:41:        /// The grantiva process holding the runner, which reads and removes
+Sources/GrantivaCore/Runner/RunnerStopMarker.swift:47:    public static let processStartTime: @Sendable (Int32) -> Int64? = { pid in
+Sources/GrantivaCore/Runner/RunnerStopMarker.swift:58:    /// live process can be marked (its start time is what the reader checks):
+Sources/GrantivaCore/Runner/RunnerStopMarker.swift:73:    /// marker for another process with the same pid does not count.
+Sources/GrantivaCore/Runner/RunnerStopMarker.swift:90:        if let owner = Self.load(path(runnerPid))?.ownerPid, isProcessAlive(owner) { return false }
+Sources/GrantivaCore/Runner/RunnerStopMarker.swift:96:    /// pid now names another process, or its runner and its holder are both
+Sources/GrantivaCore/Runner/RunnerStopMarker.swift:109:                    stale = record.ownerPid.map { !isProcessAlive($0) } ?? true
+Sources/GrantivaCore/Runner/RunnerNarration.swift:3:/// Process-wide switch for the runner's relayed output.
+Sources/GrantivaCore/Runner/RunnerNarration.swift:109:            output += process(line: line)
+Sources/GrantivaCore/Runner/RunnerNarration.swift:112:            output += process(partial: pending)
+Sources/GrantivaCore/Runner/RunnerNarration.swift:122:        return process(partial: line) + closeBlockIfNeeded()
+Sources/GrantivaCore/Runner/RunnerNarration.swift:131:    private mutating func process(partial: String) -> String {
+Sources/GrantivaCore/Runner/RunnerNarration.swift:132:        let result = process(line: partial)
+Sources/GrantivaCore/Runner/RunnerNarration.swift:133:        // `process(line:)` appends a newline; a partial line has none yet.
+Sources/GrantivaCore/Runner/RunnerNarration.swift:137:    private mutating func process(line: String) -> String {
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:5:public struct HostProcess: Equatable, Sendable {
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:18:    public static func parse(_ psOutput: String) -> [HostProcess] {
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:24:            return HostProcess(pid: pid, ppid: ppid, pgid: pgid, command: String(fields[3]))
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:28:    /// The host's process table, full command lines included.
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:34:/// The processes a runner started, as seen while it lived: every process
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:36:/// process group. A member keeps its place after its parent dies and it is
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:49:    mutating func observe(_ processes: [HostProcess]) {
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:50:        let table = Self.byPid(processes)
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:54:            for process in processes where process.pid != runnerPid && process.pid > 1 {
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:55:                let descends = process.ppid == runnerPid || process.pgid == runnerPid
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:56:                    || isMemberParent(process.ppid, in: table)
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:57:                guard descends, members[process.pid] != process.command else { continue }
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:58:                members[process.pid] = process.command
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:64:    /// True when `process` is one this runner started: still attached to a
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:68:    func owns(_ process: HostProcess, in table: [Int32: HostProcess]) -> Bool {
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:69:        guard process.pid != runnerPid else { return false }
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:70:        if process.pgid == runnerPid || process.ppid == runnerPid { return true }
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:71:        if isMemberParent(process.ppid, in: table) { return true }
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:72:        return members[process.pid] == process.command
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:78:    func isMemberParent(_ ppid: Int32, in table: [Int32: HostProcess]) -> Bool {
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:83:    static func byPid(_ processes: [HostProcess]) -> [Int32: HostProcess] {
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:84:        Dictionary(processes.map { ($0.pid, $0) }, uniquingKeysWith: { first, _ in first })
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:90:/// Stopping the runner's process group is not enough on iOS: when
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:92:/// starts `simctl diagnose --udid=<device>` (up to 600 s) in a process group
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:93:/// of its own, and that process outlives the group. This finds such
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:94:/// processes by two facts together, never by name alone:
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:98:///   process group in a snapshot taken while the runner was stopping, or it
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:104:    /// `kill(pid, signal)`; a negative pid names a process group.
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:141:            snapshot: { try await HostProcess.snapshot() },
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:143:            isAlive: KeepAliveSessionStore.processIsAlive,
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:155:    /// be a grantiva-runner), while watching the processes it started; then,
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:160:    ) async -> (T, [ReapedProcess]) {
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:162:        if let table = try? await snapshot() { lineage.observe(HostProcess.parse(table)) }
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:168:                if let table = try? await snapshot() { lineage.observe(HostProcess.parse(table)) }
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:183:    public func sweep(exitedRunnerPid: Int32, udid: String) async -> [ReapedProcess] {
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:192:    /// An interrupted xcodebuild starts diagnose in a process group of its
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:204:    public func reapDeviceHome(udid: String, rounds: Int = 3) async -> [ReapedProcess] {
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:207:        var reaped: [ReapedProcess] = []
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:211:            var targets = HostProcess.parse(table).compactMap { process -> ReapedProcess? in
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:212:                guard process.pid > 1, process.pid != me,
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:213:                      !reaped.contains(where: { $0.pid == process.pid && $0.command == process.command }),
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:214:                      let kind = SimulatorReaper.kind(of: process.command, owning: udid),
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:216:                      writesIntoDeviceHome(process.command, udid: udid)
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:218:                return ReapedProcess(pid: process.pid, processGroup: process.pgid, kind: kind, command: process.command)
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:245:    private func reap(udid: String, lineage: RunnerLineage, followLineage: Bool = true) async -> [ReapedProcess] {
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:248:        let processes = HostProcess.parse(table)
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:249:        if followLineage { lineage.observe(processes) }
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:251:        let byPid = RunnerLineage.byPid(processes)
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:252:        var targets = processes.compactMap { process -> ReapedProcess? in
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:253:            guard process.pid > 1, process.pid != me,
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:254:                  let kind = SimulatorReaper.kind(of: process.command, owning: udid), kind != .grantiva,
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:255:                  (followLineage && lineage.owns(process, in: byPid))
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:256:                    || writesIntoRunDirectory(process.command, runnerPid: lineage.runnerPid, udid: udid)
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:258:            return ReapedProcess(pid: process.pid, processGroup: process.pgid, kind: kind, command: process.command)
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:288:        _ targets: inout [ReapedProcess], killAtOnce: (ReapedProcess) -> Bool = { _ in false }
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:292:        func send(_ sig: Int32, _ target: ReapedProcess) {
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:294:            if target.processGroup == target.pid, target.processGroup > 1, target.processGroup != ownGroup {
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:295:                signal(-target.processGroup, sig)
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:311:    private func waitForExit(_ targets: [ReapedProcess], timeout: TimeInterval) async -> Bool {
+Sources/GrantivaCore/Runner/LogStreamer.swift:75:/// process's stderr with a `[log]` prefix so simulator app logs interleave
+Sources/GrantivaCore/Runner/LogStreamer.swift:78:/// Line-atomic: the underlying subprocess writes whole lines and we forward
+Sources/GrantivaCore/Runner/LogStreamer.swift:81:/// processes writing to two pipes, with no global clock — but within a given
+Sources/GrantivaCore/Runner/LogStreamer.swift:84:    private var process: Process?
+Sources/GrantivaCore/Runner/LogStreamer.swift:98:    struct ProcessIdentity: Equatable {
+Sources/GrantivaCore/Runner/LogStreamer.swift:103:    static func processIdentity(_ pid: Int32) -> ProcessIdentity? {
+Sources/GrantivaCore/Runner/LogStreamer.swift:107:        return ProcessIdentity(seconds: info.pbi_start_tvsec, microseconds: info.pbi_start_tvusec)
+Sources/GrantivaCore/Runner/LogStreamer.swift:110:    static func processIdentities() -> [Int32: ProcessIdentity] {
+Sources/GrantivaCore/Runner/LogStreamer.swift:117:            processIdentity(pid).map { (pid, $0) }
+Sources/GrantivaCore/Runner/LogStreamer.swift:124:        var snapshot: (Date) throws -> String = { try LogStreamer.processSnapshot(deadline: $0) }
+Sources/GrantivaCore/Runner/LogStreamer.swift:125:        var identities: () -> [Int32: ProcessIdentity] = LogStreamer.processIdentities
+Sources/GrantivaCore/Runner/LogStreamer.swift:126:        var identity: (Int32) -> ProcessIdentity? = LogStreamer.processIdentity
+Sources/GrantivaCore/Runner/LogStreamer.swift:145:            let identities: [Int32: ProcessIdentity]
+Sources/GrantivaCore/Runner/LogStreamer.swift:157:            let stable = pids.compactMap { pid -> (Int32, ProcessIdentity)? in
+Sources/GrantivaCore/Runner/LogStreamer.swift:169:            var discovered: [Int32: ProcessIdentity] = [:]
+Sources/GrantivaCore/Runner/LogStreamer.swift:170:            var signalled: [Int32: ProcessIdentity] = [:]
+Sources/GrantivaCore/Runner/LogStreamer.swift:197:    /// The running log process's pid, for tests.
+Sources/GrantivaCore/Runner/LogStreamer.swift:198:    var processIdentifier: Int32? {
+Sources/GrantivaCore/Runner/LogStreamer.swift:201:        return process.map(\.processIdentifier)
+Sources/GrantivaCore/Runner/LogStreamer.swift:214:    /// Starts streaming the output of an arbitrary log process (for example a
+Sources/GrantivaCore/Runner/LogStreamer.swift:220:        guard process == nil else { return }
+Sources/GrantivaCore/Runner/LogStreamer.swift:238:        let p = Process()
+Sources/GrantivaCore/Runner/LogStreamer.swift:271:        p.terminationHandler = { process in
+Sources/GrantivaCore/Runner/LogStreamer.swift:272:            if !waitsForRemoteChild { ended.once { SubprocessLog.ended(process) } }
+Sources/GrantivaCore/Runner/LogStreamer.swift:277:            try SubprocessLog.run(p)
+Sources/GrantivaCore/Runner/LogStreamer.swift:284:        process = p
+Sources/GrantivaCore/Runner/LogStreamer.swift:292:        // so a caller's `defer { stop() }` never runs and the log process
+Sources/GrantivaCore/Runner/LogStreamer.swift:297:    /// Stops the log stream subprocess. Safe to call multiple times.
+Sources/GrantivaCore/Runner/LogStreamer.swift:316:        if let p = process {
+Sources/GrantivaCore/Runner/LogStreamer.swift:321:                kill(p.processIdentifier, SIGKILL)
+Sources/GrantivaCore/Runner/LogStreamer.swift:327:                FileHandle.standardError.write(Data("Warning: log wrapper pid \(p.processIdentifier) did not stop before the cleanup deadline.\n".utf8))
+Sources/GrantivaCore/Runner/LogStreamer.swift:334:        if let p = process, !p.isRunning {
+Sources/GrantivaCore/Runner/LogStreamer.swift:335:            terminationLogged?.once { SubprocessLog.ended(p) }
+Sources/GrantivaCore/Runner/LogStreamer.swift:338:        process = nil
+Sources/GrantivaCore/Runner/LogStreamer.swift:357:    static func processSnapshot(
+Sources/GrantivaCore/Runner/LogStreamer.swift:364:        let process = Process()
+Sources/GrantivaCore/Runner/LogStreamer.swift:365:        process.executableURL = URL(fileURLWithPath: executable)
+Sources/GrantivaCore/Runner/LogStreamer.swift:366:        process.arguments = arguments
+Sources/GrantivaCore/Runner/LogStreamer.swift:368:        process.standardOutput = pipe
+Sources/GrantivaCore/Runner/LogStreamer.swift:369:        process.standardError = FileHandle.nullDevice
+Sources/GrantivaCore/Runner/LogStreamer.swift:373:        try process.run()
+Sources/GrantivaCore/Runner/LogStreamer.swift:374:        didSpawn(process.processIdentifier)
+Sources/GrantivaCore/Runner/LogStreamer.swift:377:            if process.isRunning {
+Sources/GrantivaCore/Runner/LogStreamer.swift:378:                kill(process.processIdentifier, SIGKILL)
+Sources/GrantivaCore/Runner/LogStreamer.swift:379:                while process.isRunning, Date() < deadline { usleep(1_000) }
+Sources/GrantivaCore/Runner/LogStreamer.swift:392:            if count == 0, !process.isRunning {
+Sources/GrantivaCore/Runner/LogStreamer.swift:393:                guard process.terminationStatus == 0 else { throw InventoryError.commandFailed }
+Sources/GrantivaCore/Runner/LogStreamer.swift:404:/// log process's exit first.
+Sources/GrantivaCore/Runner/LogStreamer.swift:428:            || (line.hasPrefix("Timestamp") && line.contains("Process[PID:TID]"))
+Sources/GrantivaCore/Runner/LogStreamer.swift:435:/// caught without extra config, and the process image by bundle ID. When the
+Sources/GrantivaCore/Runner/LogStreamer.swift:437:/// process, which catches everything else the app logs: on a simulator the
+Sources/GrantivaCore/Runner/LogStreamer.swift:440:    var predicate = "subsystem BEGINSWITH \(predicateString(bundleID)) OR processImagePath CONTAINS \(predicateString(bundleID))"
+Sources/GrantivaCore/Runner/LogStreamer.swift:442:        predicate += " OR process == \(predicateString(executable))"
+Sources/GrantivaCore/Runner/ChildProcess.swift:4:/// A child process spawned into its **own process group**.
+Sources/GrantivaCore/Runner/ChildProcess.swift:6:/// `Foundation.Process` gives a child the parent's process group, so a signal
+Sources/GrantivaCore/Runner/ChildProcess.swift:11:/// processes that keep owning the simulator.
+Sources/GrantivaCore/Runner/ChildProcess.swift:13:/// `ChildProcess` spawns with `POSIX_SPAWN_SETPGROUP` so the child becomes the
+Sources/GrantivaCore/Runner/ChildProcess.swift:19:/// lease descriptor can leak into it and outlive this process.
+Sources/GrantivaCore/Runner/ChildProcess.swift:20:public final class ChildProcess: @unchecked Sendable {
+Sources/GrantivaCore/Runner/ChildProcess.swift:22:    /// The child is spawned as its own process-group leader, so the group id
+Sources/GrantivaCore/Runner/ChildProcess.swift:24:    public var processGroup: pid_t { pid }
+Sources/GrantivaCore/Runner/ChildProcess.swift:42:    /// Spawns `executable` in a new process group.
+Sources/GrantivaCore/Runner/ChildProcess.swift:47:    ///   - processGroup: 0 (the default) makes the child the leader of a new
+Sources/GrantivaCore/Runner/ChildProcess.swift:57:        processGroup: pid_t = 0,
+Sources/GrantivaCore/Runner/ChildProcess.swift:59:    ) throws -> ChildProcess {
+Sources/GrantivaCore/Runner/ChildProcess.swift:70:        // their defaults, whatever this process inherited (a CI runner or a
+Sources/GrantivaCore/Runner/ChildProcess.swift:85:        posix_spawnattr_setpgroup(&attributes, processGroup)
+Sources/GrantivaCore/Runner/ChildProcess.swift:115:            ProcessInfo.processInfo.environment.merging(overrides) { _, new in new }
+Sources/GrantivaCore/Runner/ChildProcess.swift:143:        if logged { SubprocessLog.started(executable: executable, arguments: arguments) }
+Sources/GrantivaCore/Runner/ChildProcess.swift:144:        return ChildProcess(pid: pid, executable: executable, arguments: arguments, logged: logged)
+Sources/GrantivaCore/Runner/ChildProcess.swift:149:    /// on them), SIGHUP, SIGQUIT and SIGPIPE only when this process does not
+Sources/GrantivaCore/Runner/ChildProcess.swift:151:    static func signalsToReset(isIgnored: (Int32) -> Bool = isIgnoredInThisProcess) -> [Int32] {
+Sources/GrantivaCore/Runner/ChildProcess.swift:155:    /// Whether `signalNumber`'s disposition in this process is SIG_IGN.
+Sources/GrantivaCore/Runner/ChildProcess.swift:156:    static func isIgnoredInThisProcess(_ signalNumber: Int32) -> Bool {
+Sources/GrantivaCore/Runner/ChildProcess.swift:252:            SubprocessLog.ended(executable: executable, arguments: arguments, status: status, signal: signal)
+Sources/GrantivaCore/Runner/ChildProcess.swift:262:    /// Sends `signal` to the child's whole process group.
+Sources/GrantivaCore/Runner/ChildProcess.swift:264:        Self.signalGroup(processGroup, signal)
+Sources/GrantivaCore/Runner/ChildProcess.swift:285:    /// cleanly), then SIGTERM, then SIGKILL, to the entire process group.
+Sources/GrantivaCore/Runner/ChildProcess.swift:288:        Self.terminateGroup(processGroup, gracePeriod: gracePeriod)
+Sources/GrantivaCore/Runner/ChildProcess.swift:313:    /// process group and blocks reading a pipe whose only write end grantiva
+Sources/GrantivaCore/Runner/ChildProcess.swift:341:    /// Ties the child's process group to this process: when this process
+Sources/GrantivaCore/Runner/ChildProcess.swift:344:    /// has been waited for (tests close it early to simulate this process
+Sources/GrantivaCore/Runner/ChildProcess.swift:363:                arguments: ["-c", Self.watchdogScript, "grantiva-watchdog", String(processGroup), sessionDirectory ?? "", String(graceTicks)],
+Sources/GrantivaCore/Runner/ChildProcess.swift:365:                processGroup: processGroup, logged: false
+Sources/GrantivaCore/Runner/SimulatorLease.swift:10:/// process to stop. The claim is written when the lease is taken and cleared
+Sources/GrantivaCore/Runner/SimulatorLease.swift:44:    /// True when the process that wrote the claim is gone.
+Sources/GrantivaCore/Runner/SimulatorLease.swift:49:    /// True while the claim's process or its runner is still running.
+Sources/GrantivaCore/Runner/SimulatorLease.swift:65:/// A cross-process lease that prevents two Grantiva runner invocations from
+Sources/GrantivaCore/Runner/SimulatorLease.swift:68:/// The embedded runner owns WDA for the lifetime of a test process. Starting a
+Sources/GrantivaCore/Runner/SimulatorLease.swift:105:    /// Whether XCTest is loaded in this process. The grantiva binary never
+Sources/GrantivaCore/Runner/SimulatorLease.swift:140:        // `release()` unlinks the file. A process that opened it just before
+Sources/GrantivaCore/Runner/SimulatorLease.swift:156:        // the lock alive past this process. Foundation's `Process` and
+Sources/GrantivaCore/Runner/SimulatorLease.swift:157:        // `ChildProcess` both spawn with POSIX_SPAWN_CLOEXEC_DEFAULT already,
+Sources/GrantivaCore/Runner/SimulatorLease.swift:188:        // process it leaves behind (see `handOff(to:)`), and that process holds
+Sources/GrantivaCore/Runner/SimulatorLease.swift:224:    /// process and the exact command that frees it, because the situation this
+Sources/GrantivaCore/Runner/SimulatorLease.swift:271:    /// Records the runner subprocess in the claim so a later `teardown --force`
+Sources/GrantivaCore/Runner/SimulatorLease.swift:290:    /// Transfers ownership to a process that outlives this one. `runner start`
+Sources/GrantivaCore/Runner/SimulatorLease.swift:328:    /// so it is safe to call while another process holds it.
+Sources/GrantivaCore/Runner/SimulatorLease.swift:372:    /// file, or the file carries a claim whose process or runner is alive
+Sources/GrantivaCore/Runner/SimulatorLease.swift:385:    /// inherited by a spawned child and keep the lock alive past this process.
+Sources/GrantivaCore/Runner/SimulatorLease.swift:401:        // outlives its run. A process that opened the file before the unlink
+Sources/GrantivaCore/Runner/RunnerManager.swift:59:        let environment = ProcessInfo.processInfo.environment
+Sources/GrantivaCore/Runner/RunnerManager.swift:117:            let process = Process()
+Sources/GrantivaCore/Runner/RunnerManager.swift:118:            process.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
+Sources/GrantivaCore/Runner/RunnerManager.swift:119:            process.arguments = ["-xzf", tarball.path, "-C", destination]
+Sources/GrantivaCore/Runner/RunnerManager.swift:120:            try process.run()
+Sources/GrantivaCore/Runner/RunnerManager.swift:121:            process.waitUntilExit()
+Sources/GrantivaCore/Runner/RunnerManager.swift:122:            guard process.terminationStatus == 0 else {
+Sources/GrantivaCore/Runner/RunnerManager.swift:123:                throw GrantivaError.commandFailed("Failed to extract \(tarball.lastPathComponent)", process.terminationStatus)
+Sources/GrantivaCore/Runner/RunnerManager.swift:169:    /// process, for commands that use the current install without reading
+Sources/GrantivaCore/Runner/RunnerManager.swift:198:        let process = Process()
+Sources/GrantivaCore/Runner/RunnerManager.swift:199:        process.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
+Sources/GrantivaCore/Runner/RunnerManager.swift:200:        process.arguments = ["-xzf", tarball.path, "-C", scratch, "./grantiva-runner"]
+Sources/GrantivaCore/Runner/RunnerManager.swift:201:        process.standardError = FileHandle.nullDevice
+Sources/GrantivaCore/Runner/RunnerManager.swift:202:        guard (try? process.run()) != nil else { return nil }
+Sources/GrantivaCore/Runner/RunnerManager.swift:203:        process.waitUntilExit()
+Sources/GrantivaCore/Runner/RunnerManager.swift:205:        guard process.terminationStatus == 0, fm.fileExists(atPath: binary),
+Sources/GrantivaCore/Runner/RunnerManager.swift:215:    static let baseDir: String = resolveBaseDir(environment: ProcessInfo.processInfo.environment)
+Sources/GrantivaCore/Runner/RunnerManager.swift:321:                    isInUse: { runnerProcessExists(installDir: installDir(baseDir: baseDir, stamp: $0)) }
+Sources/GrantivaCore/Runner/RunnerManager.swift:509:        let process = Process()
+Sources/GrantivaCore/Runner/RunnerManager.swift:510:        process.executableURL = URL(fileURLWithPath: path)
+Sources/GrantivaCore/Runner/RunnerManager.swift:511:        process.arguments = ["--version"]
+Sources/GrantivaCore/Runner/RunnerManager.swift:513:        process.standardOutput = pipe
+Sources/GrantivaCore/Runner/RunnerManager.swift:514:        process.standardError = FileHandle.nullDevice
+Sources/GrantivaCore/Runner/RunnerManager.swift:515:        process.standardInput = FileHandle.nullDevice
+Sources/GrantivaCore/Runner/RunnerManager.swift:517:        process.terminationHandler = { _ in exited.signal() }
+Sources/GrantivaCore/Runner/RunnerManager.swift:519:            try process.run()
+Sources/GrantivaCore/Runner/RunnerManager.swift:526:            process.terminate()
+Sources/GrantivaCore/Runner/RunnerManager.swift:530:        guard process.terminationStatus == 0 else {
+Sources/GrantivaCore/Runner/RunnerManager.swift:531:            return .failure(.init(reason: "it exited with status \(process.terminationStatus)"))
+Sources/GrantivaCore/Runner/RunnerManager.swift:554:    /// that no running process uses. Installs with neither file, and staging
+Sources/GrantivaCore/Runner/RunnerManager.swift:592:    /// Whether any process runs `<installDir>/grantiva-runner`. Errs on the
+Sources/GrantivaCore/Runner/RunnerManager.swift:594:    static func runnerProcessExists(installDir: String) -> Bool {
+Sources/GrantivaCore/Runner/RunnerManager.swift:595:        let process = Process()
+Sources/GrantivaCore/Runner/RunnerManager.swift:596:        process.executableURL = URL(fileURLWithPath: "/usr/bin/pgrep")
+Sources/GrantivaCore/Runner/RunnerManager.swift:597:        process.arguments = ["-f", NSRegularExpression.escapedPattern(for: "\(installDir)/grantiva-runner")]
+Sources/GrantivaCore/Runner/RunnerManager.swift:598:        process.standardOutput = FileHandle.nullDevice
+Sources/GrantivaCore/Runner/RunnerManager.swift:599:        process.standardError = FileHandle.nullDevice
+Sources/GrantivaCore/Runner/RunnerManager.swift:600:        do { try process.run() } catch { return true }
+Sources/GrantivaCore/Runner/RunnerManager.swift:601:        process.waitUntilExit()
+Sources/GrantivaCore/Runner/RunnerManager.swift:602:        return process.terminationStatus != 1
+Sources/GrantivaCore/Runner/RunnerSession.swift:4:/// runner subprocess via its timeout task. Lets the error message distinguish
+Sources/GrantivaCore/Runner/RunnerSession.swift:89:        // subprocess exits. Refuse overlapping ownership on the same UDID so a
+Sources/GrantivaCore/Runner/RunnerSession.swift:689:    /// Extra environment for the runner process, supplied by the platform.
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:36:        let process = Process()
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:37:        process.executableURL = URL(fileURLWithPath: "/usr/bin/xcrun")
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:38:        process.arguments = ["simctl", "list", "devices", "-j"]
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:40:        process.standardOutput = pipe
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:41:        process.standardError = FileHandle.nullDevice
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:42:        process.standardInput = FileHandle.nullDevice
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:43:        do { try process.run() } catch { return nil }
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:45:        process.waitUntilExit()
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:46:        guard process.terminationStatus == 0,
+Sources/GrantivaCore/Runner/SubprocessLog.swift:4:/// The `--verbose` lines for subprocesses Grantiva keeps running: the runner,
+Sources/GrantivaCore/Runner/SubprocessLog.swift:9:public enum SubprocessLog {
+Sources/GrantivaCore/Runner/SubprocessLog.swift:17:    /// `signal` is the signal that ended the process, if one did.
+Sources/GrantivaCore/Runner/SubprocessLog.swift:27:    /// Runs `process` and logs its start.
+Sources/GrantivaCore/Runner/SubprocessLog.swift:28:    public static func run(_ process: Process) throws {
+Sources/GrantivaCore/Runner/SubprocessLog.swift:29:        try process.run()
+Sources/GrantivaCore/Runner/SubprocessLog.swift:30:        emit("$ \(commandLine(of: process))")
+Sources/GrantivaCore/Runner/SubprocessLog.swift:33:    /// Logs how `process` ended. Call once it has exited.
+Sources/GrantivaCore/Runner/SubprocessLog.swift:34:    public static func ended(_ process: Process) {
+Sources/GrantivaCore/Runner/SubprocessLog.swift:35:        let signal = process.terminationReason == .uncaughtSignal ? process.terminationStatus : nil
+Sources/GrantivaCore/Runner/SubprocessLog.swift:37:            executable: process.executableURL?.path ?? "", arguments: process.arguments ?? [],
+Sources/GrantivaCore/Runner/SubprocessLog.swift:38:            status: process.terminationStatus, signal: signal
+Sources/GrantivaCore/Runner/SubprocessLog.swift:42:    public static func commandLine(of process: Process) -> String {
+Sources/GrantivaCore/Runner/SubprocessLog.swift:43:        commandLine(executable: process.executableURL?.path ?? "", arguments: process.arguments ?? [])
+Sources/GrantivaCore/Runner/SubprocessLog.swift:48:        environment: [String: String] = ProcessInfo.processInfo.environment

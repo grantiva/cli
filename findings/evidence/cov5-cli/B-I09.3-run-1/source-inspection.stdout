@@ -1,0 +1,25 @@
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:263:        try Data(legacy.utf8).write(to: directory.appendingPathComponent("701.owner.json"))
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:264:        let owner = try XCTUnwrap(KeepAliveSessionStore.loadOwner(path: directory.appendingPathComponent("701.owner.json").path))
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:282:        let json = try String(contentsOf: directory.appendingPathComponent("\(getpid()).owner.json"), encoding: .utf8)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:289:        try encoder.encode(owner).write(to: directory.appendingPathComponent("\(owner.runnerPid).owner.json"))
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:116:        let path = directory.appendingPathComponent("100.owner.json").path
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:157:        try Data(legacy.utf8).write(to: directory.appendingPathComponent("100.owner.json"))
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:205:        let path = directory.appendingPathComponent("100.owner.json").path
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:218:        XCTAssertEqual(Set(removed), [runnerFile, directory.appendingPathComponent("100.owner.json").path])
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:226:        try encoder.encode(owner).write(to: directory.appendingPathComponent("\(owner.runnerPid).owner.json"))
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:586:        try encoder.encode(owner).write(to: sessionsDirectory.appendingPathComponent("4267.owner.json"))
+Tests/GrantivaCoreTests/ChildProcessTests.swift:176:        let mine = ["\(child.pid)-1.grantiva", "\(child.pid).owner.json"]
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:125:    func testActiveSessionlessRecordWithDeadOwnerIsPruned() {
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:163:    func testActiveSessionlessRecordWithLiveOwnerIsKept() {
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:173:    func testActiveNamedSessionRecordOutlivesItsOwnerProcess() {
+Tests/GrantivaCLITests/DumpHierarchyCommandTests.swift:40:            sessionId: "", port: 0, pid: 1, udid: simulator, path: "/tmp/1.owner.json", platform: .ios, isPublished: false
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:274:        XCTAssertEqual(left, ["999-1791583257475743000.grantiva", "999.owner.json"])
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:408:        try encoder.encode(owner).write(to: directory.appendingPathComponent("701.owner.json"))
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:98:        XCTAssertTrue(atFlowEnd.contains(".owner.json"), atFlowEnd)
+Tests/GrantivaMCPTests/MCPServerTests.swift:137:        try Data(legacy.utf8).write(to: sessions.appendingPathComponent("4242.owner.json"))
+Tests/GrantivaMCPTests/MCPServerTests.swift:281:        try Data(legacy.utf8).write(to: sessions.appendingPathComponent("4242.owner.json"))
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:161:    static let ownerExtension = "owner.json"
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:262:    /// no longer running: their `<pid>.owner.json` sidecar and the runner's own
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:202:    /// Marks the reservation active. `bootedByGrantiva` records that this
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:433:            guard !device.isBooted, !active.contains(record.udid) else { continue }
+Sources/GrantivaCore/Runner/ChildProcess.swift:336:    if [ -n "$2" ]; then rm -f "$2/$1".owner.json "$2/$1".stop.json "$2/$1"-*.grantiva; fi

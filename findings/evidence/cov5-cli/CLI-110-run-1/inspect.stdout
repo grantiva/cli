@@ -1,0 +1,113 @@
+grantiva runner start       Start the runner with WDA (UIAutomator2 on Android) and keep it alive for interactive use
+grantiva runner stop        Stop the running runner session
+grantiva runner dump-hierarchy  Dump the view hierarchy from a running app for agent inspection
+grantiva mcp                Start the Grantiva MCP server for AI agent integration (tool list: docs/mcp.md)
+grantiva init               Generate grantiva.yml (iOS) or grantiva-android.yml (Android) in the current directory
+OVERVIEW: Extract or update the embedded runner binary.
+
+A no-op when the installed runner is already this version: it prints "Runner
+already installed at <path>", and --json reports "extracted": false.
+
+USAGE: grantiva runner install [--json] [--verbose] [--quiet]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --version               Show the version.
+  -h, --help              Show help information.
+
+OVERVIEW: Start the runner with WDA (UIAutomator2 on Android) and keep it alive
+for interactive use.
+
+Without --detach the command stays in the foreground, streams the runner's
+output to stderr and holds the session until Ctrl-C (or `grantiva runner stop`
+from another shell); it then stops the runner, removes the session files and
+releases the device. Interrupted, it exits 130; ended by `grantiva runner stop`
+or by a simulator or emulator teardown, it exits 0. With --detach it returns
+once the driver is up and the runner keeps the session until `grantiva runner
+stop`.
+
+--json prints one document: {"status": "started" | "already_running", "pid":
+<number>, "port": <number> (null for a session still starting), "platform":
+"ios" | "android", plus "bundleId" and "udid" on iOS or "applicationId" and
+"serial" on Android, and "log" with --detach}. "bundle_id" (and "udid" on
+Android) are kept for compatibility and are deprecated.
+
+USAGE: grantiva runner start [--json] [--verbose] [--quiet] [--platform <platform>] [--bundle-id <bundle-id>] [--simulator <simulator>] [--application-id <application-id>] [--emulator <emulator>] [--device <device>] [--headless] [--detach]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --platform <platform>   Target platform: ios or android. Defaults to
+                          whichever of grantiva.yml / grantiva-android.yml
+                          exists, else the project files in this directory.
+                          GRANTIVA_PLATFORM also sets it. (values: ios, android)
+  --bundle-id <bundle-id> App bundle identifier (iOS; reads from grantiva.yml
+                          if omitted)
+  --simulator <simulator> Simulator name or UDID (iOS; reads from grantiva.yml
+                          if omitted)
+  --application-id <application-id>
+                          Application ID (Android; reads from
+                          grantiva-android.yml if omitted)
+  --emulator <emulator>   AVD name to use, booting it if needed (Android)
+  --device <device>       adb serial of an attached emulator or device (Android)
+  --headless              Boot an emulator without a window (Android)
+  --detach                Detach the runner process from this terminal. Prints
+                          the log file path on start.
+  --version               Show the version.
+  -h, --help              Show help information.
+
+OVERVIEW: Manage the embedded UI automation runner.
+
+USAGE: grantiva runner <subcommand>
+
+OPTIONS:
+  --version               Show the version.
+  -h, --help              Show help information.
+
+SUBCOMMANDS:
+  install                 Extract or update the embedded runner binary.
+  version                 Show the embedded runner version.
+  start                   Start the runner with WDA (UIAutomator2 on Android)
+                          and keep it alive for interactive use.
+  stop                    Stop the running runner session.
+  dump-hierarchy          Dump the view hierarchy from a running app for agent
+                          inspection.
+
+  See 'grantiva help runner <subcommand>' for detailed help.
+OVERVIEW: Stop the running runner session.
+
+Stops the session `grantiva runner start` recorded in .grantiva/session.json:
+the runner gets SIGINT, then SIGTERM and SIGKILL if it does not exit, and its
+session files and device lease are removed. Helpers the runner started for the
+device that outlive it (on iOS, the `simctl diagnose` WebDriverAgent's
+xcodebuild starts when it is interrupted) are stopped too and listed (`reaped`
+in --json); on Android the runner's port forwards and UIAutomator2 server are
+cleared. Without one, it releases a `grantiva run --keep-alive` session started
+from this directory (every one, if there are several) the way Ctrl-C would, by
+sending that grantiva process SIGINT, and waits for it to exit. A run whose
+flows had already finished keeps the ready file it wrote (`passed` or
+`failed`): the ready file is written once, and the `stopped` result here is the
+record of the release. Sessions started from other directories are left alone.
+With no session at all it prints "No active session found." and exits 0.
+
+USAGE: grantiva runner stop [--json] [--verbose] [--quiet]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --version               Show the version.
+  -h, --help              Show help information.
+

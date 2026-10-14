@@ -1,0 +1,20 @@
+README.md:17:### From source
+README.md:23:cp -R .build/release/grantiva .build/release/grantiva_GrantivaCore.bundle /usr/local/bin/
+README.md:26:Copy `grantiva_GrantivaCore.bundle` together with the binary and keep the two side by side: the bundle carries the
+README.md:28:`grantiva` executable. A binary copied on its own fails with `The grantiva_GrantivaCore.bundle resource bundle was not
+README.md:196:| `GRANTIVA_RUNNER_HOME` | Runner directory, default `~/.grantiva/runner`. It holds simulator `locks/`, the WebDriverAgent build `cache/`, and one runner install per version under `versions/<stamp>/`; a home other than the default also holds its own `simulator-capacity/` (see Simulators Grantiva created). When an install is needed (no install of this version yet), grantiva first checks the `grantiva_GrantivaCore.bundle` beside the binary: a bundle from another release fails the install, names the bundle and either both runner versions or the tarball it lacks, leaves any existing install untouched, and leaves no empty `versions/<stamp>/` directory. An existing install of the current version is used as it is, without reading the bundle; `grantiva runner install` then warns when the bundle does not carry that runner, and every command that uses the runner warns (once) when no bundle is beside the binary at all, since the next fresh install would fail. A relative path is resolved against the current directory, and the home is always printed in its resolved form (`/private/tmp/…`, not `/tmp/…`), whether or not it exists yet. |
+.github/workflows/release.yml:59:          BUNDLE="$BIN_DIR/grantiva_GrantivaCore.bundle"
+.github/workflows/release.yml:63:          tar -czf "grantiva-${{ github.ref_name }}-macos.tar.gz" -C "$BIN_DIR" grantiva grantiva_GrantivaCore.bundle
+.github/workflows/release.yml:95:              libexec.install "grantiva", "grantiva_GrantivaCore.bundle"
+docs/superpowers/plans/v2-swift-native-runner.md:21:- The embedded 24 MB Go blob (and the Homebrew-formula hack to install a `libexec/grantiva_GrantivaCore.bundle` alongside it).
+Tests/GrantivaCLITests/DocsContractTests.swift:167:        XCTAssertTrue(readme.contains("cp -R .build/release/grantiva .build/release/grantiva_GrantivaCore.bundle /usr/local/bin/"))
+docs/superpowers/plans/2026-10-08-android-support-3-hierarchy-mcp-emulator.md:4074:cp -R "$WORK/arm64/drivers/android" "$WORK/drivers/drivers/android"
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:114:            XCTAssertTrue(error.localizedDescription.contains("grantiva_GrantivaCore.bundle"), error.localizedDescription)
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:167:        let bundleURL = besideExecutable.appendingPathComponent("grantiva_GrantivaCore.bundle")
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:326:            verify: verifier(expected: "1.1.28-grantiva.8", bundlePath: "/opt/grantiva/grantiva_GrantivaCore.bundle")
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:335:            XCTAssertTrue(message.contains("/opt/grantiva/grantiva_GrantivaCore.bundle"), message)
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:525:    /// A `grantiva_GrantivaCore.bundle` holding `files` (name -> tarball of
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:530:        let resources = root.appendingPathComponent("grantiva_GrantivaCore.bundle/Contents/Resources")
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:543:        return try XCTUnwrap(Bundle(url: root.appendingPathComponent("grantiva_GrantivaCore.bundle")))
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:604:        XCTAssertTrue(warning.contains("grantiva_GrantivaCore.bundle"), warning)
+Sources/GrantivaCore/Runner/RunnerManager.swift:73:    /// The first `<candidate>/grantiva_GrantivaCore.bundle` that exists, the

@@ -1,0 +1,134 @@
+Sources/GrantivaCLI/RecordCommand.swift:73:    /// already rejected malformed input by the time `run()` reads this.
+Sources/GrantivaCLI/RecordCommand.swift:136:        timing: MP4LastFrameHold.Timing, requestedSeconds: Double, stretchedByRecorder: Bool = false,
+Sources/GrantivaCLI/RecordCommand.swift:155:        _ outcome: MP4LastFrameHold.Outcome, requestedSeconds: Double, platform: Platform = .android
+Sources/GrantivaCLI/RecordCommand.swift:157:        let timing: MP4LastFrameHold.Timing
+Sources/GrantivaCLI/RecordCommand.swift:242:        let outcome = try MP4LastFrameHold.holdFile(
+Sources/GrantivaCLI/SimulatorCommand.swift:136:        /// malformed values by the time these are read.
+Tests/GrantivaCLITests/AuthCommandTests.swift:20:    func testMalformedBaseURLThrowsInvalidArgument() {
+Tests/GrantivaCLITests/PlatformOptionTests.swift:14:    func testLoadConfigIsLoudOnMalformedFile() throws {
+Tests/GrantivaCLITests/RecordCommandTests.swift:176:    func testMalformedFramesAtIsAUsageErrorAtParseTime() {
+Tests/GrantivaCLITests/RecordCommandTests.swift:275:        let timing = try MP4LastFrameHold.timing(of: Data(contentsOf: video)).get()
+Tests/GrantivaCLITests/RecordCommandTests.swift:281:        let timing = MP4LastFrameHold.Timing(frameCount: 1, lastFrameSeconds: 0, recordedSeconds: 0.067)
+Tests/GrantivaCLITests/RecordCommandTests.swift:304:        let timing = MP4LastFrameHold.Timing(frameCount: 2, lastFrameSeconds: 0.050, recordedSeconds: 0.100)
+Tests/GrantivaCLITests/RecordCommandTests.swift:327:        let timing = MP4LastFrameHold.Timing(frameCount: 2, lastFrameSeconds: 0.033, recordedSeconds: 4.02)
+Tests/GrantivaCLITests/RecordCommandTests.swift:402:        guard case .unreadable = try MP4LastFrameHold.holdFile(atPath: probe.path, toSeconds: 2) else {
+Tests/GrantivaCLITests/RecordCommandTests.swift:422:        let timing = MP4LastFrameHold.Timing(frameCount: 2, lastFrameSeconds: 0.033, recordedSeconds: 4.02)
+Tests/GrantivaCLITests/RecordCommandTests.swift:431:        let timing = MP4LastFrameHold.Timing(frameCount: 1, lastFrameSeconds: 0, recordedSeconds: 0)
+Tests/GrantivaCLITests/RecordCommandTests.swift:432:        XCTAssertEqual(MP4LastFrameHold.Outcome.held(timing).timing, timing)
+Tests/GrantivaCLITests/RecordCommandTests.swift:433:        XCTAssertEqual(MP4LastFrameHold.Outcome.unchanged(timing).timing, timing)
+Tests/GrantivaCLITests/RecordCommandTests.swift:434:        XCTAssertNil(MP4LastFrameHold.Outcome.unreadable("x").timing)
+Tests/GrantivaCLITests/RecordCommandTests.swift:435:        XCTAssertNil(MP4LastFrameHold.Outcome.outOfRange(.infinity).timing)
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:164:    func testTeardownRejectsAMalformedUDID() {
+Sources/GrantivaCLI/Options.swift:178:    /// nil config; a malformed one throws. An explicit choice (`--platform` or
+Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:8:/// MP4LastFrameHold against real files: the screenrecord fixture, corrupt
+Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:11:final class MP4LastFrameHoldFixtureTests: XCTestCase {
+Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:28:            XCTAssertNil(MP4LastFrameHold.hold(Data(truncated), toSeconds: 2), "length \(length)")
+Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:31:            XCTAssertTrue(try Self.isUnreadable(MP4LastFrameHold.holdFile(atPath: path, toSeconds: 2)), "length \(length)")
+Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:43:        XCTAssertNil(MP4LastFrameHold.hold(corrupt, toSeconds: 2))
+Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:46:        XCTAssertTrue(try Self.isUnreadable(MP4LastFrameHold.holdFile(atPath: path, toSeconds: 2)))
+Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:60:                _ = MP4LastFrameHold.hold(Data(bytes), toSeconds: 2)
+Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:75:        guard case .held(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 2) else {
+Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:102:        guard case .trimmed(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 0.75) else {
+Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:134:        func timing(_ lastFrame: Double) -> MP4LastFrameHold.Timing {
+Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:146:    private static func isUnreadable(_ outcome: MP4LastFrameHold.Outcome) -> Bool {
+Tests/GrantivaCLITests/RunCommandTests.swift:213:    func testMalformedEnvironmentPairIsRejectedWithAClearError() throws {
+Sources/GrantivaMCP/ValidatingTransport.swift:9:    /// Malformed input nobody may answer: a message without an id, or a
+Sources/GrantivaMCP/ValidatingTransport.swift:12:    /// Malformed input the transport answers itself.
+Sources/GrantivaMCP/ValidatingTransport.swift:14:    /// A batch with some malformed members: the server gets the valid ones
+Sources/GrantivaMCP/ValidatingTransport.swift:15:    /// (`forward`), the transport answers the malformed ones (`reply`).
+Sources/GrantivaMCP/ValidatingTransport.swift:21:    /// member); a malformed message without an id, and any response, is not
+Sources/GrantivaMCP/ValidatingTransport.swift:108:/// `JSONRPCScreen`), so a malformed line never gets a reply the client
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:7:final class MP4LastFrameHoldTests: XCTestCase {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:10:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 2)?.data)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:23:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 2)?.data)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:34:        XCTAssertNil(MP4LastFrameHold.hold(file.data, toSeconds: 2))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:35:        XCTAssertNil(MP4LastFrameHold.hold(file.data, toSeconds: 1.5))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:40:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 2))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:54:        XCTAssertEqual(try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 2)).recordedSeconds, 0.1, accuracy: 0.0001)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:57:    /// Review fix: a header box too short to hold its duration is malformed,
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:63:                XCTAssertNil(MP4LastFrameHold.hold(file.data, toSeconds: 2), "\(box) v\(version1 ? 1 : 0)")
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:73:        let timing = try MP4LastFrameHold.timing(of: file.data).get()
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:77:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 2))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:84:        let timing = try MP4LastFrameHold.timing(of: file.data).get()
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:98:        guard case .trimmed(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 2) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:115:        guard case .trimmed(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 4) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:133:        guard case .unchanged = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 4) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:145:        guard case .unchanged(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 4) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:161:        guard case .held(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 3) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:176:        let reread = try MP4LastFrameHold.timing(of: held).get()
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:179:        guard case .unchanged = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 3) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:194:        guard case .trimmed(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 3, dropFramesPastEnd: true) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:207:        guard case .unchanged = try MP4LastFrameHold.holdFile(atPath: kept.path, toSeconds: 3) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:221:        XCTAssertEqual(try MP4LastFrameHold.timing(of: file.data).get().lastFrameSeconds, 38.0 / 600, accuracy: 0.0001)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:224:        guard case .unchanged = try MP4LastFrameHold.holdFile(atPath: kept.path, toSeconds: 35.0 / 600) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:231:        guard case .trimmed = try MP4LastFrameHold.holdFile(atPath: cut.path, toSeconds: 35.0 / 600, dropFramesPastEnd: true) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:248:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 3))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:258:    // MARK: - L25: a malformed extra track does not stop the hold
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:260:    func testAnExtraTrackWithoutMdiaIsSkippedInEitherOrder() throws {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:262:            for kind in [MP4Fixture.ExtraTrak.Kind.noMdia, .mdiaWithoutHdlr] {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:269:                guard case .held(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 4) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:281:    func testAFileWithOnlyAnMdiaLessTrackHasNoVideoTrack() {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:282:        let file = MP4Fixture(stts: [(1, 0)], mdhdDuration: 0, movieDuration: 0, extraTrak: .init(position: .after, kind: .noMdia), omitVideo: true)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:283:        XCTAssertEqual(MP4LastFrameHold.timing(of: file.data), .failure(.init("the movie has no video track")))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:293:        guard case .held(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 2) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:305:        guard case .unreadable(let reason) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 2) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:308:        XCTAssertEqual(reason, "the file's box sizes are malformed")
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:311:        XCTAssertEqual(MP4LastFrameHold.timing(of: ftypOnly), .failure(.init("the file has no moov box (not an MP4, or not finalized)")))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:312:        XCTAssertThrowsError(try MP4LastFrameHold.timing(of: Data()).get())
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:314:        switch MP4LastFrameHold.timing(of: truncated.data) {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:326:        XCTAssertEqual(try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: .infinity), .outOfRange(.infinity))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:327:        XCTAssertEqual(try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 0), .outOfRange(0))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:337:            XCTAssertEqual(try MP4LastFrameHold.holdFile(atPath: path.path, toSeconds: 2), .unreadable(reason), box)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:348:        XCTAssertNil(MP4LastFrameHold.hold(Data(), toSeconds: 2))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:349:        XCTAssertNil(MP4LastFrameHold.hold(Data("not a movie".utf8), toSeconds: 2))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:353:/// ftyp, moov(mvhd, trak(tkhd, edts(elst), mdia(mdhd, hdlr vide, minf(stbl(stts, stco))))), mdat.
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:365:        enum Kind { case noMdia, mdiaWithoutHdlr }
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:387:            case .noMdia: return box("trak", tkhd)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:388:            case .mdiaWithoutHdlr:
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:389:                return box("trak", tkhd + box("mdia", full("mdhd", time(0) + time(0) + be(1_000) + time(1_234) + be(0))))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:397:            let hdlr = box("hdlr", [0, 0, 0, 0] + be(0) + Array("vide".utf8) + [UInt8](repeating: 0, count: 13))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:408:            let trak = omitVideo ? [] : box("trak", tkhd + box("edts", elst) + box("mdia", mdhd + hdlr + box("minf", stbl)))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:458:                case "moov", "trak", "edts", "mdia", "minf", "stbl": walk(b, p, o + size)
+Tests/GrantivaCoreTests/UIAutomator2HierarchyParserTests.swift:70:    func testMalformedXMLThrows() {
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:5:    func testConfiguredAPIBaseURLRejectsMalformedValues() {
+Tests/GrantivaCLITests/ConsoleCommandTests.swift:283:    func testParseWhenRejectsMalformedSpec() {
+Tests/GrantivaCoreTests/AuthStoreSecurityTests.swift:23:    func testFileStoreTreatsMalformedJSONAsMissingCredentials() throws {
+Tests/GrantivaCoreTests/AuthStoreSecurityTests.swift:24:        let root = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-auth-malformed-\(UUID().uuidString)")
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:72:    func testMalformedYAMLIsReportedWithTheParserMessage() throws {
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:406:    // MARK: - L42-b: a malformed step is a plain config error
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:408:    func testAMalformedStepIsAPlainConfigErrorWithItsLine() throws {
+Tests/GrantivaCoreTests/WDAClientTests.swift:20:    func testHierarchyParserThrowsForMalformedXML() {
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:145:    func testMalformedCacheIsIgnored() throws {
+Tests/GrantivaMCPTests/MCPTransportTests.swift:9:/// K101: malformed input never gets a reply with an invented id. A message
+Tests/GrantivaMCPTests/MCPTransportTests.swift:11:/// `"id": null`; a malformed request that carries an id gets -32600 echoing it.
+Tests/GrantivaMCPTests/MCPTransportTests.swift:40:    /// The repro's four lines plus a malformed request with an id, through a
+Tests/GrantivaMCPTests/MCPTransportTests.swift:83:        XCTAssertNotNil(byID["3"]?["result"], "valid traffic still works after malformed lines")
+Tests/GrantivaMCPTests/MCPTransportTests.swift:363:    /// A response is never answered, even a malformed one with an id.
+Tests/GrantivaMCPTests/MCPTransportTests.swift:364:    func testAMalformedResponseIsDroppedNotAnswered() {
+Tests/GrantivaMCPTests/ToolSchemaTests.swift:8:/// A malformed input schema is silently accepted by the server but makes the tool
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:23:public enum MP4LastFrameHold {
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:126:    /// out of range, or the file is malformed. Never traps on bad input.
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:199:            return .failure(Unreadable("the file's box sizes are malformed"))
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:224:        // A track without mdia/hdlr is not provably video: skipped, as the
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:226:        guard let mdia = trak.child("mdia"),
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:227:              mdia.child("hdlr").map({ $0.handlerType() == "vide" }) == true else { return .failure(notVideo) }
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:228:        guard let mdhd = mdia.child("mdhd"), let scale = mdhd.timescale(), scale > 0, mdhd.duration() != nil else {
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:231:        guard let stts = mdia.child("minf")?.child("stbl")?.child("stts"), let entries = stts.sttsEntries(), !entries.isEmpty else {
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:247:        if let ctts = mdia.child("minf")?.child("stbl")?.child("ctts"),
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:287:    /// is not provably video (no mdia or hdlr, L25), already exactly long
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:295:        guard var mdia = trak.child("mdia"),
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:296:              mdia.child("hdlr").map({ $0.handlerType() == "vide" }) == true else { return .success(.none) }
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:297:        guard var mdhd = mdia.child("mdhd"), let mediaScale = mdhd.timescale(), mediaScale > 0, mdhd.duration() != nil else {
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:303:        guard var minf = mdia.child("minf"), var stbl = minf.child("stbl"), var stts = stbl.child("stts"),
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:323:            minf.replaceChild(stbl); mdia.replaceChild(minf)
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:324:            mdhd.setDuration(mediaTarget); mdia.replaceChild(mdhd)
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:325:            trak.replaceChild(mdia)
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:385:    private static let containers: Set<String> = ["moov", "trak", "mdia", "minf", "stbl", "edts"]
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:513:                guard value <= UInt64(Int64.max) else { throw Malformed() }
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:515:                guard !overflow, shifted >= 0 else { throw Malformed() }
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:519:                    guard shifted <= Int64(UInt32.max) else { throw Malformed() }
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:526:    private struct Malformed: Error {}
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:536:                guard offset + 16 <= end else { throw Malformed() }
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:542:            guard declared >= UInt64(header), declared <= UInt64(end - offset) else { throw Malformed() }
+Sources/GrantivaCore/Auth/AuthStore.swift:10:/// Parses a configured API origin without allowing malformed credentials to
+Tests/GrantivaMCPTests/MCPServerTests.swift:52:    func testSessionRejectsMalformedUDIDBeforeToolsConsumeIt() throws {

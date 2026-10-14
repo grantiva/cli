@@ -1,0 +1,54 @@
+grantiva runner start       Start the runner with WDA (UIAutomator2 on Android) and keep it alive for interactive use
+grantiva runner stop        Stop the running runner session
+grantiva runner dump-hierarchy  Dump the view hierarchy from a running app for agent inspection
+grantiva mcp                Start the Grantiva MCP server for AI agent integration (tool list: docs/mcp.md)
+grantiva init               Generate grantiva.yml (iOS) or grantiva-android.yml (Android) in the current directory
+| Flag | Description |
+|------|-------------|
+| `--udid` | Target a specific simulator's (UDID) or emulator's (adb serial) session, resolved through grantiva's `<pid>.owner.json` sidecar (defaults to the newest live keep-alive session). |
+| `--format` | `xml` (default) or `json`. |
+| `--json` | Same as `--format json`. Combining it with `--format xml` is a usage error. |
+| `--timeout` | Seconds to wait for GrantivaAgent's page-source response (default 60). |
+
+## Alternative: `grantiva runner dump-hierarchy`
+
+OVERVIEW: Dump the UI hierarchy of a booted simulator or emulator without
+relaunching the app.
+
+Finds the session published by `grantiva run --keep-alive` (in
+/tmp/grantiva-sessions, with the simulator UDID or adb serial recorded by
+grantiva) and reads the current page source: from GrantivaAgent on iOS, from
+the UIAutomator2 server on Android. The target app is never touched — no
+launch, no stopApp, no clearState.
+
+Typical agent workflow:
+
+    # Terminal 1 (or backgrounded in CI):
+    grantiva run --keep-alive --flow flows/onboarding.yaml
+
+    # Terminal 2:
+    grantiva hierarchy > state.xml
+
+If no keep-alive session is running, this command fails with a clear message
+rather than trying to start one (which would relaunch the app and destroy the
+state you wanted to inspect).
+
+USAGE: grantiva hierarchy [--json] [--verbose] [--quiet] [--udid <udid>] [--timeout <timeout>] [--format <format>]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --udid <udid>           Simulator UDID or adb serial to target (default:
+                          newest keep-alive session)
+  --timeout <timeout>     Seconds to wait for GrantivaAgent's (iOS) or
+                          UIAutomator2's (Android) page-source response.
+                          Default: 60. (default: 60.0)
+  --format <format>       Output format: xml (default) or json. --json is the
+                          same as --format json. (values: xml, json)
+  --version               Show the version.
+  -h, --help              Show help information.
+

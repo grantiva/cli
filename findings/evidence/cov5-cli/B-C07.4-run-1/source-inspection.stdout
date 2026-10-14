@@ -1,0 +1,77 @@
+Sources/GrantivaCLI/DriverCommand.swift:216:        - waitForAnimationToEnd:
+Sources/GrantivaCLI/DriverCommand.swift:279:    /// The session flow's `waitForAnimationToEnd` was meant to hold the runner
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:139:            flowName: "f", commandIndex: 1, action: "extendedWaitUntil: visible text=\"X\"",
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:230:            ✓ waitForAnimationToEnd (700ms)
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:91:            XCTAssertEqual($0.localizedDescription, "Invalid argument: f.yaml:1: unsupported Maestro command 'swipe'")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:97:    func testExtendedWaitUntilKeepsItsTimeout() throws {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:99:        - extendedWaitUntil:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:102:        - extendedWaitUntil:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:105:        - extendedWaitUntil:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:119:    func testBareWaitForAnimationToEndIsASettleStep() throws {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:121:        - waitForAnimationToEnd
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:129:    func testWaitForAnimationToEndGeneratesASettleNotASleep() {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:133:        XCTAssertTrue(yaml.contains("- waitForAnimationToEnd:\n    timeout: 3000\n"), yaml)
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:145:            XCTAssertEqual($0.localizedDescription, "Invalid argument: grantiva.yml:5: unsupported Maestro command 'back'")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:174:        - extendedWaitUntil:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:296:        - waitForAnimationToEnd
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:297:        - extendedWaitUntil:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:311:        // screenshot (A04); the source's own waitForAnimationToEnd replaces
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:320:        - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:322:        - extendedWaitUntil:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:325:        - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:331:        - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:335:        - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:339:        - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:49:        XCTAssertEqual(steps.map(\.action), ["launchApp", "tapOn: text=\"Favorites\"", "waitForAnimationToEnd", "takeScreenshot"])
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:83:                       "crash-flow: extendedWaitUntil: visible text=\"This never appears\": app crashed after launch")
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:150:         {"index":1,"yaml":"waitForAnimationToEnd","status":"passed","duration":100},
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:154:         {"index":4,"yaml":"waitForAnimationToEnd","status":"skipped"},
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:156:         {"index":6,"yaml":"waitForAnimationToEnd","status":"skipped"},
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:279:     {"index":2,"type":"waitForAnimationToEnd","yaml":"waitForAnimationToEnd","status":"passed","duration":601},
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:293:     {"id":"cmd-001","index":1,"type":"extendedWaitUntil","yaml":"extendedWaitUntil: visible text=\\"This never appears\\"","status":"running"}]}
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:56:    private let settle = "- waitForAnimationToEnd:\n    timeout: 5000"
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:58:    // C09: `wait: N` sleeps N seconds; waitForAnimationToEnd is only an upper bound.
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:104:            - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:108:            - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:112:            - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:115:            - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:120:            - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:126:            - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:172:        XCTAssertFalse(ios.contains("extendedWaitUntil"), ios)
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:194:        XCTAssertEqual(yaml.components(separatedBy: "waitForAnimationToEnd").count - 1, 2, yaml)
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:216:        XCTAssertTrue(yaml.hasSuffix("- tapOn: \"Go\"\n- waitForAnimationToEnd:\n    timeout: 2000\n- takeScreenshot: \"S\"\n"), yaml)
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:477:    func testParseWaitForAnimationToEnd() throws {
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:479:        - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:493:    func testParseExtendedWaitUntil() throws {
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:495:        - extendedWaitUntil:
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:537:            XCTAssertEqual(error.localizedDescription, "Invalid argument: checkout.yaml:2: unsupported Maestro command 'setPermissions'")
+Tests/GrantivaCoreTests/FlowStagingTests.swift:134:    // MARK: - K109: extendedWaitUntil keeps its timeout; scrollUntilVisible scrolls
+Tests/GrantivaCoreTests/FlowStagingTests.swift:136:    func testExtendedWaitUntilKeepsItsTimeoutAndSelector() throws {
+Tests/GrantivaCoreTests/FlowStagingTests.swift:140:        - extendedWaitUntil:
+Tests/GrantivaCoreTests/FlowStagingTests.swift:143:        - extendedWaitUntil:
+Tests/GrantivaCoreTests/FlowStagingTests.swift:147:        - extendedWaitUntil:
+Tests/GrantivaCoreTests/FlowStagingTests.swift:164:        - extendedWaitUntil:
+Tests/GrantivaCoreTests/FlowStagingTests.swift:169:        - extendedWaitUntil:
+Tests/GrantivaCoreTests/FlowStagingTests.swift:208:    - waitForAnimationToEnd
+Tests/GrantivaCoreTests/FlowStagingTests.swift:212:    - extendedWaitUntil:
+Sources/GrantivaCore/Config/GrantivaConfig.swift:53:            /// Maestro `waitForAnimationToEnd`: wait until the screen is still,
+Sources/GrantivaCore/Config/GrantivaConfig.swift:56:            /// Maestro `extendedWaitUntil: {visible|notVisible, timeout}`: the
+Sources/GrantivaCore/Config/GrantivaConfig.swift:58:            /// Maestro parser; emitted as `extendedWaitUntil`.
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:321:            case "waitForAnimationToEnd": return .step(.init(settle: defaultSettleSeconds))
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:431:        if dict.keys.contains("waitForAnimationToEnd") {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:432:            let timeout = (dict["waitForAnimationToEnd"] as? [String: Any])?["timeout"]
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:439:        if let val = dict["extendedWaitUntil"] as? [String: Any] {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:451:            // Older Grantiva form: `extendedWaitUntil: {text: X}`.
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:457:            return .unsupported("extendedWaitUntil")
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:493:    /// Upper bound for `waitForAnimationToEnd` without a `timeout:`.
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:540:        return .invalidArgument("\(location): unsupported Maestro command '\(command)'")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:107:                        if lines.suffix(2).first == "- waitForAnimationToEnd:" { lines.removeLast(2) }
+Sources/GrantivaCore/Runner/FlowGenerator.swift:108:                        lines.append("- waitForAnimationToEnd:")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:220:        "- extendedWaitUntil:",
+Sources/GrantivaCore/Runner/FlowGenerator.swift:231:    /// before each screenshot. `waitForAnimationToEnd` returns as soon as two
+Sources/GrantivaCore/Runner/FlowGenerator.swift:239:    /// Maestro `waitForAnimationToEnd`) is skipped.
+Sources/GrantivaCore/Runner/FlowGenerator.swift:241:        if lines.suffix(2).first == "- waitForAnimationToEnd:" { return }
+Sources/GrantivaCore/Runner/FlowGenerator.swift:242:        lines.append(contentsOf: ["- waitForAnimationToEnd:", "    timeout: \(settleTimeoutMs)"])
+Sources/GrantivaCore/Runner/FlowGenerator.swift:262:    /// Maestro `extendedWaitUntil` kept as written, so its `timeout` is the
+Sources/GrantivaCore/Runner/FlowGenerator.swift:267:        lines.append("- extendedWaitUntil:")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:300:    /// command, and `waitForAnimationToEnd` is only an upper bound: it returns

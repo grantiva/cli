@@ -1,0 +1,18 @@
+Tests/GrantivaCoreTests/ScreenArtifactTests.swift:8:final class ScreenArtifactTests: XCTestCase {
+Tests/GrantivaCoreTests/ScreenArtifactTests.swift:10:        XCTAssertEqual(ScreenArtifact.fileName(for: "Deep Links"), "Deep Links.png")
+Tests/GrantivaCoreTests/ScreenArtifactTests.swift:27:        XCTAssertEqual(ScreenArtifact.legacyFileName(for: "Deep Links"), "Deep%20Links.png")
+Tests/GrantivaCoreTests/ScreenArtifactTests.swift:28:        XCTAssertEqual(ScreenArtifact.screenName(from: "Deep%20Links.png"), "Deep Links")
+Tests/GrantivaCoreTests/ScreenArtifactTests.swift:35:        let legacy = root.appendingPathComponent("Deep%20Links.png")
+Tests/GrantivaCoreTests/ScreenArtifactTests.swift:43:        XCTAssertEqual(ScreenArtifact.existingFileName(for: "Deep Links", in: root.path), "Deep%20Links.png")
+Tests/GrantivaCoreTests/ScreenArtifactTests.swift:47:        XCTAssertEqual(URL(fileURLWithPath: saved).lastPathComponent, "Deep Links.png")
+Tests/GrantivaCoreTests/ScreenArtifactTests.swift:73:        try Data("old".utf8).write(to: root.appendingPathComponent("Deep%20Links.png"))
+Tests/GrantivaCoreTests/ScreenArtifactTests.swift:74:        try Data("new".utf8).write(to: root.appendingPathComponent("Deep Links.png"))
+Tests/GrantivaCoreTests/ScreenArtifactTests.swift:89:        let legacy = root.appendingPathComponent("Deep%20Links.png")
+Tests/GrantivaCoreTests/ScreenArtifactTests.swift:101:        try Data("old".utf8).write(to: root.appendingPathComponent("Deep%20Links.png"))
+Tests/GrantivaCoreTests/ScreenArtifactTests.swift:102:        try Data("new".utf8).write(to: root.appendingPathComponent("Deep Links.png"))
+Tests/GrantivaCLITests/DiffCommandTests.swift:40:        XCTAssertEqual(try DiffCommand.captureArtifacts(from: ["Deep%20Links.png"]), [
+Tests/GrantivaCLITests/DiffCommandTests.swift:41:            .init(fileName: "Deep%20Links.png", screenName: "Deep Links"),
+Tests/GrantivaCLITests/DiffCommandTests.swift:43:        XCTAssertEqual(try DiffCommand.captureArtifacts(from: ["Deep%20Links.png", "Deep Links.png"]), [
+Tests/GrantivaCLITests/DiffCommandTests.swift:44:            .init(fileName: "Deep Links.png", screenName: "Deep Links"),
+Sources/GrantivaCLI/DiffCommand.swift:573:    /// Files named the 2.0.1-and-earlier way (`Deep%20Links.png`) are accepted; when
+Sources/GrantivaCore/Diff/BaselineStore.swift:7:    /// unambiguous. "Deep Links" is `Deep Links.png`.

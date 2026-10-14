@@ -1,0 +1,280 @@
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:14:/// `simulator ensure/teardown/cleanup`, `runner start/stop/install`, `auth
+Tests/GrantivaCLITests/AndroidCommandTests.swift:78:        XCTAssertTrue(fake.calls.contains("cleanupOrphans"), "\(fake.calls)")
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:147:        let orphan = "101     1   100 \(xcodebuild)"
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:163:                table.value = orphan
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:114:        let cleanup = Once {
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:119:        DispatchQueue.global().async { cleanup.run(); firstReturned.signal() }
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:123:            cleanup.run()
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:132:        cleanup.run()
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:343:        XCTAssertEqual(events.value, ["snapshot", "remove", "terminate", "files 1234", "orphans 8430", "owner", "release"])
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:359:        XCTAssertEqual(events.value, ["snapshot", "remove", "terminate", "files 1234", "orphans -", "owner", "release"])
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:372:        XCTAssertFalse(events.value.contains(where: { $0.hasPrefix("orphans") }), "\(events.value)")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:688:                cleanup: { cleaned.set(cleaned.value + 1) }
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:709:                cleanup: { cleaned.set(cleaned.value + 1) }
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:718:        XCTAssertEqual(cleaned.value, 1, "cleanup must run once")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:744:                    cleanup: { owned.release() }
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:749:            XCTAssertEqual(releases.value, 0, "the live session must retain its forward")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:755:            XCTAssertEqual(releases.value, 1, "foreground cleanup must release the attachment exactly once")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:756:            XCTAssertEqual(unrelatedReleases.value, 0, "foreground cleanup must not release an attachment it does not own")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:788:                       "the signal cleanup must wait for the rejected attachment's detach")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:817:                       "the signal cleanup must not return while owned detach is running")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:844:        XCTAssertTrue(help.contains("Driver port: WDA on iOS, the forwarded UIAutomator2 port on Android"), help)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1034:    // MARK: - L38-b: a new runner never adopts an orphaned UIAutomator2 server
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1054:        XCTAssertEqual(detached.value, 3, "each rejected attachment's forward is removed")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1072:        XCTAssertFalse(android.calls.contains("cleanupOrphans"), "\(android.calls)")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1163:            cleanupOrphans: { _, port in events.append("orphans \(port.map(String.init) ?? "-")") },
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1222:        let forwarder = RunnerOutputForwarder(narrate: { narrated.append($0) })
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1224:        forwarder.attachOutput(pipe.fileHandleForReading)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1231:        for await chunk in forwarder.chunks { received.append(chunk) }
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:83:    func cleanupOrphans(deviceID: String) async { record("cleanupOrphans") }
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:399:        XCTAssertEqual(EmulatorCommand.Teardown.cleanupLines(outcome), [
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:407:        XCTAssertEqual(EmulatorCommand.Teardown.cleanupLines(outcome), [
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:426:            cleanupOrphans: { _ in },
+Tests/GrantivaCLITests/RecordCommandTests.swift:84:            // Expected: cleanup must not replace the cancellation error.
+Sources/GrantivaCLI/DriverCommand.swift:247:            // (or the interrupt cleanup) releases it.
+Sources/GrantivaCLI/DriverCommand.swift:300:    /// The successful attachment is returned un-detached: its forward is the
+Sources/GrantivaCLI/DriverCommand.swift:419:    /// The local end of the forward to the runner's UIAutomator2 session. The
+Sources/GrantivaCLI/DriverCommand.swift:420:    /// forward is left in place: it is the port the session records.
+Sources/GrantivaCLI/DriverCommand.swift:436:    /// forward is removed again.
+Sources/GrantivaCLI/DriverCommand.swift:445:    /// session owner instead of reducing it to an unowned port.
+Sources/GrantivaCLI/DriverCommand.swift:661:    /// cleanup and exits 130), `runner stop` from another shell, or the runner
+Sources/GrantivaCLI/DriverCommand.swift:688:        let cleanup = Once {
+Sources/GrantivaCLI/DriverCommand.swift:696:        let startupInterrupt = SignalRelay.shared.onTermination { cleanup.run() }
+Sources/GrantivaCLI/DriverCommand.swift:713:            cleanup.run()
+Sources/GrantivaCLI/DriverCommand.swift:719:            // The port comes from the forward, not the output.
+Sources/GrantivaCLI/DriverCommand.swift:728:                cleanup.run()
+Sources/GrantivaCLI/DriverCommand.swift:736:                cleanup.run()
+Sources/GrantivaCLI/DriverCommand.swift:749:                cleanup.run()
+Sources/GrantivaCLI/DriverCommand.swift:765:                cleanup.run()
+Sources/GrantivaCLI/DriverCommand.swift:779:                cleanup.run()
+Sources/GrantivaCLI/DriverCommand.swift:805:                cleanup.run()
+Sources/GrantivaCLI/DriverCommand.swift:845:                // Read before the cleanup removes the session file and marker.
+Sources/GrantivaCLI/DriverCommand.swift:851:            cleanup: { cleanup.run() }
+Sources/GrantivaCLI/DriverCommand.swift:854:            // Ctrl-C: the relay is reaping and exits 130 once its cleanups
+Sources/GrantivaCLI/DriverCommand.swift:863:    /// Holds until `waitForExit` returns, running `cleanup` exactly once:
+Sources/GrantivaCLI/DriverCommand.swift:870:        cleanup: @escaping @Sendable () -> Void
+Sources/GrantivaCLI/DriverCommand.swift:872:        let once = Once(cleanup)
+Sources/GrantivaCLI/DriverCommand.swift:1060:        forwards and UIAutomator2 server are cleared. Without one, it releases a \
+Sources/GrantivaCLI/DriverCommand.swift:1160:        // The runner's own teardown clears its forwards and the UIA2 server
+Sources/GrantivaCLI/DriverCommand.swift:1163:            await dependencies.cleanupOrphans(
+Sources/GrantivaCLI/DriverCommand.swift:1253:    var cleanupOrphans: @Sendable (String, Int?) async -> Void
+Sources/GrantivaCLI/DriverCommand.swift:1259:    /// Live keep-alive sessions, orphans included, published or still in
+Sources/GrantivaCLI/DriverCommand.swift:1275:        cleanupOrphans: { serial, ownedForwardPort in
+Sources/GrantivaCLI/DriverCommand.swift:1277:            await platform.cleanupOrphans(deviceID: serial)
+Sources/GrantivaCLI/DriverCommand.swift:1290:    /// What `runner stop` may release: every session in `store`, orphans
+Sources/GrantivaCLI/DriverCommand.swift:1308:    @Option(name: .shortAndLong, help: "Driver port: WDA on iOS, the forwarded UIAutomator2 port on Android (auto-detected from the active session if omitted)")
+Sources/GrantivaCLI/DriverCommand.swift:1347:    /// A keep-alive port of 0 (Android) becomes nil: the platform forwards one.
+Sources/GrantivaCore/Platform/IOSPlatform.swift:181:    public func cleanupOrphans(deviceID: String) async {}
+Sources/GrantivaCLI/SimulatorCommand.swift:365:            let removed = try await SimulatorManager.live.cleanup()
+Sources/GrantivaCLI/SimulatorCommand.swift:369:                Output.line("No orphaned Grantiva-created simulators to delete.")
+Sources/GrantivaCLI/DiffCommand.swift:64:            defer { resolvedBinary?.cleanup() }
+Sources/GrantivaCLI/DiffCommand.swift:337:                defer { resolvedBinary?.cleanup() }
+Sources/GrantivaCore/Android/AndroidPlatform.swift:274:    public func cleanupOrphans(deviceID: String) async {
+Sources/GrantivaCore/Android/AndroidPlatform.swift:280:    /// Removes a forward whose local port was recorded by the session being
+Sources/GrantivaCore/Android/AndroidPlatform.swift:299:        let forwarded: Bool
+Sources/GrantivaCore/Android/AndroidPlatform.swift:303:            forwarded = false
+Sources/GrantivaCore/Android/AndroidPlatform.swift:305:            // No recorded port, or its forward is gone (an adb restart drops
+Sources/GrantivaCore/Android/AndroidPlatform.swift:306:            // every forward): make a fresh one.
+Sources/GrantivaCore/Android/AndroidPlatform.swift:308:            forwarded = true
+Sources/GrantivaCore/Android/AndroidPlatform.swift:314:            if forwarded { _ = try? await adb.removeForward(serial: deviceID, localPort: endpoint.localPort) }
+Sources/GrantivaCore/Android/AndroidPlatform.swift:322:            detach: { if forwarded { _ = try? await adb.removeForward(serial: deviceID, localPort: endpoint.localPort) } }
+Sources/GrantivaCLI/HierarchyCommand.swift:80:        // is neither a device to forward to nor a port to read from.
+Sources/GrantivaCLI/HierarchyCommand.swift:151:    /// is needed: the platform forwards a port and finds the held session.
+Sources/GrantivaCore/Android/EmulatorManager.swift:610:    /// Stops the UIAutomator2 server, drops this serial's forwards, flushes
+Sources/GrantivaCLI/CICommand.swift:226:            defer { resolvedBinary?.cleanup() }
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:89:/// This ledger persists that provenance so teardown and cleanup can safely
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:222:        // A killed run never ran its cleanup: remove the temp dirs its claim
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:7:/// On iOS the runner forwards `launchApp: environment:` to the app as process
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:338:    /// Removes `udid`'s runner homes for `delete` and `cleanup`, whose output
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:423:    public func cleanup() async throws -> [CreatedSimulatorRecord] {
+Sources/GrantivaMCP/RunnerConnection.swift:20:    /// one attach instead of each attaching (and leaking an adb forward).
+Sources/GrantivaMCP/RunnerConnection.swift:48:    /// Android, the port forwarded on attach).
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:64:            // so cancellation of the operation cannot prevent cleanup from waiting.
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:305:    /// gone is an orphan: its runner normally follows within seconds (see
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:308:    /// orphans up).
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:354:    /// is an orphan, not a start in progress, and is left out unless
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:356:    /// orphans up).
+Sources/GrantivaMCP/ValidatingTransport.swift:8:    case forward
+Sources/GrantivaMCP/ValidatingTransport.swift:15:    /// (`forward`), the transport answers the malformed ones (`reply`).
+Sources/GrantivaMCP/ValidatingTransport.swift:16:    case split(forward: Data, reply: Data?)
+Sources/GrantivaMCP/ValidatingTransport.swift:31:            case .valid: return .forward
+Sources/GrantivaMCP/ValidatingTransport.swift:48:        if valid.count == batch.count { return .forward }
+Sources/GrantivaMCP/ValidatingTransport.swift:50:        return .split(forward: encode(valid), reply: errors.isEmpty ? nil : encode(errors))
+Sources/GrantivaMCP/ValidatingTransport.swift:193:    /// Notes `data`, then forwards it; a cancel for an unanswered request is
+Sources/GrantivaMCP/ValidatingTransport.swift:194:    /// forwarded again on `cancelRetries` while that request is unanswered.
+Sources/GrantivaMCP/ValidatingTransport.swift:195:    private func forward(_ data: Data, to continuation: AsyncThrowingStream<Data, Swift.Error>.Continuation) {
+Sources/GrantivaMCP/ValidatingTransport.swift:225:                        case .forward: self.forward(data, to: continuation)
+Sources/GrantivaMCP/ValidatingTransport.swift:229:                            self.forward(valid, to: continuation)
+Sources/GrantivaCore/Build/AppBinaryResolver.swift:134:    public func cleanup() {
+Sources/GrantivaCore/Runner/RunnerExecution.swift:6:/// process-group, signal-forwarding and readiness behaviour that a `--keep-alive`
+Sources/GrantivaCore/Runner/RunnerExecution.swift:28:    /// descendant that outlives the runner (an orphaned xcodebuild) can hold
+Sources/GrantivaCore/Runner/RunnerExecution.swift:95:        // If grantiva dies without running its cleanups (`kill -9`), the
+Sources/GrantivaCore/Runner/RunnerExecution.swift:126:        let cleanupToken = SignalRelay.shared.onTermination {
+Sources/GrantivaCore/Runner/RunnerExecution.swift:137:            SignalRelay.shared.removeCleanup(cleanupToken)
+Sources/GrantivaCore/Runner/LogStreamer.swift:14:    /// forwarded at all (for example the log tool's own banners).
+Sources/GrantivaCore/Runner/LogStreamer.swift:78:/// Line-atomic: the underlying subprocess writes whole lines and we forward
+Sources/GrantivaCore/Runner/LogStreamer.swift:92:    private var cleanupSucceeded = true
+Sources/GrantivaCore/Runner/LogStreamer.swift:191:            // confirmation, cleanup is explicitly incomplete.
+Sources/GrantivaCore/Runner/LogStreamer.swift:221:        // Started after the relay snapshotted its cleanups, a stream would
+Sources/GrantivaCore/Runner/LogStreamer.swift:252:        let forward: @Sendable (FileHandle, PrefixedLineDecoder) -> Void = { [output] handle, decoder in
+Sources/GrantivaCore/Runner/LogStreamer.swift:264:        forward(outPipe.fileHandleForReading, outDecoder)
+Sources/GrantivaCore/Runner/LogStreamer.swift:265:        forward(errPipe.fileHandleForReading, errDecoder)
+Sources/GrantivaCore/Runner/LogStreamer.swift:290:        cleanupSucceeded = true
+Sources/GrantivaCore/Runner/LogStreamer.swift:291:        // Ctrl-C reaches SignalRelay, which runs its cleanups and calls exit,
+Sources/GrantivaCore/Runner/LogStreamer.swift:303:        guard !stopped else { return cleanupSucceeded }
+Sources/GrantivaCore/Runner/LogStreamer.swift:327:                FileHandle.standardError.write(Data("Warning: log wrapper pid \(p.processIdentifier) did not stop before the cleanup deadline.\n".utf8))
+Sources/GrantivaCore/Runner/LogStreamer.swift:332:            FileHandle.standardError.write(Data("Warning: could not confirm log-stream cleanup for \(children.deviceID) (\(children.marker)).\n".utf8))
+Sources/GrantivaCore/Runner/LogStreamer.swift:344:        cleanupSucceeded = complete
+Sources/GrantivaCore/Runner/LogStreamer.swift:354:    /// The inventory gets only the cleanup budget that remains. Its pipe is
+Sources/GrantivaCore/Runner/LogStreamer.swift:424:    /// dropped instead of being forwarded as `[log]` lines.
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:17:/// A forwarded local port and the session the runner holds on the device.
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:32:/// CLI forwards a local port to it and reuses the runner's session.
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:37:    /// failure the forward is removed again so nothing leaks.
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:41:        let port = try await adb.forward(serial: serial, devicePort: devicePort)
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:50:    /// For a port forwarded earlier (`runner start` records it).
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:10:/// - A `runner start --detach` session, or an orphan whose grantiva process is
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:12:///   its session files, forwards (Android) and lease are cleaned up here.
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:66:    public var cleanupOrphans: @Sendable (String) async -> Void
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:67:    public var cleanupOwnedForward: @Sendable (String, Int) async -> Void
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:88:        cleanupOrphans: @escaping @Sendable (String) async -> Void,
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:89:        cleanupOwnedForward: @escaping @Sendable (String, Int) async -> Void = { _, _ in },
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:104:        self.cleanupOrphans = cleanupOrphans
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:105:        self.cleanupOwnedForward = cleanupOwnedForward
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:123:            cleanupOrphans: { serial in
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:125:                await platform.cleanupOrphans(deviceID: serial)
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:127:            cleanupOwnedForward: { serial, localPort in
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:191:            ownedForwardPort: session.port > 0 ? session.port : nil, deadline: deadline
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:231:            await cleanupOrphans(udid)
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:233:                await cleanupOwnedForward(udid, ownedForwardPort)
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:240:    /// Every session on `udid`, orphans included and whether or not its
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:199:        let removed = try await manager.cleanup()
+Sources/GrantivaCore/Android/ADB.swift:189:    /// `adb forward tcp:0 tcp:<devicePort>` prints the local port it chose.
+Sources/GrantivaCore/Android/ADB.swift:190:    public func forward(serial: String, devicePort: Int) async throws -> Int {
+Sources/GrantivaCore/Android/ADB.swift:191:        let output = try await execute(line(serial, "forward tcp:0 tcp:\(devicePort)"))
+Sources/GrantivaCore/Android/ADB.swift:193:            throw GrantivaError.commandFailed("Could not forward a local port to \(serial):\(devicePort): \(output)", 1)
+Sources/GrantivaCore/Android/ADB.swift:199:        _ = try await execute(line(serial, "forward --remove tcp:\(localPort)"))
+Sources/GrantivaCore/Android/ADB.swift:202:    /// Local tcp ports forwarded for `serial`, from `adb forward --list`.
+Sources/GrantivaCore/Android/ADB.swift:203:    public func forwards(serial: String) async throws -> [Int] {
+Sources/GrantivaCore/Android/ADB.swift:204:        Self.parseForwards(try await execute(line(serial, "forward --list")), serial: serial)
+Sources/GrantivaCore/Android/ADB.swift:218:        for port in try await forwards(serial: serial) {
+Sources/GrantivaCore/Runner/RunnerSession.swift:152:        // Defers fire in reverse order — trace must export before cleanup wipes
+Sources/GrantivaCore/Runner/RunnerSession.swift:153:        // the report dir, so declare cleanup first, then the export.
+Sources/GrantivaCore/Runner/RunnerSession.swift:203:                await platform.cleanupOrphans(deviceID: id)
+Sources/GrantivaCore/Runner/RunnerSession.swift:505:        // Defers fire in reverse order — trace must export before cleanup wipes
+Sources/GrantivaCore/Runner/RunnerSession.swift:506:        // the report dir, so declare cleanup first, then the export.
+Sources/GrantivaCore/Runner/RunnerSession.swift:552:                await platform.cleanupOrphans(deviceID: id)
+Sources/GrantivaCore/Runner/RunnerSession.swift:664:    /// A synchronous cleanup for SignalRelay: the relay runs cleanups on its own
+Sources/GrantivaCore/Runner/RunnerSession.swift:672:                await platform.cleanupOrphans(deviceID: deviceID)
+Sources/GrantivaCLI/RunCommand.swift:48:    @Option(name: .long, help: "Write the runner's report.json + assets to this directory (workspace-relative). Survives grantiva's cleanup so CI can upload it. Default: ephemeral tmp dir.")
+Sources/GrantivaCLI/RunCommand.swift:323:    /// True after an interrupt: the relay exits 130 once its cleanups run.
+Sources/GrantivaCLI/RunCommand.swift:339:    /// error while SignalRelay is still running its cleanups (lease, capture
+Sources/GrantivaCLI/RunCommand.swift:343:        // Bounded: a hung cleanup must not wedge the process forever.
+Sources/GrantivaCLI/RunCommand.swift:371:        defer { resolvedBinary?.cleanup() }
+Sources/GrantivaCLI/RunCommand.swift:425:        // failure; on Ctrl-C the streamer's own SignalRelay cleanup stops it,
+Sources/GrantivaCore/Runner/SignalRelay.swift:6:/// runs the registered cleanups before exiting.
+Sources/GrantivaCore/Runner/SignalRelay.swift:25:/// signal context, so cleanups can do real work. Installation is idempotent and
+Sources/GrantivaCore/Runner/SignalRelay.swift:35:    private var cleanups: [(id: UInt64, body: @Sendable () -> Void)] = []
+Sources/GrantivaCore/Runner/SignalRelay.swift:76:            // suppressed first or the process dies before cleanups can run.
+Sources/GrantivaCore/Runner/SignalRelay.swift:116:        cleanups.append((id: id, body: body))
+Sources/GrantivaCore/Runner/SignalRelay.swift:123:        cleanups.removeAll { $0.id == id }
+Sources/GrantivaCore/Runner/SignalRelay.swift:135:    /// Test seam: runs the registered cleanups without exiting the process.
+Sources/GrantivaCore/Runner/SignalRelay.swift:137:        for cleanup in snapshotCleanups() { cleanup() }
+Sources/GrantivaCore/Runner/SignalRelay.swift:143:        return cleanups.map(\.body)
+Sources/GrantivaCore/Runner/SignalRelay.swift:147:    /// mark terminating, reap tracked groups, run cleanups — without exiting.
+Sources/GrantivaCore/Runner/SignalRelay.swift:168:    /// interrupt: it is forwarded to the runner, nothing else runs, and the
+Sources/GrantivaCore/Runner/SignalRelay.swift:240:        // A signal arriving while cleanups run exits at once. In practice only
+Sources/GrantivaCore/Runner/SignalRelay.swift:244:        // guarantee against a hung cleanup. A release of an armed hold
+Sources/GrantivaCore/Runner/SignalRelay.swift:263:        let pendingCleanups = cleanups.map(\.body)
+Sources/GrantivaCore/Runner/SignalRelay.swift:273:        for cleanup in pendingCleanups { cleanup() }
+Sources/GrantivaCLI/BuildCommand.swift:124:        defer { resolvedBinary?.cleanup() }
+Sources/GrantivaMCP/Tools/ContextTool.swift:86:            // port is forwarded when the tools attach. A session from an
+Sources/GrantivaMCP/Tools/ContextTool.swift:88:            let port = session.wdaPort > 0 ? "\(session.wdaPort)" : driverPort.map(String.init) ?? "(forwarded on attach)"
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:32:        XCTAssertEqual(calls.values, ["restore(emulator-5554)", "cleanupOrphans(emulator-5554)"])
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:229:/// Records the capture-restore calls a termination cleanup makes; every other
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:255:    func cleanupOrphans(deviceID: String) async {
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:256:        calls.append("cleanupOrphans(\(deviceID))")
+Sources/GrantivaCLI/Options.swift:143:/// forwards to `GlobalOptions.note`; made with `init()` in a test, it keeps
+Sources/GrantivaMCP/MCPServer.swift:21:        // Detach on both paths: on Android the attachment owns an adb forward.
+Sources/GrantivaMCP/MCPServer.swift:149:    /// runner does not proxy UIAutomator2); nil tells the platform to forward one.
+Sources/GrantivaCLI/TargetOptions.swift:219:/// Reject explicitly supplied empty targets before device resolution or forwarding.
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:4:/// Runs a cleanup once and waits for it to finish on every calling path.
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:5:/// Bodies must not call back into this same Once; lifecycle cleanups only
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:33:/// foreground session ends. SignalRelay cleanups are synchronous, so release
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:34:/// waits briefly for the attachment's asynchronous platform cleanup.
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:41:    /// Completes startup's ownership handoff. If cleanup already started,
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:42:    /// reject and release the late attachment before waking that cleanup.
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:249:    /// the flow still `running`, and the `interrupted` cleanup was dropped.
+Tests/GrantivaCoreTests/SignalRelayTests.swift:9:        let ran = expectation(description: "cleanup ran")
+Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:73:        result.cleanup()
+Tests/GrantivaCoreTests/ADBTests.swift:108:        let port = try await adb.forward(serial: "emulator-5554", devicePort: 6790)
+Tests/GrantivaCoreTests/ADBTests.swift:110:        XCTAssertEqual(shell.commands, ["'/sdk/platform-tools/adb' -s 'emulator-5554' forward tcp:0 tcp:6790"])
+Tests/GrantivaCoreTests/ADBTests.swift:117:            _ = try await adb.forward(serial: "emulator-5554", devicePort: 6790)
+Tests/GrantivaCoreTests/ADBTests.swift:120:            XCTAssertTrue("\(error)".contains("Could not forward a local port to emulator-5554:6790"), "\(error)")
+Tests/GrantivaCoreTests/ADBTests.swift:139:            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --list",
+Tests/GrantivaCoreTests/ADBTests.swift:140:            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove tcp:61211",
+Tests/GrantivaCoreTests/ADBTests.swift:141:            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove tcp:7000",
+Tests/GrantivaCoreTests/LogStreamerTests.swift:136:            XCTAssertFalse(streamer.stop(), "a second call must not hide an incomplete cleanup")
+Tests/GrantivaCoreTests/LogStreamerTests.swift:138:        XCTAssertEqual(warning, "Warning: could not confirm log-stream cleanup for TEST-DEVICE (grantiva-log-test).\n")
+Tests/GrantivaCoreTests/LogStreamerTests.swift:226:    /// stream, so the streamer must register its own termination cleanup.
+Tests/GrantivaCoreTests/LogStreamerTests.swift:235:        XCTAssertTrue(waitForExit(pid), "the log stream outlived the termination cleanups")
+Tests/GrantivaCoreTests/LogStreamerTests.swift:247:        // cleanup left over from its first session, and a later sweep must not
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:610:    func cleanupOrphans(deviceID: String) async {}
+Tests/GrantivaCoreTests/UIAutomator2ClientTests.swift:37:        XCTAssertEqual(shell.commands, ["'/sdk/platform-tools/adb' -s 'emulator-5554' forward tcp:0 tcp:6790"])
+Tests/GrantivaCoreTests/UIAutomator2ClientTests.swift:52:        XCTAssertEqual(shell.commands.last, "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove tcp:61211")
+Tests/GrantivaMCPTests/MCPTestSupport.swift:173:    func cleanupOrphans(deviceID: String) async { record("cleanupOrphans") }
+Tests/GrantivaCoreTests/RunnerHelperReaperTests.swift:14:    private var orphanedXcodebuild: String { "101     1   100 /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /tmp/wda.xctestrun -destination id=\(udid)" }
+Tests/GrantivaCoreTests/RunnerHelperReaperTests.swift:47:        let interrupted = "\(orphanedXcodebuild)\n\(diagnose(ppid: 101, runPid: 999))"
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:301:    func cleanupOrphans(deviceID: String) async {}
+Sources/GrantivaCLI/EmulatorCommand.swift:119:            abstract: "Kill emulators Grantiva started: one by serial, or all of them. Stops the UIAutomator2 server and removes the serial's adb forwards first.",
+Sources/GrantivaCLI/EmulatorCommand.swift:183:            // runner's own adb cleanup has nothing left to do by then.
+Sources/GrantivaCLI/EmulatorCommand.swift:209:        static func cleanupLines(_ outcome: EmulatorTeardownOutcome) -> [String] {
+Sources/GrantivaCLI/EmulatorCommand.swift:266:                outcomes.flatMap { [Self.render($0)] + Self.cleanupLines($0) }.forEach(Output.line)
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:193:        await platform(shell).cleanupOrphans(deviceID: "emulator-5554")
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:204:            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove tcp:61211",
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:315:            .success("61211"),                       // forward
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:318:            .success(""),                            // forward --remove
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:326:            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward tcp:0 tcp:6790",
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:329:            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove tcp:61211",
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:342:    /// An adb restart drops the forward `runner start` recorded; attach makes
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:346:            .success("61211"),                       // forward
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:356:        XCTAssertEqual(shell.commands.first, "'/sdk/platform-tools/adb' -s 'emulator-5554' forward tcp:0 tcp:6790")
+Tests/GrantivaMCPTests/ContextToolTests.swift:195:        let forwarded = section("Runner Session", in: try await context(platform: .android, session: android))
+Tests/GrantivaMCPTests/ContextToolTests.swift:196:        XCTAssertTrue(forwarded.contains("driver_port: (forwarded on attach)"), forwarded)
+Tests/GrantivaMCPTests/ContextToolTests.swift:197:        XCTAssertTrue(forwarded.contains("application_id: com.kylebrowning.landmarks"), forwarded)
+Tests/GrantivaMCPTests/ContextToolTests.swift:201:        for text in [iosSession, forwarded, attached] {
+Sources/GrantivaCore/Platform/DevicePlatform.swift:70:/// the platform set up to reach it (a port forward on Android, nothing on iOS).
+Sources/GrantivaCore/Platform/DevicePlatform.swift:140:    func cleanupOrphans(deviceID: String) async
+Sources/GrantivaCore/Platform/DevicePlatform.swift:143:    /// means "find it", which on Android forwards a new one.
+Tests/GrantivaMCPTests/MCPServerTests.swift:512:                if n == 1 { throw GrantivaError.commandFailed("adb forward", 1) }
+Tests/GrantivaMCPTests/MCPServerTests.swift:520:            XCTAssertTrue(String(describing: error).contains("adb forward"), "\(error)")
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:771:            .success(""),                                            // forward --list
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:782:            "'/sdk/platform-tools/adb' -s 'emulator-5556' forward --list",
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:793:            .success(""), .success(""), .success(""),                     // force-stop x2, forward --list
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:811:            .success(""), .success(""), .success(""),                     // force-stop x2, forward --list
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:879:            .success(""), .success(""), .success(""),                    // force-stop x2, forward --list
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:909:            .success(""), .success(""), .success(""),                    // force-stop x2, forward --list
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:1149:            .success(""), .success(""), .success(""),                    // force-stop x2, forward --list
+Tests/GrantivaCoreTests/RunnerSessionAppIdTests.swift:130:            func cleanupOrphans(deviceID: String) async {}
+Tests/GrantivaMCPTests/MCPTransportTests.swift:19:        XCTAssertEqual(JSONRPCScreen.screen(Data(#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#.utf8)), .forward)
+Tests/GrantivaMCPTests/MCPTransportTests.swift:20:        XCTAssertEqual(JSONRPCScreen.screen(Data(#"{"jsonrpc":"2.0","id":2,"method":"tools/list"}"#.utf8)), .forward)
+Tests/GrantivaMCPTests/MCPTransportTests.swift:21:        XCTAssertEqual(JSONRPCScreen.screen(Data(#"{"jsonrpc":"2.0","id":"a","result":{}}"#.utf8)), .forward)
+Tests/GrantivaMCPTests/MCPTransportTests.swift:22:        XCTAssertEqual(JSONRPCScreen.screen(Data(#"[{"jsonrpc":"2.0","id":3,"method":"ping"}]"#.utf8)), .forward)
+Tests/GrantivaMCPTests/MCPTransportTests.swift:229:        let requestSeen = expectation(description: "request forwarded")
+Tests/GrantivaMCPTests/MCPTransportTests.swift:230:        let cancelSeen = expectation(description: "cancel forwarded")
+Tests/GrantivaMCPTests/MCPTransportTests.swift:266:        let requestSeen = expectation(description: "request forwarded")
+Tests/GrantivaMCPTests/MCPTransportTests.swift:267:        let cancelSeen = expectation(description: "cancel forwarded")
+Tests/GrantivaMCPTests/MCPTransportTests.swift:295:        // The production retry schedule and cleanup grace expire after two
+Tests/GrantivaMCPTests/MCPTransportTests.swift:350:        guard case .split(let forward, let reply) = JSONRPCScreen.screen(Data(mixed.utf8)) else { return XCTFail("expected a split") }
+Tests/GrantivaMCPTests/MCPTransportTests.swift:351:        let forwarded = try XCTUnwrap(JSONSerialization.jsonObject(with: forward) as? [[String: Any]])
+Tests/GrantivaMCPTests/MCPTransportTests.swift:352:        XCTAssertEqual(forwarded.map { $0["id"] as? Int }, [1])
+Tests/GrantivaMCPTests/MCPTransportTests.swift:359:        XCTAssertEqual(JSONRPCScreen.screen(Data(#"[{"jsonrpc":"2.0","id":1,"method":"ping"}]"#.utf8)), .forward)
+Sources/GrantivaCore/Shell.swift:6:/// speaks JSON-RPC on stdin, and a child such as `adb shell` forwards whatever
+Sources/GrantivaCore/Shell.swift:12:/// starts (cleanup after a cancellation) still runs it to the end.
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:173:        try writeRunnerSession(pid: 100, nanos: 1, port: 8100, sessionId: "orphan")
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:342:    /// An owner whose holder is dead is an orphan: skipped by default,
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:94:        XCTAssertEqual(events.value, ["terminate 701", "files 701", "orphans emulator-5554", "lease emulator-5554"])
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:114:            "terminate 701", "files 701", "orphans emulator-5554", "forward emulator-5554 61211", "lease emulator-5554",
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:236:    /// An orphan whose holder is dead is terminated only while its pid is
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:259:    /// nil, and its orphaned runner is still terminated, matched by process
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:308:            cleanupOrphans: { serial in events.append("orphans \(serial)") },
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:309:            cleanupOwnedForward: { serial, port in events.append("forward \(serial) \(port)") },

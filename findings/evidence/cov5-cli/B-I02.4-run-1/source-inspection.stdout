@@ -1,0 +1,91 @@
+Tests/GrantivaCLITests/AndroidCommandTests.swift:40:        var command = try RunCommand.parse(["--no-build", "--scheme", "Demo"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:54:        var command = try RunCommand.parse(["--no-build"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:69:        var command = try RunCommand.parse(["--no-build", "--application-id", "com.fake", "--logs", "--logs-tag", "Fake", "--timeout", "30"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:314:        var command = try CICommand.CIRunCommand.parse(["--no-build", "--application-id", "com.fake"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:327:        var command = try RunCommand.parse(["--no-build", "--application-id", "com.fake", "--timeout", "30"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:340:    // MARK: - K25 / K32: --no-build, --app-file and the completion line
+Tests/GrantivaCLITests/AndroidCommandTests.swift:346:        var command = try InstallCommand.parse(["--no-launch", "--no-build", "--app-file", apk])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:357:        var command = try RunCommand.parse(["--no-build", "--app-file", apk, "--timeout", "30"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:375:        var command = try DiffCommand.CaptureCommand.parse(["--no-build", "--app-file", apk])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:389:    /// `--no-build` alone installs nothing, so it never says "installed".
+Tests/GrantivaCLITests/AndroidCommandTests.swift:391:        var command = try InstallCommand.parse(["--no-launch", "--no-build", "--application-id", "com.fake.app"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:400:        var command = try InstallCommand.parse(["--no-launch", "--no-build", "--application-id", "com.fake.app", "--json"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:408:    /// K32: with --no-build the app is checked before launching; one that is
+Tests/GrantivaCLITests/AndroidCommandTests.swift:411:        var command = try InstallCommand.parse(["--no-build", "--application-id", "com.fake.app"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:428:        var command = try InstallCommand.parse(["--no-build", "--application-id", "com.fake.app"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:437:    /// AndroidPlatform answers `isInstalled`, so `run --no-build` refuses up
+Tests/GrantivaCLITests/AndroidCommandTests.swift:440:        var command = try RunCommand.parse(["--no-build", "--application-id", "com.fake.app", "--timeout", "30"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:451:            XCTAssertTrue(message.contains("Drop --no-build or run grantiva build install"), message)
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:37:        var command = try RunCommand.parse(["--platform", "ios", "--flow", flow.path, "--no-build", "--bundle-id", "com.example.app"])
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:59:        var command = try RunCommand.parse(["--platform", "ios", "--flow", flow.path, "--no-build", "--bundle-id", "com.example.app", "--simulator", "qa-ios"])
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:94:/// L08's `--no-build` twin: the capture's fallback (the sole booted
+Tests/GrantivaCLITests/BuildCommandTests.swift:11:            "--no-build", "--no-launch", "--json",
+Tests/GrantivaCLITests/BuildCommandTests.swift:29:            var args = ["--platform", "ios", "--bundle-id", "com.fake.binary", "--simulator", "Fake", "--no-build", "--no-launch", "--json"]
+Tests/GrantivaCLITests/BuildCommandTests.swift:69:        XCTAssertThrowsError(try BuildOnlyCommand.parse(["--no-build"]))
+Tests/GrantivaCLITests/TargetOptionsTests.swift:104:        XCTAssertEqual(TargetOptions.androidAppID(flag: nil, binary: nil, configured: free).id, free, "--no-build falls back to config")
+Tests/GrantivaCLITests/RunSessionContractTests.swift:114:            var command = try RunCommand.parse(["--no-build", "--flow", "missing.yaml"])
+Tests/GrantivaCLITests/RunSessionContractTests.swift:170:            "Bundle ID is required to run flows. Project detection runs only when building, and --no-build skips it.\n"
+Tests/GrantivaCLITests/RunSessionContractTests.swift:185:            var command = try RunCommand.parse(["--platform", "android", "--no-build", "--flow", "perm.yaml", "--device", Self.fakeSerial()])
+Tests/GrantivaCLITests/RunSessionContractTests.swift:250:            var arguments = ["--json", "--no-build", "--application-id", "com.fake", "--device", Self.fakeSerial()]
+Tests/GrantivaCLITests/RunCommandTests.swift:287:                "--json", "--no-build", "--application-id", "com.fake", "--timeout", "30", "--report-dir", "rep",
+Tests/GrantivaCLITests/RunCommandTests.swift:323:            var command = try RunCommand.parse(["--quiet", "--no-build", "--application-id", "com.fake", "--timeout", "30"])
+Tests/GrantivaCLITests/RunCommandTests.swift:810:            ["--no-build", "--platform", "android"], platform: .android
+Tests/GrantivaCLITests/RunCommandTests.swift:818:        let error = await runIn(files: [:], ["--no-build"], platform: .ios)
+Tests/GrantivaCLITests/RunCommandTests.swift:827:            ["--no-build", "--platform", "android"], platform: .android
+Tests/GrantivaCLITests/RunCommandTests.swift:835:    /// K52: with no config, `run` (with and without --no-build) and `diff
+Tests/GrantivaCLITests/RunCommandTests.swift:869:        let noBuild = await runError(["--no-build"])
+Tests/GrantivaCLITests/RunCommandTests.swift:899:        var run = try RunCommand.parse(["--no-build"])
+Tests/GrantivaCLITests/RunCommandTests.swift:906:        var capture = try DiffCommand.CaptureCommand.parse(["--no-build"])
+Tests/GrantivaCLITests/RunCommandTests.swift:985:    // MARK: - --no-build with the app missing (I15)
+Tests/GrantivaCLITests/RunCommandTests.swift:1006:        var command = try RunCommand.parse(["--no-build", "--platform", "ios"])
+Tests/GrantivaCLITests/RunCommandTests.swift:1020:                "com.kylebrowning.Landmarks is not installed on qa-ios-1. Drop --no-build or run grantiva build install."
+Tests/GrantivaCLITests/DiffCommandTests.swift:451:    // MARK: - I02: --no-build device resolution
+Tests/GrantivaCLITests/DiffCommandTests.swift:453:    /// Two booted devices and config `simulator: B`: the --no-build path uses B, never the platform default.
+Tests/GrantivaCLITests/DiffCommandTests.swift:454:    func testNoBuildUsesConfiguredSimulatorNotFirstBooted() async throws {
+Tests/GrantivaCLITests/DiffCommandTests.swift:468:            var command = try DiffCommand.CaptureCommand.parse(["--no-build", "--platform", "ios"])
+Tests/GrantivaCLITests/DiffCommandTests.swift:488:            var command = try DiffCommand.CaptureCommand.parse(["--no-build", "--platform", "ios"])
+Tests/GrantivaCLITests/DiffCommandTests.swift:499:    /// I02 end to end through `run()`: config `simulator: B` under --no-build reaches the platform as B.
+Tests/GrantivaCLITests/DiffCommandTests.swift:500:    func testCaptureNoBuildRunUsesTheConfiguredSimulator() async throws {
+Tests/GrantivaCLITests/DiffCommandTests.swift:508:            var command = try DiffCommand.CaptureCommand.parse(["--no-build", "--platform", "ios"])
+Tests/GrantivaCLITests/DiffCommandTests.swift:523:    /// `diff capture --no-build --simulator <held>` captures through the live
+Tests/GrantivaCLITests/DiffCommandTests.swift:533:            var command = try DiffCommand.CaptureCommand.parse(["--no-build", "--platform", "ios", "--simulator", "HELD-UDID"])
+Tests/GrantivaCLITests/DiffCommandTests.swift:561:            var command = try DiffCommand.CaptureCommand.parse(["--no-build", "--platform", "ios"])
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:56:        let configured = try await ResolvedProject.resolve(schemeFlag: "S", bundleIdFlag: "com.x", config: GrantivaConfig(simulator: "x"), loadCache: { nil }, saveCache: { _ in })
+Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift:57:        XCTAssertFalse(configured.simulatorIsDefault)
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:164:    /// The only booted simulator, as the `--no-build` capture's default
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:40:    /// tool's argument) in MCP. `soleBooted` is the `--no-build` capture's
+Sources/GrantivaMCP/Tools/SessionScreenCapture.swift:4:/// `grantiva diff capture --no-build` on a device a live `runner start`
+Sources/GrantivaMCP/Tools/ContextTool.swift:71:            sections.append(await simulatorSection(session: session, configured: config?.simulator, listSimulators: listSimulators))
+Sources/GrantivaMCP/Tools/ContextTool.swift:145:                return "[Simulator]\n  Configured simulator \"\(configured)\" not found. No runner session."
+Sources/GrantivaMCP/Tools/ContextTool.swift:147:            return "[Simulator]\n  Configured simulator \"\(configured)\" is not booted. No runner session."
+Sources/GrantivaMCP/Tools/VRTTools.swift:17:            description: "Capture screenshots for all configured screens. Equivalent to 'grantiva diff capture --no-build --json'. Assumes the app is already running on the device.",
+Sources/GrantivaMCP/Tools/VRTTools.swift:68:        [executable, "diff", "capture", "--no-build", "--json", "--platform", platform.rawValue]
+Sources/GrantivaCore/Platform/DevicePlatform.swift:126:    /// The device a `--no-build` capture targets when none is named by flag,
+Sources/GrantivaCore/Platform/DevicePlatform.swift:148:    /// cannot tell. `run --no-build` checks this before starting the runner.
+Sources/GrantivaCore/GrantivaError.swift:94:    /// with (`run --no-build`, `build install --no-build`, a failed launch);
+Sources/GrantivaCLI/DiffCommand.swift:134:                // --no-build honours flag > config > runner session, and only
+Sources/GrantivaCLI/DiffCommand.swift:233:    // MARK: - --no-build device
+Sources/GrantivaCLI/DiffCommand.swift:235:    /// The device a `--no-build` capture drives: the flag, else the config's
+Sources/GrantivaCLI/DiffCommand.swift:242:        let configured = platform == .ios ? config?.simulator : config?.android?.emulator
+Sources/GrantivaCLI/BuildCommand.swift:138:            options.note("[grantiva] Skipping build and install (--no-build)")
+Sources/GrantivaCLI/BuildCommand.swift:268:    /// `installed` is false when nothing was installed (`--no-build`); not
+Sources/GrantivaCLI/BuildCommand.swift:281:            + "; install it first (drop --no-build, or pass --app-file) or pass --no-launch."
+Sources/GrantivaCLI/BuildCommand.swift:305:    /// by this command, or already there with `--no-build`). `skipped`:
+Sources/GrantivaCLI/BuildCommand.swift:306:    /// `--no-build --no-launch`, nothing done to the app.
+Sources/GrantivaCLI/CICommand.swift:298:                    rlog("Skipping build and install (--no-build)")
+Tests/GrantivaMCPTests/SimToolsTests.swift:47:        let section = await ContextTool.simulatorSection(session: nil, configured: "fix2-10-ios", listSimulators: { [devices] in devices })
+Tests/GrantivaMCPTests/ContextToolTests.swift:40:    /// C06: with two booted simulators and the session on the second,
+Tests/GrantivaMCPTests/ContextToolTests.swift:55:    func testWithoutASessionTheConfiguredBootedSimulatorIsShown() async throws {
+Tests/GrantivaMCPTests/ContextToolTests.swift:67:    func testWithoutASessionAConfiguredSimulatorThatIsNotBootedIsSaidSo() async throws {
+Tests/GrantivaMCPTests/ContextToolTests.swift:73:        XCTAssertTrue(simulator.contains("Configured simulator \"qa-ios-1\" is not booted"), simulator)
+Tests/GrantivaMCPTests/ContextToolTests.swift:77:    /// L17: with neither a session nor a configured simulator there is no
+Tests/GrantivaMCPTests/ContextToolTests.swift:79:    func testWithNeitherSessionNorConfiguredSimulatorThereIsNoDevice() async throws {
+Sources/GrantivaCLI/RunCommand.swift:271:    /// `--no-build` assumes the app is on the device; say so plainly when it
+Sources/GrantivaCLI/RunCommand.swift:274:        GrantivaError.notInstalledRoot(appID: appID, device: device) + ". Drop --no-build or run grantiva build install."
+Sources/GrantivaCLI/RunCommand.swift:451:        // --no-build installs nothing, so the app ID is the resolved one; a
+Sources/GrantivaCLI/RunCommand.swift:466:            log("Skipping build and install (--no-build)")
+Tests/GrantivaMCPTests/VRTToolsTests.swift:33:        XCTAssertEqual(VRTTools.captureCommand(platform: .ios, executable: exe), [exe, "diff", "capture", "--no-build", "--json", "--platform", "ios"])
+Tests/GrantivaMCPTests/VRTToolsTests.swift:127:            "own diff capture --no-build --json --platform ios",
+Sources/GrantivaCLI/TargetOptions.swift:200:            return "Bundle ID is required to run flows. Project detection runs only when building, and --no-build skips it.\n"
+Sources/GrantivaCLI/Options.swift:61:    /// device). An explicit `--app-file` wins over `--no-build`'s "assume it
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:119:    /// The `--no-build` capture's default (the sole booted simulator) follows

@@ -1,0 +1,30 @@
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:73:        XCTAssertFalse(run.stdout.contains("unknown key"), run.stdout)
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:74:        XCTAssertTrue(run.stderr.contains(#"unknown key "schem""#), run.stderr)
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:129:    // C19: unknown keys are reported with their line, and the load still succeeds.
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:130:    func testUnknownKeysYieldDiagnosticsWithLineNumbers() throws {
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:141:            #"grantiva.yml:1: unknown key "schem" (did you mean "scheme"?)"#,
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:142:            #"grantiva.yml:4: unknown key "screen" (did you mean "screens"?)"#,
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:166:            #"grantiva-android.yml:2: unknown key "modul" (did you mean "module"?)"#,
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:167:            #"grantiva-android.yml:6: unknown key "titel""#,
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:168:            #"grantiva-android.yml:9: unknown key "tpa" (did you mean "tap"?)"#,
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:169:            #"grantiva-android.yml:10: unknown key "exakt" (did you mean "exact"?)"#,
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:170:            #"grantiva-android.yml:14: unknown key "tolerance""#,
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:182:                error.localizedDescription.contains(#"grantiva.yml:3: unknown key "pth" (did you mean "path"?)"#),
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:425:            XCTAssertTrue(text.contains("unknown key \"txt\""), "the unknown key is folded in: \(text)")
+Tests/GrantivaCoreTests/DoctorTests.swift:373:        XCTAssertTrue(check.message.contains(#"grantiva.yml:1: unknown key "schem" (did you mean "scheme"?)"#), check.message)
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:270:                    fix: "Fix or remove the unknown keys; they are ignored", section: .project
+Sources/GrantivaCore/Config/GrantivaConfig.swift:21:    /// Non-fatal problems found while loading the file, such as unknown keys.
+Sources/GrantivaCore/Config/GrantivaConfig.swift:384:        // Unknown keys are dropped by the decoder; report them, and fold them
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:56:                lineNumbers: commandLineNumbers(in: content),
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:131:        let lineNumbers = commandLineNumbers(in: content)
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:138:                throw unsupportedCommand(command, sourceName: sourceName, line: lineNumbers[safe: index])
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:190:        lineNumbers: [Int],
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:248:        try walk(commands, source: sourceName, lines: lineNumbers, directory: baseDirectory, stack: rootPath.map { [$0] } ?? [])
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:297:            commands: commands, source: file, lines: commandLineNumbers(in: contents),
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:543:    private static func commandLineNumbers(in content: String) -> [Int] {
+Sources/GrantivaCore/Config/ConfigKeyValidator.swift:12:    /// The unknown keys with their lines, so a decoding error can fold in
+Sources/GrantivaCore/Config/ConfigKeyValidator.swift:48:        /// `<file>:<line>: unknown key "x" (did you mean "y"?)`
+Sources/GrantivaCore/Config/ConfigKeyValidator.swift:50:        /// `unknown key "x" (did you mean "y"?)`
+Sources/GrantivaCore/Config/ConfigKeyValidator.swift:66:            var detail = "unknown key \"\(key)\""
+Sources/GrantivaCore/Config/ConfigKeyValidator.swift:68:                detail += " (did you mean \"\(suggestion)\"?)"
+Sources/GrantivaCore/Config/ConfigDecodingErrorRenderer.swift:6:/// bad step, with that step's unknown keys folded in. No Swift type names,

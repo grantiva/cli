@@ -1,0 +1,58 @@
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:407:        process.standardOutput = out
+Tests/GrantivaCLITests/AndroidCommandTests.swift:140:        let stdout = try await captureStandardOutput { try await command.run() }
+Tests/GrantivaCLITests/AndroidCommandTests.swift:190:    private func captureStandardOutput(_ body: () async throws -> Void) async throws -> String {
+Tests/GrantivaCLITests/AndroidCommandTests.swift:349:        let stdout = try await captureStandardOutput { try await command.run() }
+Tests/GrantivaCLITests/AndroidCommandTests.swift:394:        let stdout = try await captureStandardOutput { try await command.run() }
+Tests/GrantivaCLITests/AndroidCommandTests.swift:403:        let stdout = try await captureStandardOutput { try await command.run() }
+Tests/GrantivaCLITests/AndroidCommandTests.swift:432:        let stdout = try await captureStandardOutput { try await command.run() }
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:43:        process.standardOutput = FileHandle.nullDevice
+Sources/GrantivaCLI/RecordCommand.swift:233:        try await platformDevice.recordVideo(deviceID: booted.udid, to: outputPath, seconds: duration)
+Tests/GrantivaCLITests/DocsContractTests.swift:144:        process.standardOutput = pipe
+Tests/GrantivaCLITests/Support/SimctlRecordingFixture.swift:4:    /// The layout `simctl io recordVideo` writes for an idle screen (L60):
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:98:    func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:99:        record("recordVideo(\(deviceID),\(seconds))")
+Tests/GrantivaCLITests/RecordCommandTests.swift:164:        XCTAssertEqual(fake.calls, ["bootDevice(Pixel_8_API_35)", "recordVideo(emulator-5598,1.0)", "displayGeometry(emulator-5598)"])
+Tests/GrantivaCLITests/RecordCommandTests.swift:378:        XCTAssertTrue(fake.calls.contains { $0.hasPrefix("recordVideo(") }, "\(fake.calls)")
+Tests/GrantivaCLITests/RecordCommandTests.swift:416:        XCTAssertTrue(fake.calls.contains { $0.hasPrefix("recordVideo(") }, "\(fake.calls)")
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:621:        process.standardOutput = pipe
+Tests/GrantivaMCPTests/MCPTestSupport.swift:178:    func recordVideo(deviceID: String, to path: String, seconds: Double) async throws { record("recordVideo") }
+Tests/GrantivaCoreTests/ShellQuotingTests.swift:5:    func testShellDrainsStandardErrorWhileWaitingForStandardOutput() async throws {
+Sources/GrantivaCore/Build/AppBinaryResolver.swift:70:        process.standardOutput = FileHandle.nullDevice
+Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:101:        process.standardOutput = FileHandle.nullDevice
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:612:    func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {}
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:259:    func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {}
+Sources/GrantivaCore/Shell.swift:23:    process.standardOutput = pipe
+Sources/GrantivaCore/Shell.swift:82:    process.standardOutput = pipe
+Sources/GrantivaCore/Shell.swift:110:    process.standardOutput = stdout
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:9:            SubprocessLog.commandLine(executable: "/usr/bin/xcrun", arguments: ["simctl", "io", "ABC", "recordVideo", "--codec=h264", "/tmp/a b.mp4"], environment: [:]),
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:10:            "/usr/bin/xcrun simctl io ABC recordVideo --codec=h264 '/tmp/a b.mp4'"
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:53:            "/usr/bin/xcrun simctl io ABC recordVideo --codec=h264 /tmp/r.mp4"
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:359:    func testRecordVideoRecordsPullsAndRemoves() async throws {
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:362:        try await platform(shell).recordVideo(deviceID: "emulator-5554", to: out, seconds: 4.2)
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:371:    func testRecordVideoOver180SecondsIsRefusedBeforeTouchingTheDevice() async {
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:374:            try await platform(shell).recordVideo(deviceID: "emulator-5554", to: "/tmp/x.mp4", seconds: 200)
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:382:    func testRecordVideoRefusesAnInfiniteDuration() async {
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:385:            try await platform(shell).recordVideo(deviceID: "emulator-5554", to: "/tmp/x.mp4", seconds: .infinity)
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:149:    func testRecordVideoProcessDoesNotInheritStdout() throws {
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:152:        XCTAssertEqual(recorder.arguments, ["simctl", "io", "ABC-123", "recordVideo", "--codec=h264", "/tmp/x.mov"])
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:153:        XCTAssertTrue((recorder.standardOutput as? FileHandle) === log, "stdout must go to the log, not be inherited")
+Sources/GrantivaCore/Android/AndroidPlatform.swift:328:    public func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {
+Sources/GrantivaCore/Platform/DevicePlatform.swift:146:    func recordVideo(deviceID: String, to path: String, seconds: Double) async throws
+Tests/GrantivaCoreTests/RunnerSessionAppIdTests.swift:132:            func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {}
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:303:    func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {}
+Sources/GrantivaCore/Platform/IOSPlatform.swift:190:    /// The `simctl io recordVideo` process. Both of its streams go to `log`:
+Sources/GrantivaCore/Platform/IOSPlatform.swift:196:        recorder.arguments = ["simctl", "io", deviceID, "recordVideo", "--codec=h264", path]
+Sources/GrantivaCore/Platform/IOSPlatform.swift:197:        recorder.standardOutput = log
+Sources/GrantivaCore/Platform/IOSPlatform.swift:215:    /// `simctl io recordVideo`, stopped with SIGINT so simctl finalizes the file.
+Sources/GrantivaCore/Platform/IOSPlatform.swift:216:    public func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:6:/// `screenrecord` (Android) and `simctl io recordVideo` (iOS) write a frame
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:3:/// Stops simctl recordVideo using the same interrupt semantics as Control-C.
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:40:        process.standardOutput = pipe
+Sources/GrantivaCore/Runner/RunnerManager.swift:513:        process.standardOutput = pipe
+Sources/GrantivaCore/Runner/RunnerManager.swift:598:        process.standardOutput = FileHandle.nullDevice
+Sources/GrantivaCore/Runner/SubprocessLog.swift:5:/// `adb logcat`, `simctl spawn … log stream`, `simctl io … recordVideo`. Same
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:68:        process.standardOutput = pipe
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:96:            process.standardOutput = pipe
+Sources/GrantivaCore/Output/Output.swift:44:        FileHandle.standardOutput.write(data)
+Sources/GrantivaCore/Runner/LogStreamer.swift:244:        p.standardOutput = outPipe
+Sources/GrantivaCore/Runner/LogStreamer.swift:368:        process.standardOutput = pipe

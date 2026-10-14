@@ -1,0 +1,51 @@
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:164:    func testTeardownRejectsAMalformedUDID() {
+Tests/GrantivaCLITests/ConsoleCommandTests.swift:283:    func testParseWhenRejectsMalformedSpec() {
+Tests/GrantivaCLITests/PlatformOptionTests.swift:14:    func testLoadConfigIsLoudOnMalformedFile() throws {
+Tests/GrantivaCLITests/RecordCommandTests.swift:176:    func testMalformedFramesAtIsAUsageErrorAtParseTime() {
+Tests/GrantivaCLITests/AuthCommandTests.swift:20:    func testMalformedBaseURLThrowsInvalidArgument() {
+Sources/GrantivaCLI/RecordCommand.swift:73:    /// already rejected malformed input by the time `run()` reads this.
+Tests/GrantivaCLITests/RunCommandTests.swift:213:    func testMalformedEnvironmentPairIsRejectedWithAClearError() throws {
+Tests/GrantivaMCPTests/MCPServerTests.swift:52:    func testSessionRejectsMalformedUDIDBeforeToolsConsumeIt() throws {
+Sources/GrantivaCLI/Options.swift:178:    /// nil config; a malformed one throws. An explicit choice (`--platform` or
+Sources/GrantivaCLI/SimulatorCommand.swift:136:        /// malformed values by the time these are read.
+Tests/GrantivaMCPTests/MCPTransportTests.swift:9:/// K101: malformed input never gets a reply with an invented id. A message
+Tests/GrantivaMCPTests/MCPTransportTests.swift:11:/// `"id": null`; a malformed request that carries an id gets -32600 echoing it.
+Tests/GrantivaMCPTests/MCPTransportTests.swift:40:    /// The repro's four lines plus a malformed request with an id, through a
+Tests/GrantivaMCPTests/MCPTransportTests.swift:83:        XCTAssertNotNil(byID["3"]?["result"], "valid traffic still works after malformed lines")
+Tests/GrantivaMCPTests/MCPTransportTests.swift:363:    /// A response is never answered, even a malformed one with an id.
+Tests/GrantivaMCPTests/MCPTransportTests.swift:364:    func testAMalformedResponseIsDroppedNotAnswered() {
+Tests/GrantivaMCPTests/ToolSchemaTests.swift:8:/// A malformed input schema is silently accepted by the server but makes the tool
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:5:    func testConfiguredAPIBaseURLRejectsMalformedValues() {
+Tests/GrantivaCoreTests/AuthStoreSecurityTests.swift:23:    func testFileStoreTreatsMalformedJSONAsMissingCredentials() throws {
+Tests/GrantivaCoreTests/AuthStoreSecurityTests.swift:24:        let root = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-auth-malformed-\(UUID().uuidString)")
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:145:    func testMalformedCacheIsIgnored() throws {
+Tests/GrantivaCoreTests/WDAClientTests.swift:20:    func testHierarchyParserThrowsForMalformedXML() {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:57:    /// Review fix: a header box too short to hold its duration is malformed,
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:258:    // MARK: - L25: a malformed extra track does not stop the hold
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:308:        XCTAssertEqual(reason, "the file's box sizes are malformed")
+Tests/GrantivaCoreTests/DoctorTests.swift:216:        XCTAssertTrue(check.message.hasPrefix("could not be parsed: 5:3"), check.message)
+Sources/GrantivaMCP/ValidatingTransport.swift:9:    /// Malformed input nobody may answer: a message without an id, or a
+Sources/GrantivaMCP/ValidatingTransport.swift:12:    /// Malformed input the transport answers itself.
+Sources/GrantivaMCP/ValidatingTransport.swift:14:    /// A batch with some malformed members: the server gets the valid ones
+Sources/GrantivaMCP/ValidatingTransport.swift:15:    /// (`forward`), the transport answers the malformed ones (`reply`).
+Sources/GrantivaMCP/ValidatingTransport.swift:21:    /// member); a malformed message without an id, and any response, is not
+Sources/GrantivaMCP/ValidatingTransport.swift:108:/// `JSONRPCScreen`), so a malformed line never gets a reply the client
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:72:    func testMalformedYAMLIsReportedWithTheParserMessage() throws {
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:118:            XCTAssertTrue("\(error)".contains("grantiva.yml could not be parsed"), "\(error)")
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:406:    // MARK: - L42-b: a malformed step is a plain config error
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:408:    func testAMalformedStepIsAPlainConfigErrorWithItsLine() throws {
+Tests/GrantivaCoreTests/UIAutomator2HierarchyParserTests.swift:70:    func testMalformedXMLThrows() {
+Sources/GrantivaCore/Android/APKOutputMetadata.swift:42:                throw GrantivaError.buildFailed("\(path) could not be parsed: \(error)")
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:263:                    fix: firstLine.hasPrefix("could not be parsed") ? "Fix the YAML in \(path)" : "Fix \(path)",
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:126:    /// out of range, or the file is malformed. Never traps on bad input.
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:199:            return .failure(Unreadable("the file's box sizes are malformed"))
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:513:                guard value <= UInt64(Int64.max) else { throw Malformed() }
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:515:                guard !overflow, shifted >= 0 else { throw Malformed() }
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:519:                    guard shifted <= Int64(UInt32.max) else { throw Malformed() }
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:526:    private struct Malformed: Error {}
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:536:                guard offset + 16 <= end else { throw Malformed() }
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:542:            guard declared >= UInt64(header), declared <= UInt64(end - offset) else { throw Malformed() }
+Sources/GrantivaCore/Auth/AuthStore.swift:10:/// Parses a configured API origin without allowing malformed credentials to
+Sources/GrantivaCore/Config/GrantivaConfig.swift:361:            throw GrantivaError.configuration("\(fileName) could not be parsed: \(error)")
+Sources/GrantivaCore/Config/GrantivaConfig.swift:381:                throw GrantivaError.configuration("\(fileName) could not be parsed: \(error)")
+Sources/GrantivaCore/Config/ConfigDecodingErrorRenderer.swift:55:                lines.append("\(fileName) could not be parsed: \(error.localizedDescription)")

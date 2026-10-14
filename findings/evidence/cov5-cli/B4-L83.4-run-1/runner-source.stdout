@@ -1,0 +1,770 @@
+pkg/flow/step.go:295:	// UIAutomator2 server that holds still before lifting, with a settle wait
+pkg/flow/exact_driver_test.go:11:		"wda": false, "uiautomator2": false, "UIAutomator2": false,
+pkg/flow/launcharguments.go:130:// for drivers that forward arguments to an API expecting plain JSON values.
+pkg/emulator/manager.go:84:	// Check if we already allocated a port this session
+pkg/device/devicelab_install_test.go:105:	s.on("pm list packages "+DeviceLabDriverTest, "package:"+DeviceLabDriverTest+"\n")
+pkg/device/devicelab_install_test.go:106:	s.on("pm list packages "+DeviceLabDriverServer, "package:"+DeviceLabDriverServer+"\n")
+pkg/device/devicelab_install_test.go:107:	s.on("pm path '"+DeviceLabDriverTest+"'", "package:"+testAPKOnDevice+"\n")
+pkg/device/devicelab_install_test.go:108:	s.on("pm path '"+DeviceLabDriverServer+"'", "package:"+serverAPKOnDevice+"\n")
+pkg/device/devicelab_install_test.go:114:func TestInstallDeviceLabDriver(t *testing.T) {
+pkg/device/devicelab_install_test.go:133:			wantUninstall: []string{DeviceLabDriverServer, DeviceLabDriverTest},
+pkg/device/devicelab_install_test.go:139:			wantUninstall: []string{DeviceLabDriverTest},
+pkg/device/devicelab_install_test.go:143:			adb:           (&scriptedADB{}).on("sha256sum", "!fail").on("pm list packages", "package:"+DeviceLabDriverServer+"\npackage:"+DeviceLabDriverTest+"\n").on("pm path", "package:/x/base.apk\n"),
+pkg/device/devicelab_install_test.go:145:			wantUninstall: []string{DeviceLabDriverServer, DeviceLabDriverTest},
+pkg/device/devicelab_install_test.go:158:			if err := d.InstallDeviceLabDriver(dir); err != nil {
+pkg/device/devicelab_install_test.go:159:				t.Fatalf("InstallDeviceLabDriver: %v", err)
+pkg/device/devicelab_install_test.go:176:func TestInstallDeviceLabDriverErrors(t *testing.T) {
+pkg/device/devicelab_install_test.go:180:		if err := d.InstallDeviceLabDriver(t.TempDir()); err == nil {
+pkg/device/devicelab_install_test.go:188:		if err := d.InstallDeviceLabDriver(dir); err == nil {
+pkg/device/devicelab_install_test.go:217:			if got := d.installedAPKMatches(DeviceLabDriverServer, tt.path); got != tt.want {
+pkg/flutter/widgettree.go:125:		// Look forward for Text("...") child widget in the subtree
+pkg/flutter/widgettree.go:134:		// Look forward for tooltip in the subtree
+pkg/flutter/widgettree.go:165:// then scans forward collecting all lines at deeper indentation (child widgets).
+pkg/flutter/widgettree.go:178:	// Scan forward from the end of this line
+pkg/device/discover_test.go:119:func TestDefaultUIAutomator2Config(t *testing.T) {
+pkg/device/discover_test.go:120:	cfg := DefaultUIAutomator2Config()
+pkg/uiautomator2/request_deadline_test.go:88:	if !strings.Contains(err.Error(), "UIAutomator2") || !strings.Contains(err.Error(), "/actions") {
+pkg/uiautomator2/request_deadline_test.go:89:		t.Errorf("error should name UIAutomator2 and the request: %v", err)
+pkg/flutter/discovery_test.go:11:	forwardSocketCalled bool
+pkg/flutter/discovery_test.go:12:	forwardSocketPath   string
+pkg/flutter/discovery_test.go:13:	forwardSocketRemote int
+pkg/flutter/discovery_test.go:14:	forwardSocketErr    error
+pkg/flutter/discovery_test.go:22:	m.forwardSocketCalled = true
+pkg/flutter/discovery_test.go:23:	m.forwardSocketPath = socketPath
+pkg/flutter/discovery_test.go:24:	m.forwardSocketRemote = remotePort
+pkg/flutter/discovery_test.go:25:	return m.forwardSocketErr
+pkg/flutter/discovery_test.go:44:	if !dev.forwardSocketCalled {
+pkg/flutter/discovery_test.go:47:	if dev.forwardSocketPath != "/tmp/test-flutter.sock" {
+pkg/flutter/discovery_test.go:48:		t.Errorf("socketPath = %q, want %q", dev.forwardSocketPath, "/tmp/test-flutter.sock")
+pkg/flutter/discovery_test.go:50:	if dev.forwardSocketRemote != 54321 {
+pkg/flutter/discovery_test.go:51:		t.Errorf("remotePort = %d, want 54321", dev.forwardSocketRemote)
+pkg/flutter/discovery_test.go:70:	if dev.forwardSocketRemote != 22222 {
+pkg/flutter/discovery_test.go:71:		t.Errorf("remotePort = %d, want 22222", dev.forwardSocketRemote)
+pkg/flutter/discovery_test.go:89:	if dev.forwardSocketCalled {
+pkg/flutter/discovery_test.go:119:		forwardSocketErr: fmt.Errorf("forward failed"),
+pkg/flutter/discovery_test.go:124:		t.Error("expected error when forward fails")
+pkg/flutter/wrapper.go:44:	socketPath    string          // Unix socket path for VM Service forwarding (Android)
+pkg/flutter/wrapper.go:68:// socketPath is the Unix socket used for adb forward (e.g., /tmp/<serial>-flutter.sock).
+pkg/flutter/wrapper.go:81:// No port forwarding needed — the VM Service listens on localhost directly.
+pkg/flutter/wrapper.go:416:// tryReconnectAndroid discovers and connects via Unix socket (adb forward).
+pkg/flutter/wrapper.go:713:// --- Optional interface forwarding ---
+pkg/device/android_test.go:162:	// Create forward
+pkg/device/android_test.go:188:	// SocketPath() should be empty before StartUIAutomator2
+pkg/device/android_test.go:193:	// LocalPort() should be 0 before StartUIAutomator2
+pkg/device/android_test.go:209:	// Create socket forward
+pkg/device/android_test.go:228:	// Create a forward first
+pkg/device/android_test.go:240:func TestAndroidDevice_UIAutomator2NotInstalled(t *testing.T) {
+pkg/device/android_test.go:248:	// Check if UIAutomator2 is installed
+pkg/device/android_test.go:249:	serverInstalled := device.IsInstalled(UIAutomator2Server)
+pkg/device/android_test.go:250:	testInstalled := device.IsInstalled(UIAutomator2Test)
+pkg/device/android_test.go:252:	t.Logf("UIAutomator2 Server installed: %v", serverInstalled)
+pkg/device/android_test.go:253:	t.Logf("UIAutomator2 Test installed: %v", testInstalled)
+pkg/device/android_test.go:255:	// If not installed, StartUIAutomator2 should fail
+pkg/device/android_test.go:257:		cfg := DefaultUIAutomator2Config()
+pkg/device/android_test.go:258:		err := device.StartUIAutomator2(cfg)
+pkg/device/android_test.go:260:			t.Error("expected error when UIAutomator2 not installed")
+pkg/device/android_test.go:265:func TestAndroidDevice_StopUIAutomator2(t *testing.T) {
+pkg/device/android_test.go:273:	// StopUIAutomator2 should not error even if not running
+pkg/device/android_test.go:274:	if err := device.StopUIAutomator2(); err != nil {
+pkg/device/android_test.go:275:		t.Errorf("StopUIAutomator2 failed: %v", err)
+pkg/device/android_test.go:279:func TestAndroidDevice_IsUIAutomator2Running(t *testing.T) {
+pkg/device/android_test.go:288:	if device.IsUIAutomator2Running() {
+pkg/device/android_test.go:289:		t.Error("expected IsUIAutomator2Running to be false")
+pkg/device/android_test.go:293:func TestAndroidDevice_StartUIAutomator2(t *testing.T) {
+pkg/device/android_test.go:301:	// Check if UIAutomator2 is installed
+pkg/device/android_test.go:302:	if !device.IsInstalled(UIAutomator2Server) || !device.IsInstalled(UIAutomator2Test) {
+pkg/device/android_test.go:303:		t.Skip("UIAutomator2 not installed")
+pkg/device/android_test.go:306:	cfg := DefaultUIAutomator2Config()
+pkg/device/android_test.go:309:	// Start UIAutomator2
+pkg/device/android_test.go:310:	if err := device.StartUIAutomator2(cfg); err != nil {
+pkg/device/android_test.go:311:		t.Fatalf("StartUIAutomator2 failed: %v", err)
+pkg/device/android_test.go:315:	if !device.IsUIAutomator2Running() {
+pkg/device/android_test.go:316:		t.Error("expected IsUIAutomator2Running to be true")
+pkg/device/android_test.go:324:	t.Logf("UIAutomator2 running - SocketPath: %s, LocalPort: %d", device.SocketPath(), device.LocalPort())
+pkg/device/android_test.go:326:	// Stop UIAutomator2
+pkg/device/android_test.go:327:	if err := device.StopUIAutomator2(); err != nil {
+pkg/device/android_test.go:328:		t.Errorf("StopUIAutomator2 failed: %v", err)
+pkg/device/android_test.go:332:	if device.IsUIAutomator2Running() {
+pkg/device/android_test.go:333:		t.Error("expected IsUIAutomator2Running to be false after stop")
+pkg/device/android_test.go:345:	// Use settings APK for testing (less critical than UIAutomator2)
+pkg/device/android_test.go:382:func TestAndroidDevice_InstallUIAutomator2(t *testing.T) {
+pkg/device/android_test.go:391:	if err := device.InstallUIAutomator2("../../drivers/android"); err != nil {
+pkg/device/android_test.go:392:		t.Errorf("InstallUIAutomator2 failed: %v", err)
+pkg/device/android_test.go:396:	if !device.IsInstalled(UIAutomator2Server) {
+pkg/device/android_test.go:397:		t.Error("UIAutomator2Server should be installed")
+pkg/device/android_test.go:399:	if !device.IsInstalled(UIAutomator2Test) {
+pkg/device/android_test.go:400:		t.Error("UIAutomator2Test should be installed")
+pkg/device/android_test.go:426:func TestAndroidDevice_UninstallUIAutomator2(t *testing.T) {
+pkg/device/android_test.go:434:	// First ensure UIAutomator2 is installed
+pkg/device/android_test.go:435:	if err := device.InstallUIAutomator2("../../drivers/android"); err != nil {
+pkg/device/android_test.go:436:		t.Fatalf("InstallUIAutomator2 failed: %v", err)
+pkg/device/android_test.go:440:	if err := device.UninstallUIAutomator2(); err != nil {
+pkg/device/android_test.go:441:		t.Errorf("UninstallUIAutomator2 failed: %v", err)
+pkg/device/android_test.go:445:	if device.IsInstalled(UIAutomator2Server) {
+pkg/device/android_test.go:446:		t.Error("UIAutomator2Server should be uninstalled")
+pkg/device/android_test.go:448:	if device.IsInstalled(UIAutomator2Test) {
+pkg/device/android_test.go:449:		t.Error("UIAutomator2Test should be uninstalled")
+pkg/device/android_test.go:453:	if err := device.InstallUIAutomator2("../../drivers/android"); err != nil {
+pkg/flutter/discovery_iossim.go:12:// Returns the ws:// URL directly — no forwarding needed on simulators.
+pkg/device/exec_test.go:255:	err := installCheckError("UIAutomator2 server", "io.appium.uiautomator2.server", errFakeShell)
+pkg/device/exec_test.go:264:	err = installCheckError("UIAutomator2 server", "io.appium.uiautomator2.server", nil)
+pkg/executor/parallel.go:59:// formatDeviceLabel creates a short device label for event logs
+pkg/executor/parallel.go:60:func formatDeviceLabel(device *report.Device) string {
+pkg/executor/parallel.go:190:			deviceLabel := formatDeviceLabel(deviceInfo)
+pkg/device/uiautomator.go:20:// UIAutomator2 package names
+pkg/device/uiautomator.go:22:	UIAutomator2Server = "io.appium.uiautomator2.server"
+pkg/device/uiautomator.go:23:	UIAutomator2Test   = "io.appium.uiautomator2.server.test"
+pkg/device/uiautomator.go:27:// Port range for TCP forwarding (Windows)
+pkg/device/uiautomator.go:33:// UIAutomator2Config holds configuration for the UIAutomator2 server.
+pkg/device/uiautomator.go:34:type UIAutomator2Config struct {
+pkg/device/uiautomator.go:43:	// TCPForward forces TCP-to-TCP forwarding (adb forward tcp:N tcp:M)
+pkg/device/uiautomator.go:44:	// instead of the default Linux/Mac unix-socket forward. Required on
+pkg/device/uiautomator.go:46:	// localfilesystem:/localabstract: forwards but allows plain tcp:.
+pkg/device/uiautomator.go:52:// DefaultUIAutomator2Config returns default configuration.
+pkg/device/uiautomator.go:53:func DefaultUIAutomator2Config() UIAutomator2Config {
+pkg/device/uiautomator.go:54:	return UIAutomator2Config{
+pkg/device/uiautomator.go:60:// StartUIAutomator2 starts the UIAutomator2 server on the device. A server
+pkg/device/uiautomator.go:63:func (d *AndroidDevice) StartUIAutomator2(cfg UIAutomator2Config) error {
+pkg/device/uiautomator.go:66:		retries = defaultUIAutomator2StartRetries
+pkg/device/uiautomator.go:70:		err := d.startUIAutomator2Once(cfg)
+pkg/device/uiautomator.go:80:		logger.Warn("UIAutomator2 server not ready after %v; starting it again (attempt %d of %d)", cfg.Timeout, attempt+2, retries+1)
+pkg/device/uiautomator.go:84:// defaultUIAutomator2StartRetries is how many more starts a server that
+pkg/device/uiautomator.go:86:const defaultUIAutomator2StartRetries = 1
+pkg/device/uiautomator.go:98:		return fmt.Sprintf("UIAutomator2 server not ready after %v on each of %d starts (%v in all; raise the limit with --driver-start-timeout <seconds>)", e.timeout, e.starts, e.total.Round(100*time.Millisecond))
+pkg/device/uiautomator.go:100:	return fmt.Sprintf("UIAutomator2 server not ready after %v (raise the limit with --driver-start-timeout <seconds>)", e.timeout)
+pkg/device/uiautomator.go:103:// startUIAutomator2Once is one start of the server: forward, instrument,
+pkg/device/uiautomator.go:105:func (d *AndroidDevice) startUIAutomator2Once(cfg UIAutomator2Config) error {
+pkg/device/uiautomator.go:107:	if ok, err := d.CheckInstalled(UIAutomator2Server); !ok {
+pkg/device/uiautomator.go:108:		return installCheckError("UIAutomator2 server", UIAutomator2Server, err)
+pkg/device/uiautomator.go:110:	if ok, err := d.CheckInstalled(UIAutomator2Test); !ok {
+pkg/device/uiautomator.go:111:		return installCheckError("UIAutomator2 test APK", UIAutomator2Test, err)
+pkg/device/uiautomator.go:115:	if err := d.StopUIAutomator2(); err != nil {
+pkg/device/uiautomator.go:116:		logger.Warn("failed to stop existing UIAutomator2 instance: %v", err)
+pkg/device/uiautomator.go:119:	// Set up forwarding. TCP-to-TCP path is mandatory on Windows (where
+pkg/device/uiautomator.go:120:	// adb doesn't support localfilesystem: forwards) and used on Unix
+pkg/device/uiautomator.go:122:	// Default Unix path uses a unix-socket forward so multiple devices
+pkg/device/uiautomator.go:140:		UIAutomator2Test,
+pkg/device/uiautomator.go:147:	if err := d.waitForUIAutomator2Ready(cfg.Timeout); err != nil {
+pkg/device/uiautomator.go:148:		if stopErr := d.StopUIAutomator2(); stopErr != nil {
+pkg/device/uiautomator.go:149:			logger.Warn("failed to stop UIAutomator2 after startup timeout: %v", stopErr)
+pkg/device/uiautomator.go:157:// setupSocketForward sets up Unix socket forwarding (Linux/Mac).
+pkg/device/uiautomator.go:158:func (d *AndroidDevice) setupSocketForward(cfg UIAutomator2Config) error {
+pkg/device/uiautomator.go:173:			logger.Debug("failed to remove stale socket forward %s: %v", socketPath, err)
+pkg/device/uiautomator.go:182:		return fmt.Errorf("socket forward failed: %w", err)
+pkg/device/uiautomator.go:194:// setupTCPForward sets up TCP port forwarding (Windows).
+pkg/device/uiautomator.go:195:func (d *AndroidDevice) setupTCPForward(cfg UIAutomator2Config) error {
+pkg/device/uiautomator.go:206:		return fmt.Errorf("port forward failed: %w", err)
+pkg/device/uiautomator.go:227:// RestoreUIAutomator2Forward re-creates the adb forward to the UIAutomator2
+pkg/device/uiautomator.go:228:// server when it is gone. adb drops a device's forwards when the device
+pkg/device/uiautomator.go:230:// calls this before retrying a refused connection. A forward still listed is
+pkg/device/uiautomator.go:234:func (d *AndroidDevice) RestoreUIAutomator2Forward(devicePort int) error {
+pkg/device/uiautomator.go:235:	d.forwardMu.Lock()
+pkg/device/uiautomator.go:236:	defer d.forwardMu.Unlock()
+pkg/device/uiautomator.go:238:		devicePort = DefaultUIAutomator2Config().DevicePort
+pkg/device/uiautomator.go:243:	listing, err := d.adb("forward", "--list")
+pkg/device/uiautomator.go:245:		return fmt.Errorf("read adb forwards: %w", err)
+pkg/device/uiautomator.go:263:// StopUIAutomator2 stops the UIAutomator2 server.
+pkg/device/uiautomator.go:264:func (d *AndroidDevice) StopUIAutomator2() error {
+pkg/device/uiautomator.go:266:	if _, err := d.Shell("am force-stop " + UIAutomator2Server); err != nil {
+pkg/device/uiautomator.go:267:		logger.Warn("failed to force-stop %s: %v", UIAutomator2Server, err)
+pkg/device/uiautomator.go:269:	if _, err := d.Shell("am force-stop " + UIAutomator2Test); err != nil {
+pkg/device/uiautomator.go:270:		logger.Warn("failed to force-stop %s: %v", UIAutomator2Test, err)
+pkg/device/uiautomator.go:279:			logger.Warn("failed to remove socket forward for %s: %v", d.socketPath, err)
+pkg/device/uiautomator.go:290:		logger.Warn("failed to remove default socket forward for %s: %v", defaultSocket, err)
+pkg/device/uiautomator.go:297:	// Clean up port forward (Windows)
+pkg/device/uiautomator.go:300:			logger.Warn("failed to remove port forward for port %d: %v", d.localPort, err)
+pkg/device/uiautomator.go:308:// IsUIAutomator2Running checks if the UIAutomator2 server is responding.
+pkg/device/uiautomator.go:309:func (d *AndroidDevice) IsUIAutomator2Running() bool {
+pkg/device/uiautomator.go:313:// waitForUIAutomator2Ready waits for the server to be ready.
+pkg/device/uiautomator.go:314:func (d *AndroidDevice) waitForUIAutomator2Ready(timeout time.Duration) error {
+pkg/device/uiautomator.go:327:// checkHealth checks if UIAutomator2 is responding.
+pkg/device/uiautomator.go:374:// InstallUIAutomator2 installs UIAutomator2 APKs from the given directory.
+pkg/device/uiautomator.go:377:func (d *AndroidDevice) InstallUIAutomator2(apksDir string) error {
+pkg/device/uiautomator.go:382:		{UIAutomator2Server, "appium-uiautomator2-server-v*.apk"},
+pkg/device/uiautomator.go:383:		{UIAutomator2Test, "appium-uiautomator2-server-debug-androidTest.apk"},
+pkg/device/uiautomator.go:394:			if apk.pkg == UIAutomator2Server {
+pkg/device/uiautomator.go:400:				logger.Info("UIAutomator2 server version mismatch: installed=%s, bundled=%s — upgrading",
+pkg/device/uiautomator.go:410:			if apk.pkg == UIAutomator2Server {
+pkg/device/uiautomator.go:411:				_ = d.Uninstall(UIAutomator2Test)
+pkg/device/uiautomator.go:475:// UninstallUIAutomator2 removes UIAutomator2 packages from the device.
+pkg/device/uiautomator.go:476:func (d *AndroidDevice) UninstallUIAutomator2() error {
+pkg/device/uiautomator.go:477:	packages := []string{UIAutomator2Server, UIAutomator2Test, AppiumSettings}
+pkg/device/forward_cleanup_test.go:11:type forwardInventory struct {
+pkg/device/forward_cleanup_test.go:16:func (f *forwardInventory) exec(_ string, args ...string) *exec.Cmd {
+pkg/device/forward_cleanup_test.go:19:		if args[i] == "forward" && args[i+1] == "--remove" {
+pkg/device/forward_cleanup_test.go:27:func (f *forwardInventory) removed(endpoint string) bool {
+pkg/device/forward_cleanup_test.go:29:		if strings.Join(args, " ") == "-s owned-device forward --remove "+endpoint {
+pkg/device/forward_cleanup_test.go:45:			name:          "UIAutomator2",
+pkg/device/forward_cleanup_test.go:52:			stop: (*AndroidDevice).StopUIAutomator2,
+pkg/device/forward_cleanup_test.go:55:			name:          "DeviceLab driver",
+pkg/device/forward_cleanup_test.go:56:			unrelatedPort: DeviceLabDriverPort,
+pkg/device/forward_cleanup_test.go:62:			stop: (*AndroidDevice).StopDeviceLabDriver,
+pkg/device/forward_cleanup_test.go:72:			adb := &forwardInventory{active: map[string]bool{
+pkg/device/forward_cleanup_test.go:85:				t.Fatalf("owned forwards remain after cleanup: %v", adb.active)
+pkg/device/forward_cleanup_test.go:88:				t.Fatalf("cleanup removed unrelated forward %s; calls: %q", unrelatedTCP, adb.calls)
+pkg/device/forward_cleanup_test.go:99:				t.Fatalf("repeat cleanup removed unrelated forward %s; calls: %q", unrelatedTCP, adb.calls)
+pkg/device/android.go:21:	socketPath string // Unix socket path for UIAutomator2 (Linux/Mac)
+pkg/device/android.go:22:	localPort  int    // TCP port for UIAutomator2 (Windows)
+pkg/device/android.go:24:	driverSocketPath string // Unix socket path for DeviceLab Android Driver (Linux/Mac)
+pkg/device/android.go:25:	driverLocalPort  int    // TCP port for DeviceLab Android Driver (Windows)
+pkg/device/android.go:27:	// forwardMu serialises RestoreUIAutomator2Forward, so retries racing on
+pkg/device/android.go:28:	// one device re-create its forward once.
+pkg/device/android.go:29:	forwardMu sync.Mutex
+pkg/device/android.go:402:// Forward creates a port forward from local to device.
+pkg/device/android.go:404:	_, err := d.adb("forward", fmt.Sprintf("tcp:%d", localPort), fmt.Sprintf("tcp:%d", remotePort))
+pkg/device/android.go:408:// RemoveForward removes a port forward.
+pkg/device/android.go:410:	_, err := d.adb("forward", "--remove", fmt.Sprintf("tcp:%d", localPort))
+pkg/device/android.go:414:// RemoveAllForwards removes all port forwards for this device.
+pkg/device/android.go:416:	_, err := d.adb("forward", "--remove-all")
+pkg/device/android.go:420:// ForwardSocket forwards a Unix socket to a device TCP port.
+pkg/device/android.go:422:	_, err := d.adb("forward", fmt.Sprintf("localfilesystem:%s", socketPath), fmt.Sprintf("tcp:%d", remotePort))
+pkg/device/android.go:426:// RemoveSocketForward removes a Unix socket forward.
+pkg/device/android.go:428:	_, err := d.adb("forward", "--remove", fmt.Sprintf("localfilesystem:%s", socketPath))
+pkg/device/android.go:432:// ForwardToAbstractSocket forwards a local Unix socket to a device abstract socket.
+pkg/device/android.go:435:	_, err := d.adb("forward", fmt.Sprintf("localfilesystem:%s", localSocketPath), fmt.Sprintf("localabstract:%s", remoteSocketName))
+pkg/device/android.go:439:// ForwardTCPToAbstractSocket forwards a local TCP port to a device abstract socket.
+pkg/device/android.go:442:	_, err := d.adb("forward", fmt.Sprintf("tcp:%d", localPort), fmt.Sprintf("localabstract:%s", remoteSocketName))
+pkg/device/android.go:446:// RemoveTCPForward removes a TCP port forward.
+pkg/device/android.go:448:	_, err := d.adb("forward", "--remove", fmt.Sprintf("tcp:%d", localPort))
+pkg/device/android.go:452:// CDPSocketPath returns the local Unix socket path for CDP WebView forwarding.
+pkg/device/android.go:462:// SocketPath returns the current UIAutomator2 socket path (empty if not started or on Windows).
+pkg/device/android.go:467:// LocalPort returns the current UIAutomator2 TCP port (0 if not started or on Linux/Mac).
+pkg/uiautomator2/client.go:19:// Client communicates with UIAutomator2 server.
+pkg/uiautomator2/client.go:146:// request makes an HTTP request to UIAutomator2 under the step context.
+pkg/uiautomator2/client.go:151:// requestContext makes an HTTP request to UIAutomator2 under ctx (nil = the
+pkg/uiautomator2/client.go:341:// DetectWebView is a no-op for native UIAutomator2 client.
+pkg/uiautomator2/client.go:342:// WebView detection is only meaningful for the DeviceLab Android Driver.
+pkg/core/driver.go:306:// wrappers may not forward.
+pkg/device/devicelab_driver.go:20:// DeviceLab Android Driver package names.
+pkg/device/devicelab_driver.go:22:	DeviceLabDriverServer = "dev.devicelab.driver.android"
+pkg/device/devicelab_driver.go:23:	DeviceLabDriverTest   = "dev.devicelab.driver.android.test"
+pkg/device/devicelab_driver.go:24:	DeviceLabDriverPort   = 6791
+pkg/device/devicelab_driver.go:27:// DeviceLabDriverConfig holds configuration for the DeviceLab Android Driver.
+pkg/device/devicelab_driver.go:28:type DeviceLabDriverConfig struct {
+pkg/device/devicelab_driver.go:33:	// TCPForward forces TCP-to-TCP forwarding (adb forward tcp:N tcp:M)
+pkg/device/devicelab_driver.go:34:	// instead of the default Linux/Mac unix-socket forward. Required on
+pkg/device/devicelab_driver.go:36:	// localfilesystem:/localabstract: forwards but allows plain tcp:.
+pkg/device/devicelab_driver.go:42:// DefaultDeviceLabDriverConfig returns default configuration.
+pkg/device/devicelab_driver.go:43:func DefaultDeviceLabDriverConfig() DeviceLabDriverConfig {
+pkg/device/devicelab_driver.go:44:	return DeviceLabDriverConfig{
+pkg/device/devicelab_driver.go:45:		DevicePort: DeviceLabDriverPort,
+pkg/device/devicelab_driver.go:50:// DeviceLabDriverSocketPath returns the default socket path for the DeviceLab Android Driver.
+pkg/device/devicelab_driver.go:51:func (d *AndroidDevice) DeviceLabDriverSocketPath() string {
+pkg/device/devicelab_driver.go:55:// StartDeviceLabDriver starts the DeviceLab Android Driver on the device.
+pkg/device/devicelab_driver.go:56:func (d *AndroidDevice) StartDeviceLabDriver(cfg DeviceLabDriverConfig) error {
+pkg/device/devicelab_driver.go:58:	if ok, err := d.CheckInstalled(DeviceLabDriverServer); !ok {
+pkg/device/devicelab_driver.go:59:		return installCheckError("DeviceLab Android Driver", DeviceLabDriverServer, err)
+pkg/device/devicelab_driver.go:61:	if ok, err := d.CheckInstalled(DeviceLabDriverTest); !ok {
+pkg/device/devicelab_driver.go:62:		return installCheckError("DeviceLab Android Driver test APK", DeviceLabDriverTest, err)
+pkg/device/devicelab_driver.go:71:	if err := d.StopDeviceLabDriver(); err != nil {
+pkg/device/devicelab_driver.go:72:		logger.Warn("failed to stop existing DeviceLab Android Driver instance: %v", err)
+pkg/device/devicelab_driver.go:75:	// Set up forwarding. TCP path is mandatory on Windows and used on
+pkg/device/devicelab_driver.go:78:		if err := d.setupDeviceLabTCPForward(cfg); err != nil {
+pkg/device/devicelab_driver.go:82:		if err := d.setupDeviceLabSocketForward(cfg); err != nil {
+pkg/device/devicelab_driver.go:91:		return fmt.Errorf("failed to start DeviceLab Android Driver instrumentation: %w", err)
+pkg/device/devicelab_driver.go:100:	if err := d.waitForDeviceLabDriverReady(cfg.Timeout, marker); err != nil {
+pkg/device/devicelab_driver.go:107:		// driver — adb forward list (is our local→device forward live?)
+pkg/device/devicelab_driver.go:113:		if stopErr := d.StopDeviceLabDriver(); stopErr != nil {
+pkg/device/devicelab_driver.go:114:			logger.Warn("failed to stop DeviceLab Android Driver after startup timeout: %v", stopErr)
+pkg/device/devicelab_driver.go:151:			if line == "" || strings.Contains(line, DeviceLabDriverTest) {
+pkg/device/devicelab_driver.go:211:		DeviceLabDriverTest,
+pkg/device/devicelab_driver.go:212:		DeviceLabDriverServer+".DeviceLabDriverRunner",
+pkg/device/devicelab_driver.go:261:	if strings.Contains(psOutput, DeviceLabDriverServer) {
+pkg/device/devicelab_driver.go:299:// setupDeviceLabSocketForward sets up Unix socket forwarding for the DeviceLab Android Driver.
+pkg/device/devicelab_driver.go:300:func (d *AndroidDevice) setupDeviceLabSocketForward(cfg DeviceLabDriverConfig) error {
+pkg/device/devicelab_driver.go:303:		socketPath = d.DeviceLabDriverSocketPath()
+pkg/device/devicelab_driver.go:309:			return fmt.Errorf("device %s already in use by DeviceLab Android Driver (socket %s is active)", d.Serial(), socketPath)
+pkg/device/devicelab_driver.go:312:		logger.Info("Removing stale DeviceLab Android Driver socket for device %s: %s", d.Serial(), socketPath)
+pkg/device/devicelab_driver.go:314:			logger.Debug("failed to remove stale socket forward %s: %v", socketPath, err)
+pkg/device/devicelab_driver.go:323:		return fmt.Errorf("DeviceLab Android Driver socket forward failed: %w", err)
+pkg/device/devicelab_driver.go:329:		logger.Warn("failed to write DeviceLab Android Driver PID file: %v", err)
+pkg/device/devicelab_driver.go:335:// setupDeviceLabTCPForward sets up TCP port forwarding for the DeviceLab Android Driver (Windows).
+pkg/device/devicelab_driver.go:336:func (d *AndroidDevice) setupDeviceLabTCPForward(cfg DeviceLabDriverConfig) error {
+pkg/device/devicelab_driver.go:347:		return fmt.Errorf("DeviceLab Android Driver port forward failed: %w", err)
+pkg/device/devicelab_driver.go:353:// StopDeviceLabDriver stops the DeviceLab Android Driver.
+pkg/device/devicelab_driver.go:354:func (d *AndroidDevice) StopDeviceLabDriver() error {
+pkg/device/devicelab_driver.go:356:	if _, err := d.Shell("am force-stop " + DeviceLabDriverServer); err != nil {
+pkg/device/devicelab_driver.go:357:		logger.Warn("failed to force-stop %s: %v", DeviceLabDriverServer, err)
+pkg/device/devicelab_driver.go:359:	if _, err := d.Shell("am force-stop " + DeviceLabDriverTest); err != nil {
+pkg/device/devicelab_driver.go:360:		logger.Warn("failed to force-stop %s: %v", DeviceLabDriverTest, err)
+pkg/device/devicelab_driver.go:368:			logger.Warn("failed to remove DeviceLab Android Driver socket forward for %s: %v", d.driverSocketPath, err)
+pkg/device/devicelab_driver.go:371:			logger.Warn("failed to remove DeviceLab Android Driver socket file %s: %v", d.driverSocketPath, err)
+pkg/device/devicelab_driver.go:377:	defaultSocket := d.DeviceLabDriverSocketPath()
+pkg/device/devicelab_driver.go:379:		logger.Warn("failed to remove default DeviceLab Android Driver socket forward for %s: %v", defaultSocket, err)
+pkg/device/devicelab_driver.go:382:		logger.Warn("failed to remove default DeviceLab Android Driver socket file %s: %v", defaultSocket, err)
+pkg/device/devicelab_driver.go:386:	// Clean up port forward (Windows)
+pkg/device/devicelab_driver.go:389:			logger.Warn("failed to remove DeviceLab Android Driver port forward for port %d: %v", d.driverLocalPort, err)
+pkg/device/devicelab_driver.go:397:// IsDeviceLabDriverRunning checks if the DeviceLab Android Driver is responding.
+pkg/device/devicelab_driver.go:398:func (d *AndroidDevice) IsDeviceLabDriverRunning() bool {
+pkg/device/devicelab_driver.go:399:	return d.checkDeviceLabHealth()
+pkg/device/devicelab_driver.go:402:// DeviceLabDriverSocket returns the current DeviceLab Android Driver socket path.
+pkg/device/devicelab_driver.go:403:func (d *AndroidDevice) DeviceLabDriverSocket() string {
+pkg/device/devicelab_driver.go:407:// DeviceLabDriverPort returns the current DeviceLab Android Driver TCP port.
+pkg/device/devicelab_driver.go:408:func (d *AndroidDevice) DeviceLabDriverLocalPort() int {
+pkg/device/devicelab_driver.go:412:// waitForDeviceLabDriverReady waits for the driver started with marker to
+pkg/device/devicelab_driver.go:414:func (d *AndroidDevice) waitForDeviceLabDriverReady(timeout time.Duration, marker string) error {
+pkg/device/devicelab_driver.go:418:		if d.checkDeviceLabHealth() {
+pkg/device/devicelab_driver.go:424:			return fmt.Errorf("DeviceLab driver crashed on startup: %s", reason)
+pkg/device/devicelab_driver.go:429:	return fmt.Errorf("DeviceLab Android Driver not ready after %v", timeout)
+pkg/device/devicelab_driver.go:432:// checkDeviceLabHealth checks if the DeviceLab Android Driver is responding.
+pkg/device/devicelab_driver.go:434:func (d *AndroidDevice) checkDeviceLabHealth() bool {
+pkg/device/devicelab_driver.go:436:		return checkDeviceLabHealthViaSocket(d.driverSocketPath)
+pkg/device/devicelab_driver.go:439:		return checkDeviceLabHealthViaTCP(d.driverLocalPort)
+pkg/device/devicelab_driver.go:444:// checkDeviceLabHealthViaSocket checks health via Unix socket.
+pkg/device/devicelab_driver.go:446:// (bare connect succeeds immediately since ADB creates the socket on forward).
+pkg/device/devicelab_driver.go:447:func checkDeviceLabHealthViaSocket(socketPath string) bool {
+pkg/device/devicelab_driver.go:448:	return checkDeviceLabHandshake("unix", socketPath)
+pkg/device/devicelab_driver.go:451:// checkDeviceLabHealthViaTCP checks health via TCP connect.
+pkg/device/devicelab_driver.go:452:func checkDeviceLabHealthViaTCP(port int) bool {
+pkg/device/devicelab_driver.go:453:	return checkDeviceLabHandshake("tcp", fmt.Sprintf("127.0.0.1:%d", port))
+pkg/device/devicelab_driver.go:456:// checkDeviceLabHandshake verifies the driver is responding by sending a
+pkg/device/devicelab_driver.go:458:func checkDeviceLabHandshake(network, address string) bool {
+pkg/device/devicelab_driver.go:488:// InstallDeviceLabDriver installs DeviceLab Android Driver APKs from the given directory.
+pkg/device/devicelab_driver.go:496:func (d *AndroidDevice) InstallDeviceLabDriver(apksDir string) error {
+pkg/device/devicelab_driver.go:501:		{DeviceLabDriverServer, "devicelab-android-driver.apk"},
+pkg/device/devicelab_driver.go:502:		{DeviceLabDriverTest, "devicelab-android-driver-test*.apk"},
+pkg/device/devicelab_driver.go:515:			logger.Info("DeviceLab Android Driver %s differs from bundled %s — reinstalling",
+pkg/device/devicelab_driver.go:522:			if apk.pkg == DeviceLabDriverServer {
+pkg/device/devicelab_driver.go:523:				_ = d.Uninstall(DeviceLabDriverTest)
+pkg/device/devicelab_driver.go:623:// UninstallDeviceLabDriver removes DeviceLab Android Driver packages from the device.
+pkg/device/devicelab_driver.go:624:func (d *AndroidDevice) UninstallDeviceLabDriver() error {
+pkg/device/devicelab_driver.go:625:	packages := []string{DeviceLabDriverServer, DeviceLabDriverTest}
+pkg/device/devicelab_driver.go:646://   - `adb forward --list` — verifies our local→device port/socket
+pkg/device/devicelab_driver.go:647://     forward is established. If it's missing or pointing at a different
+pkg/device/devicelab_driver.go:657:// proxy stripping forward subcommand, etc.) we just include whatever
+pkg/device/devicelab_driver.go:662:	forwards, ferr := d.adb("forward", "--list")
+pkg/device/devicelab_driver.go:663:	diag.WriteString("\n\n[diagnostics] adb forward --list:")
+pkg/device/devicelab_driver.go:666:	} else if forwards == "" {
+pkg/device/devicelab_driver.go:667:		diag.WriteString(" (empty — no active forwards)")
+pkg/device/devicelab_driver.go:669:		diag.WriteString("\n" + indentDiag(forwards))
+pkg/device/devicelab_driver.go:673:	portHex := fmt.Sprintf("%04X", DeviceLabDriverPort)
+pkg/device/devicelab_driver.go:675:	diag.WriteString(fmt.Sprintf("\n[diagnostics] /proc/net/tcp entries for port %d (%s):", DeviceLabDriverPort, portHex))
+pkg/flutter/discovery.go:19:// Sets up a Unix socket forward via socketPath and returns the VM service token.
+pkg/flutter/discovery.go:48:	// Set up Unix socket forward — no port collision across devices
+pkg/flutter/discovery.go:50:		return "", fmt.Errorf("socket forward port %d: %w", port, err)
+pkg/flutter/vmservice.go:84:// Used with adb forward localfilesystem:<socketPath> tcp:<port>.
+pkg/device/uiautomator_retry_test.go:16:// fakeUIA2Device answers adb for a device whose UIAutomator2 server becomes
+pkg/device/uiautomator_retry_test.go:43:			return exec.Command("printf", "%s", "package:"+UIAutomator2Server+"\npackage:"+UIAutomator2Test+"\n")
+pkg/device/uiautomator_retry_test.go:54:func TestStartUIAutomator2RetriesOnceAfterReadinessTimeout(t *testing.T) {
+pkg/device/uiautomator_retry_test.go:56:	cfg := UIAutomator2Config{DevicePort: 6790, Timeout: time.Second, TCPForward: true, LocalPort: port}
+pkg/device/uiautomator_retry_test.go:57:	if err := d.StartUIAutomator2(cfg); err != nil {
+pkg/device/uiautomator_retry_test.go:67:func TestStartUIAutomator2NamesTheLimitFlag(t *testing.T) {
+pkg/device/uiautomator_retry_test.go:69:	cfg := UIAutomator2Config{DevicePort: 6790, Timeout: 500 * time.Millisecond, TCPForward: true, LocalPort: port}
+pkg/device/uiautomator_retry_test.go:70:	err := d.StartUIAutomator2(cfg)
+pkg/device/devicelab_driver_test.go:60:	original := errors.New("DeviceLab Android Driver not ready after 30s")
+pkg/device/devicelab_driver_test.go:77:func wrapForDiag(orig error, forwards, listening string) error {
+pkg/device/devicelab_driver_test.go:79:	diag.WriteString("\n\n[diagnostics] adb forward --list:\n")
+pkg/device/devicelab_driver_test.go:80:	diag.WriteString(indentDiag(forwards))
+pkg/device/devicelab_driver_test.go:114:		"u0_a187       4330   312   14971104 132016 do_epoll_wait       0 S " + DeviceLabDriverServer + "\n"
+pkg/device/devicelab_driver_test.go:124:		"dev.devicelab.driver.android.DeviceLabDriverRunner: java.lang.NoClassDefFoundError\n" +
+pkg/device/devicelab_driver_test.go:131:		DeviceLabDriverTest + "/" + DeviceLabDriverServer + ".DeviceLabDriverRunner\n" +
+pkg/device/devicelab_driver_test.go:215:func TestDeviceLabStartCommand(t *testing.T) {
+pkg/device/devicelab_driver_test.go:220:		"nohup am instrument -w --no-hidden-api-checks " + DeviceLabDriverTest + "/" + DeviceLabDriverServer + ".DeviceLabDriverRunner",
+pkg/device/devicelab_driver_test.go:268:func TestWaitForDeviceLabDriverReady(t *testing.T) {
+pkg/device/devicelab_driver_test.go:282:			err := d.waitForDeviceLabDriverReady(600*time.Millisecond, testMarker)
+pkg/device/devicelab_driver_test.go:315:func TestWaitForDeviceLabDriverReadyHealthy(t *testing.T) {
+pkg/device/devicelab_driver_test.go:332:	if err := d.waitForDeviceLabDriverReady(2*time.Second, testMarker); err != nil {
+pkg/device/devicelab_driver_test.go:333:		t.Fatalf("waitForDeviceLabDriverReady: %v", err)
+pkg/cli/flutter_check.go:74:			"     to connect, and terminates — typically producing a port-forward\n"+
+pkg/device/uia2_forward_restore_test.go:12:// recordExec records each adb invocation and answers `forward --list` with
+pkg/device/uia2_forward_restore_test.go:19:		if strings.Contains(strings.Join(args, " "), "forward --list") {
+pkg/device/uia2_forward_restore_test.go:26:// K06: a device that briefly left adb loses its forwards; the forward to the
+pkg/device/uia2_forward_restore_test.go:27:// UIAutomator2 server is re-created before the client retries.
+pkg/device/uia2_forward_restore_test.go:28:func TestRestoreUIAutomator2ForwardRecreatesMissingForward(t *testing.T) {
+pkg/device/uia2_forward_restore_test.go:34:	if err := d.RestoreUIAutomator2Forward(6790); err != nil {
+pkg/device/uia2_forward_restore_test.go:37:	want := "-s emulator-5556 forward localfilesystem:" + d.socketPath + " tcp:6790"
+pkg/device/uia2_forward_restore_test.go:49:// A forward that is still in place is left alone.
+pkg/device/uia2_forward_restore_test.go:50:func TestRestoreUIAutomator2ForwardKeepsLiveForward(t *testing.T) {
+pkg/device/uia2_forward_restore_test.go:57:	if err := d.RestoreUIAutomator2Forward(6790); err != nil {
+pkg/device/uia2_forward_restore_test.go:61:		if strings.Contains(c, "forward localfilesystem:") {
+pkg/device/uia2_forward_restore_test.go:62:			t.Errorf("live forward re-created: %q", calls)
+pkg/device/uia2_forward_restore_test.go:67:// A forward listing that cannot be read proves nothing: the restore returns
+pkg/device/uia2_forward_restore_test.go:69:func TestRestoreUIAutomator2ForwardListFailureKeepsSocket(t *testing.T) {
+pkg/device/uia2_forward_restore_test.go:84:	if err := d.RestoreUIAutomator2Forward(6790); err == nil {
+pkg/device/uia2_forward_restore_test.go:85:		t.Fatal("want the forward --list error")
+pkg/device/uia2_forward_restore_test.go:91:		if strings.Contains(c, "forward localfilesystem:") {
+pkg/device/uia2_forward_restore_test.go:92:			t.Errorf("forward re-created without a listing: %q", calls)
+pkg/device/uia2_forward_restore_test.go:97:// Two retries racing to restore the same device's forward run one after the
+pkg/device/uia2_forward_restore_test.go:99:func TestRestoreUIAutomator2ForwardSerialisesConcurrentRestores(t *testing.T) {
+pkg/device/uia2_forward_restore_test.go:101:	var active, maxActive, forwards int
+pkg/device/uia2_forward_restore_test.go:111:		if forwards > 0 {
+pkg/device/uia2_forward_restore_test.go:114:		if strings.Contains(joined, "forward localfilesystem:") {
+pkg/device/uia2_forward_restore_test.go:115:			forwards++
+pkg/device/uia2_forward_restore_test.go:120:		if strings.Contains(joined, "forward --list") {
+pkg/device/uia2_forward_restore_test.go:132:			if err := d.RestoreUIAutomator2Forward(6790); err != nil {
+pkg/device/uia2_forward_restore_test.go:141:	if forwards != 1 {
+pkg/device/uia2_forward_restore_test.go:142:		t.Errorf("forward re-created %d times, want 1", forwards)
+pkg/executor/parallel_test.go:68:func TestFormatDeviceLabel(t *testing.T) {
+pkg/executor/parallel_test.go:110:			got := formatDeviceLabel(tt.device)
+pkg/executor/parallel_test.go:112:				t.Errorf("formatDeviceLabel() = %q, want %q", got, tt.expected)
+pkg/cli/device.go:243:		AndroidTCPForward:  getBool("android-tcp-forward"),
+pkg/cli/keepalive.go:71:// on iOS (wda), UIAutomator2 on Android's default driver, and the neutral
+pkg/cli/keepalive.go:77:		return "UIAutomator2"
+pkg/cli/keepalive.go:260:	// Clean up driver resources (socket, adb forward, session)
+pkg/executor/tap_options.go:56:	// waitToSettleTimeoutMs settle (the DeviceLab driver's own post-tap settle).
+pkg/executor/tap_options.go:62:// Uses DeviceLab's native event-based settle when available, falls back to hierarchy comparison.
+pkg/executor/tap_options.go:66:	// Check if driver supports native settle (DeviceLab)
+pkg/executor/tap_options.go:155:	// A driver with a native settle (DeviceLab) waits for the screen to stay
+pkg/executor/tap_options_test.go:336:// nativeSettleDriver is a mockDriver with DeviceLab's native settle.
+pkg/uiautomator2/transport_retry_test.go:62:// K06: a refused connection mid-flow (the adb forward dropped on a freshly
+pkg/uiautomator2/transport_retry_test.go:63:// booted emulator) is retried, the forward is re-created, and the call
+pkg/uiautomator2/transport_retry_test.go:90:		t.Error("the forward should be re-created before retrying")
+pkg/uiautomator2/transport_retry_test.go:123:// UIAutomator2, the device and the retry count, after the retry budget.
+pkg/uiautomator2/transport_retry_test.go:124:func TestScreenshotKeepsRefusingNamesUIAutomator2(t *testing.T) {
+pkg/uiautomator2/transport_retry_test.go:137:	if !strings.HasPrefix(msg, "UIAutomator2 server on emulator-5556 stopped responding (connection refused); retried ") {
+pkg/uiautomator2/transport_retry_test.go:153:// reply, the way the forward behaves while the device is off adb.
+pkg/uiautomator2/transport_retry_test.go:204:// not replayed; it still reports the UIAutomator2 server by name.
+pkg/uiautomator2/transport_retry_test.go:226:	if !strings.Contains(err.Error(), "UIAutomator2 server on emulator-5556") {
+pkg/uiautomator2/transport_retry_test.go:227:		t.Errorf("error = %q, want it to name the UIAutomator2 server", err)
+pkg/cli/test_unified_output_test.go:97:func TestFormatDeviceLabel_MarksSimulator(t *testing.T) {
+pkg/cli/test_unified_output_test.go:98:	label := formatDeviceLabel(&report.Device{
+pkg/cli/test_unified_output_test.go:108:	physical := formatDeviceLabel(&report.Device{Name: "iPhone 15", Platform: "ios", OSVersion: "18.0"})
+pkg/core/iospermissions.go:53:// caller should say so rather than sending simctl a name it rejects. Shared by the WDA and DeviceLab iOS drivers so the two
+pkg/cli/test.go:38:// can clean up resources (sockets, adb forwards, sessions) before os.Exit.
+pkg/cli/test.go:180:			Usage:   "Typing speed in keys/sec (default 30). Lower values help apps that drop fast key events. Applies to WDA and the DeviceLab iOS driver (all typing) and to keyPress-mode inputText on uiautomator2; the default DeviceLab Android driver types through its agent and is unaffected.",
+pkg/cli/test.go:190:			Usage:   "Keep the runner session (GrantivaAgent on iOS, UIAutomator2 on Android) alive after flows complete (Ctrl-C to exit)",
+pkg/cli/test.go:194:			Name:  "android-tcp-forward",
+pkg/cli/test.go:195:			Usage: "Force TCP-to-TCP adb forward for Android drivers (auto-enabled when $DEVICEFARM_DEVICE_UDID is set; needed on AWS Device Farm and similar sandboxes that block localfilesystem:/localabstract: forwards)",
+pkg/cli/test.go:606:	// Android driver — TCP forward override
+pkg/cli/test.go:607:	// Forces TCP-to-TCP adb forward instead of the Unix-socket forward
+pkg/cli/test.go:611:	// forwards.
+pkg/cli/test.go:841:		AndroidTCPForward:  getBool("android-tcp-forward"),
+pkg/cli/test.go:1035:	// Pre-checks for iOS with a direct driver (DeviceLab or WDA, not Appium).
+pkg/cli/test.go:1065:		// starts. Standalone debug builds crash and produce a port-forward
+pkg/uiautomator2/types.go:1:// Package uiautomator2 provides HTTP client for UIAutomator2 server.
+pkg/uiautomator2/types.go:4:// Response is the standard UIAutomator2 response format.
+pkg/uiautomator2/types.go:10:// ErrorValue represents an error from UIAutomator2.
+pkg/uiautomator2/types.go:69:// UIAutomator2 gesture APIs expect left/top/width/height format.
+pkg/uiautomator2/transport.go:25:// ServerUnavailableError is a request that could not reach the UIAutomator2
+pkg/uiautomator2/transport.go:40:	server := "UIAutomator2 server"
+pkg/uiautomator2/transport.go:56:// RequestTimeoutError is a request the UIAutomator2 server did not answer
+pkg/uiautomator2/transport.go:68:	server := "UIAutomator2 server"
+pkg/uiautomator2/transport.go:190:// before each retry, typically re-creating the adb forward that a device
+pkg/cli/ios_devicelab_device.go:15:// xcodebuild and reached through a usbmux port forward. The agent runs under
+pkg/core/selectormatch.go:160:// withHint adds hintMatches, a DeviceLab-agent extension over an EditText's
+pkg/core/element.go:3:// Element is an abstraction over native (UIAutomator2) and web (Rod/CDP) elements.
+pkg/uiautomator2/gestures.go:70:// The UIAutomator2 driver therefore double taps through the device's input
+pkg/uiautomator2/gestures.go:96:// sequence as DoubleClick. The UIAutomator2 driver no longer calls it (it
+pkg/report/html.go:27:// is disabled to keep report dirs lean and avoid shipping the DeviceLab-branded
+pkg/report/html.go:1098:                        <img src="data:image/jpeg;base64,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" alt="DeviceLab" style="width:32px;height:32px;" />
+pkg/report/html.go:1102:                        <span class="brand-by">by <a href="https://devicelab.dev/" target="_blank" class="brand-link">DeviceLab</a></span>
+pkg/cli/narration_test.go:149:func TestFormatDeviceLabelNamesEmulatorOnAndroid(t *testing.T) {
+pkg/cli/narration_test.go:178:			got := formatDeviceLabel(&d)
+pkg/cli/narration_test.go:180:				t.Errorf("formatDeviceLabel = %q, want %q", got, tc.want)
+pkg/cli/narration_test.go:184:					t.Errorf("formatDeviceLabel = %q contains %q", got, w)
+pkg/cli/narration_test.go:275:		{name: "explicit driver lower-cased", platform: "android", driver: "UIAutomator2", detected: "android", want: "Driver: uiautomator2"},
+pkg/cli/keepalive_agent_test.go:9:// actually holds: UIAutomator2 on Android, GrantivaAgent on iOS.
+pkg/cli/keepalive_agent_test.go:14:		{"android", "", "UIAutomator2"},
+pkg/cli/keepalive_agent_test.go:15:		{"android", "uiautomator2", "UIAutomator2"},
+pkg/cli/keepalive_agent_test.go:16:		{"", "", "UIAutomator2"}, // detected Android default
+pkg/cli/keepalive_agent_test.go:41:	if got := keepAliveBanner("UIAutomator2", 0, "s1"); got != "  UIAutomator2 keep-alive: session=s1" {
+pkg/cli/keepalive_agent_test.go:44:	if got := keepAliveReleaseLine("UIAutomator2"); got != "  Releasing UIAutomator2 session..." {
+pkg/report/allure_test.go:656:	if exec.Name != "DeviceLab" {
+pkg/report/allure_test.go:657:		t.Errorf("executor name = %q, want DeviceLab", exec.Name)
+pkg/report/allure_test.go:665:	if exec.ReportName != "Powered by DeviceLab" {
+pkg/report/allure.go:441:// writeAllureExecutor writes executor.json with DeviceLab branding.
+pkg/report/allure.go:444:		Name:       "DeviceLab",
+pkg/report/allure.go:447:		ReportName: "Powered by DeviceLab",
+pkg/maestro/client.go:25:// Client communicates with the DeviceLab on-device driver over WebSocket.
+pkg/cli/cli.go:92:		Usage:   "Skip driver installation (UIAutomator2, WDA, DeviceLab)",
+pkg/cli/cli.go:134:		Usage:   "Override driver start timeout in seconds (0 = use driver default — 30s for UIAutomator2 / DeviceLab Android, 90s for WDA iOS). Bump to 120+ for slow cloud farms (AWS Device Farm, low-end shared devices) where APK install + dex2oat takes >30s.",
+pkg/cli/cli.go:167:  # Run with default UIAutomator2 driver
+pkg/maestro/protocol.go:1:// Package maestro provides a WebSocket-based client for the DeviceLab on-device driver.
+pkg/cli/cli_test.go:203:// — see createUIAutomator2Driver / createDeviceLabDriver in android.go.
+pkg/cli/android.go:23:// useAndroidTCPForward decides whether to force TCP-to-TCP adb forwards
+pkg/cli/android.go:24:// (instead of the default Linux/Mac unix-socket forward) for Android
+pkg/cli/android.go:28:// localfilesystem:/localabstract: forwards but allows plain tcp:,
+pkg/cli/android.go:45:		// Grantiva fork: UIAutomator2 stays the default Android driver (upstream
+pkg/cli/android.go:46:		// 1.1.28 switched to DeviceLab). The grantiva CLI passes no --driver.
+pkg/cli/android.go:95:		socketPath := dev.DeviceLabDriverSocketPath()
+pkg/cli/android.go:97:			return nil, nil, fmt.Errorf("device %s is already in use by DeviceLab driver\n"+
+pkg/cli/android.go:122:		driver, cleanup, err = createUIAutomator2Driver(cfg, dev, info)
+pkg/cli/android.go:124:		driver, cleanup, err = createDeviceLabDriver(cfg, dev, info)
+pkg/cli/android.go:151:// createUIAutomator2Driver creates a direct UIAutomator2 driver (no Appium server needed).
+pkg/cli/android.go:152:func createUIAutomator2Driver(cfg *RunConfig, dev *device.AndroidDevice, info device.DeviceInfo) (core.Driver, func(), error) {
+pkg/cli/android.go:153:	// 1. Check/install UIAutomator2 APKs
+pkg/cli/android.go:154:	if !cfg.NoDriverInstall && !dev.IsInstalled(device.UIAutomator2Server) {
+pkg/cli/android.go:155:		printSetupStep("Installing UIAutomator2 APKs...")
+pkg/cli/android.go:160:		if err := dev.InstallUIAutomator2(apksDir); err != nil {
+pkg/cli/android.go:161:			return nil, nil, fmt.Errorf("install UIAutomator2: %w", err)
+pkg/cli/android.go:163:		printSetupSuccess("UIAutomator2 installed")
+pkg/cli/android.go:166:	// 2. Start UIAutomator2 server
+pkg/cli/android.go:167:	printSetupStep("Starting UIAutomator2 server...")
+pkg/cli/android.go:168:	logger.Info("Starting UIAutomator2 server on device %s", dev.Serial())
+pkg/cli/android.go:169:	uia2Cfg := device.DefaultUIAutomator2Config()
+pkg/cli/android.go:172:		logger.Info("Overriding UIAutomator2 start timeout to %v (--driver-start-timeout)", uia2Cfg.Timeout)
+pkg/cli/android.go:176:		logger.Info("Android: using TCP-to-TCP adb forward (AWS DF / --android-tcp-forward)")
+pkg/cli/android.go:178:	if err := dev.StartUIAutomator2(uia2Cfg); err != nil {
+pkg/cli/android.go:179:		logger.Error("Failed to start UIAutomator2: %v", err)
+pkg/cli/android.go:180:		return nil, nil, fmt.Errorf("start UIAutomator2: %w", err)
+pkg/cli/android.go:191:	if !dev.IsUIAutomator2Running() {
+pkg/cli/android.go:192:		return nil, nil, fmt.Errorf("UIAutomator2 server not responding after start")
+pkg/cli/android.go:194:	printSetupSuccess("UIAutomator2 server started")
+pkg/cli/android.go:208:	// K06: name the device in connection errors and re-create the forward
+pkg/cli/android.go:210:	client.SetRecovery(dev.Serial(), func() error { return dev.RestoreUIAutomator2Forward(uia2Cfg.DevicePort) })
+pkg/cli/android.go:214:	logger.Info("Creating UIAutomator2 session with capabilities: Platform=Android, Device=%s", info.Model)
+pkg/cli/android.go:221:		if stopErr := dev.StopUIAutomator2(); stopErr != nil {
+pkg/cli/android.go:222:			logger.Warn("failed to stop UIAutomator2 after session failure: %v", stopErr)
+pkg/cli/android.go:308:		if err := dev.StopUIAutomator2(); err != nil {
+pkg/cli/android.go:309:			logger.Warn("failed to stop UIAutomator2 during cleanup: %v", err)
+pkg/cli/android.go:336:// Skips devices whose UIAutomator2 socket is already bound by another maestro-runner instance.
+pkg/cli/android.go:391:// createDeviceLabDriver creates a DeviceLab Android Driver (WebSocket-based).
+pkg/cli/android.go:393:func createDeviceLabDriver(cfg *RunConfig, dev *device.AndroidDevice, info device.DeviceInfo) (core.Driver, func(), error) {
+pkg/cli/android.go:394:	// 1. Check/install DeviceLab driver APKs (always check for updates)
+pkg/cli/android.go:400:		if err := dev.InstallDeviceLabDriver(apksDir); err != nil {
+pkg/cli/android.go:401:			return nil, nil, fmt.Errorf("install DeviceLab driver: %w", err)
+pkg/cli/android.go:405:	// 2. Start DeviceLab Android Driver
+pkg/cli/android.go:406:	printSetupStep("Starting DeviceLab driver...")
+pkg/cli/android.go:407:	logger.Info("Starting DeviceLab driver on device %s", dev.Serial())
+pkg/cli/android.go:408:	driverCfg := device.DefaultDeviceLabDriverConfig()
+pkg/cli/android.go:411:		logger.Info("Overriding DeviceLab driver start timeout to %v (--driver-start-timeout)", driverCfg.Timeout)
+pkg/cli/android.go:415:		logger.Info("Android: using TCP-to-TCP adb forward (AWS DF / --android-tcp-forward)")
+pkg/cli/android.go:417:	if err := dev.StartDeviceLabDriver(driverCfg); err != nil {
+pkg/cli/android.go:418:		logger.Error("Failed to start DeviceLab driver: %v", err)
+pkg/cli/android.go:419:		return nil, nil, fmt.Errorf("start DeviceLab driver: %w", err)
+pkg/cli/android.go:422:	if dev.DeviceLabDriverSocket() != "" {
+pkg/cli/android.go:423:		fmt.Printf("  → Socket: %s\n", dev.DeviceLabDriverSocket())
+pkg/cli/android.go:424:	} else if dev.DeviceLabDriverLocalPort() != 0 {
+pkg/cli/android.go:425:		fmt.Printf("  → Port: %d\n", dev.DeviceLabDriverLocalPort())
+pkg/cli/android.go:428:	if !dev.IsDeviceLabDriverRunning() {
+pkg/cli/android.go:429:		return nil, nil, fmt.Errorf("DeviceLab driver not responding after start")
+pkg/cli/android.go:431:	printSetupSuccess("DeviceLab driver started")
+pkg/cli/android.go:435:	if dev.DeviceLabDriverSocket() != "" {
+pkg/cli/android.go:436:		wsClient = maestro.NewClient(dev.DeviceLabDriverSocket())
+pkg/cli/android.go:438:		wsClient = maestro.NewClientTCP(dev.DeviceLabDriverLocalPort())
+pkg/cli/android.go:448:		if stopErr := dev.StopDeviceLabDriver(); stopErr != nil {
+pkg/cli/android.go:449:			logger.Warn("failed to stop DeviceLab driver after connect failure: %v", stopErr)
+pkg/cli/android.go:459:	logger.Info("Creating DeviceLab driver session")
+pkg/cli/android.go:464:		if stopErr := dev.StopDeviceLabDriver(); stopErr != nil {
+pkg/cli/android.go:465:			logger.Warn("failed to stop DeviceLab driver after session failure: %v", stopErr)
+pkg/cli/android.go:473:	// the agent's settle diagnostics (logcat, tag DeviceLabBridge).
+pkg/cli/android.go:519:	// 7. Create driver (DeviceLab-specific driver with RPC support)
+pkg/cli/android.go:547:	// Enable WebView CDP element finding via ADB socket forwarding
+pkg/cli/android.go:557:		if err := dev.StopDeviceLabDriver(); err != nil {
+pkg/cli/android.go:558:			logger.Warn("failed to stop DeviceLab driver during cleanup: %v", err)
+pkg/cli/android.go:565:// sessionCreator is the part of the UIAutomator2 client that starts a
+pkg/cli/android.go:585:	logger.Warn("UIAutomator2 session start failed in transport (%v); retrying once", err)
+pkg/cli/test_unified_output.go:91:// formatDeviceLabel formats device info for display.
+pkg/cli/test_unified_output.go:92:func formatDeviceLabel(device *report.Device) string {
+pkg/cli/test_unified_output.go:115:		deviceLabel := formatDeviceLabel(flowEntry.Device)
+pkg/cli/test_unified_output.go:284:		deviceLabel := formatDeviceLabel(flowEntry.Device)
+pkg/driver/devicelab_ios_legacy/lifecycle.go:25:// SIMCTL_CHILD_ prefix simctl forwards to the app. Nil keeps the default.
+pkg/driver/devicelab/webview.go:25:// CDPForwarder handles ADB socket forwarding for CDP connections.
+pkg/driver/devicelab/webview.go:44:	socketPath string // local forwarded socket path
+pkg/driver/devicelab/webview.go:59:	// lazily on the same forwarded socket; closed on disconnect.
+pkg/driver/devicelab/webview.go:72:	forwarder CDPForwarder
+pkg/driver/devicelab/webview.go:75:func newWebViewManager(forwarder CDPForwarder) *webViewManager {
+pkg/driver/devicelab/webview.go:77:		forwarder: forwarder,
+pkg/driver/devicelab/webview.go:104:// connectViaUnixSocket uses ADB Unix socket forwarding with a custom dialer.
+pkg/driver/devicelab/webview.go:106:	socketPath := m.forwarder.CDPSocketPath()
+pkg/driver/devicelab/webview.go:108:	// Step 4: ADB socket forwarding (local unix socket → device abstract socket)
+pkg/driver/devicelab/webview.go:109:	logger.Info("[cdp:4-forward] setting up ADB forward: local=%s → device=%s", socketPath, cdpInfo.Socket)
+pkg/driver/devicelab/webview.go:110:	if err := m.forwarder.ForwardToAbstractSocket(socketPath, cdpInfo.Socket); err != nil {
+pkg/driver/devicelab/webview.go:111:		logger.Info("[cdp:4-forward] ADB forward failed: %v", err)
+pkg/driver/devicelab/webview.go:112:		return fmt.Errorf("failed to forward CDP socket: %w", err)
+pkg/driver/devicelab/webview.go:114:	logger.Info("[cdp:4-forward] ADB forward established: local=%s → device=%s", socketPath, cdpInfo.Socket)
+pkg/driver/devicelab/webview.go:127:		_ = m.forwarder.RemoveSocketForward(socketPath)
+pkg/driver/devicelab/webview.go:151:		_ = m.forwarder.RemoveSocketForward(socketPath)
+pkg/driver/devicelab/webview.go:160:		_ = m.forwarder.RemoveSocketForward(socketPath)
+pkg/driver/devicelab/webview.go:254:// connection to the same forwarded WebView socket, used only for iframe evals so
+pkg/driver/devicelab/webview.go:267:		return nil, fmt.Errorf("no forwarded socket for eval connection")
+pkg/driver/devicelab/webview.go:883:	socketPath := m.forwarder.CDPSocketPath()
+pkg/driver/devicelab/webview.go:885:	// Step 4: ADB socket forwarding
+pkg/driver/devicelab/webview.go:886:	logger.Info("[cdp:4-forward] setting up ADB forward: local=%s → device=%s", socketPath, cdpInfo.Socket)
+pkg/driver/devicelab/webview.go:887:	if err := m.forwarder.ForwardToAbstractSocket(socketPath, cdpInfo.Socket); err != nil {
+pkg/driver/devicelab/webview.go:888:		logger.Info("[cdp:4-forward] ADB forward failed: %v", err)
+pkg/driver/devicelab/webview.go:889:		return fmt.Errorf("failed to forward CDP socket: %w", err)
+pkg/driver/devicelab/webview.go:891:	logger.Info("[cdp:4-forward] ADB forward established: local=%s → device=%s", socketPath, cdpInfo.Socket)
+pkg/driver/devicelab/webview.go:898:		_ = m.forwarder.RemoveSocketForward(socketPath)
+pkg/driver/devicelab/webview.go:916:		_ = m.forwarder.RemoveSocketForward(socketPath)
+pkg/driver/devicelab/webview.go:939:		_ = m.forwarder.RemoveSocketForward(socketPath)
+pkg/driver/devicelab/webview.go:956:		_ = m.forwarder.RemoveSocketForward(socketPath)
+pkg/driver/devicelab/webview.go:966:		_ = m.forwarder.RemoveSocketForward(socketPath)
+pkg/driver/devicelab/webview.go:1027:// Uses HTTP /json/close/<id> via the forwarded Unix socket. Best-effort — errors are logged but ignored.
+pkg/driver/devicelab/webview.go:1055:// disconnect closes the Rod connection and cleans up ADB forwarding.
+pkg/driver/devicelab/webview.go:1073:		logger.Info("[cdp:disconnect] removing ADB forward and cleaning up: %s", m.socketPath)
+pkg/driver/devicelab/webview.go:1074:		_ = m.forwarder.RemoveSocketForward(m.socketPath)
+pkg/driver/devicelab/webview.go:1081:// cleanup tears down the entire CDP connection — Rod browser, ADB forward, local socket.
+pkg/driver/devicelab/webview.go:1102:		logger.Info("[cdp:cleanup] removing ADB forward: %s", socketPath)
+pkg/driver/devicelab/webview.go:1103:		_ = m.forwarder.RemoveSocketForward(socketPath)
+pkg/driver/devicelab/webview.go:1202:// (Rod browser, ADB forward, local socket file) so the next ensureWebViewConnection
+pkg/driver/devicelab/webview.go:1738:// DialContext dials the forwarded socket and puts ctx's deadline on the
+pkg/driver/devicelab/webview.go:1740:// forward succeeds at once; the WebSocket handshake then read with no
+pkg/driver/appium/commands.go:379:	// `from:` confines the scroll to a container. Only the UIAutomator2 driver
+pkg/driver/appium/commands.go:1094:	// backspace) as there; it was 112, forward-delete, which removes nothing
+pkg/driver/wda/commands.go:770:	// `from:` confines the scroll to a container. Only the UIAutomator2 driver
+pkg/driver/wda/commands.go:929:			dir = "up" // match the UIAutomator2 driver default
+pkg/driver/wda/commands.go:1535:	// Uninstall via xcrun devicectl (uses remoted, doesn't disrupt usbmuxd port forwarding)
+pkg/driver/wda/commands.go:2069:// table is shared with the DeviceLab iOS driver in pkg/core.
+pkg/driver/wda/commands.go:2107:// service names. Shared with the DeviceLab iOS driver via pkg/core.
+pkg/driver/devicelab/driver.go:1:// Package devicelab provides Android automation driver using the DeviceLab Android Driver.
+pkg/driver/devicelab/driver.go:3:// Unlike the UIAutomator2 HTTP driver, element taps are always coordinate-based
+pkg/driver/devicelab/driver.go:27:// DeviceLabClient defines the interface for DeviceLab driver operations.
+pkg/driver/devicelab/driver.go:30:type DeviceLabClient interface {
+pkg/driver/devicelab/driver.go:102:// Driver implements core.Driver using the DeviceLab Android Driver.
+pkg/driver/devicelab/driver.go:107:	client DeviceLabClient
+pkg/driver/devicelab/driver.go:211:// New creates a new DeviceLab driver.
+pkg/driver/devicelab/driver.go:212:func New(client DeviceLabClient, info *core.PlatformInfo, device ShellExecutor) *Driver {
+pkg/driver/devicelab/driver.go:394:// SetWebViewForwarder enables WebView CDP support using the given ADB forwarder.
+pkg/driver/devicelab/driver.go:396:func (d *Driver) SetWebViewForwarder(forwarder CDPForwarder) {
+pkg/driver/devicelab/driver.go:397:	d.webView = newWebViewManager(forwarder)
+pkg/driver/devicelab/driver.go:400:// Close cleans up resources (WebView CDP connection, ADB forwards).
+pkg/driver/devicelab/driver.go:1061:// DeviceLab behavior: non-clickable first (fastest match), then clickable fallback.
+pkg/driver/devicelab/driver.go:1158:// a DeviceLab-agent extension, so "tapOn: 'Email'" finds an empty field by
+pkg/driver/devicelab/driver.go:1810:// buildSelectors converts a Maestro Selector to UIAutomator2 locator strategies.
+pkg/driver/devicelab/driver.go:1859:	// (#188). hintMatches is a DeviceLab-agent extension: it matches the
+pkg/driver/uiautomator2/input_timeout_test.go:79:// text: the step fails naming UIAutomator2 and the timeout, once.
+pkg/driver/uiautomator2/input_timeout_test.go:87:	if !strings.Contains(line, "UIAutomator2") || !strings.Contains(line, "within") {
+pkg/driver/uiautomator2/input_timeout_test.go:88:		t.Errorf("failure should name UIAutomator2 and the timeout: %q", line)
+pkg/driver/devicelab/commands.go:1356:	// `from:` confines the scroll to a container. Only the UIAutomator2 driver
+pkg/driver/devicelab/commands.go:1403:			// The DeviceLab agent returns matches from the full view hierarchy,
+pkg/driver/devicelab/commands.go:1458:// on-device DeviceLab agent's MotionEvent injection. ADB falls back to the
+pkg/driver/devicelab/commands.go:1505:// scrollDurationMs is the swipe duration (in ms) passed to the DeviceLab
+pkg/driver/devicelab/native_element.go:8:// NativeElement wraps a UIAutomator2 element to implement core.Element.
+pkg/driver/devicelab/native_element.go:11:	client DeviceLabClient
+pkg/uiautomator2/element.go:320:// Cached elements (NewCachedElement, used by the DeviceLab WebSocket adapter)
+pkg/driver/browser/cdp/commands.go:703:	// `from:` confines the scroll to a container. Only the UIAutomator2 driver
+pkg/driver/devicelab/physicalscreen_test.go:40:	d := New(&mockDeviceLabClient{}, &core.PlatformInfo{ScreenWidth: 1080, ScreenHeight: 2204}, shell)
+pkg/driver/devicelab/physicalscreen_test.go:64:	d := New(&mockDeviceLabClient{}, &core.PlatformInfo{ScreenWidth: 1080, ScreenHeight: 2204}, shell)
+pkg/driver/devicelab/physicalscreen_test.go:89:	d := New(&mockDeviceLabClient{}, &core.PlatformInfo{}, shell)
+pkg/driver/devicelab/draganddrop_test.go:14:	d := New(&mockDeviceLabClient{}, &core.PlatformInfo{ScreenWidth: 1000, ScreenHeight: 2000}, shell)
+pkg/driver/devicelab/draganddrop_test.go:41:	d := New(&mockDeviceLabClient{}, &core.PlatformInfo{ScreenWidth: 1000, ScreenHeight: 2000}, shell)
+pkg/driver/devicelab_ios/wir_test.go:104:		case "_rpc_forwardGetListing:":
+pkg/driver/devicelab_ios/wir_test.go:111:		case "_rpc_forwardSocketSetup:":
+pkg/driver/devicelab_ios/wir_test.go:124:		case "_rpc_forwardSocketData:":
+pkg/driver/devicelab/fresh_text_test.go:14:// like the DeviceLab adapter builds one: text cached from the find, writes
+pkg/driver/devicelab/fresh_text_test.go:51:// The cached text of a DeviceLab element is the value from the find. Reading it
+pkg/driver/devicelab/commands_test.go:16:// mockDeviceLabClient is a minimal mock for scrollUntilVisible tests.
+pkg/driver/devicelab/commands_test.go:17:type mockDeviceLabClient struct {
+pkg/driver/devicelab/commands_test.go:30:func (m *mockDeviceLabClient) FindElement(strategy, selector string) (*uiautomator2.Element, error) {
+pkg/driver/devicelab/commands_test.go:33:func (m *mockDeviceLabClient) FindAndClick(strategy, selector string) (*uiautomator2.Element, error) {
+pkg/driver/devicelab/commands_test.go:42:func (m *mockDeviceLabClient) FindFirstAndClickChecked([]string, int, int, bool) (*uiautomator2.Element, bool, string, int, error) {
+pkg/driver/devicelab/commands_test.go:46:func (m *mockDeviceLabClient) FindAndClickChecked(strategy, selector string, screenW, screenH int, hitTest bool) (*uiautomator2.Element, bool, string, error) {
+pkg/driver/devicelab/commands_test.go:51:func (m *mockDeviceLabClient) FindAndClickGuarded(strategy, selector string, screenW, screenH int) (*uiautomator2.Element, bool, error) {
+pkg/driver/devicelab/commands_test.go:60:func (m *mockDeviceLabClient) ActiveElement() (*uiautomator2.Element, error) { return nil, nil }
+pkg/driver/devicelab/commands_test.go:61:func (m *mockDeviceLabClient) SetImplicitWait(timeout time.Duration) error   { return nil }
+pkg/driver/devicelab/commands_test.go:62:func (m *mockDeviceLabClient) Click(x, y int) error                          { return nil }
+pkg/driver/devicelab/commands_test.go:63:func (m *mockDeviceLabClient) DoubleClick(x, y int) error                    { return nil }
+pkg/driver/devicelab/commands_test.go:64:func (m *mockDeviceLabClient) DoubleClickElement(elementID string) error     { return nil }
+pkg/driver/devicelab/commands_test.go:65:func (m *mockDeviceLabClient) LongClick(x, y, durationMs int) error          { return nil }
+pkg/driver/devicelab/commands_test.go:66:func (m *mockDeviceLabClient) LongClickElement(elementID string, durationMs int) error {
+pkg/driver/devicelab/commands_test.go:69:func (m *mockDeviceLabClient) ScrollInArea(area uiautomator2.RectModel, direction string, percent float64, speed int) error {
+pkg/driver/devicelab/commands_test.go:73:func (m *mockDeviceLabClient) SwipeInArea(area uiautomator2.RectModel, direction string, percent float64, speed int) error {
+pkg/driver/devicelab/commands_test.go:76:func (m *mockDeviceLabClient) SwipeCoords(startX, startY, endX, endY, durationMs int) error {
+pkg/driver/devicelab/commands_test.go:80:func (m *mockDeviceLabClient) Back() error                                   { return nil }
+pkg/driver/devicelab/commands_test.go:81:func (m *mockDeviceLabClient) HideKeyboard() error                           { return nil }
+pkg/driver/devicelab/commands_test.go:82:func (m *mockDeviceLabClient) PressKeyCode(keyCode int) error                { return nil }
+pkg/driver/devicelab/commands_test.go:83:func (m *mockDeviceLabClient) SendKeyActions(text string) error              { return nil }
+pkg/driver/devicelab/commands_test.go:84:func (m *mockDeviceLabClient) AddMedia(name, mime string, data []byte) error { return nil }
+pkg/driver/devicelab/commands_test.go:85:func (m *mockDeviceLabClient) Screenshot() ([]byte, error)                   { return nil, nil }
+pkg/driver/devicelab/commands_test.go:86:func (m *mockDeviceLabClient) Source() (string, error) {
+pkg/driver/devicelab/commands_test.go:92:func (m *mockDeviceLabClient) Snapshot(int) (string, error) {
+pkg/driver/devicelab/commands_test.go:98:func (m *mockDeviceLabClient) GetOrientation() (string, error) { return "PORTRAIT", nil }
+pkg/driver/devicelab/commands_test.go:99:func (m *mockDeviceLabClient) SetOrientation(string) error     { return nil }
+pkg/driver/devicelab/commands_test.go:100:func (m *mockDeviceLabClient) GetClipboard() (string, error)   { return "", nil }
+pkg/driver/devicelab/commands_test.go:101:func (m *mockDeviceLabClient) SetClipboard(string) error       { return nil }
+pkg/driver/devicelab/commands_test.go:102:func (m *mockDeviceLabClient) GetDeviceInfo() (*uiautomator2.DeviceInfo, error) {
+pkg/driver/devicelab/commands_test.go:105:func (m *mockDeviceLabClient) LaunchApp(string, map[string]interface{}) error { return nil }
+pkg/driver/devicelab/commands_test.go:106:func (m *mockDeviceLabClient) ForceStop(string) error                         { return nil }
+pkg/driver/devicelab/commands_test.go:107:func (m *mockDeviceLabClient) ClearAppData(string) error                      { return nil }
+pkg/driver/devicelab/commands_test.go:108:func (m *mockDeviceLabClient) GrantPermissions(string, []string) error        { return nil }
+pkg/driver/devicelab/commands_test.go:109:func (m *mockDeviceLabClient) SetAppiumSettings(map[string]interface{}) error { return nil }
+pkg/driver/devicelab/commands_test.go:110:func (m *mockDeviceLabClient) WaitForSettle(int, int) (bool, error)           { return true, nil }
+pkg/driver/devicelab/commands_test.go:111:func (m *mockDeviceLabClient) TreeHash() (uint64, error)                      { return 0, nil }
+pkg/driver/devicelab/commands_test.go:112:func (m *mockDeviceLabClient) FindFirstOf([]string) (*uiautomator2.Element, error) {
+pkg/driver/devicelab/commands_test.go:115:func (m *mockDeviceLabClient) WaitForWindowUpdate(string, int) (bool, error) { return false, nil }
+pkg/driver/devicelab/commands_test.go:118:var _ DeviceLabClient = (*mockDeviceLabClient)(nil)
+pkg/driver/devicelab/commands_test.go:122:	client := &mockDeviceLabClient{
+pkg/driver/devicelab/commands_test.go:148:	client := &mockDeviceLabClient{
+pkg/driver/devicelab/commands_test.go:180:	client := &mockDeviceLabClient{
+pkg/driver/devicelab/commands_test.go:284:	client := &mockDeviceLabClient{sourceFunc: func() (string, error) {
+pkg/driver/devicelab/commands_test.go:330:	client := &mockDeviceLabClient{
+pkg/driver/uiautomator2/not_found_message_test.go:118:// the UIAutomator2 server once in the step line, not again as the cause.
+pkg/driver/uiautomator2/not_found_message_test.go:131:		if n := strings.Count(line, "UIAutomator2 server on emulator-5556 stopped responding"); n != 1 {
+pkg/driver/appium/tap_selector_fields_test.go:90:// backspace (67), not forward-delete (112).
+pkg/maestro/adapter.go:15:// by translating each method to a WebSocket RPC call to the DeviceLab Android Driver.
+pkg/driver/uiautomator2/driver_test.go:1411:// setupMockServer creates a test server that mimics UIAutomator2 responses.
+pkg/driver/uiautomator2/driver_test.go:1746:// Note: UIAutomator2 by default only returns visible elements, so we assume visible=true when found.
+pkg/driver/uiautomator2/driver_test.go:3405:// TestKeyPressAppliesTypingDelay verifies keyPress-mode inputText forwards the
+pkg/driver/devicelab/crash.go:13:// driver has explained this for a while; this brings the DeviceLab driver level,
+pkg/driver/uiautomator2/bare_scroll_test.go:14:// issued through the UIAutomator2 server, centred on the screen and spanning
+pkg/driver/devicelab/commands_helpers_test.go:135:	driver := New(&mockDeviceLabClient{}, &core.PlatformInfo{}, shell)
+pkg/driver/devicelab/commands_helpers_test.go:146:	driver := New(&mockDeviceLabClient{}, &core.PlatformInfo{}, &mockShell{})
+pkg/driver/devicelab/commands_helpers_test.go:154:	driver := New(&mockDeviceLabClient{}, &core.PlatformInfo{}, nil)
+pkg/driver/devicelab/commands_helpers_test.go:162:	driver := New(&mockDeviceLabClient{}, &core.PlatformInfo{}, &mockShell{err: errors.New("boom")})
+pkg/driver/devicelab/commands_helpers_test.go:171:	driver := New(&mockDeviceLabClient{}, &core.PlatformInfo{}, shell)
+pkg/driver/devicelab/commands_helpers_test.go:182:	driver := New(&mockDeviceLabClient{}, &core.PlatformInfo{}, &mockShell{})
+pkg/driver/devicelab/commands_helpers_test.go:190:	driver := New(&mockDeviceLabClient{}, &core.PlatformInfo{}, nil)
+pkg/driver/devicelab/commands_helpers_test.go:199:	driver := New(&mockDeviceLabClient{}, &core.PlatformInfo{}, shell)
+pkg/driver/devicelab/commands_helpers_test.go:212:	driver := New(&mockDeviceLabClient{}, &core.PlatformInfo{}, &mockShell{})
+pkg/driver/devicelab/commands_helpers_test.go:220:	driver := New(&mockDeviceLabClient{}, &core.PlatformInfo{}, nil)
+pkg/driver/devicelab/commands_helpers_test.go:233:		driver := New(&mockDeviceLabClient{}, &core.PlatformInfo{}, shell)
+pkg/driver/devicelab/commands_helpers_test.go:269:		driver := New(&mockDeviceLabClient{}, &core.PlatformInfo{}, shell)
+pkg/driver/devicelab/commands_helpers_test.go:285:		driver := New(&mockDeviceLabClient{}, &core.PlatformInfo{}, shell)
+pkg/driver/devicelab/commands_helpers_test.go:297:		driver := New(&mockDeviceLabClient{}, &core.PlatformInfo{}, shell)
+pkg/driver/devicelab/commands_helpers_test.go:352:// Trackable mock client (extends mockDeviceLabClient with call recording)
+pkg/driver/devicelab/commands_helpers_test.go:355:// trackingClient records the most recent calls. Embeds mockDeviceLabClient
+pkg/driver/devicelab/commands_helpers_test.go:358:	*mockDeviceLabClient
+pkg/driver/devicelab/commands_helpers_test.go:379:	return &trackingClient{mockDeviceLabClient: &mockDeviceLabClient{}}
+pkg/driver/wda/kept_connections_test.go:21:// that many: a forward whose new connections fail, while kept ones work.
+pkg/driver/wda/kept_connections_test.go:88:// Where a new connection fails (the phone's forward), only the first burst opens any, so the
+pkg/driver/wda/header_env_launch_test.go:59:// `stopApp: false`, header-only variables bring the app forward and are
+pkg/driver/devicelab_ios/device_launch.go:15:	"github.com/danielpaulus/go-ios/ios/forward"
+pkg/driver/devicelab_ios/device_launch.go:22:// test-without-building with the re-signed agent, the port forwarded over
+pkg/driver/devicelab_ios/device_launch.go:40:// xcodebuild and forwards its port to 127.0.0.1. An agent xcodebuild runs
+pkg/driver/devicelab_ios/device_launch.go:82:// or fails in a way a retry can fix. The port and its forward are chosen once
+pkg/driver/devicelab_ios/device_launch.go:301:// startForward forwards 127.0.0.1:port to the same port on the device over
+pkg/driver/devicelab_ios/device_launch.go:306:	if a.forward != nil {
+pkg/driver/devicelab_ios/device_launch.go:313:	l, err := forward.Forward(entry, uint16(a.port), uint16(a.port))
+pkg/driver/devicelab_ios/device_launch.go:315:		return fmt.Errorf("forward port %d to device %s: %w", a.port, a.opts.UDID, err)
+pkg/driver/devicelab_ios/device_launch.go:317:	a.forward = l
+pkg/driver/devicelab_ios/device_launch.go:323:	l := a.forward
+pkg/driver/devicelab_ios/device_launch.go:324:	a.forward = nil
+pkg/driver/devicelab_ios/device_launch.go:328:			logger.Debug("[devicelab-ios] close port forward: %v", err)
+pkg/driver/uiautomator2/driver.go:1:// Package uiautomator2 provides Android automation driver using UIAutomator2 server.
+pkg/driver/uiautomator2/driver.go:29:// UIA2Client defines the interface for UIAutomator2 client operations.
+pkg/driver/uiautomator2/driver.go:166:// Driver implements core.Driver using UIAutomator2.
+pkg/driver/uiautomator2/driver.go:261:// New creates a new UIAutomator2 driver.
+pkg/driver/uiautomator2/driver.go:1056:		// UIAutomator2 by default only returns visible elements
+pkg/driver/uiautomator2/driver.go:1654:// buildSelectors converts a Maestro Selector to UIAutomator2 locator strategies.
+pkg/driver/uiautomator2/driver.go:1878:	// An unreachable UIAutomator2 server is named once, in the step message
+pkg/driver/uiautomator2/driver.go:1879:	// ("Failed to take screenshot: UIAutomator2 server on emulator-5556
+pkg/driver/uiautomator2/deterministic_gestures_test.go:20:// gesturePad fakes the demo's Gesture Lab pad behind a UIAutomator2 server:
+pkg/driver/uiautomator2/deterministic_gestures_test.go:454:// drag through the UIAutomator2 server with an explicit duration: from the
+pkg/driver/uiautomator2/commands.go:349:// host nor the UIAutomator2 server's synchronous injection sits between
+pkg/driver/uiautomator2/commands.go:743:				unicodeWarning += " (UIAutomator2 answered late; the field holds the text)"
+pkg/driver/uiautomator2/commands.go:833:// isRequestTimeout reports whether err is a UIAutomator2 request that was
+pkg/driver/uiautomator2/commands.go:1702:// UIAutomator2 server as one W3C pointer sequence: no hold before the move
+pkg/driver/uiautomator2/commands.go:1938:	// Strategy 1: Use UIAutomator2 server endpoint (most reliable)
+pkg/driver/uiautomator2/commands.go:2074:// a quiet host and 5-10 s under load. Until then the UIAutomator2 server
+pkg/driver/uiautomator2/commands.go:2130:// drawn. Before that, the UIAutomator2 server holds a lookup until the
+pkg/driver/uiautomator2/commands.go:2989:	// PORTRAIT and LANDSCAPE: use UIAutomator2 API
+pkg/driver/wda/runner.go:19:	"github.com/danielpaulus/go-ios/ios/forward"
+pkg/driver/wda/runner.go:74:	portForwardListener io.Closer // Port forwarding for physical devices (go-ios)
+pkg/driver/wda/runner.go:335:			// For physical devices, forward the WDA port from device to localhost.
+pkg/driver/wda/runner.go:339:					return fmt.Errorf("failed to start port forwarding: %w", pferr)
+pkg/driver/wda/runner.go:439:// startPortForward uses go-ios to forward the WDA port from a physical device to localhost.
+pkg/driver/wda/runner.go:446:	listener, err := forward.Forward(entry, r.port, r.port)
+pkg/driver/wda/runner.go:448:		return fmt.Errorf("port forward %d->%d failed: %w", r.port, r.port, err)
+pkg/driver/wda/runner.go:452:	// Give the forward a moment to establish
+pkg/driver/wda/runner.go:459:// so the WDA test runner process starts on the allocated port.
+pkg/driver/wda/runner.go:528:	// Stop port forwarding if running (for physical devices)
+pkg/driver/wda/runner.go:531:			logger.Warn("failed to close port forward listener: %v", err)
+pkg/driver/devicelab_ios/lifecycle.go:101:// the app's variables under the SIMCTL_CHILD_ prefix simctl forwards.
+pkg/driver/uiautomator2/launch_crash_after_draw_test.go:611:	server.Close() // a refused connection would normally restore the ADB forward
+pkg/driver/devicelab/lazyretry_test.go:19:	d := &Driver{client: &mockDeviceLabClient{}}
+pkg/driver/devicelab/lazyretry_test.go:40:	d := &Driver{client: &mockDeviceLabClient{}}
+pkg/driver/devicelab_ios/agent.go:61:	// ids the agent was signed as and the usbmux port forward.
+pkg/driver/devicelab_ios/agent.go:68:	forward  io.Closer
+pkg/driver/devicelab_ios/wir.go:194:	go func() { _ = c.send("_rpc_forwardGetListing:", map[string]any{"WIRApplicationIdentifierKey": id}) }()
+pkg/driver/devicelab_ios/wir.go:315:	err := c.send("_rpc_forwardSocketSetup:", map[string]any{
+pkg/driver/devicelab_ios/wir.go:486:	err = s.client.send("_rpc_forwardSocketData:", map[string]any{
+pkg/driver/devicelab_ios/wir.go:526:	_ = c.send("_rpc_forwardDidClose:", map[string]any{
+pkg/driver/devicelab/keyboard_test.go:173:	d := &Driver{client: &mockDeviceLabClient{}}
+pkg/driver/devicelab/keyboard_test.go:196:	d := New(&mockDeviceLabClient{}, &core.PlatformInfo{}, shell)
+pkg/driver/devicelab/keyboard_test.go:215:	d := New(&mockDeviceLabClient{}, &core.PlatformInfo{}, &mockShell{})
+pkg/driver/devicelab/find_visible_test.go:34:		client := &mockDeviceLabClient{sourceFunc: func() (string, error) { return screen, nil }}
+pkg/driver/uiautomator2/crash_replay_test.go:15:// missedCrashServer replays the UIAutomator2 server of round2b-A3 run 1
+pkg/driver/wda/client.go:33:// The address is 127.0.0.1, not localhost: WDA (and the go-ios forward to a
+pkg/driver/wda/client.go:50:// forward (SSH, then iproxy), a new connection took about 300 ms, and the two opened together
+pkg/driver/wda/client.go:358:// response came back: an EOF, a reset or a broken pipe. Over a forwarded WDA port

@@ -1,0 +1,57 @@
+README.md:496:Date-valued JSON fields use ISO 8601 UTC strings (for example,
+README.md:497:`1970-01-01T00:00:00Z`). Scripts should parse this representation rather than
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:219:                ownerPID: 1, acquiredAt: Date(), state: .active
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:335:        let record = ManagedSimulatorSession(udid: "MANAGED", name: "n", sessionId: "S1", ownerPID: 1, acquiredAt: Date(), state: .active)
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:375:        let record = ManagedSimulatorSession(udid: "MANAGED", name: "n", sessionId: "S1", ownerPID: 1, acquiredAt: Date(), state: .active)
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:385:                udid: "EXACT-UDID", name: "n", sessionId: "s", ownerPID: 1, acquiredAt: Date(), state: .active
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:407:        encoder.dateEncodingStrategy = .iso8601
+Tests/GrantivaCLITests/DocsContractTests.swift:192:        XCTAssertTrue(mcpDocs.contains("ISO 8601"))
+Tests/GrantivaCLITests/DocsContractTests.swift:193:        for key in ["timestamp", "detectedAt", "startedAt", "acquiredAt", "createdAt", "finishedAt"] {
+Tests/GrantivaCLITests/DocsContractTests.swift:196:        XCTAssertTrue(mcpDocs.contains("1970-01-01T00:00:00Z"))
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:36:            ownerPID: 42, acquiredAt: date, state: .active, bootedByGrantiva: true, ephemeral: false
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:585:        encoder.dateEncodingStrategy = .iso8601
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:258:            ownerPID: 4242, acquiredAt: Date(), state: .active
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:410:            ownerPID: 1, acquiredAt: Date(), state: .pending
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:496:            ownerPID: 1, acquiredAt: Date(), state: .pending, ephemeral: false
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:512:        XCTAssertEqual(record.acquiredAt, twin.acquiredAt)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:521:            udid: "RACE-1", name: "Race iPhone 17", sessionId: "qa", ownerPID: 4242, acquiredAt: Date(), state: .pending
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:28:        XCTAssertEqual(acquired.acquiredAt, original.acquiredAt)
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:113:            acquiredAt: Date(),
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:157:        let legacy = #"[{"udid":"SIM-1","name":"Simulator 1","sessionId":"x","ownerPID":1,"acquiredAt":0,"state":"active"}]"#
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:220:            ownerPID: 1, acquiredAt: Date(), state: .pending
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:263:            ownerPID: pid, acquiredAt: Date(), state: .active, ephemeral: ephemeral
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:176:        ManagedSimulatorSession(udid: udid, name: "Sim \(udid.prefix(4))", sessionId: session, ownerPID: 4242, acquiredAt: Date(), state: state)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:288:        encoder.dateEncodingStrategy = .iso8601
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:225:        encoder.dateEncodingStrategy = .iso8601
+Tests/GrantivaCoreTests/CLILogHandlerTests.swift:135:                ownerPID: 1, acquiredAt: Date(), state: .active
+Tests/GrantivaCoreTests/JSONOutputTests.swift:16:    // read as Unix time land in 1995. They are ISO 8601, like --ready-file.
+Tests/GrantivaCoreTests/JSONOutputTests.swift:20:        XCTAssertTrue(json.contains(#""at" : "1970-01-01T00:00:00Z""#), json)
+Tests/GrantivaCoreTests/JSONOutputTests.swift:22:        XCTAssertEqual(compact, #"{"at":"1970-01-01T00:00:00Z"}"#)
+Sources/GrantivaAPI/AnalyticsModels.swift:7:// the wire keys directly. Dates arrive as ISO 8601 strings without fractional
+Sources/GrantivaAPI/AnalyticsModels.swift:120:    /// ISO 8601 lower bound (inclusive).
+Sources/GrantivaAPI/AnalyticsModels.swift:122:    /// ISO 8601 upper bound (inclusive).
+Sources/GrantivaAPI/AnalyticsModels.swift:156:    /// A two-element `[start, end]` array of ISO 8601 timestamps — how Swift
+Sources/GrantivaAPI/AnalyticsModels.swift:228:    /// `[start, end]` ISO 8601 pair.
+docs/mcp.md:181:Date-valued JSON fields use ISO 8601 UTC strings, such as
+docs/mcp.md:182:`1970-01-01T00:00:00Z`. This is the representation scripts should consume;
+docs/mcp.md:186:`acquiredAt` on simulator capacity records, `createdAt` on created-simulator
+Sources/GrantivaCLI/ConsoleAnalyticsCommand.swift:128:        @Option(name: .long, help: "Only events at or after this ISO 8601 timestamp, e.g. 2026-09-01T00:00:00Z.")
+Sources/GrantivaCLI/ConsoleAnalyticsCommand.swift:131:        @Option(name: .long, help: "Only events at or before this ISO 8601 timestamp.")
+Sources/GrantivaCLI/ConsoleAnalyticsCommand.swift:169:            throw ValidationError("\(option) must be an ISO 8601 timestamp, for example 2026-09-01T00:00:00Z.")
+Sources/GrantivaCore/Runner/ReadyFile.swift:105:        encoder.dateEncodingStrategy = .iso8601
+Sources/GrantivaCore/Runner/ReadyFile.swift:119:        decoder.dateDecodingStrategy = .iso8601
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:11:    public let acquiredAt: Date
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:28:        acquiredAt: Date,
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:37:        self.acquiredAt = acquiredAt
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:161:                        acquiredAt: Date(),
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:224:                ownerPID: me, acquiredAt: Date(), state: .pending, ephemeral: true
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:324:            return records.sorted { $0.acquiredAt < $1.acquiredAt }
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:214:            encoder.dateEncodingStrategy = .iso8601
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:465:        decoder.dateDecodingStrategy = .iso8601
+Sources/GrantivaCore/Output/JSONOutput.swift:7:        // ISO 8601, like --ready-file and the keep-alive session file; the
+Sources/GrantivaCore/Output/JSONOutput.swift:9:        encoder.dateEncodingStrategy = .iso8601
+Sources/GrantivaCore/Output/JSONOutput.swift:22:        encoder.dateEncodingStrategy = .iso8601
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:531:        @Option(name: .long, help: "Expiry as an ISO 8601 timestamp.") var expires: String?
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:544:                        throw ValidationError("--expires must be an ISO 8601 timestamp.")
+Sources/GrantivaCore/Runner/SimulatorLease.swift:421:        encoder.dateEncodingStrategy = .iso8601
+Sources/GrantivaCore/Runner/SimulatorLease.swift:430:        decoder.dateDecodingStrategy = .iso8601

@@ -1,0 +1,101 @@
+[
+  {
+    "fix" : "Point at an installed Xcode: sudo xcode-select -s \/Applications\/Xcode.app (or unset DEVELOPER_DIR)",
+    "message" : "\/nonexistent does not exist",
+    "name" : "Xcode",
+    "section" : "Advisory",
+    "status" : "warning"
+  },
+  {
+    "fix" : "Ensure Xcode is properly installed",
+    "message" : "Could not determine Xcode version",
+    "name" : "Xcode Version",
+    "section" : "Advisory",
+    "status" : "warning"
+  },
+  {
+    "fix" : "Fix the Xcode check above (xcode-select -p, or unset DEVELOPER_DIR), then run grantiva doctor again",
+    "message" : "Could not list simulators: xcrun: error: missing DEVELOPER_DIR path: \/nonexistent",
+    "name" : "Booted Simulator",
+    "section" : "Advisory",
+    "status" : "warning"
+  },
+  {
+    "message" : "\/Users\/kyle\/Library\/Android\/sdk",
+    "name" : "Android SDK",
+    "section" : "Advisory",
+    "status" : "ok"
+  },
+  {
+    "message" : "Android Debug Bridge version 1.0.41",
+    "name" : "adb",
+    "section" : "Advisory",
+    "status" : "ok"
+  },
+  {
+    "message" : "\/Users\/kyle\/Library\/Android\/sdk\/emulator\/emulator",
+    "name" : "Android Emulator",
+    "section" : "Advisory",
+    "status" : "ok"
+  },
+  {
+    "fix" : "Run: brew install openjdk@21 and set JAVA_HOME (see docs\/android-environment.md)",
+    "message" : "No JDK found (JAVA_HOME or \/usr\/libexec\/java_home)",
+    "name" : "JDK",
+    "section" : "Advisory",
+    "status" : "warning"
+  },
+  {
+    "message" : "Pixel_8_API_35, cov5-android-2, cov5-android",
+    "name" : "Android AVDs",
+    "section" : "Advisory",
+    "status" : "ok"
+  },
+  {
+    "message" : "emulator-5554, emulator-5556",
+    "name" : "Running Emulator",
+    "section" : "Advisory",
+    "status" : "ok"
+  },
+  {
+    "message" : "grantiva-runner 1.1.28-grantiva.15+android-drivers-2",
+    "name" : "Runner",
+    "section" : "Advisory",
+    "status" : "ok"
+  },
+  {
+    "fix" : "Run: grantiva init",
+    "message" : "Not found",
+    "name" : "grantiva.yml",
+    "section" : "Project",
+    "status" : "warning"
+  },
+  {
+    "fix" : "Run: grantiva init --platform android",
+    "message" : "Not found",
+    "name" : "grantiva-android.yml",
+    "section" : "Project",
+    "status" : "warning"
+  },
+  {
+    "fix" : "Run: git init",
+    "message" : "Not a git repository",
+    "name" : "Git Repository",
+    "section" : "Project",
+    "status" : "warning"
+  },
+  {
+    "fix" : "Run: grantiva auth login",
+    "message" : "Not authenticated — remote baselines unavailable",
+    "name" : "Grantiva Auth",
+    "section" : "CI \/ Cloud",
+    "status" : "warning"
+  },
+  {
+    "fix" : "Install the GitHub App from your Grantiva dashboard settings",
+    "message" : "GitHub App not configured — Check Runs won't be posted",
+    "name" : "GitHub App",
+    "section" : "CI \/ Cloud",
+    "status" : "warning"
+  }
+]

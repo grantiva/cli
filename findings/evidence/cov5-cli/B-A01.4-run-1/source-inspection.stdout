@@ -1,0 +1,462 @@
+Sources/GrantivaCLI/GrantivaCommand.swift:42:    public static func normalizedArguments(_ arguments: [String]) -> [String] {
+Sources/GrantivaCLI/DriverCommand.swift:215:        - launchApp
+Sources/GrantivaCLI/DriverCommand.swift:568:                arguments: [launch.runnerBin] + launch.runnerArgs,
+Sources/GrantivaCLI/DriverCommand.swift:668:            arguments: launch.runnerArgs,
+Sources/GrantivaCLI/DriverCommand.swift:930:                    if text.contains("launchApp"), text.contains("✓"),
+Sources/GrantivaCLI/DriverCommand.swift:998:            if content.contains("launchApp") && content.contains("✓"),
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:140:        - launchApp
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:155:        try "appId: a\n---\n- launchApp\n".write(to: maestro.appendingPathComponent("good.yaml"), atomically: true, encoding: .utf8)
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:293:        - launchApp
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:317:        - launchApp
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:347:        XCTAssertEqual(MaestroFlowParser.appId(in: "appId: com.example.app\n---\n- launchApp"), "com.example.app")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:348:        XCTAssertNil(MaestroFlowParser.appId(in: "- launchApp"))
+Tests/GrantivaCoreTests/FlowReferenceResolverTests.swift:62:        - launchApp:
+Tests/GrantivaCoreTests/RunnerSessionAppIdTests.swift:10:        - launchApp
+Tests/GrantivaCoreTests/RunnerSessionAppIdTests.swift:19:        - launchApp
+Tests/GrantivaCoreTests/RunnerSessionAppIdTests.swift:27:        - launchApp
+Tests/GrantivaCoreTests/RunnerSessionAppIdTests.swift:35:            - launchApp
+Tests/GrantivaCoreTests/RunnerSessionAppIdTests.swift:42:        - launchApp
+Tests/GrantivaCoreTests/RunnerSessionAppIdTests.swift:51:            - launchApp
+Sources/GrantivaCLI/RunCommand.swift:59:    @Option(name: .long, parsing: .unconditionalSingleValue, help: "Environment variable for the app under test, as KEY=VALUE. Repeatable. Forwarded through the flow's launchApp (environment on iOS, string intent extras on Android).")
+Sources/GrantivaCLI/RunCommand.swift:94:    static func predicateArgument(in arguments: [String]) -> String? {
+Sources/GrantivaCLI/RunCommand.swift:272:    /// is not, instead of letting the runner fail every launchApp step.
+Sources/GrantivaCLI/RunCommand.swift:442:                try streamer.start(executable: stream.executable, arguments: stream.arguments)
+Sources/GrantivaCLI/RunCommand.swift:513:        // Do not pre-launch: flows drive the app themselves via launchApp/clearState.
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:49:        XCTAssertEqual(steps.map(\.action), ["launchApp", "tapOn: text=\"Favorites\"", "waitForAnimationToEnd", "takeScreenshot"])
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:56:        [{"index":0,"type":"launchApp","yaml":"launchApp","status":"passed","duration":2000},
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:97:        [{"index":0,"type":"launchApp","yaml":"launchApp","status":"passed","duration":1365},
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:105:            "launchApp", "tapOn: text=\"No Such Element fix4-3\"", "assertVisible: text=\"Landmarks\"",
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:118:        // launchApp, settle, shot Home, tapOn, settle, settle-before-shot is skipped, shot Favorites
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:149:        [{"index":0,"yaml":"launchApp","status":"passed","duration":1000},
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:231:        [{"index":0,"yaml":"launchApp","status":"passed","artifacts":{"screenshotBefore":"assets/flow-000/cmd-000-before.png","screenshotAfter":"assets/flow-000/cmd-000-after.png"}},
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:244:         "steps":[{"name":"launchApp","attachments":[{"name":"after","source":"hash0after-attachment.png","type":"image/png"}]}]}
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:277:    [{"index":0,"type":"launchApp","yaml":"launchApp","status":"passed","duration":1883},
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:292:     {"id":"cmd-000","index":0,"type":"launchApp","yaml":"launchApp","status":"passed","duration":1976},
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:386:        _ arguments: [String],
+Tests/GrantivaCoreTests/ChildProcessTests.swift:36:            arguments: ["-c", "sleep 30"],
+Tests/GrantivaCoreTests/ChildProcessTests.swift:58:            arguments: ["-c", "sleep 60 & echo $! > \(pidFile); sleep 60"],
+Tests/GrantivaCoreTests/ChildProcessTests.swift:92:            arguments: ["-c", "exit 7"],
+Tests/GrantivaCoreTests/ChildProcessTests.swift:112:            arguments: ["-c", "pwd"],
+Tests/GrantivaCoreTests/ChildProcessTests.swift:133:            child = try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:153:            executable: "/bin/sh", arguments: ["-c", "sleep 30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:173:            executable: "/bin/sh", arguments: ["-c", "sleep 30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:202:            executable: "/bin/sh", arguments: ["-c", "trap '' INT TERM; while :; do sleep 0.1; done"],
+Tests/GrantivaCoreTests/ChildProcessTests.swift:222:            executable: "/bin/sh", arguments: ["-c", "trap '' HUP; sleep 30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:237:            executable: "/bin/sh", arguments: ["-c", "sleep 30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:256:            executable: "/bin/sh", arguments: ["-c", "trap '' INT TERM; while :; do sleep 0.1; done"],
+Tests/GrantivaCoreTests/ChildProcessTests.swift:275:                executable: "/bin/sh", arguments: ["-c", "exit 3"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:287:                executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:313:            executable: "/usr/bin/perl", arguments: ["-e", "print $SIG{HUP} // 'DEFAULT'"],
+Tests/GrantivaCoreTests/ChildProcessTests.swift:326:            try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:340:            try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:354:                try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:373:        let child = try ChildProcess.spawn(executable: "/bin/sh", arguments: ["-c", "exit 4"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:385:        let sleeper = try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:397:        let child = try ChildProcess.spawn(executable: "/bin/sh", arguments: ["-c", "exit 0"], stdout: output, stderr: output)
+Sources/GrantivaCLI/LoggingBootstrap.swift:7:    public static func bootstrap(arguments: [String] = CommandLine.arguments) {
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:51:        let launch = try XCTUnwrap((steps.first as? [String: Any])?["launchApp"] as? [String: Any])
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:103:            - launchApp
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:163:        - launchApp
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:173:        XCTAssertTrue(ios.contains("- launchApp\n\(settle)\n- takeScreenshot: \"Home\""), ios)
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:193:        XCTAssertTrue(yaml.contains("- launchApp\n\(settle)\n- takeScreenshot: \"Home\""), yaml)
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:289:        XCTAssertTrue(MaestroFlowParser.isMaestroFormat("appId: com.example.app\n---\n- launchApp"))
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:291:        XCTAssertTrue(MaestroFlowParser.isMaestroFormat("- launchApp"))
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:306:        - launchApp
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:357:        - launchApp
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:378:        - launchApp
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:527:        - launchApp
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:558:        - launchApp
+Tests/GrantivaCoreTests/FlowStagingTests.swift:27:        - launchApp
+Tests/GrantivaCoreTests/FlowStagingTests.swift:80:                "appId: com.kylebrowning.Landmarks\n---\n- launchApp\n\(runFlow)\n- takeScreenshot: \"Main\"\n",
+Tests/GrantivaCoreTests/FlowStagingTests.swift:93:            "appId: x\n---\n- launchApp\n- runFlow: plain.yaml\n- takeScreenshot: \"Main\"\n",
+Tests/GrantivaCoreTests/FlowStagingTests.swift:126:        try "appId: com.example\n---\n- launchApp\n- runFlow: sub.yaml\n- takeScreenshot: \"Main\"\n"
+Tests/GrantivaCoreTests/FlowStagingTests.swift:205:    - launchApp
+Tests/GrantivaCLITests/AndroidCommandTests.swift:20:        try "appId: com.placeholder\n---\n- launchApp\n".write(to: dir.appendingPathComponent("smoke.yaml"), atomically: true, encoding: .utf8)
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:101:            RunnerSession.injectFlowName("appId: com.example\n---\n- launchApp\n", name: "qa/a/same"),
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:102:            "appId: com.example\nname: \"qa/a/same\"\n---\n- launchApp\n"
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:104:        let named = "appId: com.example\nname: Mine\n---\n- launchApp\n"
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:217:        try "appId: placeholder\n---\n- launchApp\n".write(to: url, atomically: true, encoding: .utf8)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:39:            arguments: ["-c", script],
+Sources/GrantivaMCP/ToolRegistry.swift:73:        arguments: [String: Value],
+Sources/GrantivaMCP/ToolRegistry.swift:76:        try await call(name: name, arguments: arguments, notify: { uri in
+Sources/GrantivaMCP/ToolRegistry.swift:85:        arguments: [String: Value],
+Sources/GrantivaMCP/ToolRegistry.swift:97:                outcome = try await callSessionTool(name: name, current: current, arguments: arguments)
+Sources/GrantivaMCP/ToolRegistry.swift:114:            return try await callTool(name: name, arguments: arguments)
+Sources/GrantivaMCP/ToolRegistry.swift:122:    private func callTool(name: String, arguments: [String: Value]) async throws -> CallTool.Result {
+Sources/GrantivaMCP/ToolRegistry.swift:134:            return try await BuildTools.build(device: device, platform: platform, config: config, arguments: arguments, missingConfig: missingConfig)
+Sources/GrantivaMCP/ToolRegistry.swift:137:                device: device, platform: platform, config: config, arguments: arguments,
+Sources/GrantivaMCP/ToolRegistry.swift:141:            return try await BuildTools.test(runner: buildRunner, platform: platform, config: config, simManager: simulatorManager, arguments: arguments, missingConfig: missingConfig)
+Sources/GrantivaMCP/ToolRegistry.swift:145:            return try await SimTools.list(simManager: simulatorManager, arguments: arguments)
+Sources/GrantivaMCP/ToolRegistry.swift:147:            return try await SimTools.boot(simManager: simulatorManager, arguments: arguments)
+Sources/GrantivaMCP/ToolRegistry.swift:149:            return try await SimTools.ensure(simManager: simulatorManager, arguments: arguments)
+Sources/GrantivaMCP/ToolRegistry.swift:151:            return try await SimTools.delete(simManager: simulatorManager, arguments: arguments)
+Sources/GrantivaMCP/ToolRegistry.swift:155:            return try await EmulatorTools.list(deps: emulators, arguments: arguments)
+Sources/GrantivaMCP/ToolRegistry.swift:157:            return try await EmulatorTools.boot(deps: emulators, config: config, arguments: arguments)
+Sources/GrantivaMCP/ToolRegistry.swift:159:            return try await EmulatorTools.ensure(deps: emulators, arguments: arguments)
+Sources/GrantivaMCP/ToolRegistry.swift:161:            return try await EmulatorTools.delete(deps: emulators, arguments: arguments)
+Sources/GrantivaMCP/ToolRegistry.swift:188:                return try await VRTTools.capture(platform: platform, arguments: arguments)
+Sources/GrantivaMCP/ToolRegistry.swift:191:            return try await VRTTools.compare(platform: platform, arguments: arguments)
+Sources/GrantivaMCP/ToolRegistry.swift:193:            return try await VRTTools.approve(platform: platform, arguments: arguments)
+Sources/GrantivaMCP/ToolRegistry.swift:264:        arguments: [String: Value]
+Sources/GrantivaMCP/ToolRegistry.swift:270:            return (try await UITools.screenshot(driver: driver, device: device, session: current.session, arguments: arguments), false)
+Sources/GrantivaMCP/ToolRegistry.swift:272:            return changed(try await UITools.tap(driver: driver, arguments: arguments))
+Sources/GrantivaMCP/ToolRegistry.swift:274:            return changed(try await UITools.swipe(driver: driver, arguments: arguments))
+Sources/GrantivaMCP/ToolRegistry.swift:276:            return changed(try await UITools.type(driver: driver, arguments: arguments))
+Sources/GrantivaMCP/ToolRegistry.swift:282:            let outcome = try await ScriptTools.run(driver: driver, arguments: arguments, session: current.session)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:71:            deadline: began.addingTimeInterval(0.1), executable: "/bin/sleep", arguments: ["0.5"],
+Tests/GrantivaCoreTests/LogStreamerTests.swift:92:                    deadline: deadline, executable: "/bin/sleep", arguments: ["30"],
+Tests/GrantivaCoreTests/LogStreamerTests.swift:113:            deadline: Date().addingTimeInterval(2), executable: "/usr/bin/printf", arguments: ["%s", expected]
+Tests/GrantivaCoreTests/LogStreamerTests.swift:133:        try streamer.start(executable: "/usr/bin/true", arguments: [])
+Tests/GrantivaCoreTests/LogStreamerTests.swift:159:        try streamer.start(executable: "/usr/bin/true", arguments: [])
+Tests/GrantivaCoreTests/LogStreamerTests.swift:217:        try streamer.start(executable: "/bin/echo", arguments: ["hello from a fake log"])
+Tests/GrantivaCoreTests/LogStreamerTests.swift:219:        // that start(executable:arguments:) exists and does not throw for a
+Tests/GrantivaCoreTests/LogStreamerTests.swift:229:        try streamer.start(executable: "/bin/sleep", arguments: ["30"])
+Tests/GrantivaCoreTests/LogStreamerTests.swift:241:        try streamer.start(executable: "/bin/sleep", arguments: ["30"])
+Tests/GrantivaCoreTests/LogStreamerTests.swift:249:        try streamer.start(executable: "/bin/sleep", arguments: ["30"])
+Tests/GrantivaCoreTests/LogStreamerTests.swift:261:            try streamer.start(executable: "/bin/sleep", arguments: ["30"])
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:9:            SubprocessLog.commandLine(executable: "/usr/bin/xcrun", arguments: ["simctl", "io", "ABC", "recordVideo", "--codec=h264", "/tmp/a b.mp4"], environment: [:]),
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:16:            executable: "/bin/runner", arguments: ["--api-key", "gk_live_secret", "--token=abc123", "x=gk_live_secret"],
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:26:            SubprocessLog.ended(executable: "/bin/x", arguments: ["a"], status: 0, signal: nil)
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:27:            SubprocessLog.ended(executable: "/bin/x", arguments: ["a"], status: 1, signal: nil)
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:28:            SubprocessLog.ended(executable: "/bin/x", arguments: ["a"], status: 0, signal: SIGINT)
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:29:            SubprocessLog.ended(executable: "/bin/x", arguments: ["a"], status: 0, signal: SIGKILL)
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:36:        try "appId: com.example.app\n---\n- launchApp\n".write(to: flow, atomically: true, encoding: .utf8)
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:58:        try "appId: com.example.app\n---\n- launchApp\n".write(to: flow, atomically: true, encoding: .utf8)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:58:                arguments: ["-c", "printf '  grantiva-runner 1.0 - by Grantiva\\n    ✓ launchApp (1.0s)\\n'"],
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:75:                XCTAssertTrue(collected.text.contains("✓ launchApp"), collected.text)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:153:        try #"{"commands":[{"index":0,"type":"launchApp","yaml":"launchApp","status":"passed","duration":1800},{"index":1,"type":"tapOn","yaml":"tapOn: text=\"No Such\"","status":"failed","duration":12000,"error":{"type":"element_not_found","message":"Element not found: text='No Such'"}}]}"#
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:223:        // launchApp, tapOn, settle, evalScript (index 3), settle, takeScreenshot
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:228:            ✓ launchApp (1.0s)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:244:            ✓ launchApp (1.0s)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:274:        // launchApp, settle, takeScreenshot Home, tapOn, settle, takeScreenshot Broken
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:365:        try "appId: com.example\n---\n- launchApp\n- runFlow: sub.yaml\n"
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:367:        try "appId: com.example\n---\n- launchApp\n"
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:405:        try "appId: com.example\n---\n- launchApp\n- runFlow: sub.yaml\n"
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:407:        try "appId: com.example\n---\n- launchApp\n"
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:413:            printf '{"commands":[{"yaml":"launchApp","status":"passed","duration":10},{"yaml":"runFlow: \(subFlow)","status":"\(status)","duration":20,"error":{"message":"\(subFlow) failed"}}]}' > "$out/flows/flow-000.json"
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:424:        XCTAssertEqual(passing.first?.steps.map(\.action), ["launchApp", "runFlow: sub.yaml"])
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:439:        XCTAssertEqual(failed.steps.map(\.action), ["launchApp", "runFlow: sub.yaml"])
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:116:        try write("grantiva.yml", "appId: com.example.demo\n---\n- launchApp\n- tapOn: [unclosed\n")
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:123:        try write("grantiva.yml", "appId: com.example.demo\n---\n- launchApp\n- takeScreenshot: Home\n")
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:239:            - launchApp
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:306:        try write(".maestro/01.yaml", "appId: com.example.android\n---\n- launchApp\n")
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:318:        try write(".maestro/01.yaml", "appId: com.example.ios\n---\n- launchApp\n")
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:80:        record("logStream(\(appID ?? "-"),\(filter ?? "-"))"); return LogStreamCommand(executable: "/bin/echo", arguments: ["fake log"])
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:162:    static let failedFlow = #"{"id":"flow-000","name":"smoke","commands":[{"id":"cmd-000","type":"launchApp","yaml":"launchApp","status":"passed"},{"id":"cmd-001","type":"tapOn","yaml":"tapOn: text=\"Remove\"","status":"failed","error":{"type":"element_not_found","message":"Element not found: text='Remove'"}},{"id":"cmd-002","type":"takeScreenshot","yaml":"takeScreenshot","status":"skipped"}]}"#
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:188:        XCTAssertEqual(steps.map(\.action), ["launchApp", "tapOn: text=\"Remove\""])
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:283:        try "appId: com.fake\n---\n- launchApp\n"
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:28:        let data = DefaultSimulator.catalogJSON(executable: "/bin/sleep", arguments: ["30"], timeout: 0.5)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:35:        let data = DefaultSimulator.catalogJSON(executable: "/bin/echo", arguments: ["hello"], timeout: 5)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:37:        XCTAssertNil(DefaultSimulator.catalogJSON(executable: "/usr/bin/false", arguments: [], timeout: 5))
+Tests/GrantivaCLITests/RunSessionContractTests.swift:99:                          steps: [StepResult(action: "launchApp", status: .passed, duration: 1.9)],
+Tests/GrantivaCLITests/RunSessionContractTests.swift:182:            "perm.yaml": "appId: com.kylebrowning.landmarks\n---\n- launchApp\n",
+Tests/GrantivaCLITests/RunSessionContractTests.swift:233:        XCTAssertEqual(passSteps.map { $0["action"] as? String }, ["launchApp", "takeScreenshot"])
+Tests/GrantivaCLITests/RunSessionContractTests.swift:247:            "smoke.yaml": "appId: com.placeholder\n---\n- launchApp\n- takeScreenshot: Home\n",
+Tests/GrantivaCLITests/RunSessionContractTests.swift:272:            ? #"{"commands":[{"index":0,"type":"launchApp","yaml":"launchApp","status":"passed","duration":1800},{"index":1,"type":"takeScreenshot","yaml":"takeScreenshot","status":"passed","duration":120,"artifacts":{"screenshotAfter":"assets/flow-000/cmd-001-Home.png"}}]}"#
+Tests/GrantivaCLITests/RunSessionContractTests.swift:273:            : #"{"commands":[{"index":0,"type":"launchApp","yaml":"launchApp","status":"passed","duration":1800},{"index":1,"type":"tapOn","yaml":"tapOn: text=\"Remove\"","status":"failed","duration":12000,"error":{"type":"element_not_found","message":"Element not found: text='Remove'"}}]}"#
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:6:/// `--env KEY=VALUE` rides the runner's existing `launchApp: environment:`
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:9:final class FlowEnvironmentTests: XCTestCase {
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:48:                  let launch = mapping["launchApp"] as? [String: Any],
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:56:    func testInjectsIntoABareLaunchApp() throws {
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:60:        - launchApp
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:68:    func testKeepsTheAppIdOfAScalarLaunchApp() throws {
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:72:        - launchApp: com.example.other
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:77:        let launch = try XCTUnwrap((steps.first as? [String: Any])?["launchApp"] as? [String: Any])
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:82:    func testMergesIntoAMappingLaunchAppPreservingItsOtherKeys() throws {
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:86:        - launchApp:
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:93:        let launch = try XCTUnwrap((steps.first as? [String: Any])?["launchApp"] as? [String: Any])
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:102:        - launchApp:
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:113:    func testReportsWhenTheFlowHasNoLaunchAppToCarryTheEnvironment() {
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:125:        let flow = "appId: com.example.app\n---\n- launchApp\n"
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:130:        let flow = "appId: com.example.app\n---\n- launchApp\n"
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:137:    private func launchApp(in yaml: String) throws -> [String: Any] {
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:140:        return try XCTUnwrap((steps.first as? [String: Any])?["launchApp"] as? [String: Any])
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:143:    func testAndroidDeliversEnvAsArgumentsIntoABareLaunchApp() throws {
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:144:        let flow = "appId: com.example.app\n---\n- launchApp\n- tapOn: \"Start\"\n"
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:147:        let launch = try launchApp(in: result.yaml)
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:153:    func testAndroidDeliversEnvAsArgumentsIntoAScalarLaunchApp() throws {
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:154:        let flow = "appId: com.example.app\n---\n- launchApp: com.example.other\n"
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:156:        let launch = try launchApp(in: result.yaml)
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:165:        - launchApp:
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:167:            arguments:
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:172:        let launch = try launchApp(in: result.yaml)
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:181:        - launchApp:
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:186:        let launch = try launchApp(in: result.yaml)
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:192:        let flow = "appId: com.example.app\n---\n- launchApp\n"
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:195:        XCTAssertNil(try launchApp(in: result.yaml)["arguments"])
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:199:        let flow = "appId: com.example.app\nenv:\n  A: b\n  CRASH: \"1\"\n---\n- launchApp\n"
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:214:        - launchApp:
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:223:        let flow = "appId: com.example.app\n---\n- launchApp\n"
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:229:        XCTAssertEqual(FlowEnvironment.headerEnvironment("appId: x\nenv:\n  A: b\n---\n- launchApp\n"), ["A": "b"])
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:230:        XCTAssertEqual(FlowEnvironment.headerEnvironment("- launchApp\n- inputText: \"env: x\"\n"), [:])
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:234:        let flow = "---\nappId: x\nenv:\n  A: b\n---\n- launchApp\n"
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:239:        let flow = "appId: x\nenv:\n  EMPTY:\n  TILDE: ~\n---\n- launchApp\n"
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:244:        let flow = "appId: x\nenv:\n  OK_1.x: a\n  \"BAD;rm\": b\n---\n- launchApp\n"
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:249:        let flow = "appId: x\nenv:\n  OK: a\n  my-key: b\n  \"A;B\": c\n---\n- launchApp\n"
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:254:        XCTAssertEqual(FlowEnvironment.headerKeyWarnings("appId: x\nenv:\n  OK: a\n---\n- launchApp\n"), [])
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:270:        - launchApp:
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:271:            arguments:
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:280:        let launch = try launchApp(in: result.yaml)
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:290:        - launchApp:
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:293:            arguments:
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:296:        let launch = try launchApp(in: FlowEnvironment.apply(to: flow, environment: [:], platform: .android).yaml)
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:305:        - launchApp:
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:341:        XCTAssertTrue(yaml.contains("- launchApp\n"))
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:20:        func spawn(_ executable: String, _ arguments: [String]) throws -> Int32 { pid }
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:25:        func spawn(_ executable: String, _ arguments: [String]) throws -> Int32 {
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:458:        let child = try ChildProcess.spawn(executable: "/usr/bin/false", arguments: [], stdin: devnull, stdout: devnull, stderr: devnull)
+Tests/GrantivaCLITests/RunCommandTests.swift:258:        try "appId: com.placeholder\n---\n- launchApp\n"
+Tests/GrantivaCLITests/RunCommandTests.swift:270:        printf '{"commands":[{"yaml":"launchApp","status":"passed"},{"yaml":"tapOn: Remove","status":"failed","error":{"message":"Element not found: text=Remove"}}]}' > "$out/flows/flow-000.json"
+Tests/GrantivaCLITests/RunCommandTests.swift:394:            ScreenCapture(screenName: "smoke", path: "", sizeBytes: 0, steps: [StepResult(action: "launchApp", status: .passed, duration: 0)]),
+Tests/GrantivaCLITests/RunCommandTests.swift:617:                StepResult(action: "launchApp", status: .passed, duration: 1),
+Tests/GrantivaCLITests/RunCommandTests.swift:620:                StepResult(action: "launchApp", status: .passed, duration: 1),
+Tests/GrantivaCLITests/RunCommandTests.swift:670:            StepResult(action: "launchApp", status: .passed, duration: 1.365),
+Tests/GrantivaCLITests/RunCommandTests.swift:748:        try "appId: com.kylebrowning.Landmarks\n---\n- launchApp\n".write(toFile: path, atomically: true, encoding: .utf8)
+Tests/GrantivaCLITests/RunCommandTests.swift:761:        try "appId: ${APP_ID}\n---\n- launchApp\n".write(toFile: path, atomically: true, encoding: .utf8)
+Tests/GrantivaCLITests/RunCommandTests.swift:783:    private func runIn(files: [String: String], _ arguments: [String], platform: Platform) async -> Error? {
+Tests/GrantivaCLITests/RunCommandTests.swift:858:        func runError(_ arguments: [String]) async -> String {
+Tests/GrantivaCLITests/RunCommandTests.swift:998:        try "appId: com.kylebrowning.Landmarks\n---\n- launchApp\n"
+Tests/GrantivaCLITests/InitAndroidTests.swift:67:    private func assertInitFails(_ arguments: [String], environment: [String: String] = [:], mentioning expected: String, file: StaticString = #filePath, line: UInt = #line) async {
+Sources/GrantivaMCP/Tools/SimTools.swift:72:        arguments: [String: Value]
+Sources/GrantivaMCP/Tools/SimTools.swift:104:        arguments: [String: Value]
+Sources/GrantivaMCP/Tools/SimTools.swift:123:    static func ensure(simManager: SimulatorManager, arguments: [String: Value]) async throws -> CallTool.Result {
+Sources/GrantivaMCP/Tools/SimTools.swift:141:    static func delete(simManager: SimulatorManager, arguments: [String: Value]) async throws -> CallTool.Result {
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:22:            steps: [StepResult(action: "launchApp", status: .passed, duration: 1.9)],
+Sources/GrantivaMCP/Tools/UITools.swift:109:        arguments: [String: Value]
+Sources/GrantivaMCP/Tools/UITools.swift:140:    static func tap(driver: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
+Sources/GrantivaMCP/Tools/UITools.swift:182:    static func swipe(driver: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
+Sources/GrantivaMCP/Tools/UITools.swift:199:    static func type(driver: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
+Sources/GrantivaMCP/Tools/BuildTools.swift:98:    static func resolvedProject(platform: Platform, config: GrantivaConfig?, arguments: [String: Value]) throws -> ResolvedProject {
+Sources/GrantivaMCP/Tools/BuildTools.swift:132:        platform: Platform, config: GrantivaConfig?, arguments: [String: Value], message: String?
+Sources/GrantivaMCP/Tools/BuildTools.swift:150:        arguments: [String: Value],
+Sources/GrantivaMCP/Tools/BuildTools.swift:153:        if let missing = missingConfigError(platform: platform, config: config, arguments: arguments, message: missingConfig) {
+Sources/GrantivaMCP/Tools/BuildTools.swift:158:            resolved = try resolvedProject(platform: platform, config: config, arguments: arguments)
+Sources/GrantivaMCP/Tools/BuildTools.swift:193:        arguments: [String: Value],
+Sources/GrantivaMCP/Tools/BuildTools.swift:197:        if let missing = missingConfigError(platform: platform, config: config, arguments: arguments, message: missingConfig) {
+Sources/GrantivaMCP/Tools/BuildTools.swift:202:            resolved = try resolvedProject(platform: platform, config: config, arguments: arguments)
+Sources/GrantivaMCP/Tools/BuildTools.swift:271:        arguments: [String: Value],
+Sources/GrantivaMCP/Tools/BuildTools.swift:277:        if let missing = missingConfigError(platform: platform, config: config, arguments: arguments, message: missingConfig) {
+Sources/GrantivaMCP/Tools/ScriptTools.swift:68:    static func script(driver: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
+Sources/GrantivaMCP/Tools/ScriptTools.swift:69:        try await run(driver: driver, arguments: arguments).result
+Sources/GrantivaMCP/Tools/ScriptTools.swift:76:        driver: DriverClient, arguments: [String: Value], session: RunnerSessionInfo? = nil
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:20:        _ registry: ToolRegistry, _ name: String, _ arguments: [String: Value], _ notified: Notified
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:22:        try await registry.call(name: name, arguments: arguments, notify: { notified.record($0) })
+Sources/GrantivaMCP/Tools/EmulatorTools.swift:87:    static func list(deps: EmulatorToolDependencies?, arguments: [String: Value]) async throws -> CallTool.Result {
+Sources/GrantivaMCP/Tools/EmulatorTools.swift:99:    static func boot(deps: EmulatorToolDependencies?, config: GrantivaConfig?, arguments: [String: Value]) async throws -> CallTool.Result {
+Sources/GrantivaMCP/Tools/EmulatorTools.swift:112:    static func ensure(deps: EmulatorToolDependencies?, arguments: [String: Value]) async throws -> CallTool.Result {
+Sources/GrantivaMCP/Tools/EmulatorTools.swift:119:    static func delete(deps: EmulatorToolDependencies?, arguments: [String: Value]) async throws -> CallTool.Result {
+Tests/GrantivaMCPTests/BuildToolsTests.swift:13:        let result = try await BuildTools.build(device: device, platform: .ios, config: nil, arguments: [:])
+Tests/GrantivaMCPTests/BuildToolsTests.swift:20:        let android = try BuildTools.resolvedProject(platform: .android, config: androidConfig, arguments: ["module": .string("mobile"), "variant": .string("freeDebug"), "emulator": .string("Other")])
+Tests/GrantivaMCPTests/BuildToolsTests.swift:24:        let ios = try BuildTools.resolvedProject(platform: .ios, config: GrantivaConfig(scheme: "Demo", simulator: "iPhone 17"), arguments: ["simulator": .string("iPhone 16")])
+Tests/GrantivaMCPTests/BuildToolsTests.swift:27:        XCTAssertThrowsError(try BuildTools.resolvedProject(platform: .ios, config: nil, arguments: [:]))
+Tests/GrantivaMCPTests/BuildToolsTests.swift:32:        let ios = try BuildTools.resolvedProject(platform: .ios, config: GrantivaConfig(scheme: "Demo"), arguments: [:])
+Tests/GrantivaMCPTests/BuildToolsTests.swift:40:        let result = try await BuildTools.build(device: device, platform: .android, config: androidConfig, arguments: ["variant": .string("noSuchVariant")])
+Tests/GrantivaMCPTests/BuildToolsTests.swift:50:        let result = try await BuildTools.run(device: device, platform: .android, config: androidConfig, arguments: [:])
+Tests/GrantivaMCPTests/BuildToolsTests.swift:62:        let result = try await BuildTools.run(device: device, platform: .android, config: config, arguments: [:])
+Tests/GrantivaMCPTests/BuildToolsTests.swift:73:        let result = try await BuildTools.run(device: device, platform: .ios, config: GrantivaConfig(scheme: "Demo"), arguments: [:])
+Tests/GrantivaMCPTests/BuildToolsTests.swift:80:        let result = try await BuildTools.test(runner: XcodeBuildRunner(), platform: .android, config: androidConfig, simManager: .live, arguments: [:])
+Tests/GrantivaMCPTests/BuildToolsTests.swift:163:        let result = try await BuildTools.build(device: device, platform: .android, config: androidConfig, arguments: [:])
+Tests/GrantivaMCPTests/BuildToolsTests.swift:172:        _ = try await BuildTools.build(device: device, platform: .ios, config: GrantivaConfig(scheme: "Demo", simulator: "fix2-10-ios"), arguments: [:])
+Tests/GrantivaMCPTests/BuildToolsTests.swift:182:            device: ios, platform: .ios, config: GrantivaConfig(scheme: "Demo", bundleId: "com.example.demo"), arguments: [:]
+Tests/GrantivaMCPTests/BuildToolsTests.swift:187:        let androidText = try textContent(of: try await BuildTools.run(device: android, platform: .android, config: androidConfig, arguments: [:]))
+Tests/GrantivaMCPTests/BuildToolsTests.swift:209:            device: device, platform: .ios, config: nil, arguments: ["scheme": .string("Demo (UI Testing)")],
+Tests/GrantivaMCPTests/BuildToolsTests.swift:222:        _ = try await BuildTools.run(device: device, platform: .ios, config: GrantivaConfig(scheme: "Demo", bundleId: "com.example.Configured"), arguments: [:])
+Tests/GrantivaMCPTests/BuildToolsTests.swift:230:            device: device, platform: .ios, config: nil, arguments: ["scheme": .string("Demo")],
+Sources/GrantivaMCP/Tools/VRTTools.swift:92:        platform: Platform, arguments: [String: Value],
+Sources/GrantivaMCP/Tools/VRTTools.swift:104:        platform: Platform, arguments: [String: Value],
+Sources/GrantivaMCP/Tools/VRTTools.swift:127:        platform: Platform, arguments: [String: Value],
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:15:        _ arguments: [String: Value] = [:],
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:23:            name: name, arguments: arguments, server: MCPTestSupport.disconnectedServer()
+Sources/GrantivaMCP/MCPServer.swift:104:            try await tools.call(name: name, arguments: arguments, server: server)
+Tests/GrantivaMCPTests/ArgumentValidationTests.swift:22:            device: device, platform: .ios, config: nil, arguments: [:]
+Tests/GrantivaMCPTests/ArgumentValidationTests.swift:31:            runner: buildRunner, platform: .ios, config: nil, simManager: simManager, arguments: [:]
+Tests/GrantivaMCPTests/ArgumentValidationTests.swift:40:            device: device, platform: .ios, config: nil, arguments: [:]
+Tests/GrantivaMCPTests/ArgumentValidationTests.swift:56:            arguments: [:]
+Tests/GrantivaMCPTests/ArgumentValidationTests.swift:66:            device: MCPFakeDevicePlatform(platform: .ios), platform: .ios, config: nil, arguments: ["scheme": .int(1)]
+Tests/GrantivaMCPTests/ArgumentValidationTests.swift:83:            let result = try await SimTools.ensure(simManager: simManager, arguments: arguments)
+Tests/GrantivaMCPTests/ArgumentValidationTests.swift:92:            let result = try await SimTools.delete(simManager: simManager, arguments: arguments)
+Tests/GrantivaMCPTests/VRTToolsTests.swift:69:            arguments: ["screens": .array([.string("Home; touch \(marker.path)"), .string("$(touch \(marker.path)2)")])],
+Tests/GrantivaMCPTests/VRTToolsTests.swift:83:            try await VRTTools.capture(platform: .ios, arguments: [:], executable: own.path),
+Tests/GrantivaMCPTests/VRTToolsTests.swift:84:            try await VRTTools.compare(platform: .ios, arguments: [:], executable: own.path),
+Tests/GrantivaMCPTests/VRTToolsTests.swift:85:            try await VRTTools.approve(platform: .ios, arguments: [:], executable: own.path),
+Tests/GrantivaMCPTests/VRTToolsTests.swift:92:        let approve = try await VRTTools.approve(platform: .ios, arguments: [:], executable: plain.path)
+Tests/GrantivaMCPTests/VRTToolsTests.swift:118:            try await VRTTools.capture(platform: .ios, arguments: [:], executable: own.path, environment: path),
+Tests/GrantivaMCPTests/VRTToolsTests.swift:119:            try await VRTTools.compare(platform: .android, arguments: [:], executable: own.path, environment: path),
+Tests/GrantivaMCPTests/VRTToolsTests.swift:120:            try await VRTTools.approve(platform: .ios, arguments: ["screens": .array([.string("Home")])], executable: own.path, environment: path),
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:237:        continuation.yield(Data("launchApp completed ✓\n".utf8))
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:29:        let result = try await EmulatorTools.list(deps: deps(log), arguments: [:])
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:40:        let result = try await EmulatorTools.boot(deps: deps(log), config: config, arguments: [:])
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:49:        for arguments: [String: Value] in [["name": .string("Pixel_8_API_35")], [:]] {
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:50:            let result = try await EmulatorTools.boot(deps: shutDown, config: nil, arguments: arguments)
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:57:            let result = try await EmulatorTools.boot(deps: deps(Log()), config: nil, arguments: ["name": .string(name)])
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:65:        let missing = try await EmulatorTools.ensure(deps: deps(log), arguments: [:])
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:68:        let result = try await EmulatorTools.ensure(deps: deps(log), arguments: ["name": .string("New"), "system_image": .string("img"), "boot": .bool(true)])
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:76:        let missing = try await EmulatorTools.delete(deps: deps(log), arguments: [:])
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:78:        let result = try await EmulatorTools.delete(deps: deps(log), arguments: ["name": .string("Old"), "force": .bool(true)])
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:84:        let result = try await EmulatorTools.list(deps: nil, arguments: [:])
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:95:        _ = try await registry.call(name: "grantiva_emulator_list", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/MCPTestSupport.swift:171:    func logStream(deviceID: String, appID: String?, filter: String?, level: LogStreamLevel?) async throws -> LogStreamCommand { LogStreamCommand(executable: "/bin/echo", arguments: []) }
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:30:        let result = try await SimTools.ensure(simManager: simManager, arguments: [:])
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:39:            arguments: ["device_type": .string("iPhone 16"), "runtime": .string("latest")]
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:47:            arguments: ["name": .int(7), "device_type": .string("iPhone 16"), "runtime": .string("latest")]
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:53:        let result = try await SimTools.delete(simManager: simManager, arguments: [:])
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:58:        let result = try await SimTools.delete(simManager: simManager, arguments: ["name": .bool(true)])
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:65:        assertToolError(try await UITools.tap(driver: driver, arguments: [:]), contains: "Error:")
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:66:        assertToolError(try await UITools.swipe(driver: driver, arguments: [:]), contains: "'direction' is required")
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:67:        assertToolError(try await UITools.type(driver: driver, arguments: [:]), contains: "'text' is required")
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:68:        assertToolError(try await ScriptTools.script(driver: driver, arguments: [:]), contains: "'steps' is required")
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:76:        let result = try await UITools.tap(driver: driver, arguments: ["label": .string("No Such Label QA")])
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:87:        let ensure = try await EmulatorTools.ensure(deps: deps, arguments: [:])
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:89:        let delete = try await EmulatorTools.delete(deps: deps, arguments: ["name": .int(3)])
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:141:            let result = try await registry.call(name: name, arguments: arguments, server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:155:            name: "grantiva_emulator_delete", arguments: ["name": .string("fix-k53-hand")], server: MCPTestSupport.disconnectedServer()
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:166:            _ = try await registry.call(name: "grantiva_emulator_list", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:216:        let tap = try await registry.call(name: "grantiva_tap", arguments: ["label": .string("Landmarks")], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:221:            name: "grantiva_script", arguments: ["steps": .array([.object(["tap": .string("Landmarks")])])],
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:286:            let result = try await target.call(name: name, arguments: [:], server: server)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:300:            let missing = try await registry.call(name: "grantiva_script", arguments: [:], server: server)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:303:            let wrong = try await registry.call(name: "grantiva_script", arguments: ["steps": .string("tap")], server: server)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:307:            let empty = try await registry.call(name: "grantiva_script", arguments: ["steps": .array([])], server: server)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:311:            let noSession = try await disconnected.call(name: "grantiva_script", arguments: [:], server: server)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:320:        let result = try await registry.call(name: "grantiva_bogus_tool", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:327:        let swipe = try await registry.call(name: "grantiva_swipe", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:332:    /// Every tool called with no arguments: an isError text starts with
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:347:                let result = try await registry.call(name: tool.name, arguments: [:], server: server)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:362:        let build = try await BuildTools.build(device: device, platform: .ios, config: config, arguments: [:])
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:364:        let run = try await BuildTools.run(device: device, platform: .ios, config: config, arguments: [:])
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:16:            arguments: [
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:48:        let result = try await ScriptTools.script(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: [:])
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:58:            arguments: ["steps": .string("tap Login")]
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:69:            arguments: ["steps": .array([])]
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:81:            arguments: ["steps": .array([.object(["bogus": .int(1)]), .int(5)])]
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:94:            arguments: ["steps": .array([.object(["swipe": .string("down")]), .string("tap")])]
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:107:            arguments: ["steps": .array([.object(["frobnicate": .string("x")])])]
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:118:            arguments: ["steps": .array([.object(["tap_xy": .object(["x": .double(10)])])])]
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:129:            arguments: ["steps": .array([.object(["wait": .double(-1)])])]
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:139:            arguments: ["steps": .array([.object(["tap_xy": .object(["x": .int(5), "y": .int(6)])])])]
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:148:            arguments: ["steps": .array([.object(["tap": .string("A"), "swipe": .string("up"), "type": .string("B")])])]
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:159:            arguments: ["steps": .array([.object(["tap": .int(5)])])]
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:174:            arguments: ["steps": .array([
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:191:        let outcome = try await ScriptTools.run(driver: driver, arguments: ["steps": .array([.object(["tap": .string("Nope")])])])
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:202:        let outcome = try await ScriptTools.run(driver: driver, arguments: ["steps": .array([
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:217:        let outcome = try await ScriptTools.run(driver: driver, arguments: ["steps": .array([
+Tests/GrantivaMCPTests/ContextToolTests.swift:121:        let result = try await registry.call(name: "grantiva_context", arguments: [:], notify: { _ in })
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:71:        let result = try await registry.call(name: "grantiva_build", arguments: ["scheme": .string("Demo")], notify: { _ in })
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:105:        let run = await message { try await BuildTools.run(device: platform, platform: .ios, config: GrantivaConfig(scheme: "Demo"), arguments: [:]) }
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:110:                simManager: manager, arguments: [:]
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:114:        let boot = await message { try await SimTools.boot(simManager: manager, arguments: [:]) }
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:142:            arguments: ["scheme": .string("Demo"), "simulator": .string(DefaultSimulator.name)]
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:151:        let result = try await BuildTools.build(device: platform, platform: .ios, config: nil, arguments: ["scheme": .string("Demo")])
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:163:            device: device, platform: .ios, config: GrantivaConfig(scheme: "Demo", simulator: "qa-ios", bundleId: "com.example"), arguments: [:]
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:170:        XCTAssertTrue(try BuildTools.resolvedProject(platform: .ios, config: GrantivaConfig(scheme: "D"), arguments: [:]).simulatorIsDefault)
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:171:        XCTAssertFalse(try BuildTools.resolvedProject(platform: .ios, config: GrantivaConfig(scheme: "D", simulator: "x"), arguments: [:]).simulatorIsDefault)
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:172:        XCTAssertFalse(try BuildTools.resolvedProject(platform: .ios, config: nil, arguments: ["scheme": .string("D"), "simulator": .string("x")]).simulatorIsDefault)
+Sources/GrantivaCore/Android/AndroidPlatform.swift:227:        return LogStreamCommand(executable: adb.path, arguments: args)
+Tests/GrantivaMCPTests/UIToolsTests.swift:18:            arguments: ["label": .string("Sign In")]
+Tests/GrantivaMCPTests/UIToolsTests.swift:31:            arguments: ["x": .double(120), "y": .double(240)]
+Tests/GrantivaMCPTests/UIToolsTests.swift:44:            arguments: ["x": .int(120), "y": .int(240)]
+Tests/GrantivaMCPTests/UIToolsTests.swift:53:        let result = try await UITools.tap(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: [:])
+Tests/GrantivaMCPTests/UIToolsTests.swift:61:        let result = try await UITools.tap(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: ["x": .double(10)])
+Tests/GrantivaMCPTests/UIToolsTests.swift:70:            arguments: ["label": .string("OK"), "x": .double(1), "y": .double(2)]
+Tests/GrantivaMCPTests/UIToolsTests.swift:77:        let result = try await UITools.tap(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: ["label": .int(7)])
+Tests/GrantivaMCPTests/UIToolsTests.swift:88:            arguments: ["direction": .string("left")]
+Tests/GrantivaMCPTests/UIToolsTests.swift:97:        let result = try await UITools.swipe(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: [:])
+Tests/GrantivaMCPTests/UIToolsTests.swift:105:        let result = try await UITools.swipe(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: ["direction": .bool(true)])
+Tests/GrantivaMCPTests/UIToolsTests.swift:116:            arguments: ["text": .string("hello world")]
+Tests/GrantivaMCPTests/UIToolsTests.swift:125:        let result = try await UITools.type(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: ["text": .string("")])
+Tests/GrantivaMCPTests/UIToolsTests.swift:132:        let result = try await UITools.type(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: [:])
+Tests/GrantivaMCPTests/UIToolsTests.swift:271:            arguments: [:]
+Tests/GrantivaMCPTests/UIToolsTests.swift:284:            arguments: ["format": .string("bogus")]
+Tests/GrantivaMCPTests/UIToolsTests.swift:293:        let result = try await UITools.screenshot(driver: MCPTestSupport.fakeDriver(recorder: recorder), device: device, session: session, arguments: [:])
+Tests/GrantivaMCPTests/UIToolsTests.swift:425:        let result = try await UITools.tap(driver: driver, arguments: ["label": .string("heart")])
+Tests/GrantivaMCPTests/UIToolsTests.swift:433:        let result = try await UITools.tap(driver: driver, arguments: ["label": .string("Name")])
+Tests/GrantivaMCPTests/UIToolsTests.swift:440:        let result = try await UITools.tap(driver: driver, arguments: ["label": .string("Favorites")])
+Tests/GrantivaMCPTests/UIToolsTests.swift:450:        let result = try await UITools.type(driver: driver, arguments: ["text": .string("x")])
+Tests/GrantivaMCPTests/MCPServerTests.swift:405:                let result = try await client.callTool(name: name, arguments: arguments)
+Tests/GrantivaMCPTests/MCPServerTests.swift:423:            let result = try await client.callTool(name: "grantiva_build", arguments: [:])
+Tests/GrantivaMCPTests/MCPServerTests.swift:429:            let capture = try await client.callTool(name: "grantiva_vrt_capture", arguments: [:])
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:111:                result = try await registry.call(name: name, arguments: arguments, server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:139:        let result = try await registry.call(name: "grantiva_screenshot", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:152:                result = try await registry.call(name: name, arguments: arguments, server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:168:        let result = try await registry.call(name: "grantiva_a11y_tree", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:197:            let result = try await registry.call(name: name, arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:210:        let result = try await registry.call(name: "grantiva_build", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:224:            name: "grantiva_build", arguments: ["scheme": .string("Demo")], server: MCPTestSupport.disconnectedServer()
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:237:        let result = try await registry.call(name: "grantiva_build", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:287:        let result = try await registry.call(name: "grantiva_vrt_capture", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:326:            let result = try await registry.call(name: "grantiva_vrt_capture", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:349:        let result = try await registry.call(name: "grantiva_vrt_capture", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:363:        let result = try await registry.call(name: "grantiva_vrt_capture", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:388:        let result = try await registry.call(name: "grantiva_vrt_capture", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:572:        let result = try await registry.call(name: "grantiva_vrt_capture", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:588:        let result = try await registry.call(name: "grantiva_vrt_capture", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:599:        let result = try await registry.call(name: "grantiva_vrt_capture", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:611:        let result = try await registry.call(name: "grantiva_vrt_capture", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:623:        let result = try await registry.call(name: "grantiva_vrt_capture", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:642:        let result = try await registry.call(name: "grantiva_vrt_capture", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Sources/GrantivaCore/Platform/IOSPlatform.swift:140:        return LogStreamCommand(executable: "/usr/bin/xcrun", arguments: args)
+Sources/GrantivaCore/Platform/DevicePlatform.swift:61:    public let arguments: [String]
+Sources/GrantivaCore/Platform/DevicePlatform.swift:63:    public init(executable: String, arguments: [String]) {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:11:/// - launchApp
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:109:            if trimmed.hasPrefix("- launchApp") { return true }
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:233:                case .launchApp, .stopApp:
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:256:        // If no screens at all (e.g., just launchApp), add a launch screen
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:305:        case launchApp
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:314:        // Bare string commands: "launchApp", "back", "stopApp", "scroll"
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:317:            case "launchApp": return .launchApp
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:480:        if dict.keys.contains("launchApp") { return .launchApp }
+Sources/GrantivaCore/Output/LogVerbosity.swift:18:    public static func level(for arguments: [String]) -> Logger.Level {
+Sources/GrantivaCore/Runner/RunnerExecution.swift:34:        let arguments: [String]
+Sources/GrantivaCore/Runner/RunnerExecution.swift:76:                arguments: request.arguments,
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:4:/// Parses `--env KEY=VALUE` pairs and injects them into a flow's `launchApp`
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:7:/// On iOS the runner forwards `launchApp: environment:` to the app as process
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:9:/// the runner fills from `launchApp: arguments:` (it ignores `environment:`
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:10:/// there), so the same values go into `arguments:` as string extras. Injection
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:14:    /// The `launchApp` field the runner delivers to the app on `platform`.
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:20:    /// block and `--env` (which wins) are injected into every `launchApp`, and
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:21:    /// on Android a step's own `environment:` becomes `arguments:`. A value a
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:79:    public static func parse(_ arguments: [String]) throws -> [String: String] {
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:109:    /// Injects `environment` into every `launchApp` step of a Maestro flow.
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:110:    /// Returns the rewritten YAML and whether any `launchApp` step was found —
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:114:    /// `field` is the `launchApp` key the values go under (see
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:132:            guard let step = LaunchAppStep(line: line) else {
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:144:                output.append("\(itemIndent)- launchApp:")
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:149:                output.append("\(itemIndent)- launchApp:")
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:235:    /// Renames `from:` to `to:` in each block-mapping `launchApp` step. When
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:243:            guard let step = LaunchAppStep(line: lines[index]), case .mapping = step.form else {
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:322:    /// A recognized `- launchApp` line and the YAML shape it uses.
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:323:    struct LaunchAppStep {
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:336:            guard trimmed.hasPrefix("- launchApp") else { return nil }
+Sources/GrantivaCore/Runner/FlowEnvironment.swift:337:            let remainder = trimmed.dropFirst("- launchApp".count)
+Sources/GrantivaCore/Android/EmulatorManager.swift:82:    public typealias Spawn = @Sendable (_ executable: String, _ arguments: [String]) throws -> Int32
+Sources/GrantivaCore/Android/EmulatorManager.swift:233:            executable: executable, arguments: arguments,
+Sources/GrantivaCore/Runner/LogStreamer.swift:211:        try start(executable: "/usr/bin/xcrun", arguments: args)
+Sources/GrantivaCore/Runner/LogStreamer.swift:216:    public func start(executable: String, arguments: [String]) throws {
+Sources/GrantivaCore/Runner/LogStreamer.swift:358:        deadline: Date, executable: String = "/bin/ps", arguments: [String] = ["-ww", "-axo", "pid=,command="],
+Sources/GrantivaCore/Runner/RunnerSession.swift:209:                arguments: Array(args.dropFirst()), // drop the binary path
+Sources/GrantivaCore/Runner/RunnerSession.swift:432:            // Header `env:` and `--env` go into launchApp for the platform's channel.
+Sources/GrantivaCore/Runner/RunnerSession.swift:437:                    "[grantiva] --env had no effect on \(flowPaths[index]): the flow has no launchApp step.\n".utf8
+Sources/GrantivaCore/Runner/RunnerSession.swift:558:                arguments: Array(args.dropFirst()),
+Sources/GrantivaCore/Runner/RunnerSession.swift:871:    /// this ensures the runner always has the correct bundle ID for launchApp.
+Sources/GrantivaCore/Runner/FlowGenerator.swift:50:        // launchApp creates the WDA session — required before any interaction.
+Sources/GrantivaCore/Runner/FlowGenerator.swift:51:        // `--env` values ride the runner's existing launchApp field for the
+Sources/GrantivaCore/Runner/FlowGenerator.swift:52:        // platform: `environment:` on iOS, `arguments:` (intent extras) on Android.
+Sources/GrantivaCore/Runner/FlowGenerator.swift:54:            lines.append("- launchApp")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:56:            lines.append("- launchApp:")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:211:    /// Android only (L44): after `launchApp`, wait (up to
+Sources/GrantivaCore/Runner/ChildProcess.swift:28:    let arguments: [String]
+Sources/GrantivaCore/Runner/ChildProcess.swift:35:    private init(pid: pid_t, executable: String, arguments: [String], logged: Bool) {
+Sources/GrantivaCore/Runner/ChildProcess.swift:51:        arguments: [String],
+Sources/GrantivaCore/Runner/ChildProcess.swift:143:        if logged { SubprocessLog.started(executable: executable, arguments: arguments) }
+Sources/GrantivaCore/Runner/ChildProcess.swift:144:        return ChildProcess(pid: pid, executable: executable, arguments: arguments, logged: logged)
+Sources/GrantivaCore/Runner/ChildProcess.swift:252:            SubprocessLog.ended(executable: executable, arguments: arguments, status: status, signal: signal)
+Sources/GrantivaCore/Runner/ChildProcess.swift:363:                arguments: ["-c", Self.watchdogScript, "grantiva-watchdog", String(processGroup), sessionDirectory ?? "", String(graceTicks)],
+Sources/GrantivaCore/Runner/SubprocessLog.swift:13:    public static func started(executable: String, arguments: [String]) {
+Sources/GrantivaCore/Runner/SubprocessLog.swift:14:        emit("$ \(commandLine(executable: executable, arguments: arguments))")
+Sources/GrantivaCore/Runner/SubprocessLog.swift:18:    public static func ended(executable: String, arguments: [String], status: Int32, signal: Int32?) {
+Sources/GrantivaCore/Runner/SubprocessLog.swift:19:        let command = commandLine(executable: executable, arguments: arguments)
+Sources/GrantivaCore/Runner/SubprocessLog.swift:37:            executable: process.executableURL?.path ?? "", arguments: process.arguments ?? [],
+Sources/GrantivaCore/Runner/SubprocessLog.swift:43:        commandLine(executable: process.executableURL?.path ?? "", arguments: process.arguments ?? [])
+Sources/GrantivaCore/Runner/SubprocessLog.swift:47:        executable: String, arguments: [String],
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:115:func simulatorLogCommand(_ arguments: [String]) -> String {
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:61:        arguments: [String] = ["simctl", "list", "devicetypes", "runtimes", "--json"],

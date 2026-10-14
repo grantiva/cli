@@ -1,0 +1,44 @@
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:120:        XCTAssertEqual(json["allPassed"] as? Bool, false)
+Tests/GrantivaCLITests/RunCommandTests.swift:305:            XCTAssertEqual(json["allPassed"] as? Bool, false)
+Tests/GrantivaCLITests/RunCommandTests.swift:361:        XCTAssertEqual(json["allPassed"] as? Bool, false)
+Tests/GrantivaCLITests/RunCommandTests.swift:383:            XCTAssertEqual(json["allPassed"] as? Bool, false)
+Tests/GrantivaCLITests/RunCommandTests.swift:399:        XCTAssertFalse(failed.allPassed, "passing captures alone are not a passing verdict")
+Tests/GrantivaCLITests/RunCommandTests.swift:404:        XCTAssertTrue(released.allPassed)
+Tests/GrantivaCLITests/RunCommandTests.swift:591:        XCTAssertTrue(emitted.values.first?.contains(#""allPassed" : true"#) ?? false, "\(emitted.values)")
+Tests/GrantivaCLITests/RunCommandTests.swift:690:        XCTAssertEqual(json["allPassed"] as? Bool, true)
+Tests/GrantivaCLITests/RunCommandTests.swift:714:        XCTAssertEqual(failedJSON["allPassed"] as? Bool, false)
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:48:                screens: [.init(screen), .init(flowEntry)], allPassed: true, reportDir: "/ci/out"
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:51:                screens: [.init(failedEntry)], allPassed: false, error: "Runner failed (exit 1): ...", reportDir: "/ci/out"
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:225:        let json = try JSONOutput.string(RunCommand.RunResult(screens: [], allPassed: true, reportDir: "/ci/out"))
+Sources/GrantivaCLI/DiffCommand.swift:699:        var allPassed = true
+Sources/GrantivaCLI/DiffCommand.swift:715:                        allPassed = false
+Sources/GrantivaCLI/DiffCommand.swift:740:                    allPassed = false
+Sources/GrantivaCLI/DiffCommand.swift:753:                allPassed = false
+Sources/GrantivaCLI/DiffCommand.swift:765:        return ComparisonOutcome(screens: screenDiffs, passed: allPassed)
+Sources/GrantivaCLI/RunCommand.swift:291:                    screens: [], allPassed: false, error: Self.failureMessage(error),
+Sources/GrantivaCLI/RunCommand.swift:490:                        screens: [], allPassed: false, error: Self.buildFailureMessage(buildResult)
+Sources/GrantivaCLI/RunCommand.swift:673:            // Missing captures are returned as failed steps rather than thrown.
+Sources/GrantivaCLI/RunCommand+Result.swift:8:    /// Emits the runner result and turns a failed step into the command's
+Sources/GrantivaCLI/RunCommand+Result.swift:14:        let allPassed = captures.allSatisfy { $0.steps.allSatisfy { $0.status.isPassing } }
+Sources/GrantivaCLI/RunCommand+Result.swift:17:                screens: captures.map(RunResult.ScreenResult.init), allPassed: allPassed, reportDir: reportDir
+Sources/GrantivaCLI/RunCommand+Result.swift:24:        if !allPassed { throw ExitCode.failure }
+Sources/GrantivaCLI/RunCommand+Result.swift:125:        let allPassed: Bool
+Sources/GrantivaCLI/RunCommand+Result.swift:129:        init(screens: [ScreenResult], allPassed: Bool, error: String? = nil, reportDir: String? = nil) {
+Sources/GrantivaCLI/RunCommand+Result.swift:131:            self.allPassed = allPassed
+Sources/GrantivaCLI/RunCommand+Result.swift:198:            return RunResult(screens: screens, allPassed: true, reportDir: reportDir)
+Sources/GrantivaCLI/RunCommand+Result.swift:201:            screens: screens, allPassed: false, error: failureMessage(error), reportDir: reportDir
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:165:    /// deleted, so `run --json` can still print the failed step.
+Sources/GrantivaCLI/CICommand.swift:65:    let allPassed: Bool
+Sources/GrantivaCLI/CICommand.swift:87:        var allPassed = true
+Sources/GrantivaCLI/CICommand.swift:105:                allPassed = false
+Sources/GrantivaCLI/CICommand.swift:134:                        allPassed = false
+Sources/GrantivaCLI/CICommand.swift:152:                    allPassed = false
+Sources/GrantivaCLI/CICommand.swift:172:        return CIComparisonOutcome(screens: uploads, allPassed: allPassed)
+Sources/GrantivaCLI/CICommand.swift:414:                let allPassed = comparison.allPassed
+Sources/GrantivaCLI/CICommand.swift:494:                if !allPassed {
+Sources/GrantivaCore/Runner/RunnerNarration.swift:10:/// `Error:` line, which carries the failed step) are never routed here.
+Sources/GrantivaCore/Runner/RunnerSession+Screens.swift:29:    /// failed step and the screens after it say they were not reached.
+Sources/GrantivaCore/Runner/RunnerSession.swift:15:    /// The error text for a failed runner: the reason, then the failed step
+Sources/GrantivaCore/Runner/RunnerFailureReport.swift:104:            // A flow that did not pass must show a failed step even when no
+Tests/GrantivaCLITests/CIComparisonPipelineTests.swift:49:        XCTAssertFalse(outcome.allPassed)
+Tests/GrantivaCLITests/CIComparisonPipelineTests.swift:90:        XCTAssertFalse(outcome.allPassed)

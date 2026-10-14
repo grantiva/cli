@@ -1,0 +1,59 @@
+          path: build/Build/Products/Debug-iphonesimulator/MyApp.app
+
+  visual-regression:
+    needs: build
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+OVERVIEW: Provision, inspect, and tear down managed simulators.
+
+USAGE: grantiva simulator <subcommand>
+
+OPTIONS:
+  --version               Show the version.
+  -h, --help              Show help information.
+
+SUBCOMMANDS:
+  ensure                  Create or reuse a named simulator and boot it.
+                          `--name` alone reuses an existing simulator with that
+                          name. To create one, the name must contain a device
+                          model ("iPhone 17") or --device-type must be given;
+                          the newest installed runtime is used unless --runtime
+                          is passed.
+  delete                  Explicitly delete a named simulator.
+  sessions                List Grantiva-managed simulator capacity slots.
+  teardown                End a managed session, or reclaim one simulator by
+                          UDID when no ledger entry exists.
+  cleanup                 Delete Grantiva-created simulators that are shut down
+                          and not part of an active session.
+
+  See 'grantiva help simulator <subcommand>' for detailed help.
+OVERVIEW: Explicitly delete a named simulator.
+
+USAGE: grantiva simulator delete [--json] [--verbose] [--quiet] --name <name>
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --name <name>           Name of the simulator to delete.
+  --version               Show the version.
+  -h, --help              Show help information.
+
+OVERVIEW: List Grantiva-managed simulator capacity slots.
+
+USAGE: grantiva simulator sessions [--json] [--verbose] [--quiet]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --version               Show the version.
+  -h, --help              Show help information.
+

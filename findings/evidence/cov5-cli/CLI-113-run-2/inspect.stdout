@@ -1,0 +1,32 @@
+grantiva diff approve       Promote current captures to baselines
+grantiva simulator ensure   Create or reuse a named simulator and boot it (--name alone reuses an existing one)
+grantiva simulator delete   Explicitly delete a named simulator
+grantiva simulator sessions List Grantiva-managed simulator capacity slots
+grantiva simulator teardown End a managed session, or reclaim one simulator by UDID when no ledger entry exists (--udid <UDID> --force)
+grantiva simulator cleanup  Delete Grantiva-created simulators that are shut down and not part of an active session
+grantiva emulator ensure    Create the AVD when missing (installing its system image first) and boot it; stdout is the serial, or with --no-boot the AVD name (the serial when it is already running)
+grantiva emulator delete    Delete an AVD Grantiva created; others need --force; a running AVD is never deleted
+OVERVIEW: Delete Grantiva-created simulators that are shut down and not part of
+an active session.
+
+USAGE: grantiva simulator cleanup [--json] [--verbose] [--quiet]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --version               Show the version.
+  -h, --help              Show help information.
+
+## What is already fixed (branch `simulator-lifecycle-cleanup`, commit `90d2acb`)
+
+- **Provenance ledger.** Every simulator `ensure` creates is recorded in `~/.grantiva/simulator-capacity/created.json` (flock-protected). User-created devices are never in the ledger and are never deleted by any of the paths below.
+- **Race-free `ensure`.** The look-up/create critical section now runs under a cross-process provisioning lock. Verified: two concurrent `ensure` calls for a brand-new name yield exactly one device (`Created` + `Reused`).
+- **Teardown deletes.** `grantiva simulator teardown --session-id <id>` now deletes Grantiva-created simulators outright and only shuts down pre-existing devices the session merely booted. JSON output gained a `deleted` flag per session.
+- **New GC command.** `grantiva simulator cleanup` deletes every Grantiva-created simulator that is shut down and not part of an active managed session, and prunes ledger entries for devices that no longer exist. Safe to run any time, including from cron or an agent heartbeat.
+- Tests: `SimulatorProvenanceTests` (ledger + lock serialization) and extended `SimulatorCommandTests`; full suite passes.
+
+## What still needs doing

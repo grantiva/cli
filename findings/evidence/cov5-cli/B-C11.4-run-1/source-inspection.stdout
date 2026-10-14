@@ -1,0 +1,31 @@
+Sources/GrantivaCLI/MCPCommand.swift:12:            (grantiva_tap, grantiva_swipe, grantiva_type, grantiva_screenshot, grantiva_a11y_*, \
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:216:        let tap = try await registry.call(name: "grantiva_tap", arguments: ["label": .string("Landmarks")], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:283:            (session, "grantiva_tap", "Error: Invalid argument: Provide either 'label' or both 'x' and 'y' coordinates."),
+Sources/GrantivaMCP/ToolRegistry.swift:67:        "grantiva_screenshot", "grantiva_tap", "grantiva_swipe", "grantiva_type",
+Sources/GrantivaMCP/ToolRegistry.swift:271:        case "grantiva_tap":
+Tests/GrantivaMCPTests/MCPTransportTests.swift:20:        XCTAssertEqual(JSONRPCScreen.screen(Data(#"{"jsonrpc":"2.0","id":2,"method":"tools/list"}"#.utf8)), .forward)
+Tests/GrantivaMCPTests/MCPTransportTests.swift:31:        guard case .reply(let invalid) = JSONRPCScreen.screen(Data(#"{"id":7,"method":"tools/list"}"#.utf8)) else { return XCTFail("expected a reply") }
+Tests/GrantivaMCPTests/MCPTransportTests.swift:60:            #"{"jsonrpc":"2.0","id":2,"method":"tools/list"}"#,
+Tests/GrantivaMCPTests/MCPTransportTests.swift:62:            #"{"id":7,"method":"tools/list"}"#,
+Tests/GrantivaMCPTests/MCPTransportTests.swift:63:            #"{"jsonrpc":"2.0","id":3,"method":"tools/list"}"#,
+Tests/GrantivaMCPTests/MCPTransportTests.swift:144:                        try await clientSide.send(Data("{\"jsonrpc\":\"2.0\",\"id\":\(100 + pair),\"method\":\"tools/list\"}".utf8))
+Tests/GrantivaMCPTests/MCPTransportTests.swift:147:                        try await clientSide.send(Data("{\"id\":\(200 + pair),\"method\":\"tools/list\"}".utf8))
+Tests/GrantivaMCPTests/MCPTransportTests.swift:459:    private let list11 = #"{"jsonrpc":"2.0","id":11,"method":"tools/list"}"#
+Tests/GrantivaMCPTests/ToolRegistrationTests.swift:17:        "grantiva_tap",
+Tests/GrantivaMCPTests/ToolRegistrationTests.swift:100:        // tools/list is serialized to the client; a schema that cannot encode/decode
+Tests/GrantivaMCPTests/ToolRegistrationTests.swift:137:        let mutating = ["grantiva_tap", "grantiva_swipe", "grantiva_type", "grantiva_script", "grantiva_sim_boot", "grantiva_sim_delete",
+Tests/GrantivaMCPTests/ToolAnnotationsTests.swift:37:            "grantiva_screenshot", "grantiva_tap", "grantiva_swipe", "grantiva_type",
+Tests/GrantivaMCPTests/MCPServerTests.swift:8:final class MCPServerTests: XCTestCase {
+Tests/GrantivaMCPTests/MCPServerTests.swift:393:            XCTAssertTrue(tools.contains("grantiva_tap"), "\(tools)")
+Tests/GrantivaMCPTests/MCPServerTests.swift:397:                ("grantiva_tap", ["label": Value.string("General")]),
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:94:        ("grantiva_tap", ["label": .string("Continue")]),
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:95:        ("grantiva_tap", ["x": .double(10), "y": .double(20)]),
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:36:        let result = try await call("GRANTIVA_TAP", ["label": .string("A")])
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:50:        _ = try await call("grantiva_tap", ["label": .string("Continue")], recorder: recorder)
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:102:            ("grantiva_tap", [:]),
+Sources/GrantivaMCP/Tools/UITools.swift:31:            name: "grantiva_tap",
+Sources/GrantivaMCP/MCPServer.swift:97:        // Register tools/list handler
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:28:        let result = try await call(registry, "grantiva_tap", ["label": .string("Gesture Lab")], notified)
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:44:        let missing = try await call(registry, "grantiva_tap", ["label": .string("No Such Label")], notified)
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:48:        let tapped = try await call(registry, "grantiva_tap", ["label": .string("Gesture Lab")], notified)
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:53:        _ = try await call(registry, "grantiva_tap", ["label": .string("Gesture Lab")], notified)

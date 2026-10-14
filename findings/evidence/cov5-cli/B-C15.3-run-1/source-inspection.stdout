@@ -1,0 +1,47 @@
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:327:        let swipe = try await registry.call(name: "grantiva_swipe", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/UIToolsTests.swift:97:        let result = try await UITools.swipe(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: [:])
+Tests/GrantivaMCPTests/UIToolsTests.swift:105:        let result = try await UITools.swipe(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: ["direction": .bool(true)])
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:28:        XCTAssertEqual(steps[0].swipe, "up")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:86:        XCTAssertEqual(steps.map(\.swipe), ["down", "up", "right", "left"])
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:176:              - swipe: "up"
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:182:            XCTAssertEqual(steps[1].swipe, "up")
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:399:            XCTAssertEqual(steps[0].swipe, "up") // scroll down = swipe up
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:413:            XCTAssertEqual(steps[0].swipe, "up") // default scroll = down = swipe up
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:429:            XCTAssertEqual(steps[0].swipe, "up") // y decreases = swipe up
+Tests/GrantivaMCPTests/MCPServerTests.swift:398:                ("grantiva_swipe", ["direction": .string("up")]),
+Tests/GrantivaCoreTests/WDAClientTests.swift:333:            try await wda(swipe).swipe("up")
+Sources/GrantivaMCP/Tools/UITools.swift:54:            description: "Swipe on the device (iOS simulator or Android emulator) screen. After swiping, returns the updated accessibility tree.",
+Sources/GrantivaMCP/Tools/UITools.swift:60:                        "description": .string("Swipe direction: up, down, left, right"),
+Sources/GrantivaMCP/Tools/UITools.swift:194:                .text(text: "Swiped \(direction). Updated hierarchy:\n\(tree)", annotations: nil, _meta: nil),
+Sources/GrantivaMCP/Tools/ScriptTools.swift:46:                                    "description": .string("Swipe direction: up, down, left, right"),
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:196:                    swipe: up
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:203:        XCTAssertEqual(steps[0].swipe, "up")
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:220:                  - swipe: up
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:245:    // C15: an unknown swipe direction is a config error naming file, screen, and value.
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:252:                  - swipe: diagonal
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:257:                    #"grantiva.yml: screen "Diag": swipe direction "diagonal" is not one of up, down, left, right"#
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:270:                  - swipe: Up
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:275:        XCTAssertEqual(steps.map(\.swipe), ["Up", "DOWN"])
+Tests/GrantivaCoreTests/UIAutomator2ClientTests.swift:149:        try await client(transport).swipe("up")
+Tests/GrantivaCoreTests/UIAutomator2ClientTests.swift:161:            XCTAssertTrue("\(error)".contains("Invalid swipe direction"), "\(error)")
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:96:        ("grantiva_swipe", ["direction": .string("up")]),
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:582:        var step = GrantivaConfig.Screen.Step(swipe: "up")
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:116:        let result = try await call("grantiva_swipe", ["direction": .string("up")])
+Tests/GrantivaMCPTests/ToolSchemaTests.swift:103:        XCTAssertEqual(try enumValues("grantiva_swipe", "direction"), ["up", "down", "left", "right"])
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:91:                .init(swipe: "up"),
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:178:            .init(swipe: "Up"), .init(type: "abc"), .init(assertVisible: "Done"),
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:182:        XCTAssertTrue(yaml.contains("- swipe:\n    direction: UP\n\(settle)\n- inputText: \"abc\"\n\(settle)\n- assertVisible"), yaml)
+Sources/GrantivaCore/WDA/WDAClient.swift:191:                    throw GrantivaError.invalidArgument("Invalid swipe direction \"\(direction)\". Use: up, down, left, right")
+Sources/GrantivaCore/Config/GrantivaConfig.swift:67:            static let swipeDirectionNames = ["up", "down", "left", "right"]
+Sources/GrantivaCore/Config/GrantivaConfig.swift:432:                    "\(fileName): screen \"\(screen.name)\": swipe direction \"\(direction)\" is not one of "
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:320:            case "scroll": return .step(.init(swipe: "up")) // default scroll down = swipe up
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:403:        // --- Scroll → swipe (inverted: Maestro scroll down = finger swipe up) ---
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:552:    /// Invert scroll direction to swipe direction.
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:553:    /// Maestro "scroll down" = see content below = finger swipe up.
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:209:                    throw GrantivaError.invalidArgument("Invalid swipe direction \"\(direction)\". Use: up, down, left, right")
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:20:                    .object(["swipe": .string("up")]),
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:32:                "swipe(up)",
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:40:        XCTAssertTrue(text.contains("Step 3: swiped up"), text)
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:148:            arguments: ["steps": .array([.object(["tap": .string("A"), "swipe": .string("up"), "type": .string("B")])])]
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:203:            .object(["tap": .string("Gesture Lab")]), .object(["swipe": .string("up")]),
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:208:        XCTAssertTrue(text.hasPrefix("Error: Step 2 (swipe up) failed: The runner session's driver is not answering"), text)

@@ -1,0 +1,18 @@
+Grantiva navigates to each screen in order, captures a screenshot, then moves to the next. After every `tap`, `swipe`, `type`,
+and `run_flow`, and before every screenshot, it waits (up to 5 s) for the screen to stop changing, so a capture never shows
+the screen it is leaving. Unknown keys in the config file are reported as warnings with their line number.
+
+### Maestro Compatibility
+
+Grantiva can read [Maestro](https://maestro.mobile.dev) flow files as a drop-in replacement. If you have existing Maestro flows, Grantiva will auto-detect and parse them — no rewrite needed.
+
+Alerts on iOS: a `launchApp` pre-grants the app's permissions on the simulator, and GrantivaAgent auto-accepts only system alerts that appear during the flow (notifications, tracking, local network, Bluetooth and other prompts the simulator cannot pre-grant), so they don't block it. Your app's own alerts ("Discard changes?") are left alone: they stay up until a flow step answers them, including in `runFlow` subflows.
+
+Place your flows in a `.maestro/` directory, or write `grantiva.yml` in Maestro format:
+
+```yaml
+appId: com.example.myapp
+---
+- launchApp
+- tapOn: "Sign In"
+Error: Invalid argument: grantiva.yml:5: unsupported Maestro command 'back'

@@ -1,0 +1,26 @@
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: app-binary
+          path: ./app
+      - name: Install Grantiva CLI
+        run: brew install grantiva/tap/grantiva
+      - name: Visual regression
+        env:
+          GRANTIVA_API_KEY: ${{ secrets.GRANTIVA_API_KEY }}
+        run: |
+          grantiva ci run --app-file ./app/MyApp.app
+```
+
+Results upload to the [Grantiva](https://grantiva.io) dashboard and post as GitHub Check Runs on your PRs.
+
+## Commands
+
+```
+grantiva run                Run Maestro flows against a simulator or emulator. No visual regression: reports step pass/fail and captures a screenshot on failure (see --keep-alive, --logs, --flow)
+grantiva record             Record a simulator or emulator and extract PNG frames at exact requested timestamps
+grantiva hierarchy          Dump the UI hierarchy of a booted simulator or emulator without relaunching the app (reads a `run --keep-alive` session)
+grantiva build build        Build the app for a simulator (xcodebuild) or emulator (Gradle); `grantiva build` alone runs this
+grantiva build install      Build and install the app on a simulator or emulator, then optionally launch it (--no-launch to skip)
+grantiva ci run             Run full CI pipeline: capture screenshots, compare against baselines, upload results

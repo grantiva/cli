@@ -1,0 +1,15 @@
+
+### Homebrew
+
+```bash
+brew install grantiva/tap/grantiva
+```
+
+### From source
+
+```bash
+git clone https://github.com/grantiva/cli.git
+cd cli
+swift build -c release
+cp -R .build/release/grantiva .build/release/grantiva_GrantivaCore.bundle /usr/local/bin/
+```

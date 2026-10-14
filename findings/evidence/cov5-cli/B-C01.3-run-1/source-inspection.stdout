@@ -1,0 +1,101 @@
+Tests/GrantivaCLITests/AndroidCommandTests.swift:35:            leaseDirectory: dir.appendingPathComponent("locks").path
+Tests/GrantivaCLITests/DocsContractTests.swift:105:    /// `body` with fenced code blocks and inline code spans removed, so
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:44:            leaseDirectory: dir.appendingPathComponent("locks").path
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:66:            leaseDirectory: dir.appendingPathComponent("locks").path
+Tests/GrantivaCLITests/RunSessionContractTests.swift:118:                leaseDirectory: FileManager.default.temporaryDirectory.appendingPathComponent("locks-\(UUID().uuidString)").path
+Tests/GrantivaCLITests/RunSessionContractTests.swift:296:            leaseDirectory: dir.appendingPathComponent("locks").path
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1126:    /// Convert process output into a cancellable stream. `availableData` blocks
+Tests/GrantivaCLITests/RunCommandTests.swift:280:            leaseDirectory: dir.appendingPathComponent("locks").path
+Tests/GrantivaCLITests/RunCommandTests.swift:319:    /// still prints its blocks and summary lines on stdout, and the runner's
+Tests/GrantivaCLITests/RunCommandTests.swift:603:    /// L10: a failing run without --json prints, on stdout, the blocks of
+Tests/GrantivaCLITests/RunCommandTests.swift:1012:            leaseDirectory: scratch.appendingPathComponent("locks").path
+Tests/GrantivaCLITests/Support/LeaseDirectoryGuard.swift:9:/// `<runner home>/locks`. XCTest asks every test class for its
+Tests/GrantivaCLITests/Support/LeaseDirectoryGuard.swift:41:        let locks = SimulatorLease.directory()
+Tests/GrantivaCLITests/Support/LeaseDirectoryGuard.swift:42:        let existed = FileManager.default.fileExists(atPath: locks)
+Tests/GrantivaCLITests/Support/LeaseDirectoryGuard.swift:48:            XCTAssertFalse(FileManager.default.fileExists(atPath: locks), "the refused acquire created \(locks)")
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:51:            flushTimeout: 0.2, leaseDirectory: dir.appendingPathComponent("locks").path
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:5:final class RunnerManagerTests: XCTestCase {
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:11:        try RunnerManager.installIfNeeded(paths: paths, version: "v1") { _ in extracted = true }
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:17:    func testInstallIfNeededReportsInstalledThenAlreadyCurrent() throws {
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:20:        let first = try RunnerManager.installIfNeeded(
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:28:        let second = try RunnerManager.installIfNeeded(
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:39:        try RunnerManager.installIfNeeded(paths: paths, version: "v2") { destination in
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:49:        try RunnerManager.installIfNeeded(paths: paths, version: "v2") { destination in
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:57:        XCTAssertThrowsError(try RunnerManager.installIfNeeded(paths: paths, version: "v2") { _ in
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:63:    func testReinstallKeepsLocksReportsAndXcconfig() throws {
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:67:        try fm.createDirectory(atPath: "\(paths.base)/locks", withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:68:        try "held".write(toFile: "\(paths.base)/locks/lease", atomically: true, encoding: .utf8)
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:73:        try RunnerManager.installIfNeeded(paths: paths, version: "v2") { destination in
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:79:        XCTAssertEqual(try String(contentsOfFile: "\(paths.base)/locks/lease", encoding: .utf8), "held")
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:93:        try FileManager.default.createDirectory(atPath: "\(paths.base)/locks", withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:94:        try "held".write(toFile: "\(paths.base)/locks/lease", atomically: true, encoding: .utf8)
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:97:        XCTAssertThrowsError(try RunnerManager.installIfNeeded(paths: paths, version: "v2") { destination in
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:110:        XCTAssertThrowsError(try RunnerManager.installIfNeeded(paths: paths, version: "v2") { destination in
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:126:            try RunnerManager.installIfNeeded(paths: paths, version: stamp) { destination in
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:143:        try RunnerManager.installIfNeeded(paths: a, version: "A") { _ in extracted = true }
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:152:        try RunnerManager.installIfNeeded(paths: paths, version: "v2") { destination in
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:224:        try RunnerManager.installIfNeeded(paths: paths, version: "v1") { _ in XCTFail("no extract on the fast path") }
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:228:        try RunnerManager.installIfNeeded(paths: paths, version: "v1") { _ in }
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:261:        let versions = "\(root)/versions", locks = "\(root)/locks"
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:264:        try fm.createDirectory(atPath: locks, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:267:        let held = open("\(locks)/install-busy.lock", O_RDWR | O_CREAT, 0o644)
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:270:        RunnerManager.pruneStaleInstalls(versionsDir: versions, keeping: "current", locksDir: locks, isInUse: { _ in false })
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:274:        RunnerManager.pruneStaleInstalls(versionsDir: versions, keeping: "current", locksDir: locks, isInUse: { _ in false })
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:284:        let lock = "\(paths.base)/../locks/install-v1.lock"
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:290:                try RunnerManager.installIfNeeded(
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:323:        XCTAssertThrowsError(try RunnerManager.installIfNeeded(
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:342:        try RunnerManager.installIfNeeded(
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:355:        XCTAssertThrowsError(try RunnerManager.installIfNeeded(
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:514:        try RunnerManager.installIfNeeded(
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:564:        XCTAssertThrowsError(try RunnerManager.installIfNeeded(
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:570:        XCTAssertThrowsError(try RunnerManager.installIfNeeded(
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:637:    static func installIfNeeded(paths: Paths, version: String, extract: (String) throws -> Void) throws {
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:638:        try installIfNeeded(baseDir: paths.base, binaryPath: paths.binary, versionFilePath: paths.version, cacheDir: paths.cache, version: version, extract: extract)
+Sources/GrantivaCLI/RunCommand+Result.swift:63:    /// The text result of a suite that threw: the blocks of every screen and
+Sources/GrantivaCLI/RunCommand.swift:208:    /// the `--json` document, or the same text blocks and summary lines a
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:212:    private var leaseDirectory: String { scratch.appendingPathComponent("locks").path }
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:554:        XCTAssertFalse(FileManager.default.fileExists(atPath: SimulatorLease.leasePath(udid: "MANUAL-1", directory: "\(capacity.directory)/runner/locks")))
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:563:        let run = try SimulatorLease.acquire(udid: "MANUAL-1", directory: "\(capacity.directory)/runner/locks")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:580:    // A lease failure that is not "someone holds it" (here the locks
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:588:        // A file where the locks directory should be.
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:589:        try Data().write(to: URL(fileURLWithPath: "\(capacity.directory)/runner/locks"))
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:628:        let locks = "\(capacity.directory)/runner/locks"
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:629:        try FileManager.default.createDirectory(atPath: locks, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:630:        let path = SimulatorLease.leasePath(udid: "GONE-1", directory: locks)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:52:        let lease = try SimulatorLease.acquire(udid: "QUIET-\(UUID().uuidString)", directory: scratch.appendingPathComponent("locks").path)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:578:            leaseDirectory: scratch.appendingPathComponent("locks").path
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:48:            leaseDirectory: leaseDirectory ?? scratch.appendingPathComponent("locks").path
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:102:            flushTimeout: 0.2, leaseDirectory: scratch.appendingPathComponent("locks").path
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:1175:            environment: [:], killTimeout: 2, flushTimeout: 0.2, leaseDirectory: scratch.appendingPathComponent("locks").path
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:330:            leaseDirectory: root.appendingPathComponent("locks").path
+Tests/GrantivaCoreTests/SimulatorProvenanceTests.swift:40:    func testProvisioningLockSerializesCriticalSections() async throws {
+Sources/GrantivaCore/Shell.swift:121:    // Drain both pipes concurrently so neither fills and blocks the child.
+Tests/GrantivaCoreTests/Support/LeaseDirectoryGuard.swift:9:/// `<runner home>/locks`. XCTest asks every test class for its
+Tests/GrantivaCoreTests/Support/LeaseDirectoryGuard.swift:41:        let locks = SimulatorLease.directory()
+Tests/GrantivaCoreTests/Support/LeaseDirectoryGuard.swift:42:        let existed = FileManager.default.fileExists(atPath: locks)
+Tests/GrantivaCoreTests/Support/LeaseDirectoryGuard.swift:48:            XCTAssertFalse(FileManager.default.fileExists(atPath: locks), "the refused acquire created \(locks)")
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:17:        leaseDirectory = scratch.appendingPathComponent("locks").path
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:204:    func testWhatWentWrongBlocksOfSeveralFailuresAreAllKept() {
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:108:    private var leaseDirectory: String { "\(home!)/locks" }
+Tests/GrantivaCoreTests/ChildProcessTests.swift:123:    func testAChildStartsWithTerminationSignalsDeliverableWhateverTheParentBlocks() throws {
+Sources/GrantivaCore/Android/ADB.swift:223:    /// Blocks for `seconds`; screenrecord exits when its time limit elapses.
+Tests/GrantivaMCPTests/Support/LeaseDirectoryGuard.swift:9:/// `<runner home>/locks`. XCTest asks every test class for its
+Tests/GrantivaMCPTests/Support/LeaseDirectoryGuard.swift:41:        let locks = SimulatorLease.directory()
+Tests/GrantivaMCPTests/Support/LeaseDirectoryGuard.swift:42:        let existed = FileManager.default.fileExists(atPath: locks)
+Tests/GrantivaMCPTests/Support/LeaseDirectoryGuard.swift:48:            XCTAssertFalse(FileManager.default.fileExists(atPath: locks), "the refused acquire created \(locks)")
+Sources/GrantivaCore/Platform/IOSPlatform.swift:9:    /// home's `locks/`. Tests point it at their own temp directory.
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:330:    private var leaseDirectory: String { "\(runnerHome)/locks" }
+Sources/GrantivaCore/Runner/SimulatorLease.swift:81:        override ?? RunnerManager.baseDir + "/locks"
+Sources/GrantivaCore/Runner/SimulatorLease.swift:101:    /// default directory (`<runner home>/locks`). Test bundles install one
+Sources/GrantivaCore/Runner/ChildProcess.swift:171:    /// Blocks until the child exits and returns a Foundation-compatible
+Sources/GrantivaCore/Runner/ChildProcess.swift:313:    /// process group and blocks reading a pipe whose only write end grantiva
+Sources/GrantivaCore/Runner/RunnerManager.swift:10:    /// Where a run takes its simulator lease; nil is `<runner home>/locks`.
+Sources/GrantivaCore/Runner/RunnerManager.swift:42:    /// layout changes without a runner rebuild, so `installIfNeeded` sees a
+Sources/GrantivaCore/Runner/RunnerManager.swift:212:    /// Shared runner state: `locks/` (simulator leases), the WDA build
+Sources/GrantivaCore/Runner/RunnerManager.swift:303:        try installIfNeeded(
+Sources/GrantivaCore/Runner/RunnerManager.swift:309:            lockPath: "\(baseDir)/locks/install-\(installStamp).lock",
+Sources/GrantivaCore/Runner/RunnerManager.swift:320:                    locksDir: "\(baseDir)/locks",
+Sources/GrantivaCore/Runner/RunnerManager.swift:349:    static func installIfNeeded(
+Sources/GrantivaCore/Runner/RunnerManager.swift:560:        locksDir: String? = nil,
+Sources/GrantivaCore/Runner/RunnerManager.swift:579:            if let locksDir {
+Sources/GrantivaCore/Runner/RunnerManager.swift:580:                descriptor = open("\(locksDir)/install-\(stamp).lock", O_RDWR | O_CREAT | O_CLOEXEC, 0o644)

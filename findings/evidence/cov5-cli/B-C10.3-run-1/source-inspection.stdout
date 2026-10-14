@@ -1,0 +1,30 @@
+Sources/GrantivaCLI/ConsoleEnvsCommand.swift:199:        @Argument(help: "Direction: up or down.")
+Tests/GrantivaCoreTests/FlowStagingTests.swift:185:            direction: DOWN
+Tests/GrantivaCoreTests/FlowStagingTests.swift:194:            direction: DOWN
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:80:            direction: DOWN
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:249:        XCTAssertEqual(((commands[0] as? [String: Any])?["scroll"] as? [String: Any])?["direction"] as? String, "DOWN")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:253:    func testNormaliserGivesSetPermissionsTheHeaderAppId() throws {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:257:        - setPermissions:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:260:        - setPermissions:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:270:        let first = try XCTUnwrap((commands[0] as? [String: Any])?["setPermissions"] as? [String: Any])
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:273:        let second = try XCTUnwrap((commands[1] as? [String: Any])?["setPermissions"] as? [String: Any])
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:276:        XCTAssertEqual(((nested[0] as? [String: Any])?["scroll"] as? [String: Any])?["direction"] as? String, "DOWN")
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:257:                    #"grantiva.yml: screen "Diag": swipe direction "diagonal" is not one of up, down, left, right"#
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:393:            direction: down
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:528:        - setPermissions:
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:537:            XCTAssertEqual(error.localizedDescription, "Invalid argument: checkout.yaml:2: unsupported Maestro command 'setPermissions'")
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:209:                    throw GrantivaError.invalidArgument("Invalid swipe direction \"\(direction)\". Use: up, down, left, right")
+Sources/GrantivaCore/WDA/WDAClient.swift:191:                    throw GrantivaError.invalidArgument("Invalid swipe direction \"\(direction)\". Use: up, down, left, right")
+Sources/GrantivaMCP/Tools/ScriptTools.swift:46:                                    "description": .string("Swipe direction: up, down, left, right"),
+Sources/GrantivaCore/Config/GrantivaConfig.swift:67:            static let swipeDirectionNames = ["up", "down", "left", "right"]
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:385:                    direction = dy > 0 ? "down" : "up"
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:408:                scrollDir = obj["direction"] as? String ?? "down"
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:484:        // pressKey, setPermissions, setOrientation, setLocation, repeat, retry,
+Sources/GrantivaMCP/Tools/UITools.swift:60:                        "description": .string("Swipe direction: up, down, left, right"),
+Tests/GrantivaMCPTests/ToolSchemaTests.swift:103:        XCTAssertEqual(try enumValues("grantiva_swipe", "direction"), ["up", "down", "left", "right"])
+Sources/GrantivaCore/Runner/FlowNormalizer.swift:6:/// - bare `scroll` gets `direction: DOWN` (the runner rejects an empty direction);
+Sources/GrantivaCore/Runner/FlowNormalizer.swift:7:/// - `setPermissions` without its own `appId` gets the flow header's `appId`;
+Sources/GrantivaCore/Runner/FlowNormalizer.swift:13:            return bare == "scroll" ? ["scroll": ["direction": "DOWN"]] : command
+Sources/GrantivaCore/Runner/FlowNormalizer.swift:17:        if dictionary.keys.contains("setPermissions"), let headerAppId {
+Sources/GrantivaCore/Runner/FlowNormalizer.swift:18:            var options = dictionary["setPermissions"] as? [String: Any] ?? [:]
+Sources/GrantivaCore/Runner/FlowNormalizer.swift:21:                dictionary["setPermissions"] = options

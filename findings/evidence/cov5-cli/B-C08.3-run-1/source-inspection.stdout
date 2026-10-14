@@ -1,0 +1,5 @@
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:197:        XCTAssertTrue(yaml.contains("- tapOn:\n    id: \"General\"\n"), yaml)
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:151:        XCTAssertTrue(yaml.contains("- tapOn:\n    id: \"clock\""), yaml)
+Tests/GrantivaCoreTests/FlowStagingTests.swift:235:        XCTAssertTrue(yaml.contains("- tapOn:\n    id: \"clock\""), yaml)
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:162:    static let failedFlow = #"{"id":"flow-000","name":"smoke","commands":[{"id":"cmd-000","type":"launchApp","yaml":"launchApp","status":"passed"},{"id":"cmd-001","type":"tapOn","yaml":"tapOn: text=\"Remove\"","status":"failed","error":{"type":"element_not_found","message":"Element not found: text='Remove'"}},{"id":"cmd-002","type":"takeScreenshot","yaml":"takeScreenshot","status":"skipped"}]}"#
+Sources/GrantivaCore/Runner/FlowGenerator.swift:72:                        appendSelector("tapOn", label, byId: step.tapById, exact: step.tapExact, to: &lines)

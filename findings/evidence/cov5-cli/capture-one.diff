@@ -1,0 +1,24 @@
+--- findings/evidence/cov5-cli/capture-one.original.rb	2026-10-13 16:31:14
++++ findings/evidence/cov5-cli/capture-one.rb	2026-10-13 16:31:19
+@@ -17,9 +17,9 @@
+ abort 'timeout must be positive' unless timeout_seconds.positive?
+ 
+ binary = '/Users/kyle/.grantiva-qa/bin/grantiva'
+-manifest_path = '/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-coverage/candidate.json'
+-runner_home = '/private/tmp/grantiva-round4-candidate3-9lkulx9q/runner-home'
+-expected_manifest = 'd833797d30a794d8cfe9d2dc4646329d4f791667eb8dfa5d17cf417d827f744e'
++manifest_path = '/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/completion-candidate4/candidate.json'
++runner_home = '/private/tmp/grantiva-cov5-cli-gtwQZB/runner-home'
++expected_manifest = '714715a6890ae340395083e195eecfa3d95e28abdc102e69e7c66533dea5c783'
+ manifest_sha = Digest::SHA256.file(manifest_path).hexdigest
+ abort "manifest mismatch #{manifest_sha}" unless manifest_sha == expected_manifest
+ manifest = JSON.parse(File.read(manifest_path))
+@@ -42,7 +42,7 @@
+ boot_observe(prefix, 'before') if boot_observation
+ 
+ stdout_path = "#{prefix}.stdout"; stderr_path = "#{prefix}.stderr"
+-env = {'GRANTIVA_RUNNER_HOME'=>runner_home, 'MAESTRO_RUNNER_HOME'=>runner_home, 'GRANTIVA_SESSION_ID'=>'cov4-cli', 'GRANTIVA_API_KEY'=>nil}
++env = {'GRANTIVA_RUNNER_HOME'=>runner_home, 'MAESTRO_RUNNER_HOME'=>runner_home, 'GRANTIVA_SESSION_ID'=>'cov5-cli', 'GRANTIVA_API_KEY'=>nil}
+ started = Time.now.utc
+ pid = Process.spawn(env, *command, chdir: cwd, pgroup: true, out: [stdout_path, 'wx'], err: [stderr_path, 'wx'])
+ pgid = Process.getpgid(pid); timed_out = false; term_at = kill_at = status = nil

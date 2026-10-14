@@ -1,0 +1,44 @@
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:50:        let detector = ProjectDetector { DetectedProject(scheme: "Live", project: "Live.xcodeproj", bundleId: "com.live") }
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:70:        let detector = ProjectDetector {
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:98:        let detector = ProjectDetector {
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:110:        let detector = ProjectDetector { DetectedProject(scheme: "Only", schemes: ["Only"]) }
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:128:            XCTAssertTrue(error.localizedDescription.contains("ProjectDetector.failing"))
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:134:        let detector = ProjectDetector { DetectedProject(scheme: "A", schemes: ["A", "B"]) }
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:149:    /// K72: a cache recorded when the project had one scheme cannot supply
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:159:        for path in ProjectDetector.schemeStatePaths(container: root.appendingPathComponent("App.xcodeproj")) where fm.fileExists(atPath: path) {
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:163:        try ProjectDetector.writeCache(DetectedProject(scheme: "A", schemes: ["A"]), cacheURL: cacheURL)
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:165:        XCTAssertEqual(ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: root)?.scheme, "A", "unchanged project: cache holds")
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:168:        let detector = ProjectDetector { DetectedProject(scheme: "A", schemes: ["A", "B"]) }
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:172:                loadCache: { ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: root) },
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:191:        let paths = ProjectDetector.schemeStatePaths(container: workspace)
+Sources/GrantivaCLI/InitCommand.swift:273:    /// the resolver uses (`ProjectDetector.listSchemes`), so `init` and
+Sources/GrantivaCLI/InitCommand.swift:282:        let schemes = (try? await ProjectDetector.listSchemes(inDirectory: directory).schemes) ?? []
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:5:private actor ProjectDetectorShell {
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:24:final class ProjectDetectorTests: XCTestCase {
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:28:        let shell = ProjectDetectorShell(responses: [
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:33:        let project = try await ProjectDetector.detect(
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:50:        let shell = ProjectDetectorShell(responses: [
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:55:        let project = try await ProjectDetector.detect(
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:70:            _ = try await ProjectDetector.detect(
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:82:            _ = try await ProjectDetector.detect(
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:106:        try ProjectDetector.writeCache(project, cacheURL: cacheURL)
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:107:        let loaded = ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: root)
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:118:        try ProjectDetector.writeCache(DetectedProject(scheme: "Old"), cacheURL: cacheURL)
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:125:        XCTAssertNil(ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: root))
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:132:        try ProjectDetector.writeCache(DetectedProject(scheme: "App"), cacheURL: cacheURL)
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:140:            ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: root)?.scheme,
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:154:        XCTAssertNil(ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: root))
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:166:        let cached = ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: dir)
+Sources/GrantivaCore/Config/ProjectResolver.swift:76:        detector: ProjectDetector = .live,
+Sources/GrantivaCore/Config/ProjectResolver.swift:77:        loadCache: @Sendable () -> DetectedProject? = { ProjectDetector.loadCache() },
+Sources/GrantivaCore/Config/ProjectResolver.swift:78:        saveCache: @Sendable (DetectedProject) -> Void = { ProjectDetector.saveCache($0) },
+Sources/GrantivaCore/Config/ProjectDetector.swift:33:// MARK: - ProjectDetector
+Sources/GrantivaCore/Config/ProjectDetector.swift:35:public struct ProjectDetector: Sendable {
+Sources/GrantivaCore/Config/ProjectDetector.swift:45:extension ProjectDetector {
+Sources/GrantivaCore/Config/ProjectDetector.swift:46:    public static let live = ProjectDetector {
+Sources/GrantivaCore/Config/ProjectDetector.swift:59:    /// `xcodebuild -list` reports for it. The one scheme detection both
+Sources/GrantivaCore/Config/ProjectDetector.swift:145:extension ProjectDetector {
+Sources/GrantivaCore/Config/ProjectDetector.swift:191:    /// so watching only the container let a cache recorded with one scheme
+Sources/GrantivaCore/Config/ProjectDetector.swift:244:extension ProjectDetector {
+Sources/GrantivaCore/Config/ProjectDetector.swift:245:    public static let failing = ProjectDetector {
+Sources/GrantivaCore/Config/ProjectDetector.swift:246:        throw GrantivaError.invalidArgument("ProjectDetector.failing")

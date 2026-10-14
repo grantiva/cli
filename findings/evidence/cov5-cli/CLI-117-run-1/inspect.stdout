@@ -1,0 +1,8 @@
+`grantiva ci run --platform android` is refused today, on any machine: Android baselines
+are local only until the Grantiva backend supports platforms ("Android baselines are local
+only until the Grantiva backend supports platforms; use local baselines"). Use the local
+commands instead: `grantiva diff capture`, `grantiva diff compare`, and
+`grantiva diff approve`.
+`applicationId` for a built variant, or the APK's (read with `apkanalyzer`) for `--app-file`.
+`application_id` in the config is used only when there is no app to read it from
+(`--no-build`); when it disagrees with the app, the app wins and a warning names both.

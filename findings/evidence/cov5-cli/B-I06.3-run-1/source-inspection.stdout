@@ -1,0 +1,39 @@
+Tests/GrantivaMCPTests/MCPTestSupport.swift:50:            typeText: { text in recorder.record("typeText(\(text))") },
+Tests/GrantivaMCPTests/UIToolsTests.swift:119:        XCTAssertEqual(recorder.calls, ["typeText(hello world)", "hierarchy"])
+Tests/GrantivaMCPTests/UIToolsTests.swift:127:        XCTAssertEqual(recorder.calls.first, "typeText()")
+Tests/GrantivaMCPTests/UIToolsTests.swift:449:        driver.typeText = { text in throw GrantivaError.notFound(#"No focused text field: tap a field before typing "\#(text)"."#) }
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:458:        let hierarchy = #"{"type":"XCUIElementTypeApplication","children":[{"type":"XCUIElementTypeButton","name":"settings_button","label":"Gear","frame":{"x":0,"y":0,"width":10,"height":10},"children":[]},{"type":"XCUIElementTypeTextField","value":"Search","frame":{"x":0,"y":50,"width":10,"height":10},"children":[]}]}"#
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:533:        let hierarchy = #"{"type":"XCUIElementTypeApplication","children":[{"type":"XCUIElementTypeTextField","placeholderValue":"Search landmarks","frame":{"x":0,"y":10,"width":10,"height":10},"children":[]}]}"#
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:634:        driver.typeText = { text in throw DriverClient.noFocusedField(text) }
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:63:        XCTAssertEqual(recorder.calls.first, "typeText(abc)")
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:33:                "typeText(hunter2)",
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:171:        driver.typeText = { text in throw GrantivaError.notFound(#"No focused text field: tap a field before typing "\#(text)"."#) }
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:92:            tapByLabel: { _ in }, tapByCoordinate: { _, _ in }, typeText: { _ in }, swipe: { _ in },
+Tests/GrantivaCoreTests/WDAClientTests.swift:61:        let xml = #"<XCUIElementTypeApplication><XCUIElementTypeTextField placeholderValue="Search"/><XCUIElementTypeTextField placeholderValue=""/></XCUIElementTypeApplication>"#
+Tests/GrantivaCoreTests/WDAClientTests.swift:124:    func testTypeTextPostsCharactersToWDAKeys() async throws {
+Tests/GrantivaCoreTests/WDAClientTests.swift:126:        try await DriverClient.wda(port: 8100, transport: transport.transport).typeText("Hi!")
+Tests/GrantivaCoreTests/WDAClientTests.swift:127:        XCTAssertEqual(transport.calls.map(\.path), ["/status", "/session/S1/element/active", "/session/S1/wda/keys"])
+Tests/GrantivaCoreTests/WDAClientTests.swift:133:    func testTypeTextFallsBackToKeysOnlyAfterA404() async throws {
+Tests/GrantivaCoreTests/WDAClientTests.swift:135:        try await DriverClient.wda(port: 8100, transport: transport.transport).typeText("x")
+Tests/GrantivaCoreTests/WDAClientTests.swift:136:        XCTAssertEqual(transport.calls.map(\.path), ["/status", "/session/S1/element/active", "/session/S1/wda/keys", "/session/S1/keys"])
+Tests/GrantivaCoreTests/WDAClientTests.swift:139:    func testTypeTextFailureNamesTheHTTPStatus() async {
+Tests/GrantivaCoreTests/WDAClientTests.swift:142:            try await DriverClient.wda(port: 8100, transport: transport.transport).typeText("x")
+Tests/GrantivaCoreTests/WDAClientTests.swift:267:                ["ELEMENT": "later", "type": "XCUIElementTypeTextField", "placeholderValue": text],
+Tests/GrantivaCoreTests/WDAClientTests.swift:349:    func testTypeTextWithoutAFocusedElementSendsNoKeys() async {
+Tests/GrantivaCoreTests/WDAClientTests.swift:353:            try await wda(transport).typeText("x")
+Tests/GrantivaCoreTests/UIAutomator2ClientTests.swift:133:    func testTypeTextSendsKeyActionsPerCharacter() async throws {
+Tests/GrantivaCoreTests/UIAutomator2ClientTests.swift:135:        try await client(transport).typeText("hi")
+Tests/GrantivaCoreTests/UIAutomator2ClientTests.swift:191:    func testTypeTextWithoutAFocusedElementSendsNoKeys() async {
+Tests/GrantivaCoreTests/UIAutomator2ClientTests.swift:194:            try await client(transport).typeText("x")
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:179:            typeText: { text in
+Sources/GrantivaCore/WDA/WDAClient.swift:12:    public var typeText: @Sendable (_ text: String) async throws -> Void
+Sources/GrantivaCore/WDA/WDAClient.swift:25:        typeText: @escaping @Sendable (_ text: String) async throws -> Void,
+Sources/GrantivaCore/WDA/WDAClient.swift:35:        self.typeText = typeText
+Sources/GrantivaCore/WDA/WDAClient.swift:144:            typeText: { text in
+Sources/GrantivaCore/WDA/WDAClient.swift:154:                // GrantivaAgent (WebDriverAgent) serves keystrokes at /wda/keys;
+Sources/GrantivaCore/WDA/WDAClient.swift:156:                var (data, status) = try await send(transport, "POST", "\(base)/session/\(sessionId)/wda/keys", body)
+Sources/GrantivaCore/WDA/WDAClient.swift:409:        typeText: { _ in throw GrantivaError.commandFailed("DriverClient.failing", 1) },
+Sources/GrantivaMCP/Tools/ScriptTools.swift:161:            try await driver.typeText(text)
+Sources/GrantivaMCP/Tools/UITools.swift:207:            try await driver.typeText(text)
+Sources/GrantivaMCP/Tools/UITools.swift:258:        "XCUIElementTypeButton", "XCUIElementTypeTextField", "XCUIElementTypeSecureTextField", "XCUIElementTypeSwitch",
+Sources/GrantivaMCP/Tools/SessionCapture.swift:200:            try await driver.typeText(text)

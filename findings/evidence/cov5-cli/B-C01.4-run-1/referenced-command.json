@@ -1,0 +1,32 @@
+{
+  "cwd": "/private/tmp/grantiva-cov5-cli-gtwQZB/batch8/c01",
+  "argv": [
+    "/bin/bash",
+    "-c",
+    "set -o pipefail; h=/private/tmp/grantiva-cov5-cli-gtwQZB/batch8/c01-home-2; mkdir -p \"$h\"; find \"$h\" -type f -print0 | sort -z | xargs -0 shasum -a 256 > before.sha256; set +e; GRANTIVA_RUNNER_HOME=\"$h\" MAESTRO_RUNNER_HOME=\"$h\" ./grantiva runner install > product.stdout 2> product.stderr; code=$?; set -e; find \"$h\" -type f -print0 | sort -z | xargs -0 shasum -a 256 > after.sha256; cmp before.sha256 after.sha256; cat product.stdout; cat product.stderr >&2; exit \"$code\""
+  ],
+  "environment": {
+    "GRANTIVA_RUNNER_HOME": "/private/tmp/grantiva-cov5-cli-gtwQZB/runner-home",
+    "MAESTRO_RUNNER_HOME": "/private/tmp/grantiva-cov5-cli-gtwQZB/runner-home",
+    "GRANTIVA_SESSION_ID": "cov5-cli",
+    "GRANTIVA_API_KEY": "<unset>"
+  },
+  "startedAt": "2026-10-14T00:06:09.100238Z",
+  "endedAt": "2026-10-14T00:06:09.167981Z",
+  "timeoutSeconds": 120.0,
+  "timedOut": false,
+  "pid": 77012,
+  "processGroupId": 77012,
+  "termSentAt": null,
+  "killSentAt": null,
+  "exited": true,
+  "exitStatus": 1,
+  "signaled": false,
+  "terminationSignal": null,
+  "processGroupAliveAfterWait": false,
+  "cleanupFailed": false,
+  "stdout": "findings/evidence/cov5-cli/B-C01.1-run-2/missing-bundle.stdout",
+  "stderr": "findings/evidence/cov5-cli/B-C01.1-run-2/missing-bundle.stderr",
+  "bootObservation": false,
+  "identityEvidence": "findings/evidence/cov5-cli/B-C01.1-run-2/missing-bundle.identity.json"
+}

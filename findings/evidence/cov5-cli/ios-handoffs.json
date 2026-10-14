@@ -1,0 +1,83 @@
+{
+  "status": "PREPARED_NOT_EXECUTED_AWAITING_SMOKE_GATE",
+  "ordering": "matrix file order",
+  "count": 6,
+  "destinationOwner": "CLI",
+  "executionActor": "iOS",
+  "rows": [
+    {
+      "ordinal": 52,
+      "id": "CLI-048",
+      "matrixDisplayId": "CLI-048",
+      "matrixLine": 180,
+      "command": "`diff capture`",
+      "inputPrecondition": "`- run_flow: \"sub/flow.yaml\"` relative; a missing path",
+      "expected": "Relative to the config's directory; missing file is an error naming the path (README:141)",
+      "platform": "cli",
+      "slice": "CLI",
+      "cleanup": "none"
+    },
+    {
+      "ordinal": 53,
+      "id": "CLI-049",
+      "matrixDisplayId": "CLI-049",
+      "matrixLine": 181,
+      "command": "`diff capture`",
+      "inputPrecondition": "`run_flow` cycle A->B->A",
+      "expected": "Error naming the cycle; no hang (README:141)",
+      "platform": "cli",
+      "slice": "CLI",
+      "cleanup": "none"
+    },
+    {
+      "ordinal": 68,
+      "id": "CLI-061",
+      "matrixDisplayId": "CLI-061",
+      "matrixLine": 196,
+      "command": "`diff capture` (parse)",
+      "inputPrecondition": "Maestro flow `- tapOn: \"Mount \\\"Denali\\\" \ud83c\udfd4\ufe0f\"`",
+      "expected": "Parses; the staged flow carries the label byte for byte (README:172)",
+      "platform": "cli",
+      "slice": "CLI",
+      "cleanup": "none"
+    },
+    {
+      "ordinal": 81,
+      "id": "CLI-064",
+      "matrixDisplayId": "CLI-064 (changed)",
+      "matrixLine": 214,
+      "command": "`diff capture` (parse)",
+      "inputPrecondition": "`tapOn: {text: X}`, `tapOn: {id: X}`",
+      "expected": "Text selector and id selector; the staged flow carries `id: X` (README:172; brief C08)",
+      "platform": "cli",
+      "slice": "CLI",
+      "cleanup": "none"
+    },
+    {
+      "ordinal": 83,
+      "id": "CLI-066",
+      "matrixDisplayId": "CLI-066",
+      "matrixLine": 216,
+      "command": "`diff capture` (parse)",
+      "inputPrecondition": "`- scroll`, `- scroll: {direction: up}`",
+      "expected": "Mapped to a swipe in the opposite finger direction (README:172)",
+      "platform": "cli",
+      "slice": "CLI",
+      "cleanup": "none"
+    },
+    {
+      "ordinal": 102,
+      "id": "CLI-083",
+      "matrixDisplayId": "CLI-083",
+      "matrixLine": 245,
+      "command": "`doctor`",
+      "inputPrecondition": "no config, not authenticated, no booted simulator Round 3 re-run rule: run only while `xcrun simctl list devices booted` lists no simulator at all; an owner simulator booted \u2192 `blocked owner simulator booted` again (never shut it down); only campaign simulators booted \u2192 handed to the iOS slice, which runs it after its teardown.",
+      "expected": "Optional checks advisory; exit code unaffected (README:330)",
+      "platform": "cli",
+      "slice": "CLI",
+      "cleanup": "none"
+    }
+  ],
+  "sourceStandingDelegation": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/preparation/round4-coverage/task9-standing-delegations.md",
+  "sourceStandingDelegationSHA256": "f53ff2459cd36dd0e1215ddf4bf419114ce98873e783ccafc565285d40beb254"
+}

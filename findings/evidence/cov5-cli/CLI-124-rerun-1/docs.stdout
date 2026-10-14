@@ -1,0 +1,9 @@
+`grantiva mcp` starts without a runner session and without a config file, so an agent can list tools
+and provision a device first. Only the tools marked **yes** in the **Session** column need a session:
+until one exists they return an error (`isError`) naming `grantiva runner start` and
+`grantiva run --keep-alive`, and they attach to it on the next call once it starts (and re-attach if it
+is replaced).
+
+Every tool, with or without a session, reports every failure as an `isError` result whose text starts
+with `Error: ` exactly once, never as a JSON-RPC error: a missing simulator or AVD, a refused delete, a
+failed build (`Error: Build FAILED`), a missing config file, a VRT command that fails, an unknown tool

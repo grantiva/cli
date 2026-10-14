@@ -1,0 +1,26 @@
+    path:
+      - tap: "Profile"
+      - tap: "Settings"
+
+diff:
+  threshold: 0.02
+  perceptual_threshold: 5.0
+```
+
+`diff.threshold` and `diff.perceptual_threshold` are two separate checks, and a screen passes only when **both** hold:
+
+- `threshold` is a 0-1 fraction of pixels that differ (`0.02` = 2 %; the messages print percent). `1.0` means any share of changed pixels is fine.
+- `perceptual_threshold` is the mean CIE76 color distance (delta E) over the differing pixels only, not over the whole image. It is 0 when the images are identical and about 2.3 is a just-noticeable difference. A handful of strongly changed pixels therefore fails a screen no matter how high `threshold` is.
+
+To loosen a flaky screen, raise both. Raising only `threshold` still fails the screen on `perceptual_threshold` (for example `pixel=7.97% perceptual=6.4` against a limit of 5).
+
+### Screens
+
+Each screen has a `name` and a `path`. The path describes how to navigate there:
+
+- `launch` — screenshot right after app launch. On Android the first screen first waits (up to 10 s, then
+  continues) until an element with text is on screen inside the app's own content view, so the capture is never the
+  empty window a cold start shows before the app draws; when the app has already drawn this is a single lookup
+- `- tap: "Label"` — tap a button or element by accessibility label
+- `- swipe: up` — swipe in a direction (`up`, `down`, `left`, `right`, any case); any other value is a config error
+- `- type: "text"` — type text into the focused field
