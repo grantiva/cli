@@ -13,7 +13,7 @@ Candidate manifest: `191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c
 | IOS-015 | PASS | Temporary-session teardown deleted the created simulator and shut down the pre-existing simulator. |
 | IOS-016 | PASS | Killed authenticated keep-alive parent; force teardown reclaimed orphan WDA and diagnose processes. |
 | IOS-017 | PASS | Free-UDID force teardown returned `reclaimed: false`. |
-| IOS-018 | PASS | Isolated ledger cleanup deleted only the shutdown created simulator and preserved the active one until scoped teardown. |
+| IOS-018 | PENDING | Isolated cleanup behavior passed, but review found the exact `~/.grantiva-qa/runner` ledger before/after guard was not captured. A fresh adjacent leg is queued. |
 | IOS-019 | PASS | Exact retained IOS-003 Pin deleted; missing-name retry failed clearly. |
 | IOS-020 | PASS | Manually booted simulator was not counted or shut down by session teardown. |
 | IOS-119 | PASS | Expected exit 1 at first wait with app-crashed/not-running cause and retained screenshot. |

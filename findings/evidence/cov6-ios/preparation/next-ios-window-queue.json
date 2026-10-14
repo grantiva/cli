@@ -1,0 +1,384 @@
+{
+  "status": "PREPARED_NOT_ACTIVE",
+  "candidateManifestSHA256": "191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c",
+  "sessionId": "candidate5-ios",
+  "runnerHome": "/private/tmp/grantiva-candidate5-coverage-qjr26z3g/ios-runner-home",
+  "primary26": {
+    "name": "cov6-ios-26",
+    "udid": "1E436AED-5626-4520-9E43-1CC741510637"
+  },
+  "primary27": {
+    "name": "cov6-ios-27",
+    "udid": "9C1D624E-C6F2-4930-9581-B1A257C0DBD7"
+  },
+  "prependCorrection": {
+    "key": "IOS-018",
+    "reason": "capture exact QA/default/coverage ledger existence and hashes before and after the isolated cleanup leg; preserve first attempt"
+  },
+  "iosKeys": [
+    {
+      "key": "IOS-121",
+      "baseId": "IOS-121",
+      "matrixLine": 369,
+      "command": "`simulator teardown`, `simulator delete`",
+      "precondition": "after a run on `cov-ios-3`",
+      "expected": "The device's home under `<runner home>/versions/*/devices/<udid>` is removed; teardown exits non-zero naming any home it could not remove (README:92)"
+    },
+    {
+      "key": "IOS-122",
+      "baseId": "IOS-122",
+      "matrixLine": 370,
+      "command": "`run`",
+      "precondition": "`cov-ios-1` already booted, `GRANTIVA_SESSION_ID` unset",
+      "expected": "On a simctl-booted device not owned by any Grantiva session (input must be unowned, not a session-owned simulator such as `cov-ios-1`), a run with `GRANTIVA_SESSION_ID` unset takes no slot; without a session ID a run's slot lasts only while it runs (README:452-455). On a device owned by a named session, a session-less run is refused with guidance (`... belongs to Grantiva session <id>. Run with GRANTIVA_SESSION_ID=<id>, end that session with ..., or select another simulator.`; README \"Simulators Grantiva created\", K70) (corrected round 3)"
+    },
+    {
+      "key": "IOS-155",
+      "baseId": "IOS-155",
+      "matrixLine": 371,
+      "command": "`simulator teardown --quiet` / `--verbose`",
+      "precondition": "`cov-ios-3 iPhone 17` created and booted in the row; `teardown --udid <it> --force --json` with `--quiet`, then re-ensure and repeat with `--verbose`; delete it at the end",
+      "expected": "stdout identical in all three modes (compare byte for byte; with `--json` the JSON); `--quiet`: no progress narration on stderr, `Warning:`/`Error:` still printed; `--verbose`: stderr adds timestamps, labels and every subprocess with its exit status (README:388-396)"
+    },
+    {
+      "key": "IOS-021",
+      "baseId": "IOS-021",
+      "matrixLine": 377,
+      "command": "`build build`",
+      "precondition": "`--scheme \"Landmarks (UI Testing)\" --simulator <UDID>`",
+      "expected": "Builds, exit 0 (README:311)"
+    },
+    {
+      "key": "IOS-022",
+      "baseId": "IOS-022",
+      "matrixLine": 378,
+      "command": "`build install`",
+      "precondition": "same",
+      "expected": "Builds, installs, launches (README:312)"
+    },
+    {
+      "key": "IOS-023",
+      "baseId": "IOS-023",
+      "matrixLine": 379,
+      "command": "`build install`",
+      "precondition": "`--no-launch --json`",
+      "expected": "JSON `status`, `scheme`, `bundleId`, `appPath`, `dataContainerPath`, `simulator.name`, `simulator.udid`; app not running (README:252-253)"
+    },
+    {
+      "key": "IOS-024",
+      "baseId": "IOS-024",
+      "matrixLine": 380,
+      "command": "`build install`",
+      "precondition": "`--derived-data-path \"/private/tmp/.../cov ios/Derived Data\"`, and a relative path",
+      "expected": "Products land there; spaces and relative paths work (README:256-259)"
+    },
+    {
+      "key": "IOS-025",
+      "baseId": "IOS-025",
+      "matrixLine": 381,
+      "command": "`build build`",
+      "precondition": "`build_settings: [\"-derivedDataPath\", \"x\"]` + `--derived-data-path y`",
+      "expected": "Flag wins; other settings kept (README:258-259)"
+    },
+    {
+      "key": "IOS-026",
+      "baseId": "IOS-026",
+      "matrixLine": 382,
+      "command": "`build build`",
+      "precondition": "`--scheme NoSuchScheme`",
+      "expected": "Clear scheme error, non-zero (help: build_build.txt)"
+    },
+    {
+      "key": "IOS-027",
+      "baseId": "IOS-027",
+      "matrixLine": 383,
+      "command": "`build build`",
+      "precondition": "no scheme configured, project has two schemes",
+      "expected": "Non-zero, \"No scheme specified\" listing `Found: Landmarks, Landmarks (UI Testing)` (or a stderr warning naming the chosen one) (brief I13)"
+    },
+    {
+      "key": "IOS-028",
+      "baseId": "IOS-028",
+      "matrixLine": 384,
+      "command": "`build install`",
+      "precondition": "`--simulator cov-ios-1` (name) vs UDID",
+      "expected": "Same simulator; destination `id=<UDID>` (help: build_install.txt)"
+    },
+    {
+      "key": "IOS-123",
+      "baseId": "IOS-123",
+      "matrixLine": 385,
+      "command": "`build build`",
+      "precondition": "`--bundle-id com.kylebrowning.Landmarks`",
+      "expected": "Accepted (iOS option) and used (help: build_build.txt)"
+    },
+    {
+      "key": "IOS-124",
+      "baseId": "IOS-124",
+      "matrixLine": 386,
+      "command": "README fixture example",
+      "precondition": "README:234-250 as written with `--scheme \"Landmarks (UI Testing)\"`, `$UDID` = cov-ios-1, flow `.maestro/01-browse.yaml` for `.grantiva/flows/seeded-state.yaml`",
+      "expected": "Install JSON parses with `jq -r .dataContainerPath`; the `run --no-build ... --simulator --bundle-id` passes (README:230-261)"
+    },
+    {
+      "key": "IOS-029",
+      "baseId": "IOS-029",
+      "matrixLine": 392,
+      "command": "`run`",
+      "precondition": "configured flows",
+      "expected": "Runs all; per-step pass/fail; exit 0 only when all pass (help: run.txt)"
+    },
+    {
+      "key": "IOS-030",
+      "baseId": "IOS-030",
+      "matrixLine": 393,
+      "command": "`run --flow`",
+      "precondition": "each stock flow, one at a time",
+      "expected": "Each of 01-12 passes; 99-crash fails (help: run.txt; README:98)"
+    },
+    {
+      "key": "IOS-031",
+      "baseId": "IOS-031",
+      "matrixLine": 394,
+      "command": "`run`",
+      "precondition": "`flows: []`, no screens, `--report-dir out --ready-file out.ready`",
+      "expected": "Fails before boot/build; no success report; ready `failed` (README:85)"
+    },
+    {
+      "key": "IOS-032",
+      "baseId": "IOS-032",
+      "matrixLine": 395,
+      "command": "`run`",
+      "precondition": "stale `x.ready`",
+      "expected": "Deleted at startup; rewritten once with the run's status (README:77-85)"
+    },
+    {
+      "key": "IOS-033",
+      "baseId": "IOS-033",
+      "matrixLine": 396,
+      "command": "`run`",
+      "precondition": "`--ready-file /nonexistent-cov/sub/x.ready`",
+      "expected": "Fails before build or boot, non-zero (README:85-87)"
+    },
+    {
+      "key": "IOS-034",
+      "baseId": "IOS-034",
+      "matrixLine": 397,
+      "command": "`run`",
+      "precondition": "`--ready-file /private/tmp/.../cov-missing/x.ready`",
+      "expected": "Directory created; verdict written there (README:87)"
+    },
+    {
+      "key": "IOS-035",
+      "baseId": "IOS-035",
+      "matrixLine": 398,
+      "command": "`run`",
+      "precondition": "`--env 'LANDMARKS_NOTE=a=b c'`",
+      "expected": "Deep Links shows `a=b c` (check `hierarchy` under `--keep-alive`, or the last `--snapshot full` shot) (help: run.txt `--env`)"
+    },
+    {
+      "key": "IOS-036",
+      "baseId": "IOS-036",
+      "matrixLine": 399,
+      "command": "`run`",
+      "precondition": "`--env LANDMARKS_NOTE=hello`",
+      "expected": "`hello` under the Deep Links title (README:90)"
+    },
+    {
+      "key": "IOS-037",
+      "baseId": "IOS-037",
+      "matrixLine": 400,
+      "command": "`run`",
+      "precondition": "`--env LANDMARKS_SEED=many --env LANDMARKS_NOTE=x`",
+      "expected": "Both reach the app: the flow passes (Landmark 70 reached) and the note `x` is in `hierarchy` on Deep Links (run with `--keep-alive`) (help: run.txt \"Repeatable\")"
+    },
+    {
+      "key": "IOS-038",
+      "baseId": "IOS-038",
+      "matrixLine": 401,
+      "command": "`run`",
+      "precondition": "`--env LANDMARKS_SEED=empty`",
+      "expected": "`No landmarks yet` (help: run.txt)"
+    },
+    {
+      "key": "IOS-039",
+      "baseId": "IOS-039",
+      "matrixLine": 402,
+      "command": "`run`",
+      "precondition": "`--env LANDMARKS_CRASH_ON_LAUNCH=1 --ready-file r`",
+      "expected": "Fails, exit non-zero, failure screenshot, ready `failed` (help: run.txt)"
+    },
+    {
+      "key": "IOS-040",
+      "baseId": "IOS-040",
+      "matrixLine": 403,
+      "command": "`run`",
+      "precondition": "`--app-file Landmarks.app`",
+      "expected": "Skips build, installs; bundle ID from Info.plist; no scheme needed (README:226)"
+    },
+    {
+      "key": "IOS-041",
+      "baseId": "IOS-041",
+      "matrixLine": 404,
+      "command": "`run`",
+      "precondition": "flow 12 (`Mount \"Denali\"`)",
+      "expected": "Tap succeeds, detail opens (README:172)"
+    },
+    {
+      "key": "IOS-042",
+      "baseId": "IOS-042",
+      "matrixLine": 405,
+      "command": "`run`",
+      "precondition": "`--app-file Landmarks.ipa`",
+      "expected": "Extracts, validates, installs, runs (README:213-226)"
+    },
+    {
+      "key": "IOS-043",
+      "baseId": "IOS-043",
+      "matrixLine": 406,
+      "command": "`run`",
+      "precondition": "`--app-file` of an iphoneos build",
+      "expected": "Rejected as not a simulator build (README:226)"
+    },
+    {
+      "key": "IOS-044",
+      "baseId": "IOS-044",
+      "matrixLine": 407,
+      "command": "`run --no-build`",
+      "precondition": "app installed; then after `simctl uninstall`",
+      "expected": "First passes; second fails before the runner with `com.kylebrowning.Landmarks is not installed on cov-ios-1. Drop --no-build or run grantiva build install.` (brief I15)"
+    },
+    {
+      "key": "IOS-045",
+      "baseId": "IOS-045",
+      "matrixLine": 408,
+      "command": "`run`",
+      "precondition": "`tapOn: \"Mountains \u2192 Yosemite Valley\"`",
+      "expected": "Tap succeeds, label unmangled (README:172)"
+    },
+    {
+      "key": "IOS-125",
+      "baseId": "IOS-125",
+      "matrixLine": 409,
+      "command": "`run --flow`",
+      "precondition": "no config, no `--bundle-id`, flow `appId:` header",
+      "expected": "Uses the flow's `appId` (README:174; brief C10)"
+    },
+    {
+      "key": "IOS-126",
+      "baseId": "IOS-126",
+      "matrixLine": 410,
+      "command": "`run --flow`",
+      "precondition": "`--bundle-id com.kylebrowning.Landmarks` with config `bundle_id`, flow appId `${APP_ID}`",
+      "expected": "Order: flag > config > `--app-file` > flow appId (ignored for `${VAR}`) > detection (README:174)"
+    },
+    {
+      "key": "IOS-127",
+      "baseId": "IOS-127",
+      "matrixLine": 411,
+      "command": "`run`",
+      "precondition": "header `env:` + step `environment:`; then `--env`",
+      "expected": "Step wins over header; `--env` wins over both (README:176)"
+    },
+    {
+      "key": "IOS-128",
+      "baseId": "IOS-128",
+      "matrixLine": 412,
+      "command": "`run --derived-data-path`",
+      "precondition": "`run` and `diff capture` with `--derived-data-path`",
+      "expected": "Products land there (README:258 \"available on every Grantiva command that builds\")"
+    },
+    {
+      "key": "IOS-047",
+      "baseId": "IOS-047",
+      "matrixLine": 418,
+      "command": "`run --keep-alive`",
+      "precondition": "`--flow <flow>`",
+      "expected": "Session held after flows; app frozen; exits only on Ctrl-C (README:76)"
+    },
+    {
+      "key": "IOS-048",
+      "baseId": "IOS-048",
+      "matrixLine": 419,
+      "command": "`hierarchy`",
+      "precondition": "during keep-alive",
+      "expected": "XML on stdout, app not relaunched (docs/dump-hierarchy.md:29)"
+    },
+    {
+      "key": "IOS-049",
+      "baseId": "IOS-049",
+      "matrixLine": 420,
+      "command": "`hierarchy`",
+      "precondition": "`--format json`",
+      "expected": "Valid JSON (docs/dump-hierarchy.md:30)"
+    },
+    {
+      "key": "IOS-050",
+      "baseId": "IOS-050",
+      "matrixLine": 421,
+      "command": "`hierarchy`",
+      "precondition": "`--json`",
+      "expected": "JSON, as `--format json` (docs/dump-hierarchy.md:38; brief D01)"
+    }
+  ],
+  "cliHandoffs": [
+    {
+      "key": "CLI-048",
+      "baseId": "CLI-048",
+      "matrixLine": 180,
+      "command": "`diff capture`",
+      "precondition": "`- run_flow: \"sub/flow.yaml\"` relative; a missing path",
+      "expected": "Relative to the config's directory; missing file is an error naming the path (README:141)"
+    },
+    {
+      "key": "CLI-049",
+      "baseId": "CLI-049",
+      "matrixLine": 181,
+      "command": "`diff capture`",
+      "precondition": "`run_flow` cycle A->B->A",
+      "expected": "Error naming the cycle; no hang (README:141)"
+    },
+    {
+      "key": "CLI-061",
+      "baseId": "CLI-061",
+      "matrixLine": 196,
+      "command": "`diff capture` (parse)",
+      "precondition": "Maestro flow `- tapOn: \"Mount \\\"Denali\\\" \ud83c\udfd4\ufe0f\"`",
+      "expected": "Parses; the staged flow carries the label byte for byte (README:172)"
+    },
+    {
+      "key": "CLI-064",
+      "baseId": "CLI-064",
+      "matrixLine": 214,
+      "command": "`diff capture` (parse)",
+      "precondition": "`tapOn: {text: X}`, `tapOn: {id: X}`",
+      "expected": "Text selector and id selector; the staged flow carries `id: X` (README:172; brief C08)"
+    },
+    {
+      "key": "CLI-066",
+      "baseId": "CLI-066",
+      "matrixLine": 216,
+      "command": "`diff capture` (parse)",
+      "precondition": "`- scroll`, `- scroll: {direction: up}`",
+      "expected": "Mapped to a swipe in the opposite finger direction (README:172)"
+    },
+    {
+      "key": "CLI-083",
+      "baseId": "CLI-083",
+      "matrixLine": 245,
+      "command": "`doctor`",
+      "precondition": "no config, not authenticated, no booted simulator Round 3 re-run rule: run only while `xcrun simctl list devices booted` lists no simulator at all; an owner simulator booted \u2192 `blocked owner simulator booted` again (never shut it down); only campaign simulators booted \u2192 handed to the iOS slice, which runs it after its teardown.",
+      "expected": "Optional checks advisory; exit code unaffected (README:330)"
+    }
+  ],
+  "executionRules": [
+    "No live command until root activates the next exclusive iOS window.",
+    "Use fresh scratch source archive at demo commit 84af7581b75134b0e417b254e4317d565f7b73c6 for build rows; do not place build artifacts in evidence.",
+    "Restore the frozen app after every scratch install before unrelated runtime work.",
+    "IOS-122 requires both a sessionless run on a manually booted unowned extra and a separate sessionless refusal on an exact named-session primary.",
+    "At most two owned extras cov6-ios-3/cov6-ios-4 coexist; authenticate each UUID before mutation.",
+    "CLI-083 remains BLOCKED while either protected or owned simulator is Booted; never shut down an owner to execute it.",
+    "Other CLI handoffs require fresh candidate5 CLI actor fixture bindings before execution; do not reuse candidate4 runtime evidence.",
+    "Return both primaries Booted with frozen apps, extras retired, protected state unchanged, and no owned workers."
+  ]
+}
