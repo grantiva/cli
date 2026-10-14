@@ -1,0 +1,144 @@
+--- findings/evidence/completion-candidate4/prepare-candidate.py	2026-10-13 16:12:07
++++ findings/evidence/completion-candidate5/prepare-candidate.py	2026-10-13 18:12:54
+@@ -1,11 +1,11 @@
+ #!/usr/bin/env python3
+-"""Build, promote, upgrade, and freeze completion candidate4. Prepared only; not executed."""
++"""Build, promote, upgrade, and freeze completion candidate5. Prepared only; not executed."""
+ from pathlib import Path
+ import argparse, hashlib, json, os, shutil, subprocess, time
+ 
+ ROOT = Path('/Users/kyle/Developer/grantiva-cli/.worktrees/regression')
+-OUT = ROOT / 'findings/evidence/completion-candidate4'
+-EXPECTED_SOURCE = Path('/Users/kyle/Developer/grantiva-cli/.worktrees/release-completion-candidate4')
++OUT = ROOT / 'findings/evidence/completion-candidate5'
++EXPECTED_SOURCE = Path('/Users/kyle/Developer/grantiva-cli/.worktrees/release-completion-candidate5')
+ QA = Path.home() / '.grantiva-qa/bin'
+ 
+ def sha(path): return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+@@ -32,25 +32,29 @@
+     path=Path(entry['path']); assert path.is_file() and sha(path)==entry['sha256'], path
+ 
+ parser=argparse.ArgumentParser()
+-parser.add_argument('--merged-sha',required=True)
++parser.add_argument('--cli-merged-sha',required=True)
++parser.add_argument('--runner-merged-sha',required=True)
+ parser.add_argument('--source',required=True)
+ args=parser.parse_args()
+ state=json.loads((OUT/'initial-state.json').read_text())
+-assert args.merged_sha!='PENDING' and state['cliMergeSHA']!='PENDING'
++assert args.cli_merged_sha!='PENDING' and state['cliMergeSHA']!='PENDING'
++assert args.runner_merged_sha!='PENDING' and state['runnerMergeSHA']!='PENDING'
++assert args.runner_merged_sha==state['runnerMergeSHA'] and len(args.runner_merged_sha)==40
+ assert args.source!='PENDING' and state['source']!='PENDING'
+ source=Path(args.source).resolve(); assert source==EXPECTED_SOURCE.resolve()==Path(state['source']).resolve()
+-assert args.merged_sha==state['cliMergeSHA'] and len(args.merged_sha)==40
++assert args.cli_merged_sha==state['cliMergeSHA'] and len(args.cli_merged_sha)==40
+ scratch=Path(state['scratch']); home=Path(state['runnerHome']); build_home=Path(state['buildHome']); session=state['session']
+-assert scratch==Path('/private/tmp/grantiva-completion-candidate4-x_i_t3pq') and home==scratch/'runner-home'
+-assert session=='completion-candidate4' and OUT.resolve().is_relative_to(ROOT.resolve())
+-assert git(source,'rev-parse','HEAD')==args.merged_sha and git(source,'status','--porcelain')==''
++assert scratch.is_absolute() and str(scratch).startswith('/private/tmp/grantiva-completion-candidate5-')
++assert 'PENDING' not in str(scratch) and home==scratch/'runner-home'
++assert session=='completion-candidate5' and OUT.resolve().is_relative_to(ROOT.resolve())
++assert git(source,'rev-parse','HEAD')==args.cli_merged_sha and git(source,'status','--porcelain')==''
+ previous_path=Path(state['previousManifest']); previous=json.loads(previous_path.read_text())
+-assert previous_path==ROOT/'findings/evidence/round4-coverage/candidate.json'
+-assert state['runnerSHA']==previous['runner']['sourceSHA']=='ba9008f4b2cd2c7320a9c46e04faed612b0958a2'
++assert previous_path==ROOT/'findings/evidence/completion-candidate4/candidate.json'
++assert state['runnerMergeSHA']==args.runner_merged_sha and state['runnerMergeSHA']!=previous['runner']['sourceSHA']
+ assert state['demoSHA']==previous['demo']['sourceSHA']=='84af7581b75134b0e417b254e4317d565f7b73c6'
+ equivalence=json.loads((OUT/'clone-equivalence.json').read_text()); before=json.loads((OUT/'clone-before-upgrade.json').read_text()); source_before=json.loads((OUT/'source-before-upgrade.json').read_text())
+-assert equivalence=={'captureStarted':equivalence['captureStarted'],'captureEnded':equivalence['captureEnded'],'entries':8593,'identical':True,'scope':'after clone, before install; source was read only'}
+-assert len(before)==len(source_before)==8593 and before==source_before
++assert equivalence['identical'] is True and equivalence['scope']=='after clone, before install; source was read only'
++assert equivalence['entries']==len(before)==len(source_before) and before==source_before
+ for row in before:
+     target=home/row['path']; assert row['type'] in ('file','symlink')
+     if row['type']=='symlink': assert target.is_symlink() and os.readlink(target)==row['target']
+@@ -59,34 +63,35 @@
+ assert not (OUT/'candidate.json').exists() and not (OUT/'candidate.sha256').exists()
+ assert build_home.is_dir() and not list(build_home.iterdir())
+ build_scratch=scratch/'swift-build-scratch'; build_scratch.mkdir(exist_ok=False)
+-save_exclusive(OUT/'cli-source-before.json',{'repoPath':str(source),'head':args.merged_sha,'status':''})
++save_exclusive(OUT/'cli-source-before.json',{'repoPath':str(source),'head':args.cli_merged_sha,'status':''})
+ run('release-build',['swift','build','-c','release','--scratch-path',build_scratch],source,build_home,session)
+ products=Path(run('release-path',['swift','build','-c','release','--scratch-path',build_scratch,'--show-bin-path'],source,build_home,session))
+ assert products.is_relative_to(build_scratch)
+ binary=products/'grantiva'; bundle=products/'grantiva_GrantivaCore.bundle'; assert binary.is_file() and bundle.is_dir()
+-assert git(source,'rev-parse','HEAD')==args.merged_sha and git(source,'status','--porcelain')=='' and not list(build_home.iterdir())
+-save_exclusive(OUT/'cli-source-after.json',{'repoPath':str(source),'head':args.merged_sha,'status':'','binarySHA256':sha(binary),'bundle':tree_record(bundle),'buildHomeAfter':[],'productsPath':str(products)})
++assert git(source,'rev-parse','HEAD')==args.cli_merged_sha and git(source,'status','--porcelain')=='' and not list(build_home.iterdir())
++save_exclusive(OUT/'cli-source-after.json',{'repoPath':str(source),'head':args.cli_merged_sha,'status':'','binarySHA256':sha(binary),'bundle':tree_record(bundle),'buildHomeAfter':[],'productsPath':str(products)})
+ 
+-# Promotion is allowed only while QA still equals the frozen candidate3 manifest.
++# Promotion is allowed only while QA still equals frozen candidate4.
+ assert sha(QA/'grantiva')==previous['cli']['binary']['sha256']
+ assert tree_record(QA/'grantiva_GrantivaCore.bundle')['files']==previous['cli']['bundle']['files']
+-backup=scratch/'previous-qa-candidate3'; backup.mkdir(exist_ok=False)
++backup=scratch/'previous-qa-candidate4'; backup.mkdir(exist_ok=False)
+ shutil.copy2(QA/'grantiva',backup/'grantiva'); shutil.copytree(QA/'grantiva_GrantivaCore.bundle',backup/'grantiva_GrantivaCore.bundle'); shutil.copy2(previous_path,backup/'candidate.json')
+ assert sha(backup/'grantiva')==previous['cli']['binary']['sha256'] and tree_record(backup/'grantiva_GrantivaCore.bundle')['files']==previous['cli']['bundle']['files']
+ shutil.copy2(binary,QA/'grantiva'); shutil.rmtree(QA/'grantiva_GrantivaCore.bundle'); shutil.copytree(bundle,QA/'grantiva_GrantivaCore.bundle')
+ assert sha(binary)==sha(QA/'grantiva') and file_manifest(bundle)==file_manifest(QA/'grantiva_GrantivaCore.bundle')
+ version=run('qa-version',[QA/'grantiva','--version'],scratch,home,session)
+-save_exclusive(OUT/'qa-promotion.json',{'source':str(products),'destination':str(QA),'previousCandidateBackup':str(backup),'sha256':sha(binary),'version':version,'sourceSHA':args.merged_sha})
++save_exclusive(OUT/'qa-promotion.json',{'source':str(products),'destination':str(QA),'previousCandidateBackup':str(backup),'sha256':sha(binary),'version':version,'sourceSHA':args.cli_merged_sha})
+ 
+ native=scratch/'packaged-native'; native.mkdir(exist_ok=False)
+ archive=QA/'grantiva_GrantivaCore.bundle/Contents/Resources/grantiva-runner-arm64.tar.gz'
+ run('native-extract',['tar','-xzf',archive,'-C',native],scratch,home,session)
+ runner=native/'grantiva-runner'; runner_version=run('packaged-version',[runner,'--version'],scratch,home,session)
+-assert sha(runner)==previous['runner']['packaged']['sha256'] and runner_version==previous['runner']['packaged']['version']
++assert runner_version.splitlines()[0].strip()==state['runnerVersionLine']
++assert state['runnerMergeSHA'][:7] in runner_version
+ run('upgrade-install',[QA/'grantiva','runner','install','--json'],scratch,home,session)
+-stamp=previous['runner']['installed']['installStamp']; installed=home/'versions'/stamp/'grantiva-runner'
++stamp=state['runnerInstallStamp']; assert stamp.startswith(state['runnerVersion']+'+android-drivers-'); installed=home/'versions'/stamp/'grantiva-runner'
+ installed_version=run('installed-version',[installed,'--version'],scratch,home,session)
+-assert sha(installed)==sha(runner)==previous['runner']['installed']['sha256'] and installed_version==runner_version
++assert sha(installed)==sha(runner) and installed_version==runner_version
+ preserved_cache_entries=0
+ for row in before:
+     if not row['path'].startswith('cache/'):
+@@ -98,29 +103,32 @@
+ upgrade_dir=OUT/'upgrade'; upgrade_dir.mkdir(exist_ok=False)
+ save_exclusive(upgrade_dir/'acceptance.json',{
+     'passed':True,
+-    'cloneEquivalenceEntries':8593,
++    'cloneEquivalenceEntries':len(before),
+     'preInstallCloneEquivalent':True,
+     'preservedCacheEntries':preserved_cache_entries,
+     'installedRunner':str(installed),
+     'installStamp':stamp,
+     'packagedRunnerSHA256':sha(runner),
+     'installedRunnerSHA256':sha(installed),
+-    'runnerSourceSHA':state['runnerSHA'],
+-    'runnerTestProofDisposition':'unchanged-dependency provenance; not candidate4 execution'
++    'runnerSourceSHA':state['runnerMergeSHA'],
++    'runnerTestProofDisposition':'fresh L87 runner focused/full/vet proof on merged candidate5 runner tree'
+ })
+ 
+-# Reuse unchanged-dependency runner proof and demo/build proof only by verifying every referenced byte.
+-# These references are provenance, not fresh candidate4 test/build execution.
+-runner_repo=Path(previous['runner']['repoPath']); assert git(runner_repo,'rev-parse','HEAD')==state['runnerSHA'] and git(runner_repo,'status','--porcelain')==''
+-for entry in previous['runner']['uncachedTestProof'].values(): verify_reference(entry)
++# Bind fresh L87 runner proof from the exact merged runner tree; demo/build remains unchanged provenance.
++runner_repo=Path(state['runnerRepo']); assert git(runner_repo,'rev-parse','HEAD')==state['runnerMergeSHA'] and git(runner_repo,'status','--porcelain')==''
++runner_proof=state['runnerTestProof']
++for group in ('focused','full','vet'):
++    assert group in runner_proof
++    for entry in runner_proof[group].values(): verify_reference(entry)
++for entry in state['runnerPackageProof'].values(): verify_reference(entry)
+ demo=previous['demo']; demo_repo=Path(demo['repoPath']); assert git(demo_repo,'rev-parse','HEAD')==state['demoSHA'] and git(demo_repo,'status','--porcelain')==''
+ for platform in ('ios','android'):
+     for entry in demo['buildProof'][platform].values(): verify_reference(entry)
+ assert sha(demo['androidAPK']['path'])==demo['androidAPK']['sha256']
+ assert tree_record(Path(demo['iosApp']['path']))['files']==demo['iosApp']['files']
+ 
+-candidate={'schema':'grantiva.task8.candidate.v1','cli':{'repoPath':str(source),'mergedSHA':args.merged_sha,'binary':{'path':str(QA/'grantiva'),'sha256':sha(QA/'grantiva'),'version':version},'bundle':tree_record(QA/'grantiva_GrantivaCore.bundle')},'runner':{'repoPath':str(runner_repo),'sourceSHA':state['runnerSHA'],'runnerHome':str(home),'uncachedTestProof':previous['runner']['uncachedTestProof'],'packaged':{'path':str(runner),'sha256':sha(runner),'version':runner_version},'installed':{'path':str(installed),'sha256':sha(installed),'version':installed_version,'installStamp':stamp}},'demo':demo}
++candidate={'schema':'grantiva.task8.candidate.v1','cli':{'repoPath':str(source),'mergedSHA':args.cli_merged_sha,'binary':{'path':str(QA/'grantiva'),'sha256':sha(QA/'grantiva'),'version':version},'bundle':tree_record(QA/'grantiva_GrantivaCore.bundle')},'runner':{'repoPath':str(runner_repo),'sourceSHA':state['runnerMergeSHA'],'runnerHome':str(home),'uncachedTestProof':runner_proof,'packaged':{'path':str(runner),'sha256':sha(runner),'version':runner_version},'installed':{'path':str(installed),'sha256':sha(installed),'version':installed_version,'installStamp':stamp}},'demo':demo}
+ candidate_path=OUT/'candidate.json'; save_exclusive(candidate_path,candidate)
+ digest=sha(candidate_path); save_exclusive(OUT/'candidate.sha256',{'path':str(candidate_path),'sha256':digest,'createdEpoch':time.time()})
+ candidate_path.chmod(0o444); (OUT/'candidate.sha256').chmod(0o444)
+-print(json.dumps({'candidate':str(candidate_path),'sha256':digest,'source':str(source),'mergedSHA':args.merged_sha},indent=2))
++print(json.dumps({'candidate':str(candidate_path),'sha256':digest,'source':str(source),'mergedSHA':args.cli_merged_sha},indent=2))

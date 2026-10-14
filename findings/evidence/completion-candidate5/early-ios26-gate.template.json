@@ -1,0 +1,33 @@
+{
+  "status": "PREPARED_NOT_EXECUTED",
+  "purpose": "Run immediately after candidate5 identity/freeze and before broad smoke or resumed campaign work.",
+  "bindings": {
+    "candidateManifest": "findings/evidence/completion-candidate5/candidate.json",
+    "candidateManifestSHA256": "PENDING",
+    "binary": "/Users/kyle/.grantiva-qa/bin/grantiva",
+    "runnerHome": "/private/tmp/grantiva-completion-candidate5-PENDING/runner-home",
+    "session": "completion-candidate5-early-ios26",
+    "project": "PENDING_FRESH_COPY_OF_FROZEN_DEMO_IOS",
+    "ownedIOS26UDID": "PENDING"
+  },
+  "environment": {
+    "GRANTIVA_RUNNER_HOME": "/private/tmp/grantiva-completion-candidate5-PENDING/runner-home",
+    "MAESTRO_RUNNER_HOME": "/private/tmp/grantiva-completion-candidate5-PENDING/runner-home",
+    "GRANTIVA_SESSION_ID": "completion-candidate5-early-ios26",
+    "GRANTIVA_API_KEY": "<unset>"
+  },
+  "commands": [
+    ["/Users/kyle/.grantiva-qa/bin/grantiva", "run", "--no-build", "--simulator", "PENDING_OWNED_IOS26_UDID", "--bundle-id", "com.kylebrowning.Landmarks"],
+    ["/Users/kyle/.grantiva-qa/bin/grantiva", "diff", "capture", "--no-build", "--simulator", "PENDING_OWNED_IOS26_UDID", "--bundle-id", "com.kylebrowning.Landmarks"]
+  ],
+  "acceptance": [
+    "candidate identity validated before either command",
+    "both commands exit 0 without timeout or surviving process group",
+    "Detail sequence taps semantic Landmarks back control, opens Golden Gate Bridge, and observes Plan Visit",
+    "run reports 5/5 screens and 12/12 stock flows",
+    "diff capture reports 5/5 and retains Detail.png",
+    "exact argv/cwd/environment/times/exits/raw streams and candidate/device identity are retained",
+    "original candidate4 IOS-117 and IOS-120 failures remain immutable"
+  ],
+  "onFailure": "Stop before broad smoke/campaign. Preserve first failure and route to L87 review; do not retry broadly."
+}

@@ -1,3 +1,18 @@
+# Current checkpoint: L87 runner fix, 2026-10-14 UTC
+
+This checkpoint supersedes historical sections below. User requested a remaining-work plan and execution without repeated approvals. Continue through fixes, required CI/merges, replacement freeze, full coverage and final cleanup; no tags/releases.
+
+- Candidate4 is FAILED_INCOMPLETE due L87: stock run IOS117 and diff capture IOS120 both stay on Lakes after semantic Landmarks tap on iOS26. iOS27 passes. Original outcomes preserved; final counts504PASS/2FAIL/4BLOCKED/5NA/5PENDING/969unexecuted plus39supplemental unexecuted. No runtime verdict transfers to replacement.
+- L87 runner source commit9c18b962a0d85bcbb76fb8141fdd4aae97d28389, tree060236c478bceba52bb7e54081dd06a44d6aa299, isolated runner `.worktrees/fix5-l87`. Independent review APPROVED; deterministicRED, focusedGREEN, WDApackageGREEN, fullGo+vetGREEN. Controller evidence `findings/evidence/fix6-L87-source/`.
+- Runner PR https://github.com/grantiva/runner/pull/28, CI38494276359 active. Lint passed; Test pending. Root owns CI/merge. Require whole workflow SUCCESS including Build, exact head9c18, then squash merge; prove merged tree equals reviewed tree (reviewed commit need not be ancestor of squash).
+- Android actor owns future packaging: clean CLI `.worktrees/package-l87` branchfix5/package-l87 at73cfa99; `findings/preparation/l87-package/package-after-merge.sh` corrected to exacttree check. No packagebuild yet. Await mergedrunnerSHA and rootcompilerwindow. Version is scriptargument1.1.28-grantiva.16, stamp+android-drivers-2. Preserve demo/WDA/Androiddriver bytes; CLI diff only2archives+RunnerManager. Then required Swift checks/CI/merge.
+- CLI actor prepared controller `findings/evidence/completion-candidate5/prepare-candidate.py`, initially static only. Root requested scoped testedtree/mergedtree and exactthreepathCLI baseline guards; actor updating. Future actualmergedSHAs/scratch/proof mustreplacePENDING. NewcandidateearlyiOS26stockrun+diff gate precedes broadsmoke/fullcoverage.
+- iOS actor safely retired exactoldprimaries532523A7… andEED50B5C… plus stale7833record; sessions/created/devicehomes/workers empty. Cleanupcommit8311cc21 integrated controller. ProtectedB27D…/FE441… remainBooted.
+- Android actor currently cleaning exactoldprimarycov5-android generation2 emulator5554/PID2416 afterauthentication; secondaryalreadydeleted. No globalcleanup or unownedKotlin daemonkill. Awaitreturn+evidencecommit beforepackagebuild.
+- Controller `.worktrees/regression` branchcoverage-campaign; through94779a46pushed, iOScleanupimport and newestprep/checkpoints may still needpush. Sourceimplementation singleauthor; useexistingactors. Do not restart priorpassing source tests absent relevantchange. FullGosuite took400s becauseCDP391s, nothung.
+
+---
+
 # Coverage campaign — handoff (resume from here)
 
 Updated: 2026-10-13 (round-3 coverage complete; round-4 fix wave starting). This file is the tool-agnostic resume point for the full-coverage campaign. Everything an agent needs is on branch `coverage-campaign` of grantiva/cli, worktree `/Users/kyle/Developer/grantiva-cli/.worktrees/regression`. The per-plan SDD ledgers are git-ignored scratch; copies are committed under `findings/ledgers/` at each phase boundary (the live ones are in `.superpowers/sdd/<plan>/progress.md`).
