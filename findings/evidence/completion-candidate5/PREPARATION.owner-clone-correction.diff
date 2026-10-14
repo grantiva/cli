@@ -1,0 +1,14 @@
+--- findings/evidence/completion-candidate5/PREPARATION.pre-owner-clone-correction.md	2026-10-13 18:24:41
++++ findings/evidence/completion-candidate5/PREPARATION.md	2026-10-13 18:24:41
+@@ -14,9 +14,9 @@
+ - new runner version `1.1.28-grantiva.16` and install stamp `1.1.28-grantiva.16+android-drivers-2`;
+ - fresh focused/full/vet runner proof and package/WDA preservation proof are mandatory and rehashed;
+ - demo SHA and its accepted build artifacts remain unchanged and are rehashed;
+-- pre-install clone size is derived from the fresh candidate4-home clone rather than assuming the older 8,593-entry count.
++- pre-install clone entry count and hashes are derived from a fresh read-only APFS clone of the owner home `~/.grantiva/runner`; no historical entry count or candidate installed home is used.
+ 
+-Root must copy `initial-state.template.json` to `initial-state.json` and replace every `PENDING` binding after runner PR 28 and the packaging-only CLI PR merge. It must create a fresh APFS clone of candidate4's installed runner home, capture `source-before-upgrade.json`, `clone-before-upgrade.json`, and `clone-equivalence.json`, and create an empty build home. The script refuses a scratch path containing `PENDING`, dirty/wrong source heads, existing candidate outputs, nonempty build home, mismatched QA candidate4 bytes, stale runner identity, missing/hash-mismatched proofs, or changed demo artifacts.
++Root must copy `initial-state.template.json` to `initial-state.json` and replace every `PENDING` binding after runner PR 28 and the packaging-only CLI PR merge. It must create a fresh read-only APFS clone from `/Users/kyle/.grantiva/runner` into the isolated candidate5 runner home, then capture current `source-before-upgrade.json`, `clone-before-upgrade.json`, and `clone-equivalence.json` with their actual entry count and hashes, and create an empty build home. The owner source is read only; candidate4 remains only the previous-manifest and QA-backup identity. The script refuses a scratch path containing `PENDING`, dirty/wrong source heads, existing candidate outputs, nonempty build home, mismatched QA candidate4 bytes, stale runner identity, missing/hash-mismatched proofs, or changed demo artifacts.
+ 
+ The runner version is an explicit `scripts/build-runner.sh --version` package argument, not a tracked runner source edit. The CLI packaging commit must remain the bounded generated archive/RunnerManager stamp update from functional baseline `73cfa99`.
+ 
