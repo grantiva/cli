@@ -4,6 +4,45 @@ import XCTest
 import GrantivaCore
 
 final class RunCommandTests: XCTestCase {
+    func testCyclePreflightFailsBeforeAnyDeviceCall() async throws {
+        let fm = FileManager.default
+        let previous = fm.currentDirectoryPath
+        let scratch = fm.temporaryDirectory.appendingPathComponent("grantiva-cycle-preflight-\(UUID().uuidString)")
+        try fm.createDirectory(at: scratch, withIntermediateDirectories: true)
+        defer {
+            fm.changeCurrentDirectoryPath(previous)
+            try? fm.removeItem(at: scratch)
+        }
+        try "appId: com.example\n---\n- runFlow: b.yaml\n".write(
+            to: scratch.appendingPathComponent("a.yaml"), atomically: true, encoding: .utf8
+        )
+        try "appId: com.example\n---\n- runFlow: a.yaml\n".write(
+            to: scratch.appendingPathComponent("b.yaml"), atomically: true, encoding: .utf8
+        )
+        try """
+        simulator: Fake
+        bundle_id: com.example
+        screens:
+          - name: S
+            path:
+              - run_flow: a.yaml
+        """.write(to: scratch.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8)
+        XCTAssertTrue(fm.changeCurrentDirectoryPath(scratch.path))
+
+        let fake = FakeDevicePlatform(platform: .ios)
+        var command = try RunCommand.parse(["--no-build", "--platform", "ios", "--simulator", "Fake"])
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        do {
+            try await command.run()
+            XCTFail("Expected cycle rejection")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains(
+                "circular dependency detected: grantiva.yml -> a.yaml -> b.yaml -> a.yaml"
+            ), "\(error)")
+        }
+        XCTAssertEqual(fake.calls, [], "cycle validation must precede every device-dependent call")
+    }
+
     func testMixedSuiteDoesNotHoldOrPublishBeforeExternalFlows() async throws {
         var events: [String] = []
         var published = false
