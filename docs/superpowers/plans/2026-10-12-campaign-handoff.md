@@ -1,3 +1,9 @@
+## Current checkpoint — candidate5 packaging CI (2026-10-14 01:33 UTC)
+
+Runner PR28 merged `d98b08898f45b94bad607f76e19089bb0e15d5c0`, exact reviewed tree after successful CI. Package commit `5de5f36bd7132d981676830716ec1d946d5477e1` reviewed APPROVED; full 2,027 Swift tests pass. Exact four-path scope includes two version expectation updates; first failed stale-constant run preserved. CLI PR217 CI38496369854 is running. After CI, squash merge exact head, verify tree858d699c6edcf817e36893327ce07c2489dfb182, create clean release-completion-candidate5 CLI worktree, bind prepared controller and execute once.
+
+Candidate5 controller SHA `f33038058d4ade6832f32dad402dbde6c7fd1cf0d240c8d8970cefb653536b74` approved; fresh owner-home clone at `/private/tmp/grantiva-completion-candidate5-y6myz3jd` (8,593 entries equal), empty build home. Root frozen-input bindings remain. Exact runner merged worktree exists at `/Users/kyle/Developer/maestro-runner/.worktrees/release-completion-candidate5`. Early iOS26 stock run+diff then27 gate mandatory before broad smoke/fullcoverage. Prepared static recipes under findings/preparation/campaign-completion. All prior candidate4 devices deleted; no active owned device window. Protected devices untouched. No tags/releases.
+
 # Current checkpoint: L87 runner fix, 2026-10-14 UTC
 
 This checkpoint supersedes historical sections below. User requested a remaining-work plan and execution without repeated approvals. Continue through fixes, required CI/merges, replacement freeze, full coverage and final cleanup; no tags/releases.
