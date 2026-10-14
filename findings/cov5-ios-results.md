@@ -26,3 +26,7 @@ Exact ordered obligations are frozen in `findings/evidence/cov5-ios/preparation/
 | IOS-017 | pass | findings/evidence/cov5-ios/IOS-017/ | Exact owned free UUID exits 0 with `reclaimed:false`. |
 | IOS-018 | pass | findings/evidence/cov5-ios/IOS-018/ | Corrected isolated ledger contains two fixtures; cleanup deletes shutdown extra3 only, preserves active extra4, and external checksums match. |
 | IOS-020 | pass | findings/evidence/cov5-ios/IOS-020/ | Manual extra3 passes flow, takes no managed slot, remains Booted after empty session teardown, then is retired exactly. |
+| IOS-117 | fail | findings/evidence/cov5-ios/IOS-117/ | Exact iOS 26 stock invocation fails in configured Detail screen before flows: after Lakes, the successful `tapOn: Landmarks` leaves Lakes content visible and Golden Gate Bridge is absent; matching the selected tab/back-label element is an inference because the raw trace exposes no matched element ID. First failure preserved. |
+| IOS-118 | pass | findings/evidence/cov5-ios/IOS-118/ | Exact iOS 27 stock invocation captures 5/5 screens, passes 12/12 flows, and uses the cached iOS 27 agent. |
+| IOS-119 | pass | findings/evidence/cov5-ios/IOS-119/ | Crash flow exits 1 at the first assertion with app-crashed/not-running cause and failure screenshot. |
+| IOS-120 | fail | findings/evidence/cov5-ios/IOS-120/ | iOS 27 captures 5/5; iOS 26 independently repeats the observed post-Lakes navigation failure; a selector collision is the source-backed inference, so the required dual-runtime clause fails. |
