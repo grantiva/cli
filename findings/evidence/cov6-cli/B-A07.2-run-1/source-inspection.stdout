@@ -1,0 +1,46 @@
+Sources/GrantivaAPI/ConsoleClient.swift:215:        continuation.onTermination = { _ in task.cancel() }
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:141:            let token = SignalRelay.shared.onTermination { cleaned.set(true) }
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1140:            continuation.onTermination = { _ in
+Sources/GrantivaCLI/DriverCommand.swift:696:        let startupInterrupt = SignalRelay.shared.onTermination { cleanup.run() }
+Sources/GrantivaCLI/DriverCommand.swift:849:            onInterrupt: { SignalRelay.shared.onTermination($0) },
+Sources/GrantivaCLI/RunCommand.swift:432:        func startLogStream(appID: String) async -> LogStreamer? {
+Sources/GrantivaCLI/RunCommand.swift:435:            let streamer = LogStreamer()
+Sources/GrantivaCLI/RunCommand.swift:458:        var logStreamer: LogStreamer?
+Sources/GrantivaCLI/RunCommand.swift:459:        defer { logStreamer?.stop() }
+Sources/GrantivaCLI/RunCommand.swift:511:            logStreamer = await startLogStream(appID: bid)
+Sources/GrantivaMCP/ValidatingTransport.swift:238:            continuation.onTermination = { _ in task.cancel() }
+Tests/GrantivaCoreTests/LogStreamerTests.swift:5:final class LogStreamerTests: XCTestCase {
+Tests/GrantivaCoreTests/LogStreamerTests.swift:7:        let original = LogStreamer.ProcessIdentity(seconds: 100, microseconds: 1)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:8:        let replacement = LogStreamer.ProcessIdentity(seconds: 100, microseconds: 2)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:12:        let owner = LogStreamer.OwnedLogChildren(
+Tests/GrantivaCoreTests/LogStreamerTests.swift:29:        let original = LogStreamer.ProcessIdentity(seconds: 100, microseconds: 1)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:30:        let replacement = LogStreamer.ProcessIdentity(seconds: 100, microseconds: 2)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:34:        let owner = LogStreamer.OwnedLogChildren(
+Tests/GrantivaCoreTests/LogStreamerTests.swift:50:        let original = LogStreamer.ProcessIdentity(seconds: 100, microseconds: 1)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:53:        let owner = LogStreamer.OwnedLogChildren(
+Tests/GrantivaCoreTests/LogStreamerTests.swift:70:        XCTAssertThrowsError(try LogStreamer.processSnapshot(
+Tests/GrantivaCoreTests/LogStreamerTests.swift:81:        let original = LogStreamer.ProcessIdentity(seconds: 100, microseconds: 1)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:86:        let owner = LogStreamer.OwnedLogChildren(
+Tests/GrantivaCoreTests/LogStreamerTests.swift:91:                return try LogStreamer.processSnapshot(
+Tests/GrantivaCoreTests/LogStreamerTests.swift:112:        let actual = try LogStreamer.processSnapshot(
+Tests/GrantivaCoreTests/LogStreamerTests.swift:119:        let owner = LogStreamer.OwnedLogChildren(deviceID: "DEVICE", marker: "grantiva-log-owned", snapshot: { _ in "" })
+Tests/GrantivaCoreTests/LogStreamerTests.swift:131:        let streamer = LogStreamer()
+Tests/GrantivaCoreTests/LogStreamerTests.swift:154:        let streamer = LogStreamer()
+Tests/GrantivaCoreTests/LogStreamerTests.swift:216:        let streamer = LogStreamer()
+Tests/GrantivaCoreTests/LogStreamerTests.swift:228:        let streamer = LogStreamer()
+Tests/GrantivaCoreTests/LogStreamerTests.swift:240:        let streamer = LogStreamer()
+Tests/GrantivaCoreTests/LogStreamerTests.swift:259:        let streamer = LogStreamer()
+Tests/GrantivaCoreTests/LogStreamerTests.swift:317:        let decoder = PrefixedLineDecoder(dropping: LogStreamer.isStreamBanner)
+Tests/GrantivaCoreTests/SignalRelayTests.swift:8:    func testCleanupsRunOnTerminationAndCanBeRemoved() {
+Tests/GrantivaCoreTests/SignalRelayTests.swift:10:        let token = SignalRelay.shared.onTermination { ran.fulfill() }
+Tests/GrantivaMCPTests/MCPTransportTests.swift:559:            continuation.onTermination = { _ in task.cancel() }
+Sources/GrantivaCore/Runner/RunnerSession.swift:178:        let restoreOnSignal = SignalRelay.shared.onTermination(Self.terminationCleanup(platform: platform, deviceID: udid))
+Sources/GrantivaCore/Runner/RunnerSession.swift:530:        let restoreOnSignal = SignalRelay.shared.onTermination(Self.terminationCleanup(platform: platform, deviceID: udid))
+Sources/GrantivaCore/Runner/RunnerExecution.swift:126:        let cleanupToken = SignalRelay.shared.onTermination {
+Sources/GrantivaCore/Runner/LogStreamer.swift:83:public final class LogStreamer: @unchecked Sendable {
+Sources/GrantivaCore/Runner/LogStreamer.swift:124:        var snapshot: (Date) throws -> String = { try LogStreamer.processSnapshot(deadline: $0) }
+Sources/GrantivaCore/Runner/LogStreamer.swift:125:        var identities: () -> [Int32: ProcessIdentity] = LogStreamer.processIdentities
+Sources/GrantivaCore/Runner/LogStreamer.swift:126:        var identity: (Int32) -> ProcessIdentity? = LogStreamer.processIdentity
+Sources/GrantivaCore/Runner/LogStreamer.swift:294:        terminationCleanup = SignalRelay.shared.onTermination { [self] in stop() }
+Sources/GrantivaCore/Runner/LogStreamer.swift:420:extension LogStreamer {
+Sources/GrantivaCore/Runner/SignalRelay.swift:110:    public func onTermination(_ body: @escaping @Sendable () -> Void) -> UInt64 {

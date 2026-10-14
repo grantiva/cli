@@ -1,0 +1,217 @@
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:4:/// The stdout/stderr contract, exercised against the real binary.
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:6:/// These deliberately do not use `swift run`: it relays the child's stdout into
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:17:/// its result through `Output` and nothing else can reach stdout.
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:18:final class OutputStreamContractTests: XCTestCase {
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:19:    // MARK: - stdout is the result, and only the result
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:21:    func testJSONCommandsPutParseableJSONOnStdoutAndNothingElse() throws {
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:29:            let stdout = run.stdout.trimmingCharacters(in: .whitespacesAndNewlines)
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:31:            XCTAssertFalse(stdout.isEmpty, "\(arguments) wrote nothing to stdout")
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:33:                try JSONSerialization.jsonObject(with: Data(stdout.utf8)),
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:34:                "\(arguments) stdout is not a single JSON document:\n\(run.stdout)"
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:36:            // A `| jq` pipeline sees stdout only, so a prose line anywhere in it
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:39:                stdout.hasPrefix("{") || stdout.hasPrefix("["),
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:40:                "\(arguments) stdout does not start with a JSON document:\n\(run.stdout)"
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:72:        XCTAssertNoThrow(try JSONSerialization.jsonObject(with: Data(run.stdout.utf8)), run.stdout)
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:73:        XCTAssertFalse(run.stdout.contains("unknown key"), run.stdout)
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:99:            let json = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(run.stdout.utf8)) as? [String: Any], run.stdout)
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:100:            XCTAssertEqual(json["ignored"] as? [String], ["failure-1"], "\(command): \(run.stdout)")
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:105:    /// any device work, and must still put exactly one document on stdout.
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:115:        let stdout = run.stdout.trimmingCharacters(in: .whitespacesAndNewlines)
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:117:            JSONSerialization.jsonObject(with: Data(stdout.utf8)) as? [String: Any],
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:118:            "stdout is not a single JSON document:\n\(run.stdout)"
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:124:    func testDiagnosticsNeverReachStdout() throws {
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:129:        let lines = run.stdout.split(separator: "\n", omittingEmptySubsequences: false).dropLast()
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:130:        XCTAssertEqual(lines.count, 1, "stdout carried more than the result:\n\(run.stdout)")
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:131:        XCTAssertTrue(run.stdout.hasPrefix("grantiva-runner "), run.stdout)
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:135:    // narration on stdout, so `runner stop >/dev/null` was not silent about
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:136:    // nothing and a script reading stdout saw prose.
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:137:    func testRunnerStopWithNoSessionWritesNothingToStdout() throws {
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:145:        XCTAssertEqual(plain.stdout, "", "narration reached stdout")
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:149:        let object = try JSONSerialization.jsonObject(with: Data(json.stdout.utf8)) as? [String: String]
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:150:        XCTAssertEqual(object, ["status": "not_running"])
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:163:                quiet.stdout, normal.stdout,
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:172:        XCTAssertEqual(verbose.stdout, normal.stdout)
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:184:        XCTAssertFalse(verbose.stdout.contains("[debug]"), verbose.stdout)
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:192:        XCTAssertTrue(run.stdout.contains("--verbose"), run.stdout)
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:193:        XCTAssertTrue(run.stdout.contains("--quiet"), run.stdout)
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:199:    // so the full JSON-on-stdout contract is held by
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:320:            XCTAssertTrue(run.stdout.contains("--json"), "\(arguments) help lacks --json:\n\(run.stdout)")
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:321:            XCTAssertTrue(run.stdout.contains("--verbose"), "\(arguments) help lacks --verbose:\n\(run.stdout)")
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:328:        XCTAssertTrue(run.stdout.contains("Manage feature flags"), run.stdout)
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:341:            XCTAssertEqual(run.stdout, "", "\(arguments) put refusal text on stdout:\n\(run.stdout)")
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:370:            Direct printing writes undecorated bytes to stdout, which is where a
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:380:        let stdout: String
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:420:            stdout: String(decoding: outData, as: UTF8.self),
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:429:        var directory = Bundle(for: OutputStreamContractTests.self).bundleURL
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:439:        // …/Tests/GrantivaCLITests/OutputStreamContractTests.swift
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:70:    // It shipped in 1.7.0 printing "Created iPhone 17 (UDID) — Booted" on stdout,
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:73:    // argument. stdout must therefore be the UDID and nothing else.
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:74:    func testEnsurePrintsBareUDIDOnStdout() throws {
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:82:        XCTAssertEqual(rendered.stdout, "921A0945-7157-4533-BA1F-21E8132D3E40")
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:83:        XCTAssertFalse(rendered.stdout.contains(" "), "stdout must be a bare UDID, not prose")
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:99:        XCTAssertEqual(rendered.stdout, "AAAA1111-2222-3333-4444-555566667777")
+Tests/GrantivaCLITests/AndroidCommandTests.swift:140:        let stdout = try await captureStandardOutput { try await command.run() }
+Tests/GrantivaCLITests/AndroidCommandTests.swift:141:        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(stdout.utf8)) as? [String: Any], stdout)
+Tests/GrantivaCLITests/AndroidCommandTests.swift:142:        XCTAssertEqual(Set(json.keys), ["status", "applicationId", "device", "appPath"], stdout)
+Tests/GrantivaCLITests/AndroidCommandTests.swift:191:        let file = dir.appendingPathComponent("stdout-\(UUID().uuidString).txt")
+Tests/GrantivaCLITests/AndroidCommandTests.swift:194:        let saved = dup(STDOUT_FILENO)
+Tests/GrantivaCLITests/AndroidCommandTests.swift:195:        dup2(handle.fileDescriptor, STDOUT_FILENO)
+Tests/GrantivaCLITests/AndroidCommandTests.swift:199:            dup2(saved, STDOUT_FILENO); close(saved); try? handle.close()
+Tests/GrantivaCLITests/AndroidCommandTests.swift:202:        dup2(saved, STDOUT_FILENO); close(saved); try handle.close()
+Tests/GrantivaCLITests/AndroidCommandTests.swift:349:        let stdout = try await captureStandardOutput { try await command.run() }
+Tests/GrantivaCLITests/AndroidCommandTests.swift:351:        XCTAssertEqual(stdout.trimmingCharacters(in: .whitespacesAndNewlines), "[grantiva] Done — com.fake.binary installed on Fake (not launched)")
+Tests/GrantivaCLITests/AndroidCommandTests.swift:394:        let stdout = try await captureStandardOutput { try await command.run() }
+Tests/GrantivaCLITests/AndroidCommandTests.swift:396:        XCTAssertEqual(stdout.trimmingCharacters(in: .whitespacesAndNewlines), "[grantiva] Done — com.fake.app on Fake (install skipped, not launched)")
+Tests/GrantivaCLITests/AndroidCommandTests.swift:403:        let stdout = try await captureStandardOutput { try await command.run() }
+Tests/GrantivaCLITests/AndroidCommandTests.swift:404:        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(stdout.utf8)) as? [String: Any], stdout)
+Tests/GrantivaCLITests/AndroidCommandTests.swift:405:        XCTAssertEqual(json["status"] as? String, "skipped", stdout)
+Tests/GrantivaCLITests/AndroidCommandTests.swift:432:        let stdout = try await captureStandardOutput { try await command.run() }
+Tests/GrantivaCLITests/AndroidCommandTests.swift:434:        XCTAssertEqual(stdout.trimmingCharacters(in: .whitespacesAndNewlines), "[grantiva] Done — com.fake.app running on Fake (install skipped)")
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:17:    /// Mirrors `simulator ensure`: stdout is the identifier, context goes to stderr.
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:18:    func testEnsurePrintsTheSerialOrNameOnStdout() {
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:20:        XCTAssertEqual(booted.stdout, "emulator-5554")
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:23:        XCTAssertEqual(idle.stdout, "Pixel_8_API_35")
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:457:        XCTAssertTrue(flat.contains("even when stdout is not a terminal"), "docs/android.md states the rule")
+Tests/GrantivaCLITests/BuildCommandTests.swift:49:        let saved = dup(STDOUT_FILENO)
+Tests/GrantivaCLITests/BuildCommandTests.swift:50:        defer { dup2(saved, STDOUT_FILENO); close(saved) }
+Tests/GrantivaCLITests/BuildCommandTests.swift:51:        dup2(pipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
+Tests/GrantivaCLITests/BuildCommandTests.swift:53:        dup2(saved, STDOUT_FILENO)
+Tests/GrantivaCLITests/RunSessionContractTests.swift:255:            let stdout = Lines()
+Tests/GrantivaCLITests/RunSessionContractTests.swift:256:            command.resultOutput = ResultOutput { stdout.append($0) }
+Tests/GrantivaCLITests/RunSessionContractTests.swift:258:            XCTAssertEqual(stdout.values.count, 1, "\(stdout.values)")
+Tests/GrantivaCLITests/RunSessionContractTests.swift:259:            document = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(stdout.values.joined().utf8)) as? [String: Any])
+Sources/GrantivaCLI/Options.swift:15:    @Flag(name: .long, help: "Silence progress diagnostics on stderr; warnings and errors still print. Program output on stdout is unaffected.")
+Sources/GrantivaCLI/Options.swift:26:    /// stderr, never stdout.
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:620:        XCTAssertEqual(try decode(RunnerStopCommand.document(result))["status"] as? String, "not_running")
+Sources/GrantivaCLI/TargetOptions.swift:62:    @Flag(name: .long, help: ArgumentHelp("Boot an emulator without a window (Android). GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the same; otherwise a booted emulator gets a window, even when stdout is not a terminal.", visibility: Boot.visibility))
+Tests/GrantivaCLITests/RunCommandTests.swift:291:            let stdout = CapturedLines()
+Tests/GrantivaCLITests/RunCommandTests.swift:292:            command.resultOutput = ResultOutput { stdout.append($0) }
+Tests/GrantivaCLITests/RunCommandTests.swift:301:            XCTAssertEqual(stdout.values.count, 1, "exactly one JSON document: \(stdout.values)")
+Tests/GrantivaCLITests/RunCommandTests.swift:303:                JSONSerialization.jsonObject(with: Data(stdout.values.joined().utf8)) as? [String: Any]
+Tests/GrantivaCLITests/RunCommandTests.swift:319:    /// still prints its blocks and summary lines on stdout, and the runner's
+Tests/GrantivaCLITests/RunCommandTests.swift:326:            let stdout = CapturedLines()
+Tests/GrantivaCLITests/RunCommandTests.swift:327:            command.resultOutput = ResultOutput { stdout.append($0) }
+Tests/GrantivaCLITests/RunCommandTests.swift:341:            let text = stdout.values.joined(separator: "\n")
+Tests/GrantivaCLITests/RunCommandTests.swift:351:        let stdout = CapturedLines()
+Tests/GrantivaCLITests/RunCommandTests.swift:352:        command.resultOutput = ResultOutput { stdout.append($0) }
+Tests/GrantivaCLITests/RunCommandTests.swift:357:        XCTAssertEqual(stdout.values.count, 1, "\(stdout.values)")
+Tests/GrantivaCLITests/RunCommandTests.swift:359:            JSONSerialization.jsonObject(with: Data(stdout.values.joined().utf8)) as? [String: Any]
+Tests/GrantivaCLITests/RunCommandTests.swift:374:            let stdout = CapturedLines()
+Tests/GrantivaCLITests/RunCommandTests.swift:375:            command.resultOutput = ResultOutput { stdout.append($0) }
+Tests/GrantivaCLITests/RunCommandTests.swift:379:            XCTAssertEqual(stdout.values.count, 1, "\(stdout.values)")
+Tests/GrantivaCLITests/RunCommandTests.swift:381:                JSONSerialization.jsonObject(with: Data(stdout.values.joined().utf8)) as? [String: Any]
+Tests/GrantivaCLITests/RunCommandTests.swift:423:        let stdout = CapturedLines()
+Tests/GrantivaCLITests/RunCommandTests.swift:424:        command.resultOutput = ResultOutput { stdout.append($0) }
+Tests/GrantivaCLITests/RunCommandTests.swift:426:        XCTAssertEqual(stdout.values, [])
+Tests/GrantivaCLITests/RunCommandTests.swift:603:    /// L10: a failing run without --json prints, on stdout, the blocks of
+Tests/GrantivaCLITests/RunCommandTests.swift:626:        let stdout = CapturedLines()
+Tests/GrantivaCLITests/RunCommandTests.swift:629:            json: false, resultOutput: ResultOutput { stdout.append($0) }, log: { _ in }
+Tests/GrantivaCLITests/RunCommandTests.swift:631:        let text = stdout.values.joined(separator: "\n")
+Tests/GrantivaCoreTests/ShellQuotingTests.swift:34:    func testFailedCommandPreservesStdoutWhenStderrIsEmpty() async {
+Sources/GrantivaMCP/RequestCancellation.swift:67:    /// A completed handler's response may wait behind stdout backpressure
+Sources/GrantivaCLI/DriverCommand.swift:571:                stdout: log.fileDescriptor,
+Sources/GrantivaCLI/DriverCommand.swift:664:        let stdoutPipe = Pipe()
+Sources/GrantivaCLI/DriverCommand.swift:671:            stdout: stdoutPipe.fileHandleForWriting.fileDescriptor,
+Sources/GrantivaCLI/DriverCommand.swift:674:        try? stdoutPipe.fileHandleForWriting.close()
+Sources/GrantivaCLI/DriverCommand.swift:707:        output.attachOutput(stdoutPipe.fileHandleForReading)
+Sources/GrantivaCLI/DriverCommand.swift:1111:            // Narration, not a result: stderr, so stdout stays empty.
+Sources/GrantivaCLI/DriverCommand.swift:1223:            return RunnerLifecycleDocument(status: "not_running")
+Sources/GrantivaCLI/DriverCommand.swift:1239:            guard var first = documents.first else { return RunnerLifecycleDocument(status: "not_running") }
+Sources/GrantivaCore/Build/XcodeBuildRunner.swift:95:        // Merge stderr into stdout: xcodebuild prints the failure reason on
+Sources/GrantivaCore/Build/XcodeBuildRunner.swift:96:        // stderr and the failing tests and counts on stdout, and a failed
+Sources/GrantivaMCP/ValidatingTransport.swift:146:    /// yields when a partial write fills stdout. Keep ownership until the
+Sources/GrantivaCore/Runner/RunnerExecution.swift:69:        let stdoutPipe = Pipe()
+Sources/GrantivaCore/Runner/RunnerExecution.swift:79:                stdout: stdoutPipe.fileHandleForWriting.fileDescriptor,
+Sources/GrantivaCore/Runner/RunnerExecution.swift:91:        try? stdoutPipe.fileHandleForWriting.close()
+Sources/GrantivaCore/Runner/RunnerExecution.swift:140:        // stdout is relayed to stderr (so structured stdout stays clean for
+Sources/GrantivaCore/Runner/RunnerExecution.swift:142:        let stdoutFD = stdoutPipe.fileHandleForReading.fileDescriptor
+Sources/GrantivaCore/Runner/RunnerExecution.swift:159:                Self.drain(stdoutFD, after: runnerExited) { chunk in
+Sources/GrantivaCore/Runner/RunnerExecution.swift:270:        try? stdoutPipe.fileHandleForReading.close()
+Sources/GrantivaCore/Shell.swift:3:/// Runs `command` under `/bin/zsh -c` and returns its trimmed stdout.
+Sources/GrantivaCore/Shell.swift:93:/// stdin, trimmed stdout, a non-zero exit throws `commandFailed` with stderr
+Sources/GrantivaCore/Shell.swift:94:/// (or stdout).
+Sources/GrantivaCore/Shell.swift:107:    let stdout = Pipe()
+Sources/GrantivaCore/Shell.swift:110:    process.standardOutput = stdout
+Sources/GrantivaCore/Shell.swift:122:    async let out = readToEndOfFile(stdout.fileHandleForReading)
+Sources/GrantivaCLI/RunCommand.swift:285:            // "stdout is the result": under --json every outcome prints a
+Sources/GrantivaCLI/RunCommand.swift:706:    /// results go to stdout via `Output`.
+Sources/GrantivaCLI/RunCommand.swift:712:/// Writes `run --json` documents to stdout (through `Output`) and remembers
+Sources/GrantivaCLI/SimulatorCommand.swift:40:            // writes stderr. The UDID is the result, and goes to stdout.
+Sources/GrantivaCLI/SimulatorCommand.swift:42:            Output.line(rendered.stdout)
+Sources/GrantivaCLI/SimulatorCommand.swift:45:        /// stdout is the UDID and nothing else, so it can be captured directly:
+Sources/GrantivaCLI/SimulatorCommand.swift:51:        /// function whose output was a UDID. A prose line on stdout would have
+Sources/GrantivaCLI/SimulatorCommand.swift:60:        static func render(_ result: SimulatorProvisionResult) -> (stdout: String, stderr: String) {
+Sources/GrantivaCLI/SimulatorCommand.swift:63:                stdout: result.udid,
+Sources/GrantivaCLI/ConsoleAnalyticsCommand.swift:274:            abstract: "Export devices or events as CSV, to stdout or a file.",
+Sources/GrantivaCLI/ConsoleAnalyticsCommand.swift:277:                is written to stdout, so `grantiva console analytics export --data events > events.csv` \
+Sources/GrantivaCLI/ConsoleAnalyticsCommand.swift:296:        @Option(name: .long, help: "Write the CSV to this path instead of stdout.")
+Sources/GrantivaCore/Platform/IOSPlatform.swift:191:    /// simctl narrates ("Recording completed. Writing to disk.") on stdout,
+Sources/GrantivaCore/Platform/IOSPlatform.swift:192:    /// which must not reach Grantiva's stdout ahead of the result.
+Sources/GrantivaCore/Doctor/DoctorFormatter.swift:7:    /// stdout is a terminal and `NO_COLOR` is unset. Redirected output —
+Sources/GrantivaCore/Doctor/DoctorFormatter.swift:16:        return isatty(STDOUT_FILENO) == 1
+Sources/GrantivaCore/Runner/LogStreamer.swift:86:    private var stdoutPipe: Pipe?
+Sources/GrantivaCore/Runner/LogStreamer.swift:88:    private var stdoutDecoder: PrefixedLineDecoder?
+Sources/GrantivaCore/Runner/LogStreamer.swift:285:        stdoutPipe = outPipe
+Sources/GrantivaCore/Runner/LogStreamer.swift:287:        stdoutDecoder = outDecoder
+Sources/GrantivaCore/Runner/LogStreamer.swift:310:        stdoutPipe?.fileHandleForReading.readabilityHandler = nil
+Sources/GrantivaCore/Runner/LogStreamer.swift:312:        output.write(stdoutDecoder?.finish() ?? [])
+Sources/GrantivaCore/Runner/LogStreamer.swift:339:        stdoutPipe = nil
+Sources/GrantivaCore/Runner/LogStreamer.swift:341:        stdoutDecoder = nil
+Sources/GrantivaCore/Android/EmulatorManager.swift:105:    /// `--headless` does; `CI` does the same. A non-TTY stdout
+Sources/GrantivaCore/Android/EmulatorManager.swift:110:    /// anything but empty, `0` or `false`. A non-TTY stdout never implies it.
+Sources/GrantivaCore/Android/EmulatorManager.swift:234:            stdin: devnull >= 0 ? devnull : nil, stdout: log, stderr: log
+Sources/GrantivaCLI/EmulatorCommand.swift:14:            abstract: "Create the AVD when missing (installing its system image first) and boot it. stdout is the serial, or with --no-boot the AVD name (the serial when it is already running)."
+Sources/GrantivaCLI/EmulatorCommand.swift:27:        @Flag(name: .long, help: "Boot without a window. GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the same; otherwise the emulator gets a window, even when stdout is not a terminal.")
+Sources/GrantivaCLI/EmulatorCommand.swift:37:        /// stdout is the identifier a script captures:
+Sources/GrantivaCLI/EmulatorCommand.swift:42:        static func render(_ result: EmulatorProvisionResult) -> (stdout: String, stderr: String) {
+Sources/GrantivaCLI/EmulatorCommand.swift:45:            return (stdout: result.serial ?? result.name, stderr: "\(verb) \(result.name)\(serial) — \(result.state)")
+Sources/GrantivaCLI/EmulatorCommand.swift:59:            Output.line(rendered.stdout)
+Sources/GrantivaCLI/ConsoleFormat.swift:5:/// callers put the result on stdout via `Output`.
+Sources/GrantivaCore/Runner/RunnerSession.swift:197:        // stdout is relayed to stderr so CI sees runner progress in real time;
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:99:/// lines at a time; stdout is also fed to the startup parser until
+Sources/GrantivaCLI/RunnerOutputForwarder.swift:125:    /// The runner's stdout: narrated and parsed.
+Sources/GrantivaCore/Output/CLILogHandler.swift:32:/// Everything here goes to **stderr**. Program output belongs on stdout, via
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:388:    // MARK: - L19: stdout steps name a sub-flow as written
+Tests/GrantivaCoreTests/LogStreamerTests.swift:206:        let stdout = PrefixedLineDecoder()
+Tests/GrantivaCoreTests/LogStreamerTests.swift:209:        XCTAssertEqual(stdout.consume(Data("out".utf8)), [])
+Tests/GrantivaCoreTests/LogStreamerTests.swift:211:        XCTAssertEqual(strings(stdout.consume(Data("put\n".utf8))), ["[log] output\n"])
+Sources/GrantivaCore/Output/LogVerbosity.swift:12:/// Neither flag touches stdout. `--quiet` silences narration, not results —
+Sources/GrantivaCore/Runner/ChildProcess.swift:45:    ///   - stdout/stderr: descriptors the child should write to. They are
+Sources/GrantivaCore/Runner/ChildProcess.swift:55:        stdout: Int32,
+Sources/GrantivaCore/Runner/ChildProcess.swift:103:        posix_spawn_file_actions_adddup2(&actions, stdout, 1)
+Sources/GrantivaCore/Runner/ChildProcess.swift:364:                stdin: fds[0], stdout: output, stderr: output,
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:458:        let child = try ChildProcess.spawn(executable: "/usr/bin/false", arguments: [], stdin: devnull, stdout: devnull, stderr: devnull)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:938:    /// stdout (`serial=$(grantiva emulator ensure ...)`, pipes, CI) no longer
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:979:    /// `swift test`'s stdout is not a terminal; the boot still gets a window.
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:980:    func testBootWithoutHeadlessGetsAWindowWhenStdoutIsNotATerminal() async throws {
+Sources/GrantivaCore/Output/Output.swift:13:/// A command substitution captures stdout verbatim, and `jq` refuses anything
+Sources/GrantivaCore/Output/Output.swift:15:/// sentence on stdout where a UDID was expected; the failure surfaced much
+Sources/GrantivaCore/Output/Output.swift:22:///   to produce. It goes here, undecorated, on stdout.
+Sources/GrantivaCore/Output/Output.swift:27:/// the 1.7.0 bug across every command at once. `OutputStreamContractTests` pins
+Sources/GrantivaCore/Output/Output.swift:29:/// and stdout of a `--json` command parses as a single JSON document with
+Sources/GrantivaCore/Output/Output.swift:34:    /// Writes `text` and a newline to stdout, exactly as given.
+Sources/GrantivaCore/Output/Output.swift:39:    /// Writes raw bytes to stdout, exactly as given.
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:147:    // to: ..." on its own stdout; inherited, that landed ahead of `record`'s
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:149:    func testRecordVideoProcessDoesNotInheritStdout() throws {
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:153:        XCTAssertTrue((recorder.standardOutput as? FileHandle) === log, "stdout must go to the log, not be inherited")
+Tests/GrantivaCoreTests/ChildProcessTests.swift:37:            stdout: output,
+Tests/GrantivaCoreTests/ChildProcessTests.swift:59:            stdout: output,
+Tests/GrantivaCoreTests/ChildProcessTests.swift:93:            stdout: output,
+Tests/GrantivaCoreTests/ChildProcessTests.swift:114:            stdout: outFD,
+Tests/GrantivaCoreTests/ChildProcessTests.swift:133:            child = try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:153:            executable: "/bin/sh", arguments: ["-c", "sleep 30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:173:            executable: "/bin/sh", arguments: ["-c", "sleep 30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:203:            stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:222:            executable: "/bin/sh", arguments: ["-c", "trap '' HUP; sleep 30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:237:            executable: "/bin/sh", arguments: ["-c", "sleep 30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:257:            stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:275:                executable: "/bin/sh", arguments: ["-c", "exit 3"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:287:                executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:314:            stdout: pipe.fileHandleForWriting.fileDescriptor, stderr: pipe.fileHandleForWriting.fileDescriptor
+Tests/GrantivaCoreTests/ChildProcessTests.swift:326:            try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:340:            try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:354:                try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:373:        let child = try ChildProcess.spawn(executable: "/bin/sh", arguments: ["-c", "exit 4"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:385:        let sleeper = try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:397:        let child = try ChildProcess.spawn(executable: "/bin/sh", arguments: ["-c", "exit 0"], stdout: output, stderr: output)
+Sources/GrantivaCore/Android/ADB.swift:84:    /// streams are read (its abort line is on stdout, its argument trace on

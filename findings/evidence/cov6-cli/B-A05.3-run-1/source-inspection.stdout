@@ -1,0 +1,59 @@
+Tests/GrantivaAPITests/OrgAdminAPITests.swift:45:        let usage = #"{"currentMAD":12,"tierLimit":1000,"tierName":"Free","billingPeriodStart":"2026-09-01T00:00:00Z","billingPeriodEnd":"2026-10-01T00:00:00Z","usagePercent":1.2,"daysUntilReset":29,"resetDate":"2026-10-01"}"#
+Tests/GrantivaCLITests/AndroidCommandTests.swift:385:        let help = InstallCommand.helpMessage(columns: 1000).split(whereSeparator: \.isWhitespace).joined(separator: " ")
+Sources/GrantivaCLI/RecordCommand.swift:199:            + report.frames.map { "  \($0.requestedMilliseconds)ms -> \($0.actualMilliseconds)ms: \($0.path)" }
+Sources/GrantivaCLI/RecordCommand.swift:256:            requestedMilliseconds: requested,
+Sources/GrantivaCLI/RecordCommand.swift:284:        requestedMilliseconds: [Int],
+Sources/GrantivaCLI/RecordCommand.swift:287:        guard !requestedMilliseconds.isEmpty else { return [] }
+Sources/GrantivaCLI/RecordCommand.swift:294:        let longestRequested = CMTime(value: CMTimeValue(requestedMilliseconds.last!), timescale: 1_000)
+Sources/GrantivaCLI/RecordCommand.swift:298:                "Grantiva recording ended at \(recordedMilliseconds)ms before requested frame \(requestedMilliseconds.last!)ms",
+Sources/GrantivaCLI/RecordCommand.swift:310:        let frames = try requestedMilliseconds.map { requested in
+Sources/GrantivaCLI/RecordCommand.swift:325:                requestedMilliseconds: requested,
+Sources/GrantivaCLI/RecordCommand.swift:331:            captures: frames.map { .init(screenName: "\($0.requestedMilliseconds)ms", path: $0.path, sizeBytes: 0) },
+Sources/GrantivaCLI/RecordCommand.swift:357:    let requestedMilliseconds: Int
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:633:        let help = RunnerStopCommand.helpMessage(columns: 1000)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:824:        let help = RunnerStartCommand.helpMessage(columns: 1000)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:839:        XCTAssertTrue(RunnerCommand.helpMessage(columns: 1000).contains("UIAutomator2 on Android"))
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:843:        let help = DumpHierarchyCommand.helpMessage(columns: 1000)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:848:        let help = HierarchyCommand.helpMessage(columns: 1000)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:853:        for help in [RunCommand.helpMessage(columns: 1000), InstallCommand.helpMessage(columns: 1000)] {
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:856:        XCTAssertTrue(RunCommand.helpMessage(columns: 1000).contains("UIAutomator2 on Android"))
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1046:                return DriverAttachment(client: .failing, port: 61000 + polls.value, sessionID: id, detach: { detached.set(detached.value + 1) })
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:637:        let usage = ConsoleAdminFormat.usage(OrgUsage(currentMAD: 12, tierLimit: 1000, tierName: "Free", billingPeriodStart: "2026-09-01T00:00:00Z", billingPeriodEnd: "2026-10-01T00:00:00Z", usagePercent: 1.2, daysUntilReset: 29, resetDate: "2026-10-01"))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:638:        XCTAssertTrue(usage.contains("12 of 1000 monthly active devices (1.2%)"), usage)
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:459:        XCTAssertTrue(EmulatorCommand.Ensure.helpMessage(columns: 1000).contains("CI=true"))
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:460:        XCTAssertTrue(InstallCommand.helpMessage(columns: 1000).contains("CI=true"))
+Tests/GrantivaCLITests/HelpCorpusTests.swift:43:            let help = GrantivaCommand.helpMessage(for: type, columns: 1000)
+Tests/GrantivaCLITests/HelpCorpusTests.swift:59:            let help = GrantivaCommand.helpMessage(for: type, columns: 1000)
+Tests/GrantivaCLITests/HelpCorpusTests.swift:72:            let help = GrantivaCommand.helpMessage(for: type, columns: 1000)
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:140:                frames: [RecordFrame(requestedMilliseconds: 1000, actualMilliseconds: 1000, path: "out-1000ms.png")]
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:449:                        guard let n = Int(parts[1]), (1...10_000).contains(n) else { throw ValidationError("featureVoteThresholdCount must be 1–10000.") }
+Tests/GrantivaCLITests/RecordCommandTests.swift:225:    /// A05: a static screen gives screenrecord one frame at 0 ms and a zero
+Tests/GrantivaCLITests/RecordCommandTests.swift:226:    /// duration. The last frame is held to --duration, so 1000 ms resolves to it.
+Tests/GrantivaCLITests/RecordCommandTests.swift:230:        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "1000,2000"])
+Tests/GrantivaCLITests/RecordCommandTests.swift:238:        XCTAssertEqual(frames.map { $0["requestedMilliseconds"] as? Int }, [1000, 2000])
+Tests/GrantivaCLITests/RecordCommandTests.swift:373:        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "1000", "--platform", "ios", "--simulator", "Fake"])
+Tests/GrantivaCLITests/RecordCommandTests.swift:406:        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "1000", "--platform", "ios", "--simulator", "Fake"])
+Tests/GrantivaCLITests/RecordCommandTests.swift:414:            XCTAssertTrue("\(error)".contains("before requested frame 1000ms"), "\(error)")
+Tests/GrantivaCLITests/RecordCommandTests.swift:446:        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "1000", "--output", "clips/a.mp4", "--json"])
+Tests/GrantivaCLITests/RecordCommandTests.swift:455:        XCTAssertEqual(frames.compactMap { $0["path"] as? String }, ["clips/a-frames/001000ms.png"])
+Tests/GrantivaCLITests/RecordCommandTests.swift:456:        XCTAssertTrue(FileManager.default.fileExists(atPath: "clips/a-frames/001000ms.png"))
+Tests/GrantivaCLITests/RecordCommandTests.swift:463:            "  1000ms -> 0ms: clips/a-frames/001000ms.png",
+Tests/GrantivaCLITests/RecordCommandTests.swift:473:        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "1000", "--output", output])
+Tests/GrantivaCLITests/RecordCommandTests.swift:483:        XCTAssertEqual(frames.compactMap { $0["path"] as? String }, [dir.0.appendingPathComponent("abs/a-frames/001000ms.png").path])
+Sources/GrantivaMCP/ValidatingTransport.swift:123:    init(wrapping inner: any Transport, cancelRetries: [UInt64] = [50, 250, 1000]) {
+Sources/GrantivaCore/Android/AndroidCaptureSettings.swift:176:        let deadline = clock.now.advanced(by: .milliseconds(Int(timeout * 1000)))
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:149:        [{"index":0,"yaml":"launchApp","status":"passed","duration":1000},
+Tests/GrantivaMCPTests/BuildToolsTests.swift:122:        let result = TestResult(success: true, scheme: "Demo", duration: 2, testsPassed: 4, testsFailed: 0, output: String(repeating: "noise\n", count: 1000))
+Tests/GrantivaMCPTests/BuildToolsTests.swift:148:        let text = String(repeating: "é✘", count: 1000)
+Tests/GrantivaCoreTests/ADBTests.swift:92:        package:com.android.settings uid:1000
+Tests/GrantivaCoreTests/ADBTests.swift:95:        XCTAssertEqual(ADB.parsePackageUID(output, applicationId: "com.android.settings"), 1000)
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:73:        let message = "Grantiva recording ended at 0ms before requested frame 1000ms"
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:497:            timeout: 10000
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:213:        try writeRunnerSession(pid: 1000, nanos: 2, port: 8200, sessionId: "other")
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:214:        let store = store(live: [100, 1000])
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:220:        XCTAssertEqual(store.liveSessions().map(\.pid), [1000])
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:695:                return command.hasSuffix("SCALE") ? "3" : "1000"
+Sources/GrantivaCore/Runner/FlowGenerator.swift:109:                        lines.append("    timeout: \(Int(seconds * 1000))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:306:        let ms = Int(seconds * 1000)
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:433:            let seconds = asDouble(timeout).map { $0 / 1000.0 } ?? defaultSettleSeconds
+Sources/GrantivaCore/Runner/RunnerReportSteps.swift:82:        milliseconds.map { $0.rounded() / 1000 }

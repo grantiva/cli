@@ -1,0 +1,17 @@
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:31:        XCTAssertEqual(SimulatorCommand.Delete.configuration.abstract, "Explicitly delete a named simulator.")
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:32:        XCTAssertEqual(SimulatorCommand.Sessions.configuration.abstract, "List Grantiva-managed simulator capacity slots.")
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:47:        for (name, abstract) in abstracts where abstract.localizedCaseInsensitiveContains("simulator") {
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:50:                "\(name) abstract mentions simulator but not emulator: \(abstract)"
+Tests/GrantivaCoreTests/ADBTests.swift:128:        emulator-5554 tcp:7000 localabstract:uia2
+Sources/GrantivaCLI/BuildCommand.swift:8:        abstract: "Build and optionally install the app to a simulator or emulator.",
+Sources/GrantivaCLI/BuildCommand.swift:19:        abstract: "Build the app for a simulator (xcodebuild) or emulator (Gradle)."
+Sources/GrantivaCLI/BuildCommand.swift:94:        abstract: "Build and install the app on a simulator or emulator, then optionally launch it."
+Sources/GrantivaCLI/RunCommand.swift:8:        abstract: "Run Maestro flows against a simulator or emulator. No visual regression — reports step pass/fail and captures a screenshot on failure."
+Sources/GrantivaCLI/SimulatorCommand.swift:8:        abstract: "Provision, inspect, and tear down managed simulators.",
+Sources/GrantivaCLI/SimulatorCommand.swift:14:            abstract: "Create or reuse a named simulator and boot it. `--name` alone reuses an existing simulator with that name. To create one, the name must contain a device model (\"iPhone 17\") or --device-type must be given; the newest installed runtime is used unless --runtime is passed."
+Sources/GrantivaCLI/SimulatorCommand.swift:70:        static let configuration = CommandConfiguration(abstract: "Explicitly delete a named simulator.")
+Sources/GrantivaCLI/SimulatorCommand.swift:82:        static let configuration = CommandConfiguration(abstract: "List Grantiva-managed simulator capacity slots.")
+Sources/GrantivaCLI/SimulatorCommand.swift:102:            abstract: "End a managed session, or reclaim one simulator by UDID when no ledger entry exists.",
+Sources/GrantivaCLI/SimulatorCommand.swift:360:            abstract: "Delete Grantiva-created simulators that are shut down and not part of an active session."
+Sources/GrantivaCLI/HierarchyCommand.swift:11:        abstract: "Dump the UI hierarchy of a booted simulator or emulator without relaunching the app.",
+Sources/GrantivaCLI/RecordCommand.swift:15:        abstract: "Record a simulator or emulator and extract PNG frames at exact requested timestamps."

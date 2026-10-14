@@ -1,0 +1,191 @@
+Tests/GrantivaCLITests/DocsContractTests.swift:183:    func testPublicCompatibilityNotesCoverBaselineNamesDatesSelectorsAndLifecycleJSON() throws {
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:135:    func testTeardownRejectsBothSelectorsTogether() {
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:143:    func testTeardownRequiresOneSelector() {
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:154:    // satisfied the "pass one selector" check, matched no process, released no
+Sources/GrantivaCLI/RunCommand.swift:686:                    RunReadyState.Flow(name: FlowGenerator.screensFlowName, status: screensFailed ? "failed" : "passed"),
+Sources/GrantivaCLI/RunCommand.swift:693:                if !flows.contains(where: { $0.name == FlowGenerator.screensFlowName }) {
+Sources/GrantivaCLI/RunCommand.swift:694:                    flows.insert(RunReadyState.Flow(name: FlowGenerator.screensFlowName, status: "failed"), at: 0)
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:5:/// The bundled grantiva-runner's selector rules (1.1.28-grantiva.15), as a
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:7:final class SelectorMatchTests: XCTestCase {
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:10:        XCTAssertTrue(SelectorMatch.text("Open", "open"))
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:11:        XCTAssertFalse(SelectorMatch.text("Open", "Talk · Open"), "tap: Open does not match Talk · Open")
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:12:        XCTAssertFalse(SelectorMatch.text("Example", "Examples"))
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:13:        XCTAssertTrue(SelectorMatch.text(".*Open.*", "Talk · Open now"))
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:17:        XCTAssertTrue(SelectorMatch.text("$7.50", "$7.50"), "equal to the pattern although $ anchors")
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:18:        XCTAssertTrue(SelectorMatch.text("Plan Visit", "Plan\nVisit"))
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:19:        XCTAssertTrue(SelectorMatch.text("(", "("), "an invalid regex matches literally")
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:20:        XCTAssertTrue(SelectorMatch.text("Caf\u{E9}", "Cafe\u{301}"), "NFC on both sides")
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:24:        XCTAssertTrue(SelectorMatch.exactText("Not advertising", "Not advertising"))
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:25:        XCTAssertFalse(SelectorMatch.exactText("not advertising", "Not advertising"))
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:26:        XCTAssertFalse(SelectorMatch.exactText("Advertising", "Not advertising"))
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:27:        XCTAssertFalse(SelectorMatch.exactText(".*", "anything"), "never a regex")
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:31:        XCTAssertTrue(SelectorMatch.iosID("loginButton", "LoginButton"))
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:32:        XCTAssertFalse(SelectorMatch.iosID("login", "com.app/login"), "no last-component rule on iOS")
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:33:        XCTAssertFalse(SelectorMatch.iosID("login", "login_button"))
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:34:        XCTAssertTrue(SelectorMatch.iosID("cell_[0-9]+", "CELL_12"), "a regex id matches the whole identifier")
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:35:        XCTAssertTrue(SelectorMatch.iosID("$total", "$TOTAL"), "an id equal to the identifier matches")
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:36:        XCTAssertFalse(SelectorMatch.iosID("General", ""), "no identifier, no match")
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:40:        XCTAssertTrue(SelectorMatch.androidID("login", "com.app:id/login"))
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:41:        XCTAssertFalse(SelectorMatch.androidID("login", "com.app:id/login_button"))
+Tests/GrantivaMCPTests/SelectorMatchTests.swift:42:        XCTAssertTrue(SelectorMatch.androidID("LOGIN", "login"))
+Sources/GrantivaMCP/Tools/SessionCapture.swift:146:        let rules = try await SelectorRules.current(platform: platform, screens: screens, driver: driver)
+Sources/GrantivaMCP/Tools/SessionCapture.swift:181:        _ step: GrantivaConfig.Screen.Step, rules: SelectorRules, driver: DriverClient,
+Sources/GrantivaMCP/Tools/SessionCapture.swift:185:            let selector = Selector(pattern: label, byId: step.tapById, exact: step.tapExact, rules: rules)
+Sources/GrantivaMCP/Tools/SessionCapture.swift:186:            guard let element = try await waitForElement(selector, driver: driver, pause: pause) else {
+Sources/GrantivaMCP/Tools/SessionCapture.swift:210:            let selector = Selector(pattern: label, byId: step.assertVisibleById, exact: step.assertVisibleExact, rules: rules)
+Sources/GrantivaMCP/Tools/SessionCapture.swift:211:            guard try await waitForElement(selector, driver: driver, pause: pause) != nil else {
+Sources/GrantivaMCP/Tools/SessionCapture.swift:216:            let selector = Selector(pattern: label, byId: step.assertNotVisibleById, exact: step.assertNotVisibleExact, rules: rules)
+Sources/GrantivaMCP/Tools/SessionCapture.swift:217:            guard try await waitForAbsence(selector, driver: driver, pause: pause) else {
+Sources/GrantivaMCP/Tools/SessionCapture.swift:223:    /// Which element attributes a selector reads on this device, as the
+Sources/GrantivaMCP/Tools/SessionCapture.swift:225:    struct SelectorRules: Sendable {
+Sources/GrantivaMCP/Tools/SessionCapture.swift:234:        static func current(platform: Platform, screens: [GrantivaConfig.Screen], driver: DriverClient) async throws -> SelectorRules {
+Sources/GrantivaMCP/Tools/SessionCapture.swift:245:            guard platform == .ios, let firstIDStep else { return SelectorRules(platform: platform, identifierReported: true) }
+Sources/GrantivaMCP/Tools/SessionCapture.swift:253:                    reason: "could not read the page source to match id: selectors: \(describe(error))"
+Sources/GrantivaMCP/Tools/SessionCapture.swift:259:                    "WebDriverAgent does not report accessibility identifiers; id: selectors match WDA's name, which is the label when an element has no identifier."
+Sources/GrantivaMCP/Tools/SessionCapture.swift:262:            return SelectorRules(platform: platform, identifierReported: reported)
+Sources/GrantivaMCP/Tools/SessionCapture.swift:266:    /// A step's element selector, matched per platform as grantiva-runner
+Sources/GrantivaMCP/Tools/SessionCapture.swift:272:    struct Selector {
+Sources/GrantivaMCP/Tools/SessionCapture.swift:276:        let rules: SelectorRules
+Sources/GrantivaMCP/Tools/SessionCapture.swift:283:                    return SelectorMatch.iosID(pattern, element[key] as? String ?? "")
+Sources/GrantivaMCP/Tools/SessionCapture.swift:285:                    return SelectorMatch.androidID(pattern, element["identifier"] as? String ?? "")
+Sources/GrantivaMCP/Tools/SessionCapture.swift:298:                return exact ? SelectorMatch.exactText(pattern, value) : SelectorMatch.text(pattern, value)
+Sources/GrantivaMCP/Tools/SessionCapture.swift:303:    /// The first visible element `selector` matches, waiting
+Sources/GrantivaMCP/Tools/SessionCapture.swift:305:    /// the selector's own case wins.
+Sources/GrantivaMCP/Tools/SessionCapture.swift:307:        _ selector: Selector, driver: DriverClient, pause: @escaping @Sendable (Double) async -> Void
+Sources/GrantivaMCP/Tools/SessionCapture.swift:311:            let found = visibleMatches(selector, in: try await driver.hierarchy())
+Sources/GrantivaMCP/Tools/SessionCapture.swift:313:                ["label", "name", "value"].contains { element[$0] as? String == selector.pattern }
+Sources/GrantivaMCP/Tools/SessionCapture.swift:321:    /// Whether no visible element matches `selector`, waiting up to
+Sources/GrantivaMCP/Tools/SessionCapture.swift:324:        _ selector: Selector, driver: DriverClient, pause: @escaping @Sendable (Double) async -> Void
+Sources/GrantivaMCP/Tools/SessionCapture.swift:328:            if visibleMatches(selector, in: try await driver.hierarchy()).isEmpty { return true }
+Sources/GrantivaMCP/Tools/SessionCapture.swift:336:    static func visibleMatches(_ selector: Selector, in element: [String: Any]) -> [[String: Any]] {
+Sources/GrantivaMCP/Tools/SessionCapture.swift:339:        if !isApplication, element["visible"] as? Bool != false, selector.matches(element) {
+Sources/GrantivaMCP/Tools/SessionCapture.swift:343:            found += visibleMatches(selector, in: child)
+Sources/GrantivaMCP/Tools/SessionCapture.swift:387:/// grantiva-runner's selector rules (1.1.28-grantiva.15), so a capture
+Sources/GrantivaMCP/Tools/SessionCapture.swift:389:enum SelectorMatch {
+Sources/GrantivaMCP/Tools/SessionCapture.swift:390:    /// A text selector, on both platforms: a regex that must match the whole
+Sources/GrantivaMCP/Tools/SessionCapture.swift:405:    /// `exact: true`: the whole value as written, case and all, never a regex.
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:372:    // MARK: - Selectors in a capture through the session
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:433:        exact.tapExact = true
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:438:        otherCase.tapExact = true
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:443:    func testAssertionsUseTheSameSelectorRules() async throws {
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:460:        XCTAssertEqual(byName.isError, true, "an iOS text selector does not read name")
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:478:        exactCase.tapById = true
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:527:        exact.tapExact = true
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:529:        XCTAssertEqual(exactMiss.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:538:        exact.tapExact = true
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:548:        exactHint.tapExact = true
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:555:        exactError.assertVisibleExact = true
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:557:        XCTAssertEqual(exactErrorResult.isError, true)
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:56:        let yaml = FlowGenerator.generate(screens: [.init(name: "S", path: .steps(steps))], bundleId: "a.b")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:70:        let yaml = FlowGenerator.generate(screens: [.init(name: "S", path: .steps(steps))], bundleId: "a.b")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:130:        let yaml = FlowGenerator.generate(
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:163:    func testIdSelectorsAreCarriedForEveryCommand() throws {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:190:    func testFlowGeneratorEmitsIdSelectors() throws {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:191:        let yaml = FlowGenerator.generate(screens: [.init(name: "S", path: .steps([
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:223:    func testGeneratedSwipeFromReachesTheRunnerAsASelector() throws {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:224:        let path = try FlowGenerator.writeTemp(screens: [.init(name: "S", path: .steps([
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:232:        XCTAssertEqual(swipes[0]["selector"] as? String, "Lake Tahoe")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:234:        XCTAssertEqual((swipes[1]["selector"] as? [String: Any])?["id"] as? String, "row")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:279:    func testNormaliserMapsSwipeFromToSelector() throws {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:284:        XCTAssertEqual(swipe["selector"] as? String, "Lake Tahoe")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:309:        let yaml = FlowGenerator.generate(screens: config.screens, bundleId: try XCTUnwrap(config.bundleId))
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:5:final class FlowGeneratorTests: XCTestCase {
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:7:        let first = try FlowGenerator.writeTemp(screens: [], bundleId: "com.example.a")
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:8:        let second = try FlowGenerator.writeTemp(screens: [], bundleId: "com.example.b")
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:33:        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example:\"app\"")
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:43:        let yaml = FlowGenerator.generate(
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:61:        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:80:        XCTAssertTrue(FlowGenerator.sleepScript(seconds: 1.5).contains("Date.now() + 1500;"))
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:81:        XCTAssertEqual(FlowGenerator.waitLabel(seconds: 1.5), "Wait 1.5s")
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:131:        XCTAssertEqual(FlowGenerator.generate(screens: screens, bundleId: "com.example"), expected)
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:137:        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:146:    func testAnIdStepIsEmittedAsAnIdSelector() {
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:150:        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:161:        let android = FlowGenerator.generate(screens: screens, bundleId: "com.example", platform: .android)
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:164:        \(FlowGenerator.appDrawnWait.joined(separator: "\n"))
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:168:        XCTAssertTrue(FlowGenerator.appDrawnWait.contains("    optional: true"), "a screen without text must not fail")
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:169:        XCTAssertTrue(FlowGenerator.appDrawnWait.contains("        id: \"android:id/content\""))
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:171:        let ios = FlowGenerator.generate(screens: screens, bundleId: "com.example", platform: .ios)
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:180:        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:191:        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:197:    // A13: the mapping form emits a selector with `exact: true`.
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:198:    func testExactLabelsEmitExactSelectors() throws {
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:200:            .init(tap: "Landmarks", assertVisible: "Lakes", assertNotVisible: "Back", tapExact: true,
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:201:                  assertVisibleExact: true, assertNotVisibleExact: true),
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:204:        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:206:        XCTAssertTrue(yaml.contains("- tapOn:\n    text: \"Landmarks\"\n    exact: true\n"), yaml)
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:207:        XCTAssertTrue(yaml.contains("- assertVisible:\n    text: \"Lakes\"\n    exact: true\n"), yaml)
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:208:        XCTAssertTrue(yaml.contains("- assertNotVisible:\n    text: \"Back\"\n    exact: true\n"), yaml)
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:215:        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:317:        let yaml = FlowGenerator.generate(
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:326:        let yaml = FlowGenerator.generate(
+Tests/GrantivaCoreTests/FlowEnvironmentTests.swift:337:        let yaml = FlowGenerator.generate(
+Tests/GrantivaCoreTests/FlowReferenceResolverTests.swift:91:        let path = try FlowGenerator.writeTemp(
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:219:                  - tap: {text: "Go", exact: true}
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:285:                  - tap: {text: "Landmarks", exact: true}
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:286:                  - assert_visible: {text: "Lakes", exact: true}
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:325:    func testNativeStepsAcceptAnIdSelector() throws {
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:374:                  - assert_visible: {id: "clock", exact: true}
+Tests/GrantivaCoreTests/WDAClientTests.swift:59:    /// Text selectors read the placeholder, so the tree carries it.
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:453:    func testParseTapSelectorVariants() throws {
+Tests/GrantivaCoreTests/UIAutomator2HierarchyParserTests.swift:52:    /// Text selectors read the hint and the error text, so the tree carries them.
+Tests/GrantivaCoreTests/UIAutomator2ClientTests.swift:111:        XCTAssertEqual(body, ["strategy": "xpath", "selector": "//*[@content-desc=\"Details\" or @text=\"Details\"]"])
+Tests/GrantivaCoreTests/FlowStagingTests.swift:136:    func testExtendedWaitUntilKeepsItsTimeoutAndSelector() throws {
+Tests/GrantivaCoreTests/FlowStagingTests.swift:150:              exact: true
+Tests/GrantivaCoreTests/FlowStagingTests.swift:162:        let yaml = FlowGenerator.generate(screens: config.screens, bundleId: "x")
+Tests/GrantivaCoreTests/FlowStagingTests.swift:175:        XCTAssertTrue(yaml.contains("- assertVisible:\n    text: \"Exact\"\n    exact: true"), yaml)
+Tests/GrantivaCoreTests/FlowStagingTests.swift:189:        let yaml = FlowGenerator.generate(screens: config.screens, bundleId: "x")
+Tests/GrantivaCoreTests/FlowStagingTests.swift:234:        let yaml = FlowGenerator.generate(screens: config.screens, bundleId: "com.kylebrowning.landmarks", platform: .android)
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:117:        let owners = FlowGenerator.generateWithMap(screens: screens, bundleId: "com.example").owners
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:147:        let owners = FlowGenerator.generateWithMap(screens: screens, bundleId: "com.example").owners
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:97:            action: "assertVisible: text=\"Golden Gate.*\", exact=true",
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:104:            "Runner failed (exit 1): 02-exact-negative: assertVisible: text=\"Golden Gate.*\", exact=true: Element not visible"
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:129:            XCTAssertTrue(message.contains(failure.action), "failure line carries the selector: \(message)")
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:222:        let labels = FlowGenerator.waitLabels(inGenerated: FlowGenerator.generate(screens: screens, bundleId: "x"))
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:270:        let generated = FlowGenerator.generateWithMap(screens: screens, bundleId: "com.example")
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:621:        XCTAssertEqual(RunnerSession.stepAction(for: Step(wait: 3)), FlowGenerator.waitLabel(seconds: 3))
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:626:        XCTAssertEqual(RunnerSession.stepAction(for: Step(tap: "Lakes", tapExact: true)), "Tap on \"Lakes\" (exact)")
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:628:            RunnerSession.stepAction(for: Step(assertVisible: "Mono Lake", assertVisibleExact: true)),
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:632:            RunnerSession.stepAction(for: Step(assertNotVisible: "Golden Gate.*", assertNotVisibleExact: true)),
+Sources/GrantivaCore/Config/GrantivaConfig.swift:69:            /// Set by the mapping form `{text: "...", exact: true}`: the label
+Sources/GrantivaCore/Config/GrantivaConfig.swift:112:            /// label, `{text: "Label", exact: true}`, or `{id: "identifier"}`
+Sources/GrantivaCore/Config/GrantivaConfig.swift:124:                static let acceptedForms = #"a label, {text: "…", exact: true} or {id: "…"}"#
+Sources/GrantivaCore/Config/GrantivaConfig.swift:187:                        try c.encode(Label(text: text, exact: true), forKey: key)
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:332:                return parseTapSelector(val, command: command)
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:348:            if let (label, byId) = selector(val) {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:355:            if let (label, byId) = selector(val) {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:372:                    guard let (label, byId) = selector(val["from"]) else { return .unsupported("swipe") }
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:418:            if let (label, byId) = selector(val["element"]) ?? selector(val) {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:441:            if let (label, byId, exact) = exactSelector(val["visible"]) {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:446:            if let (label, byId, exact) = exactSelector(val["notVisible"]) {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:452:            if let (label, byId) = selector(val) {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:496:    /// Parse a Maestro tap selector (string, or object with text/id).
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:497:    private static func parseTapSelector(_ val: Any, command: String) -> ParsedCommand {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:498:        if let (label, byId) = selector(val) {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:504:    /// A Maestro element selector: a bare string or `{text: X}` matches text,
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:506:    private static func selector(_ val: Any?) -> (label: String, byId: Bool)? {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:514:    /// `selector` plus `exact: true` on the mapping form.
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:515:    private static func exactSelector(_ val: Any?) -> (label: String, byId: Bool, exact: Bool)? {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:516:        guard let (label, byId) = selector(val) else { return nil }
+Sources/GrantivaCore/Runner/RunnerSession.swift:105:        let generated = try FlowGenerator.writeTempWithMap(
+Sources/GrantivaCore/Runner/RunnerSession.swift:224:                    waitLabels: FlowGenerator.waitLabels(
+Sources/GrantivaCore/Runner/RunnerSession.swift:225:                        inGenerated: FlowGenerator.generate(
+Sources/GrantivaCore/Runner/RunnerSession.swift:946:            return FlowGenerator.waitLabel(seconds: seconds)
+Sources/GrantivaCore/Runner/FlowNormalizer.swift:8:/// - `swipe: {from: X}` becomes `swipe: {selector: X}` (the runner drops `from`
+Sources/GrantivaCore/Runner/FlowNormalizer.swift:27:            if swipe["selector"] == nil {
+Sources/GrantivaCore/Runner/FlowNormalizer.swift:28:                swipe["selector"] = from
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:162:                    ["strategy": "xpath", "selector": UIAutomator2.labelXPath(label)],
+Sources/GrantivaCore/Runner/FlowGenerator.swift:4:public enum FlowGenerator {
+Sources/GrantivaCore/Runner/FlowGenerator.swift:72:                        appendSelector("tapOn", label, byId: step.tapById, exact: step.tapExact, to: &lines)
+Sources/GrantivaCore/Runner/FlowGenerator.swift:118:                            appendSelector("assertVisible", label, byId: step.assertVisibleById, exact: step.assertVisibleExact, to: &lines)
+Sources/GrantivaCore/Runner/FlowGenerator.swift:126:                            appendSelector(
+Sources/GrantivaCore/Runner/FlowGenerator.swift:247:    private static func appendSelector(
+Sources/GrantivaCore/Runner/FlowGenerator.swift:256:            lines.append("    exact: true")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:268:        appendNestedSelector(key, label, byId: byId, exact: exact, to: &lines)
+Sources/GrantivaCore/Runner/FlowGenerator.swift:276:        appendNestedSelector("element", label, byId: step.assertVisibleById, exact: step.assertVisibleExact, to: &lines)
+Sources/GrantivaCore/Runner/FlowGenerator.swift:286:    private static func appendNestedSelector(_ key: String, _ label: String, byId: Bool, exact: Bool, to lines: inout [String]) {
+Sources/GrantivaCore/Runner/FlowGenerator.swift:293:            lines.append("      exact: true")
+Sources/GrantivaCore/Runner/RunnerSession+Screens.swift:4:/// generated flow is one runner flow called `screens`, and `FlowGenerator`
+Sources/GrantivaCore/Runner/RunnerSession+Screens.swift:8:    static func screen(for failure: RunnerReportSteps.Failure?, owners: [FlowGenerator.CommandOwner]) -> String? {
+Sources/GrantivaCore/Runner/RunnerSession+Screens.swift:34:        owners: [FlowGenerator.CommandOwner],
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:308:            if (try? await exactDevice(nameOrUDID: udid))?.isBooted == true {

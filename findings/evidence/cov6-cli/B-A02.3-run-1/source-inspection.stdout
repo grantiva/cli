@@ -1,0 +1,237 @@
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:92:            tapByLabel: { _ in }, tapByCoordinate: { _, _ in }, typeText: { _ in }, swipe: { _ in },
+Sources/GrantivaCLI/MCPCommand.swift:12:            (grantiva_tap, grantiva_swipe, grantiva_type, grantiva_screenshot, grantiva_a11y_*, \
+Sources/GrantivaMCP/ToolRegistry.swift:67:        "grantiva_screenshot", "grantiva_tap", "grantiva_swipe", "grantiva_type",
+Sources/GrantivaMCP/ToolRegistry.swift:273:        case "grantiva_swipe":
+Sources/GrantivaMCP/ToolRegistry.swift:274:            return changed(try await UITools.swipe(driver: driver, arguments: arguments))
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:19:    func testSwipeDirectionForm() throws {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:23:        - swipe:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:25:        - takeScreenshot: "Swiped"
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:28:        XCTAssertEqual(steps[0].swipe, "up")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:29:        XCTAssertNil(steps[0].swipeFrom)
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:32:    func testSwipePercentageCoordinates() throws {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:34:        - swipe:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:38:        XCTAssertEqual(steps[0].swipe, "left")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:41:    func testSwipePercentagePointsAndDurationReachTheGeneratedFlow() throws {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:43:        - swipe:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:47:        - swipe:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:51:        XCTAssertEqual(steps[0].swipeStart, "60%, 17%")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:52:        XCTAssertEqual(steps[0].swipeEnd, "5%, 17%")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:53:        XCTAssertEqual(steps[0].swipeDuration, 400)
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:54:        XCTAssertEqual(steps[1].swipeDuration, 250)
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:57:        XCTAssertTrue(yaml.contains("- swipe:\n    start: \"60%, 17%\"\n    end: \"5%, 17%\"\n    duration: 400\n"), yaml)
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:58:        XCTAssertTrue(yaml.contains("- swipe:\n    direction: LEFT\n    duration: 250\n"), yaml)
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:61:    func testPixelSwipePointsFallBackToDirection() throws {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:63:        - swipe:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:67:        XCTAssertEqual(steps[0].swipe, "left")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:68:        XCTAssertNil(steps[0].swipeStart)
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:69:        XCTAssertNil(steps[0].swipeEnd)
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:71:        XCTAssertTrue(yaml.contains("- swipe:\n    direction: LEFT\n"), yaml)
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:86:        XCTAssertEqual(steps.map(\.swipe), ["down", "up", "right", "left"])
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:89:    func testSwipeWithUnknownDirectionIsRejected() {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:90:        XCTAssertThrowsError(try MaestroFlowParser.parse("- swipe:\n    direction: SIDEWAYS", sourceName: "f.yaml")) {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:91:            XCTAssertEqual($0.localizedDescription, "Invalid argument: f.yaml:1: unsupported Maestro command 'swipe'")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:206:    func testSwipeFromIsKept() throws {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:208:        - swipe:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:211:        - swipe:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:216:        XCTAssertEqual(steps[0].swipe, "left")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:217:        XCTAssertEqual(steps[0].swipeFrom, "Lake Tahoe")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:218:        XCTAssertFalse(steps[0].swipeFromById)
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:219:        XCTAssertEqual(steps[1].swipeFrom, "row")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:220:        XCTAssertTrue(steps[1].swipeFromById)
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:223:    func testGeneratedSwipeFromReachesTheRunnerAsASelector() throws {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:225:            .init(swipe: "left", swipeFrom: "Lake Tahoe"),
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:226:            .init(swipe: "right", swipeFrom: "row", swipeFromById: true),
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:230:        let swipes = commands.compactMap { ($0 as? [String: Any])?["swipe"] as? [String: Any] }
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:231:        XCTAssertEqual(swipes.count, 2)
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:232:        XCTAssertEqual(swipes[0]["selector"] as? String, "Lake Tahoe")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:233:        XCTAssertNil(swipes[0]["from"])
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:234:        XCTAssertEqual((swipes[1]["selector"] as? [String: Any])?["id"] as? String, "row")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:279:    func testNormaliserMapsSwipeFromToSelector() throws {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:281:            in: "appId: a.b\n---\n- swipe:\n    direction: LEFT\n    from: \"Lake Tahoe\"\n", relativeTo: "/p"
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:283:        let swipe = try XCTUnwrap((try runnerCommands(staged)[0] as? [String: Any])?["swipe"] as? [String: Any])
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:284:        XCTAssertEqual(swipe["selector"] as? String, "Lake Tahoe")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:285:        XCTAssertEqual(swipe["direction"] as? String, "LEFT")
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:286:        XCTAssertNil(swipe["from"])
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:301:        - swipe:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:328:        - swipe:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:333:        - swipe:
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:176:              - swipe: "up"
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:182:            XCTAssertEqual(steps[1].swipe, "up")
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:399:            XCTAssertEqual(steps[0].swipe, "up") // scroll down = swipe up
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:413:            XCTAssertEqual(steps[0].swipe, "up") // default scroll = down = swipe up
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:419:    func testParseSwipeFromCoordinates() throws {
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:421:        - swipe:
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:424:        - takeScreenshot: "Swiped"
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:429:            XCTAssertEqual(steps[0].swipe, "up") // y decreases = swipe up
+Tests/GrantivaCoreTests/FlowStagingTests.swift:206:    - swipe:
+Tests/GrantivaCoreTests/FlowStagingTests.swift:209:    - takeScreenshot: "Home Swiped"
+Tests/GrantivaCoreTests/FlowStagingTests.swift:229:        XCTAssertEqual(config.screens.map(\.name), ["Home Swiped", "Caching Maestro"])
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:91:                .init(swipe: "up"),
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:110:            - swipe:
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:176:    func testSwipeAndTypeAreFollowedBySettle() {
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:178:            .init(swipe: "Up"), .init(type: "abc"), .init(assertVisible: "Done"),
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:182:        XCTAssertTrue(yaml.contains("- swipe:\n    direction: UP\n\(settle)\n- inputText: \"abc\"\n\(settle)\n- assertVisible"), yaml)
+Sources/GrantivaMCP/MCPServer.swift:88:                tap, swipe, type, take screenshots, inspect the accessibility tree, \
+Tests/GrantivaCoreTests/WDAClientTests.swift:329:    func testSwipeAndHierarchySayTheAppIsNotRunning() async {
+Tests/GrantivaCoreTests/WDAClientTests.swift:331:        let swipe = ScriptedTransport([(status, 200), (size, 200), (appNotRunning, 400)])
+Tests/GrantivaCoreTests/WDAClientTests.swift:333:            try await wda(swipe).swipe("up")
+Sources/GrantivaMCP/Tools/SessionCapture.swift:29:        if step.swipeFrom != nil { return "a swipe from an element" }
+Sources/GrantivaMCP/Tools/SessionCapture.swift:30:        if step.swipeStart != nil || step.swipeEnd != nil { return "a swipe between points" }
+Sources/GrantivaMCP/Tools/SessionCapture.swift:31:        if step.swipeDuration != nil { return "a swipe with a duration" }
+Sources/GrantivaMCP/Tools/SessionCapture.swift:195:        if let direction = step.swipe {
+Sources/GrantivaMCP/Tools/SessionCapture.swift:196:            try await driver.swipe(direction)
+Tests/GrantivaCoreTests/UIAutomator2ClientTests.swift:147:    func testSwipeReadsTheWindowSizeInPixels() async throws {
+Tests/GrantivaCoreTests/UIAutomator2ClientTests.swift:149:        try await client(transport).swipe("up")
+Tests/GrantivaCoreTests/UIAutomator2ClientTests.swift:155:    func testSwipeRejectsAnUnknownDirection() async {
+Tests/GrantivaCoreTests/UIAutomator2ClientTests.swift:158:            try await client(transport).swipe("sideways")
+Tests/GrantivaCoreTests/UIAutomator2ClientTests.swift:161:            XCTAssertTrue("\(error)".contains("Invalid swipe direction"), "\(error)")
+Sources/GrantivaCore/Config/GrantivaConfig.swift:31:            public var swipe: String?
+Sources/GrantivaCore/Config/GrantivaConfig.swift:44:            /// Maestro `swipe: {from: ...}`: the element the swipe starts on.
+Sources/GrantivaCore/Config/GrantivaConfig.swift:45:            public var swipeFrom: String? = nil
+Sources/GrantivaCore/Config/GrantivaConfig.swift:46:            public var swipeFromById: Bool = false
+Sources/GrantivaCore/Config/GrantivaConfig.swift:47:            /// Maestro `swipe: {start: "x%, y%", end: "x%, y%"}`: exact points,
+Sources/GrantivaCore/Config/GrantivaConfig.swift:49:            public var swipeStart: String? = nil
+Sources/GrantivaCore/Config/GrantivaConfig.swift:50:            public var swipeEnd: String? = nil
+Sources/GrantivaCore/Config/GrantivaConfig.swift:51:            /// Maestro `swipe: {duration: ms}`.
+Sources/GrantivaCore/Config/GrantivaConfig.swift:52:            public var swipeDuration: Int? = nil
+Sources/GrantivaCore/Config/GrantivaConfig.swift:66:            /// The directions a swipe step takes, lowercased.
+Sources/GrantivaCore/Config/GrantivaConfig.swift:67:            static let swipeDirectionNames = ["up", "down", "left", "right"]
+Sources/GrantivaCore/Config/GrantivaConfig.swift:76:                tap: String? = nil, swipe: String? = nil, type: String? = nil,
+Sources/GrantivaCore/Config/GrantivaConfig.swift:81:                swipeFrom: String? = nil, swipeFromById: Bool = false,
+Sources/GrantivaCore/Config/GrantivaConfig.swift:87:                self.swipe = swipe
+Sources/GrantivaCore/Config/GrantivaConfig.swift:96:                self.swipeFrom = swipeFrom
+Sources/GrantivaCore/Config/GrantivaConfig.swift:97:                self.swipeFromById = swipeFromById
+Sources/GrantivaCore/Config/GrantivaConfig.swift:105:                case tap, swipe, type, wait
+Sources/GrantivaCore/Config/GrantivaConfig.swift:174:                swipe = try c.decodeIfPresent(String.self, forKey: .swipe)
+Sources/GrantivaCore/Config/GrantivaConfig.swift:193:                try c.encodeIfPresent(swipe, forKey: .swipe)
+Sources/GrantivaCore/Config/GrantivaConfig.swift:410:        try validateSwipeDirections(config.screens, fileName: fileName)
+Sources/GrantivaCore/Config/GrantivaConfig.swift:424:    /// `swipe:` is a free string in the YAML; an unknown direction must fail
+Sources/GrantivaCore/Config/GrantivaConfig.swift:426:    static func validateSwipeDirections(_ screens: [Screen], fileName: String) throws {
+Sources/GrantivaCore/Config/GrantivaConfig.swift:429:            for direction in steps.compactMap(\.swipe)
+Sources/GrantivaCore/Config/GrantivaConfig.swift:430:            where !Screen.Step.swipeDirectionNames.contains(direction.lowercased()) {
+Sources/GrantivaCore/Config/GrantivaConfig.swift:432:                    "\(fileName): screen \"\(screen.name)\": swipe direction \"\(direction)\" is not one of "
+Sources/GrantivaCore/Config/GrantivaConfig.swift:433:                        + Screen.Step.swipeDirectionNames.joined(separator: ", ")
+Sources/GrantivaCore/Config/GrantivaConfig.swift:447:    /// True if any screen requires navigation steps (taps/swipes) to reach.
+Sources/GrantivaMCP/Tools/ScriptTools.swift:16:                Supported actions: tap (by label), tap_xy (by coordinates), swipe (direction), type (text), wait (seconds). \
+Sources/GrantivaMCP/Tools/ScriptTools.swift:28:                        "description": .string("Array of step objects. Each has one key: tap, tap_xy, swipe, type, or wait."),
+Sources/GrantivaMCP/Tools/ScriptTools.swift:44:                                "swipe": .object([
+Sources/GrantivaMCP/Tools/ScriptTools.swift:46:                                    "description": .string("Swipe direction: up, down, left, right"),
+Sources/GrantivaMCP/Tools/ScriptTools.swift:103:                + "\nEach step must be an object with one of: tap, tap_xy {x, y}, swipe, type, wait."
+Sources/GrantivaMCP/Tools/ScriptTools.swift:156:        case .swipe(let direction):
+Sources/GrantivaMCP/Tools/ScriptTools.swift:157:            try await driver.swipe(direction)
+Sources/GrantivaMCP/Tools/ScriptTools.swift:159:            log.append("Step \(stepNum): swiped \(direction)")
+Sources/GrantivaMCP/Tools/ScriptTools.swift:175:        case swipe(String)
+Sources/GrantivaMCP/Tools/ScriptTools.swift:186:            case .swipe(let direction): return "swipe \(direction)"
+Sources/GrantivaMCP/Tools/ScriptTools.swift:192:        static let actions = ["tap", "tap_xy", "swipe", "type", "wait"]
+Sources/GrantivaMCP/Tools/ScriptTools.swift:217:            case "swipe":
+Sources/GrantivaMCP/Tools/ScriptTools.swift:218:                return string().map(Step.swipe)
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:320:            case "scroll": return .step(.init(swipe: "up")) // default scroll down = swipe up
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:361:        // --- Swipe (direction, optionally from an element, or coordinates) ---
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:363:        if let val = dict["swipe"] as? [String: Any] {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:366:                guard GrantivaConfig.Screen.Step.swipeDirectionNames.contains(direction) else {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:367:                    return .unsupported("swipe")
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:369:                var step = GrantivaConfig.Screen.Step(swipe: direction)
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:370:                step.swipeDuration = asInt(val["duration"])
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:372:                    guard let (label, byId) = selector(val["from"]) else { return .unsupported("swipe") }
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:373:                    step.swipeFrom = label
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:374:                    step.swipeFromById = byId
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:387:                var step = GrantivaConfig.Screen.Step(swipe: direction)
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:388:                step.swipeDuration = asInt(val["duration"])
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:390:                // swipes exactly there. Pixel points ("100, 200") and the
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:395:                    step.swipeStart = start
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:396:                    step.swipeEnd = end
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:400:            return .unsupported("swipe")
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:403:        // --- Scroll → swipe (inverted: Maestro scroll down = finger swipe up) ---
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:412:            return .step(.init(swipe: invertDirection(scrollDir)))
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:521:    /// A swipe point: Maestro's `"x%, y%"` string, or `{x:, y:}`.
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:552:    /// Invert scroll direction to swipe direction.
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:553:    /// Maestro "scroll down" = see content below = finger swipe up.
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:197:            swipe: { direction in
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:209:                    throw GrantivaError.invalidArgument("Invalid swipe direction \"\(direction)\". Use: up, down, left, right")
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:216:                ], failure: "Failed to swipe \(direction)")
+Sources/GrantivaMCP/Tools/UITools.swift:5:/// UI automation tools: screenshot, tap, swipe, type, accessibility tree, accessibility check.
+Sources/GrantivaMCP/Tools/UITools.swift:53:            name: "grantiva_swipe",
+Sources/GrantivaMCP/Tools/UITools.swift:54:            description: "Swipe on the device (iOS simulator or Android emulator) screen. After swiping, returns the updated accessibility tree.",
+Sources/GrantivaMCP/Tools/UITools.swift:60:                        "description": .string("Swipe direction: up, down, left, right"),
+Sources/GrantivaMCP/Tools/UITools.swift:182:    static func swipe(driver: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
+Sources/GrantivaMCP/Tools/UITools.swift:189:        try await driver.swipe(direction)
+Sources/GrantivaMCP/Tools/UITools.swift:194:                .text(text: "Swiped \(direction). Updated hierarchy:\n\(tree)", annotations: nil, _meta: nil),
+Tests/GrantivaMCPTests/ToolSchemaTests.swift:14:        "grantiva_swipe": ["direction"],
+Tests/GrantivaMCPTests/ToolSchemaTests.swift:103:        XCTAssertEqual(try enumValues("grantiva_swipe", "direction"), ["up", "down", "left", "right"])
+Tests/GrantivaMCPTests/ToolRegistrationTests.swift:18:        "grantiva_swipe",
+Tests/GrantivaMCPTests/ToolRegistrationTests.swift:137:        let mutating = ["grantiva_tap", "grantiva_swipe", "grantiva_type", "grantiva_script", "grantiva_sim_boot", "grantiva_sim_delete",
+Tests/GrantivaMCPTests/MCPTestSupport.swift:51:            swipe: { direction in recorder.record("swipe(\(direction))") },
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:20:                    .object(["swipe": .string("up")]),
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:32:                "swipe(up)",
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:40:        XCTAssertTrue(text.contains("Step 3: swiped up"), text)
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:94:            arguments: ["steps": .array([.object(["swipe": .string("down")]), .string("tap")])]
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:148:            arguments: ["steps": .array([.object(["tap": .string("A"), "swipe": .string("up"), "type": .string("B")])])]
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:152:        XCTAssertTrue(try textContent(of: result).contains("Step 1: more than one action (tap, swipe, type)"))
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:201:        driver.swipe = { _ in throw URLError(.networkConnectionLost) }
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:203:            .object(["tap": .string("Gesture Lab")]), .object(["swipe": .string("up")]),
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:208:        XCTAssertTrue(text.hasPrefix("Error: Step 2 (swipe up) failed: The runner session's driver is not answering"), text)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:66:        assertToolError(try await UITools.swipe(driver: driver, arguments: [:]), contains: "'direction' is required")
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:281:            (session, "grantiva_swipe", "Error: Invalid argument: 'direction' is required."),
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:327:        let swipe = try await registry.call(name: "grantiva_swipe", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:328:        XCTAssertEqual(swipe.isError, true)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:329:        XCTAssertFalse(text(swipe).contains("'direction' is required"), text(swipe))
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:196:                    swipe: up
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:203:        XCTAssertEqual(steps[0].swipe, "up")
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:220:                  - swipe: up
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:245:    // C15: an unknown swipe direction is a config error naming file, screen, and value.
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:246:    func testUnknownSwipeDirectionIsRejected() throws {
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:252:                  - swipe: diagonal
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:257:                    #"grantiva.yml: screen "Diag": swipe direction "diagonal" is not one of up, down, left, right"#
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:264:    func testSwipeDirectionsAreCaseInsensitive() throws {
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:270:                  - swipe: Up
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:271:                  - swipe: DOWN
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:275:        XCTAssertEqual(steps.map(\.swipe), ["Up", "DOWN"])
+Tests/GrantivaMCPTests/UIToolsTests.swift:82:    // MARK: - swipe
+Tests/GrantivaMCPTests/UIToolsTests.swift:84:    func testSwipeForwardsTheDirection() async throws {
+Tests/GrantivaMCPTests/UIToolsTests.swift:86:        let result = try await UITools.swipe(
+Tests/GrantivaMCPTests/UIToolsTests.swift:91:        XCTAssertEqual(recorder.calls, ["swipe(left)", "hierarchy"])
+Tests/GrantivaMCPTests/UIToolsTests.swift:92:        XCTAssertTrue(try textContent(of: result).hasPrefix("Swiped left."))
+Tests/GrantivaMCPTests/UIToolsTests.swift:95:    func testSwipeWithoutDirectionIsRejectedBeforeReachingWDA() async throws {
+Tests/GrantivaMCPTests/UIToolsTests.swift:97:        let result = try await UITools.swipe(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: [:])
+Tests/GrantivaMCPTests/UIToolsTests.swift:103:    func testSwipeWithANonStringDirectionIsRejected() async throws {
+Tests/GrantivaMCPTests/UIToolsTests.swift:105:        let result = try await UITools.swipe(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: ["direction": .bool(true)])
+Tests/GrantivaMCPTests/MCPServerTests.swift:398:                ("grantiva_swipe", ["direction": .string("up")]),
+Sources/GrantivaCore/Runner/FlowNormalizer.swift:8:/// - `swipe: {from: X}` becomes `swipe: {selector: X}` (the runner drops `from`
+Sources/GrantivaCore/Runner/FlowNormalizer.swift:9:///   and would swipe across the screen centre instead of on the element).
+Sources/GrantivaCore/Runner/FlowNormalizer.swift:25:        if var swipe = dictionary["swipe"] as? [String: Any], let from = swipe["from"] {
+Sources/GrantivaCore/Runner/FlowNormalizer.swift:26:            swipe.removeValue(forKey: "from")
+Sources/GrantivaCore/Runner/FlowNormalizer.swift:27:            if swipe["selector"] == nil {
+Sources/GrantivaCore/Runner/FlowNormalizer.swift:28:                swipe["selector"] = from
+Sources/GrantivaCore/Runner/FlowNormalizer.swift:30:            dictionary["swipe"] = swipe
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:54:    func testSwipeRoutesToTheSwipeHandler() async throws {
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:56:        _ = try await call("grantiva_swipe", ["direction": .string("right")], recorder: recorder)
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:57:        XCTAssertEqual(recorder.calls.first, "swipe(right)")
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:70:            ["steps": .array([.object(["swipe": .string("down")])])],
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:73:        XCTAssertEqual(recorder.calls.first, "swipe(down)")
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:103:            ("grantiva_swipe", [:]),
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:116:        let result = try await call("grantiva_swipe", ["direction": .string("up")])
+Tests/GrantivaMCPTests/ToolAnnotationsTests.swift:37:            "grantiva_screenshot", "grantiva_tap", "grantiva_swipe", "grantiva_type",
+Sources/GrantivaCore/WDA/WDAClient.swift:13:    public var swipe: @Sendable (_ direction: String) async throws -> Void
+Sources/GrantivaCore/WDA/WDAClient.swift:26:        swipe: @escaping @Sendable (_ direction: String) async throws -> Void,
+Sources/GrantivaCore/WDA/WDAClient.swift:36:        self.swipe = swipe
+Sources/GrantivaCore/WDA/WDAClient.swift:164:            swipe: { direction in
+Sources/GrantivaCore/WDA/WDAClient.swift:166:                // Get window size first for calculating swipe coordinates
+Sources/GrantivaCore/WDA/WDAClient.swift:191:                    throw GrantivaError.invalidArgument("Invalid swipe direction \"\(direction)\". Use: up, down, left, right")
+Sources/GrantivaCore/WDA/WDAClient.swift:211:                    throw failure(data, fallback: GrantivaError.commandFailed("Failed to swipe \(direction)", 1))
+Sources/GrantivaCore/WDA/WDAClient.swift:410:        swipe: { _ in throw GrantivaError.commandFailed("DriverClient.failing", 1) },
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:96:        ("grantiva_swipe", ["direction": .string("up")]),
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:579:    func testASwipeWithADurationIsRefusedBeforeTouchingTheDevice() async throws {
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:582:        var step = GrantivaConfig.Screen.Step(swipe: "up")
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:583:        step.swipeDuration = 400
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:590:        XCTAssertTrue(try textContent(of: result).contains("a swipe with a duration"))
+Sources/GrantivaCore/Runner/FlowGenerator.swift:75:                    if let direction = step.swipe {
+Sources/GrantivaCore/Runner/FlowGenerator.swift:76:                        lines.append("- swipe:")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:77:                        if let start = step.swipeStart, let end = step.swipeEnd {
+Sources/GrantivaCore/Runner/FlowGenerator.swift:81:                            lines.append("    direction: \(maestroSwipeDirection(direction))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:83:                        if let duration = step.swipeDuration {
+Sources/GrantivaCore/Runner/FlowGenerator.swift:86:                        if let from = step.swipeFrom {
+Sources/GrantivaCore/Runner/FlowGenerator.swift:87:                            if step.swipeFromById {
+Sources/GrantivaCore/Runner/FlowGenerator.swift:230:    /// Upper bound for the settle wait after a tap, swipe, or typed text and
+Sources/GrantivaCore/Runner/FlowGenerator.swift:316:    private static func maestroSwipeDirection(_ direction: String) -> String {
+Sources/GrantivaCore/Runner/RunnerSession.swift:941:        } else if let direction = step.swipe {
+Sources/GrantivaCore/Runner/RunnerSession.swift:942:            return step.swipeFrom.map { "Swipe \(direction) from \"\($0)\"" } ?? "Swipe \(direction)"

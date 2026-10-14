@@ -1,0 +1,12 @@
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:221:        XCTAssertFalse(simctl.commands.contains { $0.contains("simctl shutdown") }, "\(simctl.commands)")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:239:        XCTAssertTrue(simctl.commands.contains("xcrun simctl shutdown 'MINE-1'"))
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:265:        XCTAssertFalse(simctl.commands.contains { $0.contains("simctl shutdown") || $0.contains("simctl delete") }, "\(simctl.commands)")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:420:        XCTAssertFalse(simctl.commands.contains { $0.contains("simctl shutdown") || $0.contains("simctl delete") }, "\(simctl.commands)")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:516:        XCTAssertTrue(simctl.commands.contains { $0.hasPrefix("xcrun simctl shutdown ") })
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:686:            case command.hasPrefix("xcrun simctl shutdown "):
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:821:    /// A dead pid's serial reused by someone else's emulator is not ours.
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:840:    /// C02 / AND-F03: dead pid, same AVD name, live serial. An AVD name does
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:906:            // emulator-5554: dead pid, serial listed; refused and dropped
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:104:    /// already booted with no Grantiva record was booted by someone else (Xcode,
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:309:                _ = try? await execute("xcrun simctl shutdown \(shellQuoted(udid))")
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:402:                _ = try await execute("xcrun simctl shutdown \(shellQuoted(record.udid))")

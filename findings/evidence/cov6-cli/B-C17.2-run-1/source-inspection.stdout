@@ -1,0 +1,175 @@
+Tests/GrantivaCLITests/HierarchyCommandTests.swift:274:        XCTAssertThrowsError(try HierarchyCommand.parse(["--format", "bogus"])) { error in
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:271:        XCTAssertThrowsError(try ConsoleAlertsCommand.NotificationsCommand.SetCommand.parse(["bogus=on"]))
+Tests/GrantivaCLITests/DumpHierarchyCommandTests.swift:93:    func testABogusFormatIsAUsageErrorNamingTheChoices() {
+Tests/GrantivaCLITests/DumpHierarchyCommandTests.swift:94:        XCTAssertThrowsError(try DumpHierarchyCommand.parse(["--format", "bogus"])) { error in
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:1026:        let image = "system-images;android-99;bogus;arm64-v8a"
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:1029:            .success("WARNING: The SDK Manager CLI tool (sdkmanager) is deprecated.\nPackage system-images/android-99/bogus/arm64-v8a not found."),
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:1036:            XCTAssertTrue(message.hasPrefix("sdkmanager could not install \(image): Package system-images/android-99/bogus/arm64-v8a not found."), message)
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:10:final class ScriptToolsTests: XCTestCase {
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:26:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:49:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:60:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:71:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:81:            arguments: ["steps": .array([.object(["bogus": .int(1)]), .int(5)])]
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:83:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:86:        XCTAssertTrue(text.contains("Step 1: unknown action 'bogus'"), text)
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:96:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:109:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:120:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:131:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:150:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:161:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:180:        XCTAssertEqual(outcome.result.isError, true)
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:192:        XCTAssertEqual(outcome.result.isError, true)
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:205:        XCTAssertEqual(outcome.result.isError, true)
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:220:        XCTAssertEqual(outcome.result.isError, true)
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:31:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:37:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:43:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:100:    func testValidationErrorsAreReturnedThroughDispatchWithIsErrorSet() async throws {
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:109:            XCTAssertEqual(result.isError, true, "\(name) should report a tool error for empty arguments")
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:117:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:122:        // error an agent cannot act on. They now return isError like every other tool, so
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:125:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:7:/// `CallTool.Result` with `isError: true`, which the model can read and correct. A
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:21:        XCTAssertEqual(result.isError, true, "expected an isError result", file: file, line: line)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:72:    /// transport failure: it must come back as an isError result.
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:88:        XCTAssertEqual(ensure.isError, true)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:90:        XCTAssertEqual(delete.isError, true)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:93:    // MARK: - K53: every tool failure is an isError result, from one place
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:122:    func testEveryNonSessionToolFailureIsAnIsErrorResult() async throws {
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:142:            XCTAssertEqual(result.isError, true, name)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:157:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:210:    func testAnAppThatIsNotRunningIsAnIsErrorWithTheToolsRemedy() async throws {
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:217:        XCTAssertEqual(tap.isError, true)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:224:        XCTAssertEqual(script.isError, true)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:287:            XCTAssertEqual(result.isError, true, name)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:301:            XCTAssertEqual(missing.isError, true)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:304:            XCTAssertEqual(wrong.isError, true)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:308:            XCTAssertNil(empty.isError)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:312:            XCTAssertEqual(noSession.isError, true)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:320:        let result = try await registry.call(name: "grantiva_bogus_tool", arguments: [:], server: MCPTestSupport.disconnectedServer())
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:321:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:322:        XCTAssertEqual(text(result), "Error: Unknown tool: grantiva_bogus_tool")
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:328:        XCTAssertEqual(swipe.isError, true)
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:332:    /// Every tool called with no arguments: an isError text starts with
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:348:                guard result.isError == true else { continue }
+Tests/GrantivaMCPTests/UIToolsTests.swift:20:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/UIToolsTests.swift:33:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/UIToolsTests.swift:47:        XCTAssertNil(result.isError, text)
+Tests/GrantivaMCPTests/UIToolsTests.swift:54:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/UIToolsTests.swift:62:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/UIToolsTests.swift:78:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/UIToolsTests.swift:90:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/UIToolsTests.swift:98:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/UIToolsTests.swift:106:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/UIToolsTests.swift:118:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/UIToolsTests.swift:126:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/UIToolsTests.swift:133:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/UIToolsTests.swift:146:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/UIToolsTests.swift:284:            arguments: ["format": .string("bogus")]
+Tests/GrantivaMCPTests/UIToolsTests.swift:426:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/UIToolsTests.swift:451:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:72:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:144:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:152:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/MCPTransportTests.swift:426:    /// 1 s and then returns an isError result, and returns the reply ids.
+Tests/GrantivaMCPTests/MCPTransportTests.swift:435:            return CallTool.Result(content: [.text(text: "Error: late", annotations: nil, _meta: nil)], isError: true)
+Tests/GrantivaMCPTests/MCPTransportTests.swift:486:        let answer10 = Data(#"{"jsonrpc":"2.0","id":10,"result":{"content":[],"isError":true}}"#.utf8)
+Tests/GrantivaMCPTests/VRTToolsTests.swift:21:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/VRTToolsTests.swift:26:            XCTAssertEqual(VRTTools.compareFailureResult(message: message).isError, true)
+Tests/GrantivaMCPTests/VRTToolsTests.swift:88:            XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/VRTToolsTests.swift:131:        XCTAssertTrue(results.allSatisfy { $0.isError == nil })
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:113:                XCTFail("\(name) threw (a JSON-RPC error for the client) instead of returning isError: \(error)")
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:116:            XCTAssertEqual(result.isError, true, name)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:140:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:154:                XCTFail("\(name) threw instead of returning isError: \(error)")
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:157:            XCTAssertEqual(result.isError, true, name)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:169:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:198:            XCTAssertEqual(result.isError, true, name)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:211:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:226:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:239:        XCTAssertNil(result.isError, text)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:289:        XCTAssertNil(result.isError, text)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:328:            XCTAssertNil(result.isError, text)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:350:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:364:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:394:        XCTAssertNil(result.isError, text, file: file, line: line)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:414:        XCTAssertEqual(byText.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:425:        XCTAssertEqual(partial.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:440:        XCTAssertEqual(miss.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:445:        XCTAssertEqual(partial.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:460:        XCTAssertEqual(byName.isError, true, "an iOS text selector does not read name")
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:470:        XCTAssertEqual(onIOS.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:472:        XCTAssertEqual(onAndroid.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:485:        XCTAssertEqual(miss.isError, true, "iOS ids have no last-component rule")
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:496:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:525:        XCTAssertEqual(textIsNotId.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:529:        XCTAssertEqual(exactMiss.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:557:        XCTAssertEqual(exactErrorResult.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:573:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:589:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:600:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:612:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:624:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:643:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ArgumentValidationTests.swift:24:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ArgumentValidationTests.swift:33:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ArgumentValidationTests.swift:42:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ArgumentValidationTests.swift:58:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ArgumentValidationTests.swift:68:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/ArgumentValidationTests.swift:84:            XCTAssertEqual(result.isError, true, "Expected ensure to reject \(arguments.keys.sorted())")
+Tests/GrantivaMCPTests/ArgumentValidationTests.swift:93:            XCTAssertEqual(result.isError, true, "Expected delete to reject \(arguments)")
+Sources/GrantivaCLI/DriverCommand.swift:1314:    /// Checked while parsing, so `--format bogus` is a usage error before any
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:66:        XCTAssertEqual(missing.isError, true)
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:69:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:77:        XCTAssertEqual(missing.isError, true)
+Tests/GrantivaMCPTests/EmulatorToolsTests.swift:85:        XCTAssertEqual(result.isError, true)
+Sources/GrantivaMCP/ToolRegistry.swift:81:    /// Every failure of every tool comes back as an `isError` result; only
+Sources/GrantivaMCP/ToolRegistry.swift:198:                isError: true
+Sources/GrantivaMCP/ToolRegistry.swift:230:        return CallTool.Result(content: [.text(text: "Error: \(message)", annotations: nil, _meta: nil)], isError: true)
+Sources/GrantivaMCP/ToolRegistry.swift:237:            isError: true
+Sources/GrantivaMCP/ToolRegistry.swift:267:        func changed(_ result: CallTool.Result) -> (CallTool.Result, Bool) { (result, result.isError != true) }
+Sources/GrantivaMCP/Tools/SimTools.swift:129:                isError: true
+Sources/GrantivaMCP/Tools/SimTools.swift:145:                isError: true
+Sources/GrantivaMCP/Tools/BuildTools.swift:143:        CallTool.Result(content: [.text(text: "Error: \(message)", annotations: nil, _meta: nil)], isError: true)
+Sources/GrantivaMCP/Tools/BuildTools.swift:172:        // A failure is an isError result, and every such text starts with `Error: `.
+Sources/GrantivaMCP/Tools/BuildTools.swift:185:            isError: !result.success ? true : nil
+Sources/GrantivaMCP/Tools/BuildTools.swift:217:                isError: true
+Sources/GrantivaMCP/Tools/BuildTools.swift:284:                isError: true
+Sources/GrantivaMCP/Tools/BuildTools.swift:308:            isError: !result.success ? true : nil
+Sources/GrantivaMCP/Tools/ScriptTools.swift:81:                isError: true
+Sources/GrantivaMCP/Tools/ScriptTools.swift:87:                isError: true
+Sources/GrantivaMCP/Tools/ScriptTools.swift:104:            return (CallTool.Result(content: [.text(text: text, annotations: nil, _meta: nil)], isError: true), 0)
+Sources/GrantivaMCP/Tools/ScriptTools.swift:119:                return (CallTool.Result(content: [.text(text: text, annotations: nil, _meta: nil)], isError: true), index)
+Sources/GrantivaMCP/Tools/ScriptTools.swift:135:            return (CallTool.Result(content: [.text(text: text, annotations: nil, _meta: nil)], isError: true), steps.count)
+Sources/GrantivaMCP/Tools/VRTTools.swift:88:        return CallTool.Result(content: [.text(text: "Error: \(text)", annotations: nil, _meta: nil)], isError: true)
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:29:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:42:        let rejected = try await call(registry, "grantiva_script", ["steps": .array([.object(["bogus": .int(1)])])], notified)
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:43:        XCTAssertEqual(rejected.isError, true)
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:45:        XCTAssertEqual(missing.isError, true)
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:49:        XCTAssertNil(tapped.isError)
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:68:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:79:        XCTAssertEqual(result.isError, true)
+Sources/GrantivaMCP/Tools/UITools.swift:154:                    isError: true
+Sources/GrantivaMCP/Tools/UITools.swift:177:                isError: true
+Sources/GrantivaMCP/Tools/UITools.swift:186:                isError: true
+Sources/GrantivaMCP/Tools/UITools.swift:203:                isError: true
+Sources/GrantivaMCP/Tools/UITools.swift:213:                isError: true
+Sources/GrantivaMCP/Tools/EmulatorTools.swift:80:        CallTool.Result(content: [.text(text: "Error: \(AndroidSDK.missingMessage)", annotations: nil, _meta: nil)], isError: true)
+Sources/GrantivaMCP/Tools/EmulatorTools.swift:84:        CallTool.Result(content: [.text(text: "Error: \(message)", annotations: nil, _meta: nil)], isError: true)
+Sources/GrantivaCore/Android/GradleBuildRunner.swift:176:            if isErrorLine(line) { errors.append(line) }
+Sources/GrantivaCore/Android/GradleBuildRunner.swift:184:    static func isErrorLine(_ line: String) -> Bool {
+Tests/GrantivaCLITests/RunCommandTests.swift:961:        XCTAssertThrowsError(try RunCommand.parse(["--snapshot", "bogus"])) { error in
+Tests/GrantivaMCPTests/MCPServerTests.swift:406:                XCTAssertEqual(result.isError, true, name)
+Tests/GrantivaMCPTests/MCPServerTests.swift:424:            XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/MCPServerTests.swift:430:            XCTAssertEqual(capture.isError, true)
+Tests/GrantivaMCPTests/BuildToolsTests.swift:14:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/BuildToolsTests.swift:41:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/BuildToolsTests.swift:51:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/BuildToolsTests.swift:63:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/BuildToolsTests.swift:74:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/BuildToolsTests.swift:81:        XCTAssertEqual(result.isError, true)
+Tests/GrantivaMCPTests/BuildToolsTests.swift:164:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/BuildToolsTests.swift:213:        XCTAssertNil(result.isError)
+Tests/GrantivaMCPTests/BuildToolsTests.swift:233:        XCTAssertEqual(result.isError, true)

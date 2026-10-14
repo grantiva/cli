@@ -1,0 +1,87 @@
+Tests/GrantivaCLITests/AndroidCommandTests.swift:76:        XCTAssertTrue(fake.calls.contains("logStream(com.fake,Fake)"), "\(fake.calls)")
+Tests/GrantivaCLITests/AndroidCommandTests.swift:217:    func testRunOnAndroidStartsTheLogStreamAfterInstallWithTheBuiltApplicationID() async throws {
+Tests/GrantivaCLITests/AndroidCommandTests.swift:225:        let stream = try XCTUnwrap(calls.firstIndex(of: "logStream(com.fake.built,-)"), "\(calls)")
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:79:    func logStream(deviceID: String, appID: String?, filter: String?, level: LogStreamLevel?) async throws -> LogStreamCommand {
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:80:        record("logStream(\(appID ?? "-"),\(filter ?? "-"))"); return LogStreamCommand(executable: "/bin/echo", arguments: ["fake log"])
+Tests/GrantivaCLITests/RunCommandTests.swift:222:    /// A08: `--logs-level` is validated against the documented values.
+Tests/GrantivaCLITests/RunCommandTests.swift:224:        XCTAssertEqual(try RunCommand.parse(["--logs-level", "default"]).logsLevel, .default)
+Tests/GrantivaCLITests/RunCommandTests.swift:225:        XCTAssertEqual(try RunCommand.parse(["--logs-level", "info"]).logsLevel, .info)
+Tests/GrantivaCLITests/RunCommandTests.swift:226:        XCTAssertEqual(try RunCommand.parse(["--logs-level", "debug"]).logsLevel, .debug)
+Tests/GrantivaCLITests/RunCommandTests.swift:228:        XCTAssertThrowsError(try RunCommand.parse(["--logs-level", "warning"])) { error in
+Tests/GrantivaCLITests/RunCommandTests.swift:508:    func testLogStreamNarrationNamesThePredicateOnIOSAndTheTagOnAndroid() {
+Tests/GrantivaCLITests/RunCommandTests.swift:510:            RunCommand.logStreamNarration(platform: .ios, predicate: "subsystem == \"com.x\"", tag: nil),
+Tests/GrantivaCLITests/RunCommandTests.swift:514:            RunCommand.logStreamNarration(platform: .ios, predicate: "eventMessage CONTAINS \"x\"", tag: nil),
+Tests/GrantivaCLITests/RunCommandTests.swift:517:        XCTAssertEqual(RunCommand.logStreamNarration(platform: .ios, predicate: nil, tag: nil), "Streaming simulator logs")
+Tests/GrantivaCLITests/RunCommandTests.swift:518:        XCTAssertEqual(RunCommand.logStreamNarration(platform: .android, predicate: nil, tag: nil), "Streaming emulator logs")
+Tests/GrantivaCLITests/RunCommandTests.swift:519:        XCTAssertEqual(RunCommand.logStreamNarration(platform: .android, predicate: nil, tag: "MyTag"), "Streaming emulator logs (tag: MyTag)")
+Sources/GrantivaCLI/RunCommand.swift:33:    var logsLevel: LogStreamLevel?
+Sources/GrantivaCLI/RunCommand.swift:249:    static func logStreamNarration(platform: Platform, predicate: String?, tag: String?) -> String {
+Sources/GrantivaCLI/RunCommand.swift:432:        func startLogStream(appID: String) async -> LogStreamer? {
+Sources/GrantivaCLI/RunCommand.swift:435:            let streamer = LogStreamer()
+Sources/GrantivaCLI/RunCommand.swift:437:                let stream = try await device.logStream(
+Sources/GrantivaCLI/RunCommand.swift:443:                log(Self.logStreamNarration(platform: platform, predicate: predicate, tag: logsTag))
+Sources/GrantivaCLI/RunCommand.swift:458:        var logStreamer: LogStreamer?
+Sources/GrantivaCLI/RunCommand.swift:459:        defer { logStreamer?.stop() }
+Sources/GrantivaCLI/RunCommand.swift:511:            logStreamer = await startLogStream(appID: bid)
+Sources/GrantivaCLI/Options.swift:99:extension LogStreamLevel: ExpressibleByArgument {}
+Tests/GrantivaMCPTests/MCPTestSupport.swift:171:    func logStream(deviceID: String, appID: String?, filter: String?, level: LogStreamLevel?) async throws -> LogStreamCommand { LogStreamCommand(executable: "/bin/echo", arguments: []) }
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:145:    func testLogStreamStartsNowWithoutClearingAndFiltersByUID() async throws {
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:147:        let command = try await platform(shell).logStream(deviceID: "emulator-5554", appID: "com.example.app", filter: "MyTag", level: nil)
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:148:        XCTAssertFalse(shell.commands.contains { $0.contains("logcat -c") }, "\(shell.commands)")
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:155:    func testLogStreamMapsLevelsToLogcatPriorities() async throws {
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:156:        let expected: [(LogStreamLevel?, String)] = [(nil, "*:I"), (.default, "*:I"), (.info, "*:I"), (.debug, "*:D")]
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:159:            let stream = try await platform(shell).logStream(deviceID: "emulator-5554", appID: "com.example", filter: nil, level: level)
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:161:            XCTAssertFalse(shell.commands.contains { $0.contains("logcat -c") })
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:165:    func testLogStreamFallsBackToHostTimeWhenTheDeviceClockCannotBeRead() async throws {
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:167:        let stream = try await platform(shell).logStream(deviceID: "emulator-5554", appID: "com.example", filter: "T", level: .debug)
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:178:    func testLogStreamWithoutAnInstalledAppFails() async {
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:181:            _ = try await platform(shell).logStream(deviceID: "emulator-5554", appID: "com.example.app", filter: nil, level: nil)
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:286:    func testLogStreamWithALevelAndNoTagFiltersEveryTagAtThatPriority() async throws {
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:288:        let stream = try await platform(shell).logStream(deviceID: "emulator-5554", appID: "com.example", filter: nil, level: .debug)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:5:final class LogStreamerTests: XCTestCase {
+Tests/GrantivaCoreTests/LogStreamerTests.swift:7:        let original = LogStreamer.ProcessIdentity(seconds: 100, microseconds: 1)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:8:        let replacement = LogStreamer.ProcessIdentity(seconds: 100, microseconds: 2)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:12:        let owner = LogStreamer.OwnedLogChildren(
+Tests/GrantivaCoreTests/LogStreamerTests.swift:29:        let original = LogStreamer.ProcessIdentity(seconds: 100, microseconds: 1)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:30:        let replacement = LogStreamer.ProcessIdentity(seconds: 100, microseconds: 2)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:34:        let owner = LogStreamer.OwnedLogChildren(
+Tests/GrantivaCoreTests/LogStreamerTests.swift:50:        let original = LogStreamer.ProcessIdentity(seconds: 100, microseconds: 1)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:53:        let owner = LogStreamer.OwnedLogChildren(
+Tests/GrantivaCoreTests/LogStreamerTests.swift:70:        XCTAssertThrowsError(try LogStreamer.processSnapshot(
+Tests/GrantivaCoreTests/LogStreamerTests.swift:81:        let original = LogStreamer.ProcessIdentity(seconds: 100, microseconds: 1)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:86:        let owner = LogStreamer.OwnedLogChildren(
+Tests/GrantivaCoreTests/LogStreamerTests.swift:91:                return try LogStreamer.processSnapshot(
+Tests/GrantivaCoreTests/LogStreamerTests.swift:112:        let actual = try LogStreamer.processSnapshot(
+Tests/GrantivaCoreTests/LogStreamerTests.swift:119:        let owner = LogStreamer.OwnedLogChildren(deviceID: "DEVICE", marker: "grantiva-log-owned", snapshot: { _ in "" })
+Tests/GrantivaCoreTests/LogStreamerTests.swift:131:        let streamer = LogStreamer()
+Tests/GrantivaCoreTests/LogStreamerTests.swift:154:        let streamer = LogStreamer()
+Tests/GrantivaCoreTests/LogStreamerTests.swift:216:        let streamer = LogStreamer()
+Tests/GrantivaCoreTests/LogStreamerTests.swift:227:    func testTerminationCleanupsKillARunningLogStream() throws {
+Tests/GrantivaCoreTests/LogStreamerTests.swift:228:        let streamer = LogStreamer()
+Tests/GrantivaCoreTests/LogStreamerTests.swift:240:        let streamer = LogStreamer()
+Tests/GrantivaCoreTests/LogStreamerTests.swift:259:        let streamer = LogStreamer()
+Tests/GrantivaCoreTests/LogStreamerTests.swift:317:        let decoder = PrefixedLineDecoder(dropping: LogStreamer.isStreamBanner)
+Sources/GrantivaCore/Android/AndroidPlatform.swift:211:    public func logStream(deviceID: String, appID: String?, filter: String?, level: LogStreamLevel?) async throws -> LogStreamCommand {
+Sources/GrantivaCore/Android/AndroidPlatform.swift:227:        return LogStreamCommand(executable: adb.path, arguments: args)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:608:    func logStream(deviceID: String, appID: String?, filter: String?, level: LogStreamLevel?) async throws -> LogStreamCommand { fatalError() }
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:299:    func logStream(deviceID: String, appID: String?, filter: String?, level: LogStreamLevel?) async throws -> LogStreamCommand { fatalError() }
+Sources/GrantivaCore/Platform/IOSPlatform.swift:127:    public func logStream(deviceID: String, appID: String?, filter: String?, level: LogStreamLevel?) async throws -> LogStreamCommand {
+Sources/GrantivaCore/Platform/IOSPlatform.swift:140:        return LogStreamCommand(executable: "/usr/bin/xcrun", arguments: args)
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:61:    func testLogStreamBuildsTheSimctlSpawnCommand() async throws {
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:67:        let command = try await platform.logStream(deviceID: "ABC", appID: "com.example", filter: nil, level: .debug)
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:77:        let explicit = try await platform.logStream(deviceID: "ABC", appID: nil, filter: "subsystem == \"x\"", level: nil)
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:79:        let none = try await platform.logStream(deviceID: "ABC", appID: nil, filter: nil, level: nil)
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:83:    func testLogStreamFallsBackToTheBundlePredicateWhenTheAppIsNotInstalled() async throws {
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:86:            .logStream(deviceID: "ABC", appID: "com.example", filter: nil, level: nil)
+Tests/GrantivaCoreTests/RunnerSessionAppIdTests.swift:128:            func logStream(deviceID: String, appID: String?, filter: String?, level: LogStreamLevel?) async throws -> LogStreamCommand { fatalError() }
+Sources/GrantivaCore/Platform/DevicePlatform.swift:43:/// `--logs-level`. iOS passes it to `log stream --level`; Android maps it to
+Sources/GrantivaCore/Platform/DevicePlatform.swift:45:public enum LogStreamLevel: String, CaseIterable, Sendable {
+Sources/GrantivaCore/Platform/DevicePlatform.swift:59:public struct LogStreamCommand: Sendable, Equatable {
+Sources/GrantivaCore/Platform/DevicePlatform.swift:134:    func logStream(deviceID: String, appID: String?, filter: String?, level: LogStreamLevel?) async throws -> LogStreamCommand
+Sources/GrantivaCore/Runner/LogStreamer.swift:83:public final class LogStreamer: @unchecked Sendable {
+Sources/GrantivaCore/Runner/LogStreamer.swift:124:        var snapshot: (Date) throws -> String = { try LogStreamer.processSnapshot(deadline: $0) }
+Sources/GrantivaCore/Runner/LogStreamer.swift:125:        var identities: () -> [Int32: ProcessIdentity] = LogStreamer.processIdentities
+Sources/GrantivaCore/Runner/LogStreamer.swift:126:        var identity: (Int32) -> ProcessIdentity? = LogStreamer.processIdentity
+Sources/GrantivaCore/Runner/LogStreamer.swift:215:    /// platform's `LogStreamCommand`). Non-blocking. Call `stop()` to tear down.
+Sources/GrantivaCore/Runner/LogStreamer.swift:420:extension LogStreamer {
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:253:    func logStream(deviceID: String, appID: String?, filter: String?, level: LogStreamLevel?) async throws -> LogStreamCommand { fatalError() }

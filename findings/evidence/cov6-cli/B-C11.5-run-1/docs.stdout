@@ -1,0 +1,44 @@
+OVERVIEW: Start the Grantiva MCP server for AI agent integration.
+
+The server starts without a runner session or a config file. Device tools
+(grantiva_tap, grantiva_swipe, grantiva_type, grantiva_screenshot,
+grantiva_a11y_*, grantiva_script) need a runner session and return an error
+until one exists (while one is starting, an error saying so and to retry in a
+few seconds); they pick it up on the next call. The session is the project's
+.grantiva/session.json (grantiva runner start), or a grantiva run --keep-alive
+or runner start session started from the same project directory for the same
+platform. Sessions from other projects or the other platform are never used.
+Simulator, emulator, build, context, and VRT tools work without a session.
+
+USAGE: grantiva mcp [--project-dir <project-dir>] [--platform <platform>]
+
+OPTIONS:
+  --project-dir <project-dir>
+                          Project directory (default: the current directory).
+                          Its grantiva.yml or grantiva-android.yml and runner
+                          session are used when present.
+  --platform <platform>   Target platform: ios or android. Defaults to
+                          whichever of grantiva.yml / grantiva-android.yml
+                          exists, else the project files in this directory.
+                          GRANTIVA_PLATFORM also sets it. (values: ios, android)
+  --version               Show the version.
+  -h, --help              Show help information.
+
+
+## Recording
+
+    grantiva record --duration 5 --frames-at 0,1000,3000
+
+Records with `screenrecord` to `.grantiva/recordings/recording.mp4` and extracts frames
+as PNGs. Android caps a recording at 180 seconds; longer durations are refused.
+`screenrecord` writes a frame only when the screen changes; Grantiva holds the last frame
+until `--duration`, so a static screen still yields a video of the requested length and a PNG
+for every timestamp (`actualMilliseconds` is the frame on screen at that moment). When the
+last frame was on screen for more than half of the requested duration (the screen last changed
+before the halfway point), `record` prints a note on stderr naming when that frame appears:
+expected for an idle screen, but a device that disconnected mid-recording looks the same. This
+holds whether Grantiva stretched the last frame or `screenrecord` already gave it a long sample
+(the note then says so and gives the track's length).
+When `screenrecord` stops it gives its last frame the previous frame's duration, so a recording
+can run past `--duration`; Grantiva then trims that last frame so the video ends at `--duration`.
+A last frame that itself starts after `--duration` is left as recorded (the `Held frame:` line

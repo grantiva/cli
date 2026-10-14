@@ -1,0 +1,7 @@
+# MCP-067 candidate5 clause assessment
+
+Verdict: **PASS**.
+
+Expected: isError naming the file and where it was looked for: `grantiva.yml not found at <dir>/grantiva.yml. Create one with grantiva init.` (Android: `grantiva-android.yml ... grantiva init --platform android`) (docs/mcp.md:24-26; brief R04); without screens: `No screens configured in grantiva.yml`
+
+Fresh candidate5 documentation or device-free MCP protocol captures retain exact identity/argv/cwd/exit/raw; explicit review confirms the required no-session/config/platform response without live target work. Evidence: `MCP-067-run-1/android-noscreens.command.json`, `MCP-067-run-1/ios-noscreens.command.json`, `MCP-067-run-1/android.command.json`, `MCP-067-run-1/ios.command.json`.

@@ -1,0 +1,10 @@
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:79:                "Invalid argument: No scheme specified. Pass --scheme, set it in grantiva.yml, or use --app-file to provide a pre-built binary. Found: Landmarks, Landmarks (UI Testing)."
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:142:                XCTAssertTrue(message.contains("Pass --scheme"), message)
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:146:        XCTAssertEqual(ResolvedProject.noSchemeMessage(acceptsAppFile: false), "No scheme specified. Pass --scheme or set it in grantiva.yml.")
+Tests/GrantivaCLITests/InitIOSTests.swift:7:    private let placeholderScheme = "No Xcode project found; scheme \"MyApp\" is a placeholder. Edit grantiva.yml or pass --scheme."
+Tests/GrantivaCLITests/InitIOSTests.swift:66:        XCTAssertEqual(warnings, ["Several schemes found: Landmarks, Landmarks (UI Testing). Set scheme in grantiva.yml or pass --scheme."])
+Sources/GrantivaCLI/InitCommand.swift:133:            warnings.append("Several schemes found: \(found). Set scheme in grantiva.yml or pass --scheme.")
+Sources/GrantivaCLI/InitCommand.swift:137:                "Could not list the schemes of the Xcode project; scheme \"\(schemeName)\" is a guess. Edit grantiva.yml or pass --scheme."
+Sources/GrantivaCLI/InitCommand.swift:141:            warnings.append("No Xcode project found; scheme \"MyApp\" is a placeholder. Edit grantiva.yml or pass --scheme.")
+Sources/GrantivaCore/Config/ProjectResolver.swift:60:            ? "No scheme specified. Pass --scheme, set it in grantiva.yml, or use --app-file to provide a pre-built binary."
+Sources/GrantivaCore/Config/ProjectResolver.swift:61:            : "No scheme specified. Pass --scheme or set it in grantiva.yml."

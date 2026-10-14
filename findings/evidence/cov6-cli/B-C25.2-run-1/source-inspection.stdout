@@ -1,0 +1,304 @@
+Sources/GrantivaAPI/OrgEndpoints.swift:31:    static func delete(appRef: String) -> Endpoint<EmptyBody, OrgDeleteResponse> {
+Sources/GrantivaAPI/OrgEndpoints.swift:70:    static func delete(claimRef: String) -> Endpoint<EmptyBody, OrgDeleteResponse> {
+Sources/GrantivaAPI/RangeEndpoints.swift:29:    static func delete(project: String, branch: String, screen: String) -> Endpoint<EmptyBody, EmptyResponse> {
+Sources/GrantivaAPI/ConsoleEndpoints.swift:38:    static func delete(flagRef: String) -> Endpoint<EmptyBody, EmptyResponse> {
+Sources/GrantivaAPI/ConsoleEndpoints.swift:79:    static func deleteOverride(flagRef: String, overrideId: String) -> Endpoint<EmptyBody, EmptyResponse> {
+Sources/GrantivaAPI/ConsoleEndpoints.swift:108:    static func delete(envId: String) -> Endpoint<EmptyBody, EmptyResponse> {
+Sources/GrantivaAPI/ConsoleEndpoints.swift:136:    static func delete(flagId: String, ruleId: String) -> Endpoint<EmptyBody, EmptyResponse> {
+Sources/GrantivaAPI/ReleaseNotesClient.swift:114:    static func delete(noteId: String) -> Endpoint<EmptyBody, EmptyResponse> {
+Sources/GrantivaAPI/OrgAdminClient.swift:303:    static func deleteWebhook(_ id: String) -> Endpoint<EmptyBody, EmptyResponse> { Endpoint(path: "\(prefix)/webhooks/\(EndpointPath.segment(id))", method: .delete) }
+Sources/GrantivaAPI/OrgAdminClient.swift:311:    static func deleteRule(_ id: String) -> Endpoint<EmptyBody, EmptyResponse> { Endpoint(path: "\(prefix)/risk-alerts/rules/\(EndpointPath.segment(id))", method: .delete) }
+Tests/GrantivaCoreTests/ChildProcessTests.swift:195:    /// are removed anyway.
+Tests/GrantivaCoreTests/AuthStoreSecurityTests.swift:5:final class AuthStoreSecurityTests: XCTestCase {
+Tests/GrantivaCoreTests/AuthStoreSecurityTests.swift:10:        let store = AuthStore.file(directory: root.path, path: path)
+Tests/GrantivaCoreTests/AuthStoreSecurityTests.swift:18:        XCTAssertTrue(try store.delete(), "a stored file was removed")
+Tests/GrantivaCoreTests/AuthStoreSecurityTests.swift:29:        XCTAssertNil(AuthStore.file(directory: root.path, path: path.path).load())
+Tests/GrantivaCoreTests/AuthStoreSecurityTests.swift:33:        let credentials = AuthStore.resolveCredentials(
+Tests/GrantivaCoreTests/AuthStoreSecurityTests.swift:42:        let credentials = AuthStore.resolveCredentials(
+Tests/GrantivaCoreTests/AuthStoreSecurityTests.swift:50:        XCTAssertEqual(AuthStore.resolveCredentials(environment: [:], loadStored: { stored })?.apiKey, "stored")
+Tests/GrantivaCoreTests/AuthStoreSecurityTests.swift:51:        XCTAssertEqual(AuthStore.resolveCredentials(environment: ["GRANTIVA_API_KEY": " \n"], loadStored: { stored })?.email, "dev@example.com")
+Tests/GrantivaCoreTests/AuthStoreSecurityTests.swift:55:        XCTAssertNil(AuthStore.resolveCredentials(environment: [:], loadStored: { nil }))
+Tests/GrantivaCoreTests/AuthStoreSecurityTests.swift:66:        try AuthStore.saveSecurely(
+Tests/GrantivaCoreTests/AuthStoreSecurityTests.swift:92:        try AuthStore.saveSecurely(expected, directory: root.path, path: path)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:85:    func testADetachedSessionHasItsRunnerGroupTerminatedAndItsFilesRemoved() async throws {
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:160:        XCTAssertEqual(Set(outcomes.flatMap(\.deviceHomesRemoved)), [current, older, legacy])
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:199:        let removed = try await manager.cleanup()
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:200:        XCTAssertEqual(removed.map(\.udid), ["OLD-1"])
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:549:        XCTAssertEqual(outcomes.first?.deviceHomesRemoved, [home])
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:552:        XCTAssertEqual(object.first?["deviceHomesRemoved"] as? [String], [home])
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:598:        XCTAssertTrue(FileManager.default.fileExists(atPath: home), "nothing removed without the lease")
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:262:        XCTAssertEqual(artifacts?[0], [:], "references to removed shots are dropped")
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:200:        XCTAssertFalse(FileManager.default.fileExists(atPath: path), "the stale file is still removed")
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:146:    func testRemoveDeletesTheDeviceHome() throws {
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:149:        XCTAssertEqual(removal.removed, [deviceHome])
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:193:/// L22: a runner home that could not be removed is named with its reason,
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:198:            NSLocalizedDescriptionKey: "\u{201C}U\u{201D} couldn\u{2019}t be removed because you don\u{2019}t have permission to access it.",
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:201:        XCTAssertEqual(line, "/r/devices/U: \u{201C}U\u{201D} couldn\u{2019}t be removed because you don\u{2019}t have permission to access it")
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:109:    func testOwnerSidecarRoundTripsAndIsRemoved() throws {
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:217:        let removed = store.removeSessionFiles(runnerPid: 100)
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:218:        XCTAssertEqual(Set(removed), [runnerFile, directory.appendingPathComponent("100.owner.json").path])
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:283:        let removed = store(live: [300]).removeSessions(udid: "7E846901-F93F-4220-A153-7043061033D7")
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:284:        XCTAssertEqual(removed, [dead])
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:291:        let removed = store(live: []).removeSessions(udid: "7E846901-F93F-4220-A153-7043061033D7")
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:292:        XCTAssertEqual(removed, [])
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:557:        let removed = try await manager(shell).pruneCreatedAVDs()
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:558:        XCTAssertEqual(removed, ["qa-reg-android", "qa-reg-android-2"])
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:580:        let removed = try await manager.pruneCreatedAVDs()
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:581:        XCTAssertEqual(removed, ["Gone"])
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:590:        let removed = try? await manager(shell).pruneCreatedAVDs()
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:591:        XCTAssertNil(removed)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:1121:        XCTAssertEqual(outcome.temporaryDirectoriesRemoved, temps)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:1138:        XCTAssertEqual(outcome.temporaryDirectoriesRemoved, [])
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:69:                session: session, deleted: true, deviceHomesRemoved: ["/h/devices/x"]
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:161:    /// removed only when it names the torn-down serial.
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:162:    func testSessionFileNamingTheSerialIsStoppedAndRemoved() async {
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:163:        let removed = LockedList()
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:168:            removeSession: { removed.append("session.json") },
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:176:        XCTAssertEqual(removed.values, ["session.json"])
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:180:        XCTAssertEqual(removed.values, ["session.json"], "a session naming another serial is left alone")
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:384:            removeDeadSessions: { serial in
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:390:        XCTAssertEqual(outcomes.first?.sessionFilesRemoved, ["/tmp/grantiva-sessions/12109-1791747326192132000.grantiva"])
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:392:        XCTAssertEqual(json.first?["sessionFilesRemoved"] as? [String], ["/tmp/grantiva-sessions/12109-1791747326192132000.grantiva"])
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:393:        XCTAssertEqual(json.first?["temporaryDirectoriesRemoved"] as? [String], [])
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:398:        outcome.sessionFilesRemoved = ["/tmp/grantiva-sessions/12109-1.grantiva"]
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:400:            "Removed 1 stale keep-alive session file(s) of runners that are no longer running.",
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:404:    func testTeardownTextNamesTheRemovedTempDirectories() {
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:406:        outcome.temporaryDirectoriesRemoved = ["/var/folders/x/T/grantiva-96934240", "/var/folders/x/T/grantiva-report-E0C9"]
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:408:            "Removed the killed run's temp directory /var/folders/x/T/grantiva-96934240.",
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:409:            "Removed the killed run's temp directory /var/folders/x/T/grantiva-report-E0C9.",
+Tests/GrantivaCLITests/DiffCommandTests.swift:60:    func testCaptureInvocationIgnoresStaleSameNameAndRemovedScreenFiles() throws {
+Tests/GrantivaCLITests/DiffCommandTests.swift:68:        let removedScreen = directory.appendingPathComponent("Removed.png")
+Tests/GrantivaCLITests/DiffCommandTests.swift:71:        try Data("removed".utf8).write(to: removedScreen)
+Tests/GrantivaCLITests/AuthCommandTests.swift:45:        command.authStore = AuthStore(
+Tests/GrantivaCLITests/AuthCommandTests.swift:69:    private func logoutLine(removed: Bool, json: Bool) throws -> String {
+Tests/GrantivaCLITests/AuthCommandTests.swift:71:        command.authStore = AuthStore(load: { nil }, save: { _ in }, delete: { removed })
+Tests/GrantivaCLITests/AuthCommandTests.swift:77:            try logoutLine(removed: false, json: false),
+Tests/GrantivaCLITests/AuthCommandTests.swift:80:        let json = try JSONSerialization.jsonObject(with: Data(try logoutLine(removed: false, json: true).utf8)) as? [String: Any]
+Tests/GrantivaCLITests/AuthCommandTests.swift:82:        XCTAssertEqual(json?["removed"] as? Bool, false)
+Tests/GrantivaCLITests/AuthCommandTests.swift:88:            try logoutLine(removed: true, json: false),
+Tests/GrantivaCLITests/AuthCommandTests.swift:89:            "Logged out. Credentials removed from ~/.grantiva/auth.json"
+Tests/GrantivaCLITests/AuthCommandTests.swift:91:        let json = try JSONSerialization.jsonObject(with: Data(try logoutLine(removed: true, json: true).utf8)) as? [String: Any]
+Tests/GrantivaCLITests/AuthCommandTests.swift:92:        XCTAssertEqual(json?["removed"] as? Bool, true)
+Tests/GrantivaCLITests/AuthCommandTests.swift:93:        XCTAssertEqual(json?["message"] as? String, "Credentials removed")
+Sources/GrantivaCLI/DriverCommand.swift:436:    /// forward is removed again.
+Sources/GrantivaCLI/DriverCommand.swift:497:    /// very process (`marked`), or `runner stop`'s removed session file.
+Sources/GrantivaCLI/DriverCommand.swift:633:        // A `runner stop` (or a teardown) that came during the start removed
+Sources/GrantivaCLI/DriverCommand.swift:733:                // `runner stop` removed the session file, or a teardown
+Sources/GrantivaCLI/DriverCommand.swift:761:                // `runner stop` removed the session file, or a teardown
+Sources/GrantivaCLI/DriverCommand.swift:799:        // A `runner stop` (or a teardown) that came during the start removed
+Sources/GrantivaCLI/DriverCommand.swift:1056:        its session files and device lease are removed. Helpers the runner \
+Sources/GrantivaCLI/DriverCommand.swift:1135:        var sessionRemoved = false
+Sources/GrantivaCLI/DriverCommand.swift:1143:                sessionRemoved = true
+Sources/GrantivaCLI/DriverCommand.swift:1168:        if !sessionRemoved { dependencies.removeSession() }
+Sources/GrantivaCLI/DriverCommand.swift:1257:    /// The runner's own `<pid>-<ts>.grantiva` (and sidecar), removed by pid.
+Sources/GrantivaCLI/AuthCommand.swift:30:        var authStore: AuthStore = .live
+Sources/GrantivaCLI/AuthCommand.swift:67:            try authStore.save(credentials)
+Sources/GrantivaCLI/AuthCommand.swift:128:                    try authStore.save(credentials)
+Sources/GrantivaCLI/AuthCommand.swift:167:        var authStore: AuthStore = .live
+Sources/GrantivaCLI/AuthCommand.swift:193:            if let credentials = authStore.load() {
+Sources/GrantivaCLI/AuthCommand.swift:241:        var authStore: AuthStore = .live
+Sources/GrantivaCLI/AuthCommand.swift:250:            let removed = try authStore.delete()
+Sources/GrantivaCLI/AuthCommand.swift:253:                    success: true, removed: removed,
+Sources/GrantivaCLI/AuthCommand.swift:254:                    message: removed ? "Credentials removed" : "No stored credentials"
+Sources/GrantivaCLI/AuthCommand.swift:258:            return removed
+Sources/GrantivaCLI/AuthCommand.swift:259:                ? "Logged out. Credentials removed from ~/.grantiva/auth.json"
+Sources/GrantivaCLI/AuthCommand.swift:287:    let removed: Bool
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:113:        let removed = LockedValue(false)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:117:            removed.set(true)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:131:        XCTAssertTrue(removed.value)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:703:        let removed = LockedValue<[UInt64]>([])
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:708:                removeInterruptHandler: { removed.append($0) },
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:719:        XCTAssertEqual(removed.value, [7])
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1054:        XCTAssertEqual(detached.value, 3, "each rejected attachment's forward is removed")
+Sources/GrantivaCLI/ConsoleOpenCommand.swift:68:        let apiBaseURL = AuthStore.resolveCredentials()?.baseURL
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:67:            // AuthStore uses homeDirectoryForCurrentUser, which ignores HOME
+Sources/GrantivaCLI/SimulatorCommand.swift:103:            discussion: "A runner session on a torn-down simulator (`grantiva runner start` or `grantiva run --keep-alive`) is stopped first and its session files are removed; --json reports it as runnerSessionStopped. The WebDriverAgent xcodebuild and simctl diagnose the stopped run left writing into the simulator's runner home are then ended (reapedProcesses in --json) before that home is removed. Without --force, a process still holding a simulator the teardown deletes or shuts down that it did not start (a runner, WebDriverAgent's xcodebuild, a simctl diagnose, a grantiva run) is not killed: a warning on stderr names its pid and command, --json lists it in leftoverProcesses, and the teardown goes on. --force reclaims such processes."
+Sources/GrantivaCLI/SimulatorCommand.swift:309:                if !result.sessionFilesRemoved.isEmpty {
+Sources/GrantivaCLI/SimulatorCommand.swift:310:                    lines.append("Removed \(result.sessionFilesRemoved.count) stale keep-alive session file(s) of runners that are no longer running.")
+Sources/GrantivaCLI/SimulatorCommand.swift:312:                for home in result.deviceHomesRemoved {
+Sources/GrantivaCLI/SimulatorCommand.swift:313:                    lines.append("Removed the runner home \(home).")
+Sources/GrantivaCLI/SimulatorCommand.swift:315:                for directory in result.temporaryDirectoriesRemoved {
+Sources/GrantivaCLI/SimulatorCommand.swift:316:                    lines.append("Removed the killed run's temp directory \(directory).")
+Sources/GrantivaCLI/SimulatorCommand.swift:323:        /// left runner homes behind, or nil when every home was removed.
+Sources/GrantivaCLI/SimulatorCommand.swift:327:                "The simulator was released, but its runner home could not be removed: "
+Sources/GrantivaCLI/SimulatorCommand.swift:345:                        for home in outcome.deviceHomesRemoved {
+Sources/GrantivaCLI/SimulatorCommand.swift:346:                            Output.line("Removed the runner home \(home).")
+Sources/GrantivaCLI/SimulatorCommand.swift:365:            let removed = try await SimulatorManager.live.cleanup()
+Sources/GrantivaCLI/SimulatorCommand.swift:367:                Output.line(try JSONOutput.string(removed))
+Sources/GrantivaCLI/SimulatorCommand.swift:368:            } else if removed.isEmpty {
+Sources/GrantivaCLI/SimulatorCommand.swift:371:                for record in removed {
+Sources/GrantivaCLI/DiffCommand.swift:593:    /// since removed from the config) are reported, never compared or
+Sources/GrantivaCLI/DiffCommand.swift:836:        credentials: AuthCredentials? = AuthStore.resolveCredentials()
+Sources/GrantivaCLI/CICommand.swift:243:            guard let credentials = AuthStore.resolveCredentials() else {
+Sources/GrantivaCLI/EmulatorCommand.swift:120:            discussion: "A runner session on a torn-down serial (`grantiva runner start` or `grantiva run --keep-alive`) is stopped too, and its session files are removed; --json reports it as runnerSessionStopped. The guest's writes are flushed (`adb shell sync`) before the emulator is killed, so an app installed just before survives the next boot. Session files of a runner that had already died, and the temp directories of a killed run on the serial, are removed and listed (sessionFilesRemoved, temporaryDirectoriesRemoved)."
+Sources/GrantivaCLI/EmulatorCommand.swift:142:            removeDeadSessions: (@Sendable (String) -> [String])? = nil,
+Sources/GrantivaCLI/EmulatorCommand.swift:200:            if let removeDeadSessions {
+Sources/GrantivaCLI/EmulatorCommand.swift:202:                    outcomes[index].sessionFilesRemoved = removeDeadSessions(outcomes[index].serial)
+Sources/GrantivaCLI/EmulatorCommand.swift:211:            if !outcome.sessionFilesRemoved.isEmpty {
+Sources/GrantivaCLI/EmulatorCommand.swift:212:                lines.append("Removed \(outcome.sessionFilesRemoved.count) stale keep-alive session file(s) of runners that are no longer running.")
+Sources/GrantivaCLI/EmulatorCommand.swift:214:            for directory in outcome.temporaryDirectoriesRemoved {
+Sources/GrantivaCLI/EmulatorCommand.swift:215:                lines.append("Removed the killed run's temp directory \(directory).")
+Sources/GrantivaCLI/EmulatorCommand.swift:256:                removeDeadSessions: { KeepAliveSessionStore().removeSessions(udid: $0) },
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:113:        // Once the runner is gone its session files are removed and nothing resolves.
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:315:    func testAKeepAliveRunnerKilledBySIGHUPIsNoticedAndItsFilesRemoved() async throws {
+Sources/GrantivaMCP/RequestCancellation.swift:47:    /// removed; nil when nothing is left to send.
+Sources/GrantivaCLI/DeviceRunnerSessions.swift:5:/// `runner start` session (`.grantiva/session.json` in this directory, removed
+Sources/GrantivaCLI/DeviceRunnerSessions.swift:81:    /// order), and the session file in this directory is removed, as
+Tests/GrantivaCLITests/DocsContractTests.swift:105:    /// `body` with fenced code blocks and inline code spans removed, so
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:207:        XCTAssertEqual(Set(result.deviceHomesRemoved), Set(homes))
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:275:        XCTAssertEqual(result.sessionFilesRemoved.count, 2)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:278:    /// L12: the keep-alive runner died on its own and grantiva removed its
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:290:        XCTAssertEqual(result.sessionFilesRemoved, [runnerFile])
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:418:        XCTAssertEqual(result.temporaryDirectoriesRemoved, temps)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:421:        XCTAssertEqual(object["temporaryDirectoriesRemoved"] as? [String], temps)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:434:        XCTAssertEqual(result.temporaryDirectoriesRemoved, [])
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:448:        XCTAssertEqual(result.temporaryDirectoriesRemoved, [])
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:9:/// before the device home is removed, so the home stays removed.
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:33:    /// removed one. Only zsh builtins write and wait, so no child of its
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:78:        XCTAssertEqual(removal.removed, [home])
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:553:        let removedMember = Capture<String>()
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:561:        client.removeMember = { await removedMember.set($0) }
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:582:        let removedMemberValue = await removedMember.value
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:586:        XCTAssertNil(removedMemberValue)
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:593:        let removedMember = Capture<String>()
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:601:        client.removeMember = { await removedMember.set($0) }
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:613:        let removedMemberValue = await removedMember.value
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:616:        XCTAssertEqual(removedMemberValue, "M1")
+Sources/GrantivaCLI/ConsoleCommand.swift:80:        guard let credentials = AuthStore.resolveCredentials() else {
+Sources/GrantivaCLI/ConsoleCommand.swift:89:        guard let credentials = AuthStore.resolveCredentials() else {
+Sources/GrantivaCLI/ConsoleCommand.swift:97:        guard let credentials = AuthStore.resolveCredentials() else {
+Sources/GrantivaCLI/ConsoleCommand.swift:105:        guard let credentials = AuthStore.resolveCredentials() else {
+Sources/GrantivaCLI/ConsoleCommand.swift:113:        guard let credentials = AuthStore.resolveCredentials() else {
+Sources/GrantivaCLI/ConsoleCommand.swift:121:        guard let credentials = AuthStore.resolveCredentials() else {
+Sources/GrantivaCLI/ConsoleCommand.swift:129:        guard let credentials = AuthStore.resolveCredentials() else {
+Sources/GrantivaMCP/ValidatingTransport.swift:84:    /// the session tools' text, so that prefix is removed on the way out.
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:700:        static let configuration = CommandConfiguration(commandName: "remove", abstract: "Remove a member. Admins and the owner cannot be removed with an API key.")
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:712:            try ConsoleAdmin.emit(OrgDeleteResponse(deleted: true, id: membership), options: options) { "Removed member '\(membership)'" }
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:216:    /// is removed with `remove(udid:ownedBy:)`.
+Sources/GrantivaCore/Auth/AuthStore.swift:37:// MARK: - AuthStore
+Sources/GrantivaCore/Auth/AuthStore.swift:39:public struct AuthStore: Sendable, Decodable {
+Sources/GrantivaCore/Auth/AuthStore.swift:59:extension AuthStore {
+Sources/GrantivaCore/Auth/AuthStore.swift:69:    static func file(directory: String, path: String) -> AuthStore {
+Sources/GrantivaCore/Auth/AuthStore.swift:70:        AuthStore(
+Sources/GrantivaCore/Auth/AuthStore.swift:130:extension AuthStore {
+Sources/GrantivaCore/Auth/AuthStore.swift:131:    public static let failing = AuthStore(
+Sources/GrantivaCore/Auth/AuthStore.swift:133:        save: { _ in throw GrantivaError.commandFailed("AuthStore.failing: save", 1) },
+Sources/GrantivaCore/Auth/AuthStore.swift:134:        delete: { throw GrantivaError.commandFailed("AuthStore.failing: delete", 1) }
+Sources/GrantivaCore/Auth/AuthStore.swift:140:extension AuthStore {
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:20:    /// its runner homes were removed (`teardown --udid` on a device Grantiva
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:24:    /// The device's runner homes (`<runner home>/versions/<runner version>/devices/<udid>`) that were removed.
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:25:    public var deviceHomesRemoved: [String]
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:26:    /// One "<path>: <reason>" line per runner home that could not be removed.
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:43:        deviceHomesRemoved: [String] = [],
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:48:                  deviceHomesRemoved: deviceHomesRemoved, deviceHomeFailures: deviceHomeFailures,
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:56:        deviceHomesRemoved: [String] = [],
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:63:        self.deviceHomesRemoved = deviceHomesRemoved
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:69:        case udid, session, deleted, deviceHomesRemoved, deviceHomeFailures, runnerSessionStopped, leftoverProcesses, reapedProcesses
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:77:        deviceHomesRemoved = try container.decodeIfPresent([String].self, forKey: .deviceHomesRemoved) ?? []
+Sources/GrantivaCore/Diff/BaselineStore.swift:118:                var removed = false
+Sources/GrantivaCore/Diff/BaselineStore.swift:123:                        removed = true
+Sources/GrantivaCore/Diff/BaselineStore.swift:128:                if !removed, let firstError { throw firstError }
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:38:    public var sessionFilesRemoved: [String]
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:39:    /// The device's runner homes (`<runner home>/versions/<runner version>/devices/<udid>`) that were removed.
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:40:    public var deviceHomesRemoved: [String]
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:41:    /// One "<path>: <reason>" line per runner home that could not be removed.
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:44:    /// dir) that its lease claim named and that were removed.
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:45:    public var temporaryDirectoriesRemoved: [String]
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:65:        sessionFilesRemoved: [String] = [],
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:66:        deviceHomesRemoved: [String] = [],
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:68:        temporaryDirectoriesRemoved: [String] = []
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:75:        self.sessionFilesRemoved = sessionFilesRemoved
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:76:        self.deviceHomesRemoved = deviceHomesRemoved
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:78:        self.temporaryDirectoriesRemoved = temporaryDirectoriesRemoved
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:224:        let temporaryDirectoriesRemoved = claim.map(removeTemporaryDirectories(of:)) ?? []
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:233:        let removedFiles = sessions.removeSessions(udid: udid, runnerPids: runnerPids)
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:244:            sessionFilesRemoved: removedFiles,
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:245:            deviceHomesRemoved: homes.removed,
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:247:            temporaryDirectoriesRemoved: temporaryDirectoriesRemoved
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:259:        var removed: [String] = []
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:268:            removed.append(path)
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:270:        return removed
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:312:        storedCredentials: AuthCredentials? = AuthStore.live.load()
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:314:            removeDeviceHomes(udid)
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:319:    public func delete(name: String) async throws -> SimulatorDevice {
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:324:        removeDeviceHomes(device.udid)
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:339:    /// has no place for them, logging any that could not be removed.
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:340:    private func removeDeviceHomes(_ udid: String) {
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:365:    /// has runner homes; they are removed while no run holds the device, and
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:373:        // while it is removed. A device a run holds is not idle: say who
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:385:        guard !homes.removed.isEmpty || !homes.failures.isEmpty else { return [] }
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:388:            deviceHomesRemoved: homes.removed, deviceHomeFailures: homes.failures
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:414:                deviceHomesRemoved: homes.removed, deviceHomeFailures: homes.failures
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:427:        var removed: [CreatedSimulatorRecord] = []
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:436:            removeDeviceHomes(record.udid)
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:438:            removed.append(record)
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:440:        return removed
+Sources/GrantivaMCP/Tools/SimTools.swift:141:    static func delete(simManager: SimulatorManager, arguments: [String: Value]) async throws -> CallTool.Result {
+Sources/GrantivaMCP/Tools/EmulatorTools.swift:119:    static func delete(deps: EmulatorToolDependencies?, arguments: [String: Value]) async throws -> CallTool.Result {
+Sources/GrantivaCore/Android/EmulatorManager.swift:45:    /// its ephemeral report dir), removed here, as `simulator teardown` does.
+Sources/GrantivaCore/Android/EmulatorManager.swift:46:    public var temporaryDirectoriesRemoved: [String]
+Sources/GrantivaCore/Android/EmulatorManager.swift:48:    /// longer running, removed here.
+Sources/GrantivaCore/Android/EmulatorManager.swift:49:    public var sessionFilesRemoved: [String]
+Sources/GrantivaCore/Android/EmulatorManager.swift:53:        temporaryDirectoriesRemoved: [String] = [], sessionFilesRemoved: [String] = []
+Sources/GrantivaCore/Android/EmulatorManager.swift:60:        self.temporaryDirectoriesRemoved = temporaryDirectoriesRemoved
+Sources/GrantivaCore/Android/EmulatorManager.swift:61:        self.sessionFilesRemoved = sessionFilesRemoved
+Sources/GrantivaCore/Android/EmulatorManager.swift:65:        case serial, avd, killed, recorded, runnerSessionStopped, temporaryDirectoriesRemoved, sessionFilesRemoved
+Sources/GrantivaCore/Android/EmulatorManager.swift:75:        temporaryDirectoriesRemoved = try container.decodeIfPresent([String].self, forKey: .temporaryDirectoriesRemoved) ?? []
+Sources/GrantivaCore/Android/EmulatorManager.swift:76:        sessionFilesRemoved = try container.decodeIfPresent([String].self, forKey: .sessionFilesRemoved) ?? []
+Sources/GrantivaCore/Android/EmulatorManager.swift:346:    /// removed, even when something else answers on the serial: the boot only
+Sources/GrantivaCore/Android/EmulatorManager.swift:531:        try await listAVDsPruningLedger().removed
+Sources/GrantivaCore/Android/EmulatorManager.swift:537:    private func listAVDsPruningLedger() async throws -> (avds: [String], removed: [String]) {
+Sources/GrantivaCore/Android/EmulatorManager.swift:540:        let removed = try provenance.pruneCreatedAVDs(keeping: avds, among: candidates)
+Sources/GrantivaCore/Android/EmulatorManager.swift:541:        return (avds, removed)
+Sources/GrantivaCore/Android/EmulatorManager.swift:553:    public func deleteAVD(name: String, force: Bool) async throws {
+Sources/GrantivaCore/Android/EmulatorManager.swift:668:        var temporaryDirectoriesRemoved: [String] = []
+Sources/GrantivaCore/Android/EmulatorManager.swift:670:            temporaryDirectoriesRemoved = SimulatorReaper.removeTemporaryDirectories(of: claim)
+Sources/GrantivaCore/Android/EmulatorManager.swift:675:            temporaryDirectoriesRemoved: temporaryDirectoriesRemoved
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:37:    /// failure the forward is removed again so nothing leaks.
+Sources/GrantivaCore/Android/AndroidCaptureSettings.swift:82:    /// failed restore is logged and the state file is still removed so the
+Tests/GrantivaCoreTests/SignalRelayTests.swift:8:    func testCleanupsRunOnTerminationAndCanBeRemoved() {
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:226:        XCTAssertEqual(object["deviceHomesRemoved"] as? [String], [])
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:230:    func testForceTeardownJSONStillFailsWhenARunnerHomeCouldNotBeRemoved() async throws {
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:262:    func testTeardownFailsWhenARunnerHomeCouldNotBeRemoved() throws {
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:272:        let reason = "/r/versions/v1/devices/U: \u{201C}U\u{201D} couldn\u{2019}t be removed because you don\u{2019}t have permission to access it."
+Tests/GrantivaCLITests/CIInvocationCaptureTests.swift:7:    func testCIInvocationIgnoresStaleSameNameAndRemovedScreenFiles() throws {
+Tests/GrantivaCLITests/CIInvocationCaptureTests.swift:15:        let removedScreen = directory.appendingPathComponent("Removed.png")
+Tests/GrantivaCLITests/CIInvocationCaptureTests.swift:18:        try Data("removed".utf8).write(to: removedScreen)
+Sources/GrantivaCore/Runner/ReadyFile.swift:73:                    "--ready-file \(path) exists and could not be removed: \(error.localizedDescription)"
+Sources/GrantivaCore/Runner/RunnerStopMarker.swift:97:    /// gone. Returns the paths removed.
+Sources/GrantivaCore/Runner/RunnerStopMarker.swift:101:        var removed: [String] = []
+Sources/GrantivaCore/Runner/RunnerStopMarker.swift:114:            if stale, (try? FileManager.default.removeItem(atPath: file)) != nil { removed.append(file) }
+Sources/GrantivaCore/Runner/RunnerStopMarker.swift:116:        return removed
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:244:    /// removed.
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:249:        var removed: [String] = []
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:255:            if (try? fm.removeItem(atPath: path)) != nil { removed.append(path) }
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:257:        if stopMarkers.removeUnlessHeld(runnerPid: runnerPid) { removed.append(stopMarkers.path(runnerPid)) }
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:258:        return removed
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:269:    /// removed paths.
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:283:        var removed: [String] = []
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:289:            if (try? fm.removeItem(atPath: path)) != nil { removed.append(path) }
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:293:            removed.append(markers.path(pid))
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:296:        return removed
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:141:    /// teardown's marker or its removed session file when the runner exits,
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:204:    /// files are still removed.
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:190:    /// home the teardown then removes stays removed.
+Sources/GrantivaCore/Runner/RunnerExecution.swift:112:                // cleanly removed its own `<pid>-*.grantiva`; one killed by a
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:57:    /// Homes of simulators `existingDeviceIDs` no longer lists are removed,
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:157:        public var removed: [String] = []
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:181:                removal.removed.append(home)
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:59:        var removedPaths: Set<String> = []
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:60:        var removedContents: Set<Data> = []
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:68:                if let data = fileManager.contents(atPath: url.path) { removedContents.insert(data) }
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:70:                    removedPaths.insert("\(assetsDir)/\(name)")
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:74:                dropReferences(to: removedPaths, inFlowData: root.appendingPathComponent(dataFile))
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:77:        guard !removedContents.isEmpty else { return }
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:78:        trimAllure(in: root.appendingPathComponent("allure-results", isDirectory: true), removing: removedContents)
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:81:    private static func dropReferences(to removed: Set<String>, inFlowData url: URL) {
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:82:        guard !removed.isEmpty, var data = RunnerReportFinalizer.readJSON(url) else { return }
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:87:            for (key, value) in artifacts where (value as? String).map(removed.contains) == true {
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:99:    /// removed shots go, and so do the result entries that name them.
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:103:        var removedSources: Set<String> = []
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:107:            if (try? fileManager.removeItem(at: url)) != nil { removedSources.insert(name) }
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:109:        guard !removedSources.isEmpty else { return }
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:113:            let pruned = pruneAttachments(object, removing: removedSources)
+Sources/GrantivaCore/Runner/SimulatorLease.swift:339:    /// left by a run that ended is removed too, but freeing it is no release.

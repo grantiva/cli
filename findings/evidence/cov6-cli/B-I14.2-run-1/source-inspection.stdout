@@ -1,0 +1,21 @@
+Sources/GrantivaCLI/SimulatorCommand.swift:369:                Output.line("No orphaned Grantiva-created simulators to delete.")
+Sources/GrantivaCLI/EmulatorCommand.swift:64:        static let configuration = CommandConfiguration(abstract: "Delete an AVD Grantiva created. Others need --force. A running AVD is never deleted.")
+Sources/GrantivaMCP/Tools/EmulatorTools.swift:66:            description: "Delete an AVD Grantiva created. Pass force: true to delete one it did not create. A running AVD is never deleted.",
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:151:            #"AVD "fix-k53-hand" was not created by Grantiva (grantiva emulator ensure). Pass --force to delete it anyway."#
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:539:    /// created-avds.json drops names whose AVD is gone from disk (deleted
+Sources/GrantivaCore/Android/AndroidProvenance.swift:62:    /// AVDs `emulator ensure` created. `emulator delete` refuses any other
+Sources/GrantivaCore/Android/EmulatorManager.swift:550:        "AVD \"\(name)\" was not created by Grantiva (grantiva emulator ensure). Pass \(force) to delete it anyway."
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:190:        output.reserveCapacity(bytes.count + newMoov.count - oldSize)
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:311:            _ = try? await execute("xcrun simctl delete \(shellQuoted(udid))")
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:321:        _ = try await execute("xcrun simctl delete \(shellQuoted(device.udid))")
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:354:    /// Ends a session. Simulators Grantiva created are deleted outright;
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:406:                _ = try await execute("xcrun simctl delete \(shellQuoted(record.udid))")
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:434:            _ = try await execute("xcrun simctl delete \(shellQuoted(record.udid))")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:265:        XCTAssertFalse(simctl.commands.contains { $0.contains("simctl shutdown") || $0.contains("simctl delete") }, "\(simctl.commands)")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:398:        XCTAssertTrue(simctl.commands.contains("xcrun simctl delete '\(created)'"), "\(simctl.commands)")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:420:        XCTAssertFalse(simctl.commands.contains { $0.contains("simctl shutdown") || $0.contains("simctl delete") }, "\(simctl.commands)")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:425:    // While the created device is being deleted, a pending record owned by
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:458:        XCTAssertFalse(simctl.commands.contains { $0.contains("simctl delete") }, "\(simctl.commands)")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:656:    /// Called (outside the lock) with each `simctl delete` command before it runs.
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:667:        if command.hasPrefix("xcrun simctl delete "), let onDelete { onDelete(command) }
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:689:            case command.hasPrefix("xcrun simctl delete "):

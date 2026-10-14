@@ -1,0 +1,37 @@
+Sources/GrantivaCLI/BuildCommand.swift:63:        let buildTarget = resolved.scheme ?? GradleBuildRunner.taskName(
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:25:            gradle: GradleBuildRunner(execute: shell.execute),
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:299:            sdk: sdk, adb: adb, gradle: GradleBuildRunner(execute: shell.execute),
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:5:final class GradleBuildRunnerTests: XCTestCase {
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:18:        XCTAssertEqual(GradleBuildRunner.taskName(module: "app", variant: "debug"), ":app:assembleDebug")
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:19:        XCTAssertEqual(GradleBuildRunner.taskName(module: "mobile", variant: "freeDebug"), ":mobile:assembleFreeDebug")
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:23:        XCTAssertEqual(GradleBuildRunner.taskName(module: ":app", variant: "debug"), ":app:assembleDebug")
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:24:        XCTAssertEqual(GradleBuildRunner.taskName(module: "feature:app", variant: "debug"), ":feature:app:assembleDebug")
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:25:        XCTAssertEqual(GradleBuildRunner.buildDirectory(projectRoot: "/p", module: "feature:app", extraArgs: []), "/p/feature/app/build")
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:26:        XCTAssertEqual(GradleBuildRunner.buildDirectory(projectRoot: "/p", module: ":app", extraArgs: []), "/p/app/build")
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:30:        let noWrapper = GradleBuildRunner.command(projectRoot: scratch.path, module: "app", variant: "debug", extraArgs: ["-PsomeFlag=1"], javaHome: "/jdk")
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:34:        let withWrapper = GradleBuildRunner.command(projectRoot: scratch.path, module: "app", variant: "debug", extraArgs: [], javaHome: nil)
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:39:        XCTAssertEqual(GradleBuildRunner.buildDirectory(projectRoot: "/p", module: "app", extraArgs: []), "/p/app/build")
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:40:        XCTAssertEqual(GradleBuildRunner.buildDirectory(projectRoot: "/p", module: "app", extraArgs: ["-PbuildDir=/tmp/out"]), "/tmp/out")
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:41:        XCTAssertEqual(GradleBuildRunner.buildDirectory(projectRoot: "/p", module: "app", extraArgs: ["-PbuildDir=out"]), "/p/out")
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:53:        let result = try await GradleBuildRunner(execute: shell.execute).build(
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:66:        let result = try await GradleBuildRunner(execute: shell.execute).build(
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:74:    /// A09: Gradle's reason is in the What-went-wrong block, not on a
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:82:        * What went wrong:
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:92:        let result = try await GradleBuildRunner(execute: shell.execute).build(
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:109:        * What went wrong:
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:115:        let errors = GradleBuildRunner.errorLines(lines)
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:126:    * What went wrong:
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:160:        let result = try await GradleBuildRunner(execute: shell.execute).build(
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:172:        * What went wrong:
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:185:        let result = try await GradleBuildRunner(execute: shell.execute).build(
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:197:        let result = try await GradleBuildRunner(execute: shell.execute).build(
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:210:        * What went wrong:
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:220:        * What went wrong:
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:223:        XCTAssertEqual(GradleBuildRunner.errorLines(lines), [
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:234:            _ = try await GradleBuildRunner(execute: shell.execute).build(
+Sources/GrantivaCore/Android/AndroidPlatform.swift:17:    private let gradle: GradleBuildRunner
+Sources/GrantivaCore/Android/AndroidPlatform.swift:27:        gradle: GradleBuildRunner,
+Sources/GrantivaCore/Android/AndroidPlatform.swift:49:            sdk: sdk, adb: adb, gradle: GradleBuildRunner(),
+Sources/GrantivaCore/Android/GradleBuildRunner.swift:4:public struct GradleBuildRunner: Sendable {
+Sources/GrantivaCore/Android/GradleBuildRunner.swift:156:    /// Gradle's `* What went wrong:` block (up to the next `* ` heading, such
+Sources/GrantivaCore/Android/GradleBuildRunner.swift:164:            if trimmed == "* What went wrong:" {

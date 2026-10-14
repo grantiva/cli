@@ -1,0 +1,171 @@
+Sources/GrantivaMCP/ToolRegistry.swift:18:    var projectDirectory = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+Sources/GrantivaMCP/ToolRegistry.swift:129:        let missingConfig = GrantivaConfig.missingFileMessage(platform: platform, directory: projectDirectory)
+Sources/GrantivaMCP/ToolRegistry.swift:138:                missingConfig: missingConfig, projectDirectory: projectDirectory
+Sources/GrantivaMCP/ToolRegistry.swift:169:                configSource: Self.configSource(platform: platform, config: config, directory: projectDirectory),
+Sources/GrantivaMCP/ToolRegistry.swift:171:                projectDirectory: projectDirectory, platformDetected: platformDetected
+Sources/GrantivaMCP/ToolRegistry.swift:182:                    device: device, projectDirectory: projectDirectory
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:125:    func testOwnerRecordsTheProjectDirectoryAndPlatform() throws {
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:131:        store.recordOwner(udid: "921A0945-7157-4533-BA1F-21E8132D3E40", runnerPid: 100, projectDirectory: project.path)
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:132:        store.recordOwner(udid: "emulator-5554", runnerPid: 200, projectDirectory: project.path)
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:136:        XCTAssertEqual(sessions["ios"]?.projectDirectory, canonical)
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:138:        XCTAssertEqual(sessions["android"]?.projectDirectory, canonical)
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:156:        let legacy = #"{"createdAt":"2026-10-11T07:28:18Z","grantivaPid":1,"platform":"ios","projectDirectory":"/tmp","runnerPid":100,"udid":"921A0945-7157-4533-BA1F-21E8132D3E40"}"#
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:159:        XCTAssertEqual(sessions.first?.projectDirectory, "/private/tmp")
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:160:        XCTAssertEqual(sessions.first?.projectDirectory, KeepAliveOwner.canonicalDirectory("/tmp"))
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:165:            udid: "921A0945-7157-4533-BA1F-21E8132D3E40", runnerPid: 100, projectDirectory: "/tmp"
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:167:        XCTAssertEqual(owner.projectDirectory, "/private/tmp")
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:263:        store.recordOwner(udid: "A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF", runnerPid: 300, projectDirectory: directory.path, platform: .ios, appID: "com.kylebrowning.Landmarks")
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:264:        store.recordOwner(udid: "C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961", runnerPid: 301, projectDirectory: directory.path, platform: .ios)
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:300:            udid: "emulator-5554", runnerPid: 400, projectDirectory: "/private/tmp/p", platform: .android, detached: true
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:303:            udid: "emulator-5556", runnerPid: 401, projectDirectory: "/private/tmp/p", platform: .android, detached: true
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:306:        try write(KeepAliveOwner(udid: "emulator-5558", runnerPid: 402, projectDirectory: "/private/tmp/p", platform: .android, detached: true))
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:314:            udid: "emulator-5554", runnerPid: 400, grantivaPid: 77, projectDirectory: "/private/tmp/p", platform: .android, detached: false
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:324:        try write(KeepAliveOwner(udid: "emulator-5554", runnerPid: 500, grantivaPid: 50, projectDirectory: "/private/tmp/p",
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:326:        try write(KeepAliveOwner(udid: "emulator-5556", runnerPid: 501, grantivaPid: 51, projectDirectory: "/private/tmp/p",
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:336:        XCTAssertEqual(starting.projectDirectory, "/private/tmp/p")
+Sources/GrantivaMCP/Tools/SessionCapture.swift:49:        projectDirectory: URL,
+Sources/GrantivaMCP/Tools/SessionCapture.swift:90:        let outputDir = projectDirectory.appendingPathComponent(relativeDir).path
+Sources/GrantivaCLI/DriverCommand.swift:1122:                .filter { $0.projectDirectory.map(KeepAliveOwner.canonicalDirectory) == here }
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:525:            projectDirectory: "/private/tmp/project", platform: .ios, ownerPid: 4163, detached: false
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:552:                projectDirectory: "/private/tmp/project", platform: .ios, ownerPid: Int32(pid - 100), detached: false
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:582:            projectDirectory: KeepAliveOwner.canonicalDirectory(project.path), platform: .ios, detached: false, appId: "com.example"
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:612:            projectDirectory: "/private/tmp/elsewhere", platform: .ios, ownerPid: 4163, detached: false
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:927:            projectDirectory: "/private/tmp/project", platform: .ios, ownerPid: 4163, detached: false, appId: "com.example"
+Sources/GrantivaMCP/Tools/BuildTools.swift:195:        projectDirectory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+Sources/GrantivaMCP/Tools/BuildTools.swift:230:                    ? "no \(platform.configFileName) in \(projectDirectory.path)"
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:604:            handedOff: true, projectDirectory: "/tmp/p"
+Sources/GrantivaMCP/Tools/ContextTool.swift:37:        projectDirectory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath),
+Sources/GrantivaMCP/Tools/ContextTool.swift:66:            sections.append("[Config]\n  \(missingConfigLine(platform: platform, directory: projectDirectory, platformDetected: platformDetected))")
+Tests/GrantivaCLITests/MCPCommandTests.swift:6:    func testProjectDirectoryOptionParses() throws {
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:165:        XCTAssertEqual(ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: root)?.scheme, "A", "unchanged project: cache holds")
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:172:                loadCache: { ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: root) },
+Sources/GrantivaCore/GrantivaError.swift:117:            text += " \(ignored) keep-alive session(s) started from another project directory or for another platform were ignored."
+Sources/GrantivaCLI/MCPCommand.swift:30:        try await GrantivaMCPServer(projectDirectory: directory, platform: platformOptions.platform).run()
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:236:            runnerPID: 52144, keepAlive: true, handedOff: true, projectDirectory: "/tmp/project"
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:261:    func testHandOffRecordsTheSessionKindAndProjectDirectory() throws {
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:266:        XCTAssertEqual(claim.projectDirectory, FileManager.default.currentDirectoryPath)
+Sources/GrantivaMCP/MCPServer.swift:9:    private let projectDirectory: URL?
+Sources/GrantivaMCP/MCPServer.swift:14:    public init(projectDirectory: URL? = nil, platform: Platform? = nil) {
+Sources/GrantivaMCP/MCPServer.swift:15:        self.projectDirectory = projectDirectory
+Sources/GrantivaMCP/MCPServer.swift:40:        let projectDirectory = try Self.resolveProjectDirectory(projectDirectory)
+Sources/GrantivaMCP/MCPServer.swift:41:        guard FileManager.default.changeCurrentDirectoryPath(projectDirectory.path) else {
+Sources/GrantivaMCP/MCPServer.swift:42:            throw GrantivaError.invalidArgument("Cannot use project directory: \(projectDirectory.path)")
+Sources/GrantivaMCP/MCPServer.swift:46:        let platform = try PlatformResolver(directory: projectDirectory).resolveOrDefault(flag: self.platform)
+Sources/GrantivaMCP/MCPServer.swift:51:                try Self.loadActiveSession(
+Sources/GrantivaMCP/MCPServer.swift:52:                    projectDirectory: projectDirectory, platform: platform, keepAliveSessions: keepAliveSessions
+Sources/GrantivaMCP/MCPServer.swift:73:            projectDirectory: projectDirectory,
+Sources/GrantivaMCP/MCPServer.swift:75:            loadConfig: { try GrantivaConfig.loadIfPresent(platform: platform, from: projectDirectory) }
+Sources/GrantivaMCP/MCPServer.swift:134:    static func resolveProjectDirectory(_ directory: URL?) throws -> URL {
+Sources/GrantivaMCP/MCPServer.swift:161:    static func loadActiveSession(
+Sources/GrantivaMCP/MCPServer.swift:162:        projectDirectory: URL,
+Sources/GrantivaMCP/MCPServer.swift:166:        let sessionURL = projectDirectory.appendingPathComponent(RunnerSessionInfo.path)
+Sources/GrantivaMCP/MCPServer.swift:175:        let project = KeepAliveOwner.canonicalDirectory(projectDirectory.path)
+Sources/GrantivaMCP/MCPServer.swift:179:        if let keepAlive = sessions.first(where: { $0.projectDirectory == project && $0.platform == platform }) {
+Sources/GrantivaMCP/MCPServer.swift:191:            sessionFile: sessionURL.path, directory: projectDirectory.path, ignored: live.count
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:107:        let loaded = ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: root)
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:125:        XCTAssertNil(ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: root))
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:140:            ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: root)?.scheme,
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:154:        XCTAssertNil(ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: root))
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:166:        let cached = ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: dir)
+Sources/GrantivaCore/Config/ProjectDetector.swift:152:            projectDirectory: cwd
+Sources/GrantivaCore/Config/ProjectDetector.swift:158:        projectDirectory: URL,
+Sources/GrantivaCore/Config/ProjectDetector.swift:171:        if let contents = try? fm.contentsOfDirectory(atPath: projectDirectory.path) {
+Sources/GrantivaCore/Config/ProjectDetector.swift:174:                let containerURL = projectDirectory.appendingPathComponent(item)
+Tests/GrantivaMCPTests/BuildToolsTests.swift:211:            projectDirectory: URL(fileURLWithPath: "/x")
+Tests/GrantivaMCPTests/BuildToolsTests.swift:231:            missingConfig: "unused", projectDirectory: URL(fileURLWithPath: "/proj")
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:118:            projectDirectory: FileManager.default.temporaryDirectory
+Tests/GrantivaMCPTests/ContextToolTests.swift:93:    func testWithoutConfigTheConfigSectionNamesTheProjectDirectory() async throws {
+Tests/GrantivaMCPTests/ContextToolTests.swift:97:            projectDirectory: directory, platformDetected: false
+Tests/GrantivaMCPTests/ContextToolTests.swift:105:            projectDirectory: directory, platformDetected: true
+Tests/GrantivaMCPTests/ContextToolTests.swift:113:    func testTheRegistryPassesItsProjectDirectoryToContext() async throws {
+Tests/GrantivaMCPTests/ContextToolTests.swift:119:            projectDirectory: directory, platformDetected: false
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:21:    public let projectDirectory: String?
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:47:        projectDirectory: String? = nil, platform: Platform? = nil,
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:56:        self.projectDirectory = projectDirectory
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:71:            projectDirectory: owner.projectDirectory.map(KeepAliveOwner.canonicalDirectory),
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:98:    public let projectDirectory: String?
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:120:        projectDirectory: String? = nil, platform: Platform? = nil, detached: Bool? = nil, appId: String? = nil,
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:127:        self.projectDirectory = projectDirectory
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:187:    /// Records that `runnerPid` holds `udid`, started from `projectDirectory`
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:196:        projectDirectory: String = FileManager.default.currentDirectoryPath,
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:204:            projectDirectory: KeepAliveOwner.canonicalDirectory(projectDirectory),
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:335:                    projectDirectory: owner?.projectDirectory.map(KeepAliveOwner.canonicalDirectory),
+Sources/GrantivaCore/Runner/SimulatorLease.swift:24:    public var projectDirectory: String?
+Sources/GrantivaCore/Runner/SimulatorLease.swift:32:        handedOff: Bool? = nil, projectDirectory: String? = nil, temporaryDirectories: [String]? = nil
+Sources/GrantivaCore/Runner/SimulatorLease.swift:40:        self.projectDirectory = projectDirectory
+Sources/GrantivaCore/Runner/SimulatorLease.swift:234:            if let directory = holder.projectDirectory { message += " (from \(directory))" }
+Sources/GrantivaCore/Runner/SimulatorLease.swift:301:            projectDirectory: FileManager.default.currentDirectoryPath
+Sources/GrantivaCore/Runner/SimulatorLease.swift:361:            if let directory = holder.projectDirectory { message += " (from \(directory))" }
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:67:        projectDirectory: URL,
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:74:                try GrantivaMCPServer.loadActiveSession(
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:75:                    projectDirectory: projectDirectory, platform: .ios, keepAliveSessions: store
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:87:            projectDirectory: projectDirectory
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:107:        let registry = registry(projectDirectory: directory, transport: Self.startingWDA())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:148:        let registry = registry(projectDirectory: directory, transport: Self.refusingWDA())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:167:        let registry = registry(projectDirectory: directory, transport: Self.startingWDA())
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:187:            projectDirectory: directory
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift:262:            projectDirectory: directory
+Tests/GrantivaMCPTests/MCPServerTests.swift:10:    func testProjectDirectoryDoesNotRequireAConfigFile() throws {
+Tests/GrantivaMCPTests/MCPServerTests.swift:17:            try GrantivaMCPServer.resolveProjectDirectory(directory).standardizedFileURL,
+Tests/GrantivaMCPTests/MCPServerTests.swift:22:    func testProjectDirectoryMustExist() {
+Tests/GrantivaMCPTests/MCPServerTests.swift:24:        XCTAssertThrowsError(try GrantivaMCPServer.resolveProjectDirectory(missing)) { error in
+Tests/GrantivaMCPTests/MCPServerTests.swift:29:    func testSessionIsLoadedRelativeToExplicitProjectDirectory() throws {
+Tests/GrantivaMCPTests/MCPServerTests.swift:30:        let directory = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:46:        let loaded = try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .ios, keepAliveSessions: emptyKeepAliveStore())
+Tests/GrantivaMCPTests/MCPServerTests.swift:53:        let directory = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:69:        XCTAssertThrowsError(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .ios, keepAliveSessions: emptyKeepAliveStore())) { error in
+Tests/GrantivaMCPTests/MCPServerTests.swift:75:        let directory = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:79:            try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .ios, keepAliveSessions: emptyKeepAliveStore())
+Tests/GrantivaMCPTests/MCPServerTests.swift:89:        let directory = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:94:        let loaded = try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .ios, keepAliveSessions: store)
+Tests/GrantivaMCPTests/MCPServerTests.swift:100:    /// C03: another project's keep-alive session is never attached to.
+Tests/GrantivaMCPTests/MCPServerTests.swift:101:    func testIgnoresAKeepAliveSessionFromAnotherProjectDirectory() throws {
+Tests/GrantivaMCPTests/MCPServerTests.swift:102:        let directory = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:103:        let other = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:111:            try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .ios, keepAliveSessions: store)
+Tests/GrantivaMCPTests/MCPServerTests.swift:115:            XCTAssertTrue(message.contains("1 keep-alive session(s) started from another project directory"), message)
+Tests/GrantivaMCPTests/MCPServerTests.swift:121:        let directory = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:126:            try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .android, keepAliveSessions: store)
+Tests/GrantivaMCPTests/MCPServerTests.swift:131:    func testIgnoresAKeepAliveSessionWithoutARecordedProjectDirectory() throws {
+Tests/GrantivaMCPTests/MCPServerTests.swift:132:        let directory = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:141:            try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .ios, keepAliveSessions: store)
+Tests/GrantivaMCPTests/MCPServerTests.swift:148:        let directory = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:149:        let other = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:158:        let loaded = try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .ios, keepAliveSessions: store)
+Tests/GrantivaMCPTests/MCPServerTests.swift:172:        store.recordOwner(udid: "emulator-5554", runnerPid: runnerPid, projectDirectory: project, platform: platform, detached: true)
+Tests/GrantivaMCPTests/MCPServerTests.swift:177:        let directory = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:180:        XCTAssertThrowsError(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .android, keepAliveSessions: store)) { error in
+Tests/GrantivaMCPTests/MCPServerTests.swift:187:        let directory = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:190:        XCTAssertThrowsError(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .android, keepAliveSessions: store)) { error in
+Tests/GrantivaMCPTests/MCPServerTests.swift:196:        let directory = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:197:        let other = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:203:        XCTAssertThrowsError(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .android, keepAliveSessions: elsewhere)) { error in
+Tests/GrantivaMCPTests/MCPServerTests.swift:206:        XCTAssertThrowsError(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .ios, keepAliveSessions: elsewhere)) { error in
+Tests/GrantivaMCPTests/MCPServerTests.swift:213:            let directory = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:219:            XCTAssertThrowsError(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: platform, keepAliveSessions: emptyKeepAliveStore())) { error in
+Tests/GrantivaMCPTests/MCPServerTests.swift:239:            store.recordOwner(udid: owner.udid, runnerPid: owner.pid, projectDirectory: owner.project, platform: owner.platform)
+Tests/GrantivaMCPTests/MCPServerTests.swift:246:    func testResolveProjectDirectoryKeepsThePrivatePrefix() throws {
+Tests/GrantivaMCPTests/MCPServerTests.swift:250:        let resolved = try GrantivaMCPServer.resolveProjectDirectory(URL(fileURLWithPath: short))
+Tests/GrantivaMCPTests/MCPServerTests.swift:256:        let directory = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:258:        let project = try GrantivaMCPServer.resolveProjectDirectory(directory)
+Tests/GrantivaMCPTests/MCPServerTests.swift:260:            try GrantivaMCPServer.loadActiveSession(projectDirectory: project, platform: .ios, keepAliveSessions: emptyKeepAliveStore())
+Tests/GrantivaMCPTests/MCPServerTests.swift:279:        let legacy = #"{"createdAt":"2026-10-11T07:28:18Z","grantivaPid":1,"platform":"ios","projectDirectory":"SHORT","runnerPid":4242,"udid":"921A0945-7157-4533-BA1F-21E8132D3E40"}"#
+Tests/GrantivaMCPTests/MCPServerTests.swift:285:            let project = try GrantivaMCPServer.resolveProjectDirectory(URL(fileURLWithPath: spelling))
+Tests/GrantivaMCPTests/MCPServerTests.swift:286:            let loaded = try GrantivaMCPServer.loadActiveSession(projectDirectory: project, platform: .ios, keepAliveSessions: store)
+Tests/GrantivaMCPTests/MCPServerTests.swift:311:    private func makeProjectDirectory() throws -> URL {
+Tests/GrantivaMCPTests/MCPServerTests.swift:320:    func testProjectDirectoryAcceptsAnAndroidOnlyProject() throws {
+Tests/GrantivaMCPTests/MCPServerTests.swift:325:        XCTAssertEqual(try GrantivaMCPServer.resolveProjectDirectory(directory).standardizedFileURL, directory.standardizedFileURL)
+Tests/GrantivaMCPTests/MCPServerTests.swift:329:    func testLoadActiveSessionAcceptsAnADBSerial() throws {
+Tests/GrantivaMCPTests/MCPServerTests.swift:330:        let directory = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:336:        let loaded = try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .android, keepAliveSessions: emptyKeepAliveStore())
+Tests/GrantivaMCPTests/MCPServerTests.swift:369:        let (server, connection) = try await GrantivaMCPServer(projectDirectory: directory, platform: .ios)
+Tests/GrantivaMCPTests/MCPServerTests.swift:389:        let directory = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:532:        let directory = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:539:        XCTAssertThrowsError(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .android, keepAliveSessions: emptyKeepAliveStore()))
+Tests/GrantivaMCPTests/MCPServerTests.swift:540:        XCTAssertEqual(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .ios, keepAliveSessions: emptyKeepAliveStore()).wdaPort, 8201)
+Tests/GrantivaMCPTests/MCPServerTests.swift:545:        XCTAssertThrowsError(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .ios, keepAliveSessions: emptyKeepAliveStore()))
+Tests/GrantivaMCPTests/MCPServerTests.swift:546:        XCTAssertEqual(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .android, keepAliveSessions: emptyKeepAliveStore()).udid, "emulator-5554")
+Tests/GrantivaMCPTests/MCPServerTests.swift:597:        let directory = try makeProjectDirectory()
+Tests/GrantivaMCPTests/MCPServerTests.swift:605:            udid: "921A0945-7157-4533-BA1F-21E8132D3E40", runnerPid: 4242, projectDirectory: directory.path,
+Tests/GrantivaMCPTests/MCPServerTests.swift:609:        let loaded = try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .ios, keepAliveSessions: store)
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:69:            projectDirectory: FileManager.default.temporaryDirectory

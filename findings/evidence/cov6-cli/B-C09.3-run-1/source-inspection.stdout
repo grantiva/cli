@@ -1,0 +1,284 @@
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:81:        usleep(100_000)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:15:        let result = await RunnerStartCommand.waitForIOSLaunchFlow(port: 8834, reportDir: directory.path, timeout: 0, sleep: {})
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:21:        let result = await RunnerStartCommand.waitForIOSLaunchFlow(port: 8834, reportDir: nil, timeout: 0, sleep: {})
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:35:            sleep: {
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:50:                sleep: { XCTFail("Dead runner must not consume the timeout") }
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:77:            timeout: 1, launchStatus: { "failed" }, sleep: {}
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:88:            timeout: 0, launchStatus: { nil }, sleep: {}
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:101:            sleep: { polls.set(polls.value + 1) }
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:147:                }, timeout: { _ in try? await Task.sleep(for: .seconds(1)) }, probe: { nil }
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:176:            timeout: { _ in try? await Task.sleep(for: .seconds(5)) },
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:242:            timeout: { _ in try? await Task.sleep(for: .seconds(5)) },
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:256:            timeout: { _ in try? await Task.sleep(for: .seconds(5)) },
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:273:                // 60 s sleep would.
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:274:                try? await Task.sleep(for: .milliseconds(200))
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:411:            sleep: {}
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:421:            sleep: {}
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:483:            usleep(200_000)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:691:        try await Task.sleep(for: .milliseconds(300))
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:712:        try await Task.sleep(for: .milliseconds(200))
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1050:            sleep: {}
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1060:            timeout: 5, sleep: {}
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1093:            sleep: { try? await Task.sleep(for: .milliseconds(100)) }
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1227:        try await Task.sleep(for: .milliseconds(100))
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1232:        try await Task.sleep(for: .milliseconds(100))
+Sources/GrantivaCLI/DriverCommand.swift:216:        - waitForAnimationToEnd:
+Sources/GrantivaCLI/DriverCommand.swift:279:    /// The session flow's `waitForAnimationToEnd` was meant to hold the runner
+Sources/GrantivaCLI/DriverCommand.swift:313:        sleep: @Sendable () async -> Void = { try? await Task.sleep(for: .seconds(1)) }
+Sources/GrantivaCLI/DriverCommand.swift:329:            await sleep()
+Sources/GrantivaCLI/DriverCommand.swift:338:        sleep: @Sendable () async -> Void = { try? await Task.sleep(for: .seconds(1)) }
+Sources/GrantivaCLI/DriverCommand.swift:345:            sleep: sleep
+Sources/GrantivaCLI/DriverCommand.swift:836:                try? await Task.sleep(for: .seconds(1))
+Sources/GrantivaCLI/DriverCommand.swift:856:            try? await Task.sleep(for: .seconds(30))
+Sources/GrantivaCLI/DriverCommand.swift:908:        try? await Task.sleep(for: .seconds(60))
+Sources/GrantivaCLI/DriverCommand.swift:910:            try? await Task.sleep(for: .seconds(wdaBuildTimeout - 60))
+Sources/GrantivaCLI/DriverCommand.swift:991:            try await Task.sleep(nanoseconds: 500_000_000) // 500ms
+Sources/GrantivaCLI/AuthCommand.swift:115:                try await Task.sleep(for: .seconds(interval))
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:276:    private func sleeper() throws -> Process {
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:278:        process.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:294:        let runner = try sleeper()
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:328:        let detached = try sleeper()
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:329:        let keepAlive = try sleeper()
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:351:        let runner = try sleeper()
+Sources/GrantivaCLI/DeviceRunnerSessions.swift:52:            try? await Task.sleep(for: .milliseconds(100))
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:139:                requestedDurationSeconds: 3, lastFrameMilliseconds: 2900, recordedMilliseconds: 3000,
+Sources/GrantivaCLI/DiffCommand.swift:131:                    try await Task.sleep(for: .seconds(2))
+Sources/GrantivaCLI/DiffCommand.swift:393:                        try await Task.sleep(for: .seconds(2))
+Sources/GrantivaCLI/RunCommand.swift:56:    @Option(name: .long, help: "Write this file once the run reaches a terminal state, containing its status. Deleted at startup, and always written — a setup failure records `failed` rather than leaving a waiter hanging. Missing parent directories are created. Wait on it with `while [ ! -f <path> ]; do sleep 0.2; done` instead of polling report.json — useful with --keep-alive, where the session outlives the flows.")
+Sources/GrantivaCLI/RunCommand.swift:81:    /// `--ready-file` is documented as `while [ ! -f "$f" ]; do sleep 0.2; done`,
+Sources/GrantivaCLI/RunCommand.swift:344:        try? await Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
+Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:180:            while !input.isReadyForMoreMediaData { try await Task.sleep(for: .milliseconds(5)) }
+Sources/GrantivaCLI/CICommand.swift:340:                    try await Task.sleep(for: .seconds(2))
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:295:                    Thread.sleep(forTimeInterval: 0.2)
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:395:        try "#!/bin/sh\nexec sleep 30\n".write(toFile: hanging, atomically: true, encoding: .utf8)
+Tests/GrantivaCLITests/RecordCommandTests.swift:67:    func testCleanupStopsRecorderWhenDurationSleepIsCancelledAndPreservesCancellation() async throws {
+Tests/GrantivaCLITests/RecordCommandTests.swift:69:        let enteredSleep = expectation(description: "entered duration sleep")
+Tests/GrantivaCLITests/RecordCommandTests.swift:72:                enteredSleep.fulfill()
+Tests/GrantivaCLITests/RecordCommandTests.swift:73:                try await Task.sleep(for: .seconds(60))
+Tests/GrantivaCLITests/RecordCommandTests.swift:77:        await fulfillment(of: [enteredSleep], timeout: 1)
+Tests/GrantivaMCPTests/MCPServerTests.swift:452:                try await Task.sleep(nanoseconds: 50_000_000)
+Tests/GrantivaMCPTests/MCPServerTests.swift:480:                try await Task.sleep(nanoseconds: 100_000_000)
+Tests/GrantivaCoreTests/ShellQuotingTests.swift:18:                try await Task.sleep(for: .seconds(5))
+Sources/GrantivaMCP/ValidatingTransport.swift:203:                    try? await Task.sleep(nanoseconds: (delay - elapsed) * 1_000_000)
+Sources/GrantivaMCP/ValidatingTransport.swift:210:                try? await Task.sleep(nanoseconds: 1_000_000_000)
+Tests/GrantivaMCPTests/MCPTestSupport.swift:157:        if launchDelay > 0 { try await Task.sleep(nanoseconds: launchDelay) }
+Tests/GrantivaMCPTests/MCPTransportTests.swift:69:        while replies.all.count < 5, Date() < deadline { try await Task.sleep(nanoseconds: 50_000_000) }
+Tests/GrantivaMCPTests/MCPTransportTests.swift:70:        try await Task.sleep(nanoseconds: 300_000_000)  // anything extra would arrive now
+Tests/GrantivaMCPTests/MCPTransportTests.swift:129:        while replies.all.isEmpty, Date() < initializedDeadline { try await Task.sleep(for: .milliseconds(10)) }
+Tests/GrantivaMCPTests/MCPTransportTests.swift:156:        while replies.all.count < expectedCount + 1, Date() < deadline { try await Task.sleep(for: .milliseconds(10)) }
+Tests/GrantivaMCPTests/MCPTransportTests.swift:253:        try await Task.sleep(for: .milliseconds(20))
+Tests/GrantivaMCPTests/MCPTransportTests.swift:292:        try await Task.sleep(for: .milliseconds(20))
+Tests/GrantivaMCPTests/MCPTransportTests.swift:297:        try await Task.sleep(for: .milliseconds(2200))
+Tests/GrantivaMCPTests/MCPTransportTests.swift:406:        while replies.all.count < 2, Date() < deadline { try await Task.sleep(nanoseconds: 50_000_000) }
+Tests/GrantivaMCPTests/MCPTransportTests.swift:425:    /// Sends `lines` (each after its delay) to a server whose one tool sleeps
+Tests/GrantivaMCPTests/MCPTransportTests.swift:428:        _ lines: [(delay: UInt64, line: String)], expect: Int, toolSleeps: UInt64 = 1_000_000_000
+Tests/GrantivaMCPTests/MCPTransportTests.swift:434:            if toolSleeps > 0 { try? await Task.sleep(nanoseconds: toolSleeps) }
+Tests/GrantivaMCPTests/MCPTransportTests.swift:447:            if delay > 0 { try await Task.sleep(nanoseconds: delay * 1_000_000) }
+Tests/GrantivaMCPTests/MCPTransportTests.swift:451:        while replies.all.count < expect, Date() < deadline { try await Task.sleep(nanoseconds: 50_000_000) }
+Tests/GrantivaMCPTests/MCPTransportTests.swift:452:        try await Task.sleep(nanoseconds: 1_500_000_000)  // a late result would arrive now
+Tests/GrantivaMCPTests/MCPTransportTests.swift:476:        let ids = try await replyIDs([(0, batch), (0, list11)], expect: 2, toolSleeps: 0)
+Tests/GrantivaMCPTests/MCPTransportTests.swift:569:            try await Task.sleep(for: .milliseconds(1))
+Tests/GrantivaMCPTests/BuildToolsTests.swift:137:        let long = "error: " + String(repeating: "t", count: 3000)
+Tests/GrantivaCLITests/RunCommandTests.swift:455:    // `while [ ! -f "$f" ]; do sleep 0.2; done`, which has no timeout — wedged
+Tests/GrantivaCoreTests/RunnerHelperReaperTests.swift:52:            try? await Task.sleep(for: .milliseconds(200))
+Tests/GrantivaCoreTests/RunnerHelperReaperTests.swift:100:            "104   100   100 /bin/sleep 60",
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:174:        Thread.sleep(forTimeInterval: 0.2)
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:49:        XCTAssertEqual(steps.map(\.action), ["launchApp", "tapOn: text=\"Favorites\"", "waitForAnimationToEnd", "takeScreenshot"])
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:150:         {"index":1,"yaml":"waitForAnimationToEnd","status":"passed","duration":100},
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:154:         {"index":4,"yaml":"waitForAnimationToEnd","status":"skipped"},
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:156:         {"index":6,"yaml":"waitForAnimationToEnd","status":"skipped"},
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:279:     {"index":2,"type":"waitForAnimationToEnd","yaml":"waitForAnimationToEnd","status":"passed","duration":601},
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:19:    private func sleeper() throws -> Process {
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:21:        process.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:37:        let runner = try sleeper()
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:84:        let holder = try sleeper()
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:85:        let runner = try sleeper()
+Sources/GrantivaMCP/Tools/SessionCapture.swift:50:        pause: @escaping @Sendable (Double) async -> Void = { try? await Task.sleep(for: .seconds($0)) }
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:20:          505   505 /bin/sh -c sleep 60
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:88:        unrelated.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:98:        let snapshot = "  \(unrelated.processIdentifier)  \(unrelated.processIdentifier) /bin/sleep 30"
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:266:        let runnerFile = "\(sessionDirectory)/31830-1791583257475743000.grantiva"
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:267:        let otherRunnerFile = "\(sessionDirectory)/999-1791583257475743000.grantiva"
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:274:        XCTAssertEqual(left, ["999-1791583257475743000.grantiva", "999.owner.json"])
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:295:        func sleeper() throws -> Process {
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:297:            process.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:302:        let runner = try sleeper()
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:303:        let late = try sleeper()
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:311:        let fresh = try sleeper()
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:364:        runner.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/FlowStagingTests.swift:208:    - waitForAnimationToEnd
+Tests/GrantivaCoreTests/SignalRelayTests.swift:43:        usleep(100_000)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:83:            sleep 0.5
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:86:            sleep 1.5
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:132:            sleep 2
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:180:            script: "trap '' INT; sleep 30", lease: lease, timeoutSeconds: 1
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:201:            sleep 2
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:231:            sleep 1
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:233:            sleep 1
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:262:            try await Task.sleep(nanoseconds: 1_000_000_000)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:268:            sleep 30
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:298:                sleep 1
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:327:            (trap '' TERM INT; exec sleep 8) &
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:328:            sleep 0.3
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:330:            sleep 30
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:364:        while :; do sleep 0.1; done
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:374:                try? await Task.sleep(nanoseconds: 25_000_000)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:505:                try? await Task.sleep(nanoseconds: 50_000_000)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:510:            script: "touch \(started); while :; do sleep 0.1; done",
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:119:    func testBareWaitForAnimationToEndIsASettleStep() throws {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:121:        - waitForAnimationToEnd
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:129:    func testWaitForAnimationToEndGeneratesASettleNotASleep() {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:133:        XCTAssertTrue(yaml.contains("- waitForAnimationToEnd:\n    timeout: 3000\n"), yaml)
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:296:        - waitForAnimationToEnd
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:311:        // screenshot (A04); the source's own waitForAnimationToEnd replaces
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:320:        - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:325:        - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:331:        - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:335:        - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:339:        - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/ChildProcessTests.swift:36:            arguments: ["-c", "sleep 30"],
+Tests/GrantivaCoreTests/ChildProcessTests.swift:58:            arguments: ["-c", "sleep 60 & echo $! > \(pidFile); sleep 60"],
+Tests/GrantivaCoreTests/ChildProcessTests.swift:71:            usleep(50_000)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:81:            usleep(50_000)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:133:            child = try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:153:            executable: "/bin/sh", arguments: ["-c", "sleep 30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:157:        usleep(200_000)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:173:            executable: "/bin/sh", arguments: ["-c", "sleep 30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:186:            usleep(50_000)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:202:            executable: "/bin/sh", arguments: ["-c", "trap '' INT TERM; while :; do sleep 0.1; done"],
+Tests/GrantivaCoreTests/ChildProcessTests.swift:209:        usleep(200_000)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:213:        while Date() < deadline, FileManager.default.fileExists(atPath: file.path) { usleep(50_000) }
+Tests/GrantivaCoreTests/ChildProcessTests.swift:222:            executable: "/bin/sh", arguments: ["-c", "trap '' HUP; sleep 30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:227:        usleep(300_000)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:229:        usleep(500_000)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:237:            executable: "/bin/sh", arguments: ["-c", "sleep 30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:246:        while Date() < deadline, kill(-child.pid, 0) == 0 { usleep(50_000) }
+Tests/GrantivaCoreTests/ChildProcessTests.swift:256:            executable: "/bin/sh", arguments: ["-c", "trap '' INT TERM; while :; do sleep 0.1; done"],
+Tests/GrantivaCoreTests/ChildProcessTests.swift:259:        usleep(200_000)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:287:                executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:292:        XCTAssertEqual(lines, ["$ /bin/sleep 30", "stopped by SIGINT: /bin/sleep 30"])
+Tests/GrantivaCoreTests/ChildProcessTests.swift:326:            try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:330:        usleep(200_000)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:332:        usleep(300_000)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:340:            try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:344:        usleep(200_000)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:354:                try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:356:            usleep(200_000)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:378:            if status == nil { usleep(20_000) }
+Tests/GrantivaCoreTests/ChildProcessTests.swift:385:        let sleeper = try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:386:        XCTAssertNil(sleeper.poll())
+Tests/GrantivaCoreTests/ChildProcessTests.swift:387:        kill(sleeper.pid, SIGHUP)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:388:        XCTAssertEqual(sleeper.wait(), SIGHUP)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:389:        XCTAssertEqual(sleeper.terminatingSignal, SIGHUP)
+Sources/GrantivaMCP/Tools/SessionScreenCapture.swift:46:                    outputDir: outputDir, pause: { try? await Task.sleep(for: .seconds($0)) }
+Sources/GrantivaMCP/Tools/SessionScreenCapture.swift:73:                try await Task.sleep(for: .seconds(seconds))
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:63:            process.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:182:        child.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:228:        child.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:1166:            if command.hasSuffix("shell 'sync'") { try? await Task.sleep(for: .seconds(30)) }
+Sources/GrantivaCore/Android/AndroidCaptureSettings.swift:183:            try? await Task.sleep(for: pollInterval)
+Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:205:        try await Task.sleep(for: .milliseconds(50))
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:477:    func testParseWaitForAnimationToEnd() throws {
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:479:        - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:480:            timeout: 3000
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:486:            XCTAssertEqual(steps[0].settle, 3.0) // 3000ms → 3.0s, a settle, not a sleep
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:230:            ✓ waitForAnimationToEnd (700ms)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:71:            deadline: began.addingTimeInterval(0.1), executable: "/bin/sleep", arguments: ["0.5"],
+Tests/GrantivaCoreTests/LogStreamerTests.swift:92:                    deadline: deadline, executable: "/bin/sleep", arguments: ["30"],
+Tests/GrantivaCoreTests/LogStreamerTests.swift:143:        child.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/LogStreamerTests.swift:147:        other.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/LogStreamerTests.swift:221:        Thread.sleep(forTimeInterval: 0.2)
+Tests/GrantivaCoreTests/LogStreamerTests.swift:229:        try streamer.start(executable: "/bin/sleep", arguments: ["30"])
+Tests/GrantivaCoreTests/LogStreamerTests.swift:241:        try streamer.start(executable: "/bin/sleep", arguments: ["30"])
+Tests/GrantivaCoreTests/LogStreamerTests.swift:249:        try streamer.start(executable: "/bin/sleep", arguments: ["30"])
+Tests/GrantivaCoreTests/LogStreamerTests.swift:261:            try streamer.start(executable: "/bin/sleep", arguments: ["30"])
+Tests/GrantivaCoreTests/LogStreamerTests.swift:264:        XCTAssertEqual(lines, ["$ /bin/sleep 30", "stopped by SIGTERM: /bin/sleep 30"])
+Tests/GrantivaCoreTests/LogStreamerTests.swift:283:            Thread.sleep(forTimeInterval: 0.05)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:28:        let data = DefaultSimulator.catalogJSON(executable: "/bin/sleep", arguments: ["30"], timeout: 0.5)
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:56:    private let settle = "- waitForAnimationToEnd:\n    timeout: 5000"
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:58:    // C09: `wait: N` sleeps N seconds; waitForAnimationToEnd is only an upper bound.
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:59:    func testWaitStepSleepsUnconditionally() throws {
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:66:                    script: "${var grantivaWaitUntil = Date.now() + 3000; while (Date.now() < grantivaWaitUntil) {}}"
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:71:        XCTAssertFalse(yaml.contains("timeout: 3000"), yaml)
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:80:        XCTAssertTrue(FlowGenerator.sleepScript(seconds: 1.5).contains("Date.now() + 1500;"))
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:104:            - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:108:            - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:112:            - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:115:            - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:120:            - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:126:            - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:194:        XCTAssertEqual(yaml.components(separatedBy: "waitForAnimationToEnd").count - 1, 2, yaml)
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:216:        XCTAssertTrue(yaml.hasSuffix("- tapOn: \"Go\"\n- waitForAnimationToEnd:\n    timeout: 2000\n- takeScreenshot: \"S\"\n"), yaml)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:172:    /// Runs `/usr/bin/lockf -k <path> sleep 30`, which holds a BSD `flock` on
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:178:        child.arguments = ["-k", SimulatorLease.leasePath(udid: udid, directory: leaseDirectory), "/bin/sleep", "30"]
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:187:            usleep(20_000)
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:187:        let runner = try makeRunner(exitCode: 0, sleepSeconds: 30)
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:223:    private func makeRunner(exitCode: Int, sleepSeconds: Int = 0) throws -> RunnerManager {
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:252:        sleep \(sleepSeconds)
+Sources/GrantivaMCP/Tools/UITools.swift:158:            try await Task.sleep(nanoseconds: 500_000_000)
+Sources/GrantivaMCP/Tools/UITools.swift:167:            try await Task.sleep(nanoseconds: 500_000_000)
+Sources/GrantivaMCP/Tools/UITools.swift:190:        try await Task.sleep(nanoseconds: 500_000_000)
+Sources/GrantivaMCP/Tools/UITools.swift:216:        try await Task.sleep(nanoseconds: 300_000_000)
+Sources/GrantivaCore/Android/EmulatorManager.swift:403:            try await Task.sleep(for: .seconds(pollInterval))
+Sources/GrantivaCore/Android/EmulatorManager.swift:662:                try await Task.sleep(for: .seconds(pollInterval))
+Sources/GrantivaCore/Android/EmulatorManager.swift:689:            try? await Task.sleep(for: .seconds(seconds))
+Sources/GrantivaMCP/Tools/ScriptTools.swift:150:            try await Task.sleep(nanoseconds: 500_000_000)
+Sources/GrantivaMCP/Tools/ScriptTools.swift:154:            try await Task.sleep(nanoseconds: 500_000_000)
+Sources/GrantivaMCP/Tools/ScriptTools.swift:158:            try await Task.sleep(nanoseconds: 500_000_000)
+Sources/GrantivaMCP/Tools/ScriptTools.swift:162:            try await Task.sleep(nanoseconds: 300_000_000)
+Sources/GrantivaMCP/Tools/ScriptTools.swift:165:            try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+Sources/GrantivaCore/WDA/WDAClient.swift:284:                try await Task.sleep(for: retryDelay)
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:12:                try? await Task.sleep(for: .milliseconds(10))
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:81:            try await Task.sleep(nanoseconds: 1_500_000_000)
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:88:                sleepSeconds: 30,
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:114:            try await Task.sleep(nanoseconds: 2_000_000_000)
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:117:        _ = try? await scratch.runFlows(reportDir: nil, sleepSeconds: 30, failureReport: report)
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:136:            try await Task.sleep(nanoseconds: 1_500_000_000)
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:144:                sleepSeconds: 30,
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:245:        if restoreDelay > 0 { try? await Task.sleep(for: .seconds(restoreDelay)) }
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:296:        sleepSeconds: Int = 0,
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:322:        if sleepSeconds > 0 { script += "sleep \(sleepSeconds)\n" }
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:186:                try await Task.sleep(for: .seconds(pollInterval))
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:197:                try await Task.sleep(for: .seconds(pollInterval))
+Tests/GrantivaCoreTests/RunnerSessionInfoTests.swift:20:        XCTAssertFalse(session.ownsRunnerProcess(in: " 4242 4242 /bin/sleep 30"))
+Sources/GrantivaCore/Runner/ChildProcess.swift:198:                usleep(10_000)
+Sources/GrantivaCore/Runner/ChildProcess.swift:298:            usleep(100_000)
+Sources/GrantivaCore/Runner/ChildProcess.swift:304:            usleep(100_000)
+Sources/GrantivaCore/Runner/ChildProcess.swift:331:    wait_runner() { i=0; while kill -0 "$1" 2>/dev/null && [ "$i" -lt "$ticks" ]; do sleep 0.1; i=$((i+1)); done; }
+Sources/GrantivaCore/Runner/ChildProcess.swift:335:    if kill -0 "$1" 2>/dev/null; then kill -KILL "$1" 2>/dev/null; sleep 0.2; fi
+Sources/GrantivaCore/Runner/ReadyFile.swift:44:/// runner — so a waiter can be `while [ ! -f "$f" ]; do sleep 0.2; done` and
+Sources/GrantivaCore/Runner/FlowGenerator.swift:102:                        lines.append("    script: \(FlowEnvironment.quoted(sleepScript(seconds: seconds)))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:107:                        if lines.suffix(2).first == "- waitForAnimationToEnd:" { lines.removeLast(2) }
+Sources/GrantivaCore/Runner/FlowGenerator.swift:108:                        lines.append("- waitForAnimationToEnd:")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:231:    /// before each screenshot. `waitForAnimationToEnd` returns as soon as two
+Sources/GrantivaCore/Runner/FlowGenerator.swift:239:    /// Maestro `waitForAnimationToEnd`) is skipped.
+Sources/GrantivaCore/Runner/FlowGenerator.swift:241:        if lines.suffix(2).first == "- waitForAnimationToEnd:" { return }
+Sources/GrantivaCore/Runner/FlowGenerator.swift:242:        lines.append(contentsOf: ["- waitForAnimationToEnd:", "    timeout: \(settleTimeoutMs)"])
+Sources/GrantivaCore/Runner/FlowGenerator.swift:299:    /// `wait: N` must sleep N seconds unconditionally. The runner has no sleep
+Sources/GrantivaCore/Runner/FlowGenerator.swift:300:    /// command, and `waitForAnimationToEnd` is only an upper bound: it returns
+Sources/GrantivaCore/Runner/FlowGenerator.swift:303:    /// The loop spins one core for those N seconds; a sleep command in the
+Sources/GrantivaCore/Runner/FlowGenerator.swift:305:    static func sleepScript(seconds: Double) -> String {
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:130:            usleep(200_000)
+Sources/GrantivaCore/Config/GrantivaConfig.swift:53:            /// Maestro `waitForAnimationToEnd`: wait until the screen is still,
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:293:            usleep(100_000)
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:321:            case "waitForAnimationToEnd": return .step(.init(settle: defaultSettleSeconds))
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:430:        // A settle, not a sleep: it returns as soon as the screen is still.
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:431:        if dict.keys.contains("waitForAnimationToEnd") {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:432:            let timeout = (dict["waitForAnimationToEnd"] as? [String: Any])?["timeout"]
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:493:    /// Upper bound for `waitForAnimationToEnd` without a `timeout:`.
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:273:            try? await Task.sleep(for: pollInterval)
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:32:            try await Task.sleep(for: pollInterval)
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:62:            // Sleeping on that task would throw immediately and burn through every
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:66:                try? await Task.sleep(for: pollInterval)
+Sources/GrantivaCore/Runner/RunnerExecution.swift:214:                                try? await Task.sleep(nanoseconds: 100_000_000)
+Sources/GrantivaCore/Runner/RunnerExecution.swift:229:                try? await Task.sleep(nanoseconds: 200_000_000)
+Sources/GrantivaCore/Runner/RunnerExecution.swift:236:            try await Task.sleep(nanoseconds: request.timeoutSeconds * 1_000_000_000)
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:169:                try? await Task.sleep(for: pollInterval)
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:315:            try? await Task.sleep(for: pollInterval)
+Sources/GrantivaCore/Runner/LogStreamer.swift:188:                if remaining > 0 { usleep(useconds_t(min(0.01, remaining) * 1_000_000)) }
+Sources/GrantivaCore/Runner/LogStreamer.swift:319:            while p.isRunning, Date() < deadline { usleep(10_000) }
+Sources/GrantivaCore/Runner/LogStreamer.swift:323:                while p.isRunning, Date() < killDeadline { usleep(10_000) }
+Sources/GrantivaCore/Runner/LogStreamer.swift:379:                while process.isRunning, Date() < deadline { usleep(1_000) }
+Sources/GrantivaCore/Runner/LogStreamer.swift:396:            usleep(1_000)
+Sources/GrantivaCore/Platform/IOSPlatform.swift:207:        while recorder.isRunning, Date() < deadline { usleep(10_000) }
+Sources/GrantivaCore/Platform/IOSPlatform.swift:229:                    try await Task.sleep(for: .seconds(seconds))

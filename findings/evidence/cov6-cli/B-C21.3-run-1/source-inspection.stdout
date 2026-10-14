@@ -1,0 +1,34 @@
+Tests/GrantivaCLITests/ConsoleCommandTests.swift:514:                "Not authenticated. Run: grantiva auth login"
+Sources/GrantivaCLI/AuthCommand.swift:226:                Output.line("Not authenticated. Run: grantiva auth login")
+Tests/GrantivaCLITests/DiffCommandTests.swift:174:                "No capture found for \"Missing\" in \(directory.path). Run: grantiva diff capture"
+Tests/GrantivaCLITests/DiffCommandTests.swift:195:                "No captures found for \"A\", \"B\", \"C\" in \(directory.path). Run: grantiva diff capture"
+Tests/GrantivaCLITests/DiffCommandTests.swift:394:                + "its 2 other files are not configured screens (failure-1, flow-cmd-003-Home). Run: grantiva diff capture"
+Tests/GrantivaCLITests/RemediationCommandTests.swift:7:/// Every "Run: grantiva ..." remediation has to name a command that exists.
+Tests/GrantivaCLITests/RemediationCommandTests.swift:121:        XCTAssertTrue(GrantivaError.simulatorNotRunning.errorDescription!.contains("Run: grantiva simulator ensure --name \"<device>\""))
+Sources/GrantivaCLI/DiffCommand.swift:621:                + "(\(others.joined(separator: ", "))). Run: grantiva diff capture"
+Sources/GrantivaCLI/DiffCommand.swift:760:                    message: "New screen — no baseline. Run: grantiva diff approve"
+Sources/GrantivaCLI/DiffCommand.swift:802:        case 1: return "No capture found for \"\(missing[0])\" in \(captureDirectory). Run: grantiva diff capture"
+Sources/GrantivaCLI/DiffCommand.swift:805:            return "No captures found for \(names) in \(captureDirectory). Run: grantiva diff capture"
+Tests/GrantivaCLITests/HelpCorpusTests.swift:7:/// RunnerLifecycleCommandTests; this walks the whole command tree so a new
+Tests/GrantivaCoreTests/TableFormatterTests.swift:42:        XCTAssertTrue(none.hasPrefix("? No baselines: 2 new screens. Run: grantiva diff approve"), none)
+Tests/GrantivaCoreTests/TableFormatterTests.swift:46:        XCTAssertTrue(mixed.hasPrefix("? Visual diff incomplete: 1 new screen has no baseline. Run: grantiva diff approve"), mixed)
+Tests/GrantivaMCPTests/VRTToolsTests.swift:91:        let plain = try script(#"echo "No captures found in .grantiva/captures. Run: grantiva diff capture" >&2; exit 1"#)
+Tests/GrantivaMCPTests/VRTToolsTests.swift:93:        XCTAssertEqual(try textContent(of: approve), "Error: No captures found in .grantiva/captures. Run: grantiva diff capture")
+Tests/GrantivaCoreTests/DoctorTests.swift:206:        XCTAssertEqual(android.fix, "Run: grantiva init --platform android")
+Tests/GrantivaCoreTests/DoctorTests.swift:237:        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck(name: "iPhone 18 Pro").fix, "Run: grantiva simulator ensure --name \"iPhone 18 Pro\"")
+Tests/GrantivaCoreTests/DoctorTests.swift:238:        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck().fix, "Run: grantiva simulator ensure --name \"\(DefaultSimulator.name)\"")
+Tests/GrantivaCoreTests/DoctorTests.swift:262:            "Run: grantiva simulator ensure --name \"Grantiva iPhone 18 Pro\" and set simulator: Grantiva iPhone 18 Pro in grantiva.yml "
+Tests/GrantivaCoreTests/DoctorTests.swift:267:            "Run: grantiva simulator ensure --name \"iPhone 18 Pro\""
+Tests/GrantivaCoreTests/DoctorTests.swift:276:        XCTAssertEqual(check.fix, "Run: grantiva simulator ensure --name \"\(DefaultSimulator.name)\"")
+Sources/GrantivaCore/GrantivaError.swift:34:            return "No simulator is running. Run: grantiva simulator ensure --name \"<device>\""
+Sources/GrantivaCore/GrantivaError.swift:46:            return "Not authenticated. Run: grantiva auth login"
+Sources/GrantivaCore/GrantivaError.swift:48:            return "grantiva.yml not found. Run: grantiva init"
+Sources/GrantivaCore/GrantivaError.swift:58:            return "No captures found in \(dir). Run: grantiva diff capture"
+Sources/GrantivaCore/Output/TableOutput.swift:130:            return "? No baselines: \(screens). Run: grantiva diff approve"
+Sources/GrantivaCore/Output/TableOutput.swift:132:        return "? Visual diff incomplete: \(screens) \(newScreens == 1 ? "has" : "have") no baseline. Run: grantiva diff approve"
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:138:            fix = "Run: grantiva simulator ensure --name \"Grantiva \(name)\" and set simulator: Grantiva \(name) in grantiva.yml "
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:141:            fix = "Run: grantiva simulator ensure --name \"\(name)\""
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:166:                    fix: "Run: grantiva runner install", section: .advisory
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:178:            fix: "Run: grantiva runner install", section: .advisory
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:277:            fix: platform == .ios ? "Run: grantiva init" : "Run: grantiva init --platform android",
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:331:            fix: "Run: grantiva auth login",

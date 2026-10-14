@@ -1,0 +1,22 @@
+Sources/GrantivaCLI/InitCommand.swift:169:        #     - missing_label
+Sources/GrantivaCLI/InitCommand.swift:249:        #     - missing_label
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:115:        XCTAssertEqual(config.a11y.rules, ["missing_label", "small_tap_target"])
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:153:        XCTAssertEqual(config.a11y.rules, ["missing_label", "small_tap_target"])
+Sources/GrantivaMCP/Tools/UITools.swift:234:        let rules = config?.a11y.rules ?? ["missing_label", "small_tap_target"]
+Sources/GrantivaMCP/Tools/UITools.swift:262:        "android.widget.Button", "android.widget.ImageButton", "android.widget.EditText", "android.widget.CheckBox",
+Sources/GrantivaMCP/Tools/UITools.swift:333:        // Rule: missing_label
+Sources/GrantivaMCP/Tools/UITools.swift:339:        if rules.contains("missing_label") && isInteractive && enabled && !labelledContainer {
+Sources/GrantivaMCP/Tools/UITools.swift:342:                    "rule": "missing_label",
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:230:              rules: [missing_label]
+Sources/GrantivaCore/Config/GrantivaConfig.swift:231:        public init(rules: [String] = ["missing_label", "small_tap_target"]) {
+Tests/GrantivaMCPTests/UIToolsTests.swift:180:        XCTAssertTrue(text.contains("missing_label"), text)
+Tests/GrantivaMCPTests/UIToolsTests.swift:222:        let config = GrantivaConfig(a11y: .init(rules: ["missing_label"]))
+Tests/GrantivaMCPTests/UIToolsTests.swift:303:        XCTAssertTrue(text.contains("missing_label"), text)
+Tests/GrantivaMCPTests/UIToolsTests.swift:312:        XCTAssertFalse(text.contains("missing_label"), text)
+Tests/GrantivaMCPTests/UIToolsTests.swift:320:        XCTAssertTrue(text.contains("missing_label"), text)
+Tests/GrantivaMCPTests/UIToolsTests.swift:362:        XCTAssertFalse(text.contains("missing_label"), text)
+Tests/GrantivaMCPTests/UIToolsTests.swift:367:    func testA11yCheckStillFlagsAClickableImageButtonWithNoLabelAnywhere() async throws {
+Tests/GrantivaMCPTests/UIToolsTests.swift:370:              <android.widget.ImageButton class="android.widget.ImageButton" text="" content-desc="" clickable="true" enabled="true" bounds="[0,0][300,300]" displayed="true" />
+Tests/GrantivaMCPTests/UIToolsTests.swift:374:        XCTAssertEqual(text.components(separatedBy: "\"missing_label\"").count - 1, 1, text)
+Tests/GrantivaMCPTests/UIToolsTests.swift:386:        XCTAssertTrue(text.contains("missing_label"), text)
+Tests/GrantivaMCPTests/ToolDispatchTests.swift:88:        XCTAssertTrue(try textContent(of: result).contains("missing_label"))

@@ -1,0 +1,53 @@
+Tests/GrantivaAPITests/AnalyticsAPITests.swift:68:        XCTAssertTrue(url.hasPrefix("https://api.example.com/api/v1/analytics/devices/"), url)
+Tests/GrantivaAPITests/AnalyticsAPITests.swift:69:        XCTAssertFalse(url.dropFirst("https://api.example.com/api/v1/analytics/devices/".count).contains("/"), url)
+Sources/GrantivaAPI/AnalyticsEndpoints.swift:54:    /// `GET /api/v1/analytics/devices/:keyId`
+Sources/GrantivaAPI/AnalyticsEndpoints.swift:57:        return Endpoint(path: "\(prefix)/devices/\(encoded)", method: .get)
+Tests/GrantivaAPITests/OrgAPITests.swift:37:        XCTAssertEqual(try! OrgDeviceEndpoints.detail(keyId: "a/b").url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/devices/a%2Fb")
+Sources/GrantivaAPI/AnalyticsModels.swift:12:// `/api/v1/analytics/devices/:keyId` is a raw Fluent model and serializes with
+Sources/GrantivaAPI/AnalyticsModels.swift:294:/// `GET /api/v1/analytics/devices/:keyId`.
+Tests/GrantivaCLITests/TargetOptionsTests.swift:32:            XCTAssertTrue("\(error)".contains("--derived-data-path"), "\(error)")
+Tests/GrantivaCLITests/BuildCommandTests.swift:61:            "--derived-data-path", "/tmp/Grantiva DerivedData",
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:27:    private var home: String { "\(base.path)/versions/1.1.28-grantiva.15/devices/\(udid)" }
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:36:        let output = "\(home)/cache/wda-builds/sim-ios26.0-iphone-wda16.12.8-r1/devices/\(udid)/run-\(runnerPid)-1791790261185038000/attempt-1.xcresult/Staging/1_Test/Diagnostics/simctl_diagnostics"
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:219:        let other = "/Users/someone/elsewhere/devices/\(udid)/run-1-1/x"
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:223:            "502     1   502 /Library/Developer/PrivateFrameworks/CoreSimulator.framework/Versions/A/Resources/bin/simctl diagnose --output=\(base.path)/versions/1/devices/DEAD-BEEF/x --udid=DEAD-BEEF",
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:224:            "503     1   503 /bin/zsh -c grantiva simulator ensure && echo \(base.path)/versions/1/devices/\(udid)",
+Tests/GrantivaCLITests/DocsContractTests.swift:48:        XCTAssertTrue(readme.contains("`<runner home>/versions/<stamp>/devices/<udid>`"))
+Tests/GrantivaCLITests/InstallCommandTests.swift:38:        let command = try InstallCommand.parse(["--derived-data-path", path])
+Tests/GrantivaCLITests/InstallCommandTests.swift:49:            "--derived-data-path", "/tmp/run-local-derived-data",
+Tests/GrantivaCLITests/InstallCommandTests.swift:54:                "-derivedDataPath", "/tmp/configured-derived-data",
+Tests/GrantivaCLITests/InstallCommandTests.swift:59:                "-derivedDataPath", "/tmp/run-local-derived-data",
+Tests/GrantivaCLITests/InstallCommandTests.swift:66:            "--derived-data-path", "/tmp/run-local-derived-data",
+Tests/GrantivaCLITests/InstallCommandTests.swift:71:                "-derivedDataPath=/tmp/configured-derived-data",
+Tests/GrantivaCLITests/InstallCommandTests.swift:73:            ["-derivedDataPath", "/tmp/run-local-derived-data"]
+Tests/GrantivaCLITests/InstallCommandTests.swift:86:            appPath: "/tmp/Derived Data/Tien Len.app",
+Tests/GrantivaCLITests/InstallCommandTests.swift:99:        XCTAssertEqual(json["appPath"] as? String, "/tmp/Derived Data/Tien Len.app")
+Sources/GrantivaCore/Android/AndroidCaptureSettings.swift:168:        return ["device offline", "no devices/emulators found", "error: closed", "device still connecting"]
+Tests/GrantivaCoreTests/RunnerHelperReaperTests.swift:19:            + "--output=\(base ?? self.base)/versions/1.1.28/devices/\(udid)/cache/wda-builds/sim-ios26.0-iphone-wda16.12.8-r1/devices/\(udid)/run-\(runPid)-1791728323714722000/attempt-1.xcresult/Staging/1_Test/Diagnostics/simctl_diagnostics --no-archive --udid=\(udid)"
+Tests/GrantivaCoreTests/AndroidCaptureSettingsTests.swift:224:        XCTAssertTrue(AndroidCaptureSettings.deviceLeftAdb(GrantivaError.commandFailed("adb: no devices/emulators found", 1)))
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:201:        let homes = ["v1", "v2"].map { "\(directory)/runner/versions/\($0)/devices/\(udid)" }
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:202:        let other = "\(directory)/runner/versions/v1/devices/OTHER-1"
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:469:        let line = " 4806  4806 /Library/Developer/PrivateFrameworks/CoreSimulator.framework/Versions/A/Resources/bin/simctl diagnose -l -b --timeout=600 --log-option=--last --log-option=2m --output=/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/fix3-cli/runner-home/versions/1.1.28-grantiva.10+android-drivers-2/devices/\(udid)/cache/wda-builds/sim-ios26.0-iphone-wda16.12.8-r1/devices/\(udid)/run-4685-1791728323714722000/attempt-1.xcresult/Staging/1_Test/Diagnostics/simctl_diagnostics --no-archive --udid=\(udid)"
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:100:///   (`<runner home>/…/devices/<udid>/…/run-<runner pid>-…`).
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:189:    /// the device's runner home (`<runner home>/…/devices/<udid>`), so the
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:228:    /// (`<runner base>/…/devices/<udid>`) under one of `runnerBases`.
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:231:        let device = "/devices/\(udid.lowercased())"
+Sources/GrantivaCore/Runner/RunnerHelperReaper.swift:273:        let device = "/devices/\(udid.lowercased())/"
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:40:        XCTAssertEqual(home1, "\(home!)/devices/AAAA-1111")
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:41:        XCTAssertEqual(home2, "\(home!)/devices/BBBB-2222")
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:200:        let line = WDADeviceHome.failureLine(home: "/r/devices/U", error: error)
+Tests/GrantivaCoreTests/WDADeviceHomeTests.swift:201:        XCTAssertEqual(line, "/r/devices/U: \u{201C}U\u{201D} couldn\u{2019}t be removed because you don\u{2019}t have permission to access it")
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:137:        let home = "\(capacity.directory)/runner/versions/\(stamp)/devices/\(udid)"
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:69:                session: session, deleted: true, deviceHomesRemoved: ["/h/devices/x"]
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:264:        let error = try XCTUnwrap(SimulatorCommand.Teardown.deviceHomeError(["/r/versions/v1/devices/U: denied"]))
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:266:        XCTAssertTrue(message.contains("/r/versions/v1/devices/U: denied"), message)
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:272:        let reason = "/r/versions/v1/devices/U: \u{201C}U\u{201D} couldn\u{2019}t be removed because you don\u{2019}t have permission to access it."
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:276:        let two = try XCTUnwrap(SimulatorCommand.Teardown.deviceHomeError([reason, "/r/devices/U: denied."]).flatMap(\.errorDescription))
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:278:        XCTAssertTrue(two.contains("access it; /r/devices/U: denied. Delete it by hand."), two)
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:14:/// Grantiva points `MAESTRO_RUNNER_HOME` at `<install>/devices/<udid>` instead,
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:163:    /// installed runner version, `versions/<stamp>/devices/<udid>`, plus the
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:164:    /// unversioned `devices/<udid>` older installs used. Called when the
+Sources/GrantivaCLI/TargetOptions.swift:80:            ("--derived-data-path", derivedDataPath != nil), ("--logs-predicate", logsPredicate != nil),
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:24:    /// The device's runner homes (`<runner home>/versions/<runner version>/devices/<udid>`) that were removed.
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:39:    /// The device's runner homes (`<runner home>/versions/<runner version>/devices/<udid>`) that were removed.
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:11:    /// live at `<runnerHome>/versions/<runner version>/devices/<udid>`.

@@ -1,0 +1,16 @@
+Tests/GrantivaCLITests/AndroidCommandTests.swift:422:            XCTAssertTrue(message.hasPrefix("com.fake.app is not installed on Fake (emulator-5598)"), message)
+Tests/GrantivaCLITests/RunCommandTests.swift:1020:                "com.kylebrowning.Landmarks is not installed on qa-ios-1. Drop --no-build or run grantiva build install."
+Sources/GrantivaMCP/Tools/SimTools.swift:14:            description: "List iOS simulators with their name, UDID, state (as simctl reports it), runtime (e.g. iOS 26.0), and availability (no when the simulator's runtime is not installed).",
+Sources/GrantivaMCP/Tools/EmulatorTools.swift:7:/// is not installed on this Mac.
+Sources/GrantivaCore/Android/AndroidPlatform.swift:216:            throw GrantivaError.invalidArgument("\(appID) is not installed on \(deviceID), so its logs cannot be streamed.")
+Sources/GrantivaCore/Android/ADB.swift:100:    /// monkey says "No activities found" for a package that is not installed
+Tests/GrantivaCoreTests/ADBTests.swift:160:    /// What `adb shell monkey` prints for a package that is not installed
+Tests/GrantivaCoreTests/ADBTests.swift:182:            XCTAssertTrue(message.hasPrefix("com.example.app is not installed on emulator-5554"), message)
+Tests/GrantivaCoreTests/ADBTests.swift:196:            XCTAssertTrue(error.localizedDescription.contains("is not installed"), error.localizedDescription)
+Sources/GrantivaCore/Android/EmulatorManager.swift:457:    /// `Booting` while it is still offline. adb failing (not installed, server
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:343:    /// included for `runner stop` and teardown. A dead runner is never a
+Sources/GrantivaCore/Doctor/DoctorRunner.swift:214:            return DoctorCheck(name: "Android Emulator", status: required ? .error : .warning, message: "Not installed", fix: "Run: sdkmanager emulator")
+Sources/GrantivaCore/Platform/IOSPlatform.swift:63:    /// directory") for a bundle ID that is not installed. Any other failure
+Sources/GrantivaCore/Platform/IOSPlatform.swift:65:    /// app, so it is reported as unknown rather than "not installed".
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:171:        XCTAssertNil(isUnknown, "an unrelated simctl failure must not read as not installed")
+Sources/GrantivaCore/GrantivaError.swift:97:        "\(appID) is not installed on \(device)"

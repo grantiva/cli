@@ -1,0 +1,34 @@
+## Commands
+
+```
+grantiva run                Run Maestro flows against a simulator or emulator. No visual regression: reports step pass/fail and captures a screenshot on failure (see --keep-alive, --logs, --flow)
+grantiva record             Record a simulator or emulator and extract PNG frames at exact requested timestamps
+grantiva hierarchy          Dump the UI hierarchy of a booted simulator or emulator without relaunching the app (reads a `run --keep-alive` session)
+grantiva build build        Build the app for a simulator (xcodebuild) or emulator (Gradle); `grantiva build` alone runs this
+grantiva build install      Build and install the app on a simulator or emulator, then optionally launch it (--no-launch to skip)
+grantiva ci run             Run full CI pipeline: capture screenshots, compare against baselines, upload results
+grantiva diff capture       Navigate to configured screens and capture screenshots
+grantiva diff compare       Diff current captures against baselines
+grantiva diff approve       Promote current captures to baselines
+grantiva simulator ensure   Create or reuse a named simulator and boot it (--name alone reuses an existing one)
+grantiva simulator delete   Explicitly delete a named simulator
+grantiva simulator sessions List Grantiva-managed simulator capacity slots
+grantiva simulator teardown End a managed session, or reclaim one simulator by UDID when no ledger entry exists (--udid <UDID> --force)
+grantiva simulator cleanup  Delete Grantiva-created simulators that are shut down and not part of an active session
+grantiva emulator ensure    Create the AVD when missing (installing its system image first) and boot it; stdout is the serial, or with --no-boot the AVD name (the serial when it is already running)
+grantiva emulator delete    Delete an AVD Grantiva created; others need --force; a running AVD is never deleted
+grantiva emulator sessions  List the emulators Grantiva started
+grantiva emulator teardown  Kill emulators Grantiva started: one by --serial, or --all
+grantiva console            Manage your Grantiva dashboard from the terminal (see `grantiva console --help`)
+grantiva auth login         Authenticate with Grantiva API
+grantiva auth status        Show current authentication status
+grantiva auth logout        Remove saved authentication credentials
+grantiva doctor             Check environment and dependencies (non-zero exit if a required check fails)
+grantiva runner install     Extract or update the embedded runner binary
+grantiva runner version     Show the embedded runner version
+grantiva runner start       Start the runner with WDA (UIAutomator2 on Android) and keep it alive for interactive use
+grantiva runner stop        Stop the running runner session
+grantiva runner dump-hierarchy  Dump the view hierarchy from a running app for agent inspection
+grantiva mcp                Start the Grantiva MCP server for AI agent integration (tool list: docs/mcp.md)
+grantiva init               Generate grantiva.yml (iOS) or grantiva-android.yml (Android) in the current directory
+```

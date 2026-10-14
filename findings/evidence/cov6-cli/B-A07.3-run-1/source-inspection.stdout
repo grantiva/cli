@@ -1,0 +1,130 @@
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:422:            status: process.terminationStatus
+Sources/GrantivaAPI/ConsoleClient.swift:215:        continuation.onTermination = { _ in task.cancel() }
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:139:            defer { SignalRelay.shared.resetTerminationForTesting(); RunnerNarration.isSilenced = false }
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:141:            let token = SignalRelay.shared.onTermination { cleaned.set(true) }
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:145:                    SignalRelay.shared.simulateTerminationForTesting()
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:1140:            continuation.onTermination = { _ in
+Sources/GrantivaCLI/DriverCommand.swift:696:        let startupInterrupt = SignalRelay.shared.onTermination { cleanup.run() }
+Sources/GrantivaCLI/DriverCommand.swift:849:            onInterrupt: { SignalRelay.shared.onTermination($0) },
+Sources/GrantivaCLI/DriverCommand.swift:1147:                let (termination, reaped) = await dependencies.helperReaper.stopping(
+Sources/GrantivaCLI/DriverCommand.swift:1150:                outcome = .stopped(pid: session.pid, udid: session.udid, killed: termination == .killed, reaped: reaped, details: details)
+Sources/GrantivaCLI/DriverCommand.swift:1250:    var terminateGroup: @Sendable (Int32) -> ChildProcess.GroupTermination
+Sources/GrantivaCLI/ConsoleOpenCommand.swift:96:        return process.terminationStatus
+Tests/GrantivaCLITests/RecordCommandTests.swift:29:        XCTAssertNotEqual(process.terminationReason, .exit)
+Tests/GrantivaCLITests/RecordCommandTests.swift:41:            terminationAttempts: 100,
+Tests/GrantivaCLITests/RecordCommandTests.swift:46:        XCTAssertNotEqual(process.terminationStatus, 0)
+Tests/GrantivaCLITests/RunCommandTests.swift:729:        defer { SignalRelay.shared.resetTerminationForTesting() }
+Tests/GrantivaCLITests/RunCommandTests.swift:739:        SignalRelay.shared.resetTerminationForTesting()
+Tests/GrantivaCLITests/RunCommandTests.swift:742:        SignalRelay.shared.simulateTerminationForTesting()
+Tests/GrantivaCoreTests/ChildProcessTests.swift:99:    func testTerminationStatusDecoding() {
+Tests/GrantivaCoreTests/ChildProcessTests.swift:100:        XCTAssertEqual(ChildProcess.terminationStatus(raw: 7 << 8), 7) // exit(7)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:101:        XCTAssertEqual(ChildProcess.terminationStatus(raw: SIGTERM), SIGTERM) // killed
+Tests/GrantivaCoreTests/ChildProcessTests.swift:123:    func testAChildStartsWithTerminationSignalsDeliverableWhateverTheParentBlocks() throws {
+Sources/GrantivaMCP/ValidatingTransport.swift:238:            continuation.onTermination = { _ in task.cancel() }
+Tests/GrantivaCoreTests/SignalRelayTests.swift:7:final class SignalRelayTests: XCTestCase {
+Tests/GrantivaCoreTests/SignalRelayTests.swift:8:    func testCleanupsRunOnTerminationAndCanBeRemoved() {
+Tests/GrantivaCoreTests/SignalRelayTests.swift:10:        let token = SignalRelay.shared.onTermination { ran.fulfill() }
+Tests/GrantivaCoreTests/LogStreamerTests.swift:5:final class LogStreamerTests: XCTestCase {
+Tests/GrantivaCoreTests/LogStreamerTests.swift:226:    /// stream, so the streamer must register its own termination cleanup.
+Tests/GrantivaCoreTests/LogStreamerTests.swift:227:    func testTerminationCleanupsKillARunningLogStream() throws {
+Tests/GrantivaCoreTests/LogStreamerTests.swift:235:        XCTAssertTrue(waitForExit(pid), "the log stream outlived the termination cleanups")
+Tests/GrantivaCoreTests/LogStreamerTests.swift:239:    func testARestartedStreamIsStillCoveredByTheTerminationCleanup() throws {
+Sources/GrantivaCore/Build/AppBinaryResolver.swift:75:        guard process.terminationStatus == 0 else {
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:205:        XCTAssertEqual(child.terminationStatus, SIGTERM, "the stray duplicate Grantiva spawned is stopped")
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:242:        XCTAssertEqual(child.terminationReason, .uncaughtSignal)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:243:        XCTAssertEqual(child.terminationStatus, SIGTERM)
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:26:    func testTerminationCleanupRestoresCaptureStateAndCleansOrphans() {
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:30:        RunnerSession.terminationCleanup(platform: fake, deviceID: "emulator-5554")()
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:35:    func testTerminationCleanupGivesUpAfterTheTimeout() {
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:39:        RunnerSession.terminationCleanup(platform: fake, deviceID: "emulator-5554", timeout: 0.05)()
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:77:        defer { SignalRelay.shared.resetTerminationForTesting() }
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:82:            SignalRelay.shared.simulateTerminationForTesting()
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:110:        defer { SignalRelay.shared.resetTerminationForTesting() }
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:115:            SignalRelay.shared.simulateTerminationForTesting()
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:132:        defer { SignalRelay.shared.resetTerminationForTesting() }
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:137:            SignalRelay.shared.simulateTerminationForTesting()
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:229:/// Records the capture-restore calls a termination cleanup makes; every other
+Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:105:        XCTAssertEqual(process.terminationStatus, 0)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:94:        XCTAssertEqual(outcome.terminationStatus, 0)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:141:        XCTAssertEqual(outcome.terminationStatus, 0)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:161:        XCTAssertEqual(outcome.terminationStatus, 3)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:183:        XCTAssertNotEqual(outcome.terminationStatus, 0)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:209:        XCTAssertEqual(outcome.terminationStatus, 0)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:241:        XCTAssertEqual(outcome.terminationStatus, 0)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:253:        defer { SignalRelay.shared.resetTerminationForTesting() }
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:263:            SignalRelay.shared.simulateTerminationForTesting()
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:349:        let outcome = RunnerExecution.Outcome(terminationStatus: 3, stderr: "", timedOut: false)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:381:        defer { SignalRelay.shared.resetTerminationForTesting() }
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:399:        XCTAssertEqual(outcome.terminationStatus, 1)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:406:        defer { SignalRelay.shared.resetTerminationForTesting() }
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:424:        XCTAssertEqual(outcome.terminationStatus, 0)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:433:            defer { SignalRelay.shared.resetTerminationForTesting() }
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:461:        defer { SignalRelay.shared.resetTerminationForTesting() }
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:498:        defer { SignalRelay.shared.resetTerminationForTesting() }
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:520:        defer { SignalRelay.shared.resetTerminationForTesting() }
+Sources/GrantivaCore/Shell.swift:45:    GrantivaLog.logger.debug("exit \(process.terminationStatus): \(command)")
+Sources/GrantivaCore/Shell.swift:49:    guard process.terminationStatus == 0 else {
+Sources/GrantivaCore/Shell.swift:52:            errOutput.isEmpty ? (output.isEmpty ? "\(command) exited with code \(process.terminationStatus)" : output) : errOutput,
+Sources/GrantivaCore/Shell.swift:53:            process.terminationStatus
+Sources/GrantivaCore/Shell.swift:86:    guard process.terminationStatus == 0 else { return nil }
+Sources/GrantivaCore/Shell.swift:96:/// The exit is observed through the termination handler rather than
+Sources/GrantivaCore/Shell.swift:115:        process.terminationHandler = { _ in
+Sources/GrantivaCore/Shell.swift:126:    GrantivaLog.logger.debug("exit \(process.terminationStatus): \(command)")
+Sources/GrantivaCore/Shell.swift:128:    guard process.terminationStatus == 0 else {
+Sources/GrantivaCore/Shell.swift:131:            errors.isEmpty ? (output.isEmpty ? "\(command) exited with code \(process.terminationStatus)" : output) : errors,
+Sources/GrantivaCore/Shell.swift:132:            process.terminationStatus
+Sources/GrantivaCore/Platform/IOSPlatform.swift:243:            throw GrantivaError.commandFailed("Grantiva recording produced no video: \(message)", recorder.terminationStatus)
+Tests/GrantivaMCPTests/MCPTransportTests.swift:559:            continuation.onTermination = { _ in task.cancel() }
+Sources/GrantivaCore/Runner/RunnerSession.swift:178:        let restoreOnSignal = SignalRelay.shared.onTermination(Self.terminationCleanup(platform: platform, deviceID: udid))
+Sources/GrantivaCore/Runner/RunnerSession.swift:233:        guard outcome.terminationStatus == 0, !outcome.interrupted else {
+Sources/GrantivaCore/Runner/RunnerSession.swift:271:                outcome.interrupted ? 130 : outcome.terminationStatus
+Sources/GrantivaCore/Runner/RunnerSession.swift:530:        let restoreOnSignal = SignalRelay.shared.onTermination(Self.terminationCleanup(platform: platform, deviceID: udid))
+Sources/GrantivaCore/Runner/RunnerSession.swift:580:        guard outcome.terminationStatus == 0, !outcome.interrupted else {
+Sources/GrantivaCore/Runner/RunnerSession.swift:634:                outcome.interrupted ? 130 : outcome.terminationStatus
+Sources/GrantivaCore/Runner/RunnerSession.swift:667:    static func terminationCleanup(platform: any DevicePlatform, deviceID: String, timeout: TimeInterval = 15) -> @Sendable () -> Void {
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:46:        guard process.terminationStatus == 0,
+Sources/GrantivaCore/Runner/RunnerExecution.swift:10:        let terminationStatus: Int32
+Sources/GrantivaCore/Runner/RunnerExecution.swift:24:        return "exit \(outcome.terminationStatus)"
+Sources/GrantivaCore/Runner/RunnerExecution.swift:84:                terminationStatus: 1,
+Sources/GrantivaCore/Runner/RunnerExecution.swift:126:        let cleanupToken = SignalRelay.shared.onTermination {
+Sources/GrantivaCore/Runner/RunnerExecution.swift:274:            terminationStatus: status,
+Sources/GrantivaCore/Runner/ChildProcess.swift:172:    /// termination status: the exit code, or the signal number when the child
+Sources/GrantivaCore/Runner/ChildProcess.swift:241:        let status = Self.terminationStatus(raw: raw)
+Sources/GrantivaCore/Runner/ChildProcess.swift:257:    static func terminationStatus(raw: Int32) -> Int32 {
+Sources/GrantivaCore/Runner/ChildProcess.swift:273:    public enum GroupTermination: Equatable, Sendable {
+Sources/GrantivaCore/Runner/ChildProcess.swift:287:    public func terminateGroup(gracePeriod: TimeInterval = 5) -> GroupTermination {
+Sources/GrantivaCore/Runner/ChildProcess.swift:292:    public static func terminateGroup(_ pgid: pid_t, gracePeriod: TimeInterval = 5) -> GroupTermination {
+Sources/GrantivaCore/Runner/SubprocessLog.swift:35:        let signal = process.terminationReason == .uncaughtSignal ? process.terminationStatus : nil
+Sources/GrantivaCore/Runner/SubprocessLog.swift:38:            status: process.terminationStatus, signal: signal
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:72:        process.terminationHandler = { _ in exited.signal() }
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:86:        return process.terminationStatus == 0 ? output.value : nil
+Sources/GrantivaCore/Runner/SignalRelay.swift:110:    public func onTermination(_ body: @escaping @Sendable () -> Void) -> UInt64 {
+Sources/GrantivaCore/Runner/SignalRelay.swift:148:    /// Pair with `resetTerminationForTesting()`.
+Sources/GrantivaCore/Runner/SignalRelay.swift:149:    public func simulateTerminationForTesting() {
+Sources/GrantivaCore/Runner/SignalRelay.swift:153:    public func resetTerminationForTesting() {
+Sources/GrantivaCore/Runner/SignalRelay.swift:250:    /// Returns false when a termination is already under way.
+Sources/GrantivaCore/Runner/RunnerManager.swift:122:            guard process.terminationStatus == 0 else {
+Sources/GrantivaCore/Runner/RunnerManager.swift:123:                throw GrantivaError.commandFailed("Failed to extract \(tarball.lastPathComponent)", process.terminationStatus)
+Sources/GrantivaCore/Runner/RunnerManager.swift:205:        guard process.terminationStatus == 0, fm.fileExists(atPath: binary),
+Sources/GrantivaCore/Runner/RunnerManager.swift:517:        process.terminationHandler = { _ in exited.signal() }
+Sources/GrantivaCore/Runner/RunnerManager.swift:530:        guard process.terminationStatus == 0 else {
+Sources/GrantivaCore/Runner/RunnerManager.swift:531:            return .failure(.init(reason: "it exited with status \(process.terminationStatus)"))
+Sources/GrantivaCore/Runner/RunnerManager.swift:602:        return process.terminationStatus != 1
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:40:        terminationAttempts: Int = 20,
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:47:        if await waitForExit(process, attempts: terminationAttempts, pollInterval: pollInterval) { return }
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:50:        guard await waitForExit(process, attempts: terminationAttempts, pollInterval: pollInterval) else {
+Sources/GrantivaCore/Runner/LogStreamer.swift:93:    private var terminationCleanup: UInt64?
+Sources/GrantivaCore/Runner/LogStreamer.swift:94:    private var terminationLogged: EndedOnce?
+Sources/GrantivaCore/Runner/LogStreamer.swift:271:        p.terminationHandler = { process in
+Sources/GrantivaCore/Runner/LogStreamer.swift:274:        terminationLogged = ended
+Sources/GrantivaCore/Runner/LogStreamer.swift:294:        terminationCleanup = SignalRelay.shared.onTermination { [self] in stop() }
+Sources/GrantivaCore/Runner/LogStreamer.swift:305:        if let terminationCleanup {
+Sources/GrantivaCore/Runner/LogStreamer.swift:306:            SignalRelay.shared.removeCleanup(terminationCleanup)
+Sources/GrantivaCore/Runner/LogStreamer.swift:307:            self.terminationCleanup = nil
+Sources/GrantivaCore/Runner/LogStreamer.swift:335:            terminationLogged?.once { SubprocessLog.ended(p) }
+Sources/GrantivaCore/Runner/LogStreamer.swift:337:        terminationLogged = nil
+Sources/GrantivaCore/Runner/LogStreamer.swift:393:                guard process.terminationStatus == 0 else { throw InventoryError.commandFailed }
+Sources/GrantivaCore/Runner/LogStreamer.swift:403:/// Set once by whichever of `stop()` and the termination handler sees the
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:63:    public var terminateGroup: @Sendable (Int32) -> ChildProcess.GroupTermination
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:85:        terminateGroup: @escaping @Sendable (Int32) -> ChildProcess.GroupTermination,
+Sources/GrantivaCore/Runner/RunnerSessionStopper.swift:147:    /// group termination's own grace (`terminateGroup`, 5 s live) is not

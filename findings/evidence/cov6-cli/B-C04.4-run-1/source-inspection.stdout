@@ -1,0 +1,386 @@
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:15:        let result = await RunnerStartCommand.waitForIOSLaunchFlow(port: 8834, reportDir: directory.path, timeout: 0, sleep: {})
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:21:        let result = await RunnerStartCommand.waitForIOSLaunchFlow(port: 8834, reportDir: nil, timeout: 0, sleep: {})
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:34:            port: 8834, reportDir: directory.path, timeout: 1,
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:49:                port: 8834, reportDir: nil, timeout: 60, runnerExit: { status },
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:60:            reportDir: "/tmp/start/report"
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:68:            flowPath: "/tmp/session-flow.yaml", reportDir: "/tmp/session-report"
+Sources/GrantivaCLI/DriverCommand.swift:223:        let reportDir = tempDir.appendingPathComponent("report").path
+Sources/GrantivaCLI/DriverCommand.swift:229:            reportDir: reportDir
+Sources/GrantivaCLI/DriverCommand.swift:235:            appID: resolvedAppID, device: booted, platform: platform, platformDevice: platformDevice, reportDir: reportDir
+Sources/GrantivaCLI/DriverCommand.swift:285:    static func runnerArguments(platform: any DevicePlatform, deviceID: String, flowPath: String, reportDir: String? = nil) -> [String] {
+Sources/GrantivaCLI/DriverCommand.swift:287:            + ["--keep-alive"] + (reportDir.map { ["--output", $0, "--flatten"] } ?? []) + [flowPath]
+Sources/GrantivaCLI/DriverCommand.swift:336:        port: UInt16, reportDir: String?, timeout: TimeInterval = 60,
+Sources/GrantivaCLI/DriverCommand.swift:343:            launchStatus: { completedLaunchStatus(reportDir: reportDir) },
+Sources/GrantivaCLI/DriverCommand.swift:349:    private static func completedLaunchStatus(reportDir: String?) -> String? {
+Sources/GrantivaCLI/DriverCommand.swift:350:        guard let directory = reportDir,
+Sources/GrantivaCLI/DriverCommand.swift:351:              let report = RunnerReportIndex.load(reportDir: directory),
+Sources/GrantivaCLI/DriverCommand.swift:414:        var reportDir: String? = nil
+Sources/GrantivaCLI/DriverCommand.swift:428:            launchStatus: { completedLaunchStatus(reportDir: launch.reportDir) },
+Sources/GrantivaCLI/DriverCommand.swift:617:            let launchWait = await Self.waitForIOSLaunchFlow(port: found, reportDir: launch.reportDir, runnerExit: { child.poll() })
+Sources/GrantivaCLI/DriverCommand.swift:774:            let launchWait = await Self.waitForIOSLaunchFlow(port: found, reportDir: launch.reportDir, runnerExit: { child.poll() })
+Sources/GrantivaCLI/RunCommand+Result.swift:12:        resultOutput: ResultOutput, reportDir: String? = nil
+Sources/GrantivaCLI/RunCommand+Result.swift:17:                screens: captures.map(RunResult.ScreenResult.init), allPassed: allPassed, reportDir: reportDir
+Sources/GrantivaCLI/RunCommand+Result.swift:92:    static func absoluteReportDir(_ reportDir: String?) -> String? {
+Sources/GrantivaCLI/RunCommand+Result.swift:93:        guard let reportDir, !reportDir.isEmpty else { return nil }
+Sources/GrantivaCLI/RunCommand+Result.swift:94:        return reportDir.hasPrefix("/") ? reportDir : FileManager.default.currentDirectoryPath + "/" + reportDir
+Sources/GrantivaCLI/RunCommand+Result.swift:97:    /// The `reportDir` a JSON document or ready file names: the absolute
+Sources/GrantivaCLI/RunCommand+Result.swift:99:    static func existingReportDir(_ reportDir: String?) -> String? {
+Sources/GrantivaCLI/RunCommand+Result.swift:100:        guard let path = absoluteReportDir(reportDir) else { return nil }
+Sources/GrantivaCLI/RunCommand+Result.swift:119:    /// `reportDir` whenever `--report-dir` was given, `error` only on failure.
+Sources/GrantivaCLI/RunCommand+Result.swift:127:        var reportDir: String?
+Sources/GrantivaCLI/RunCommand+Result.swift:129:        init(screens: [ScreenResult], allPassed: Bool, error: String? = nil, reportDir: String? = nil) {
+Sources/GrantivaCLI/RunCommand+Result.swift:133:            self.reportDir = reportDir
+Sources/GrantivaCLI/RunCommand+Result.swift:190:    static func failureResult(error: Error, report: RunnerFailureReport, reportDir: String? = nil) -> RunResult {
+Sources/GrantivaCLI/RunCommand+Result.swift:194:        let reportDir = reportDir ?? report.reportDir
+Sources/GrantivaCLI/RunCommand+Result.swift:198:            return RunResult(screens: screens, allPassed: true, reportDir: reportDir)
+Sources/GrantivaCLI/RunCommand+Result.swift:201:            screens: screens, allPassed: false, error: failureMessage(error), reportDir: reportDir
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:41:            RunReadyState(status: "failed", flows: [.init(name: "screens", status: "failed")], reportDir: "/ci/out", error: nil),
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:48:                screens: [.init(screen), .init(flowEntry)], allPassed: true, reportDir: "/ci/out"
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:51:                screens: [.init(failedEntry)], allPassed: false, error: "Runner failed (exit 1): ...", reportDir: "/ci/out"
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:224:    func testRunJSONNamesTheReportDirectoryInCamelCase() throws {
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:225:        let json = try JSONOutput.string(RunCommand.RunResult(screens: [], allPassed: true, reportDir: "/ci/out"))
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:226:        XCTAssertTrue(json.contains("\"reportDir\""), json)
+Tests/GrantivaCLITests/RunCommandTests.swift:57:    private static let failFastOptions = RunCommand.SessionOptions(reportDir: nil, timeoutSeconds: 600, failFast: true)
+Tests/GrantivaCLITests/RunCommandTests.swift:61:    func testScreensSessionReceivesReportDirTimeoutAndContinueOnFailure() async throws {
+Tests/GrantivaCLITests/RunCommandTests.swift:63:        let expected = RunCommand.SessionOptions(reportDir: "out", timeoutSeconds: 45, failFast: false)
+Tests/GrantivaCLITests/RunCommandTests.swift:66:                       RunCommand.SessionOptions(reportDir: nil, timeoutSeconds: 600, failFast: true))
+Tests/GrantivaCLITests/RunCommandTests.swift:79:    func testMixedSuiteGivesTheScreensSessionItsOwnReportDirectory() async throws {
+Tests/GrantivaCLITests/RunCommandTests.swift:80:        let options = RunCommand.SessionOptions(reportDir: "out", timeoutSeconds: 90, failFast: true)
+Tests/GrantivaCLITests/RunCommandTests.swift:88:        XCTAssertEqual(screens, RunCommand.SessionOptions(reportDir: "out/screens", timeoutSeconds: 90, failFast: true))
+Tests/GrantivaCLITests/RunCommandTests.swift:105:            options: RunCommand.SessionOptions(reportDir: nil, timeoutSeconds: 600, failFast: false),
+Tests/GrantivaCLITests/RunCommandTests.swift:131:            options: RunCommand.SessionOptions(reportDir: nil, timeoutSeconds: 600, failFast: false),
+Tests/GrantivaCLITests/RunCommandTests.swift:152:                    options: RunCommand.SessionOptions(reportDir: nil, timeoutSeconds: 600, failFast: false),
+Tests/GrantivaCLITests/RunCommandTests.swift:240:        XCTAssertNil(command.reportDir)
+Tests/GrantivaCLITests/RunCommandTests.swift:307:            XCTAssertTrue((json["reportDir"] as? String)?.hasSuffix("/rep") == true, "\(json)")
+Tests/GrantivaCLITests/RunCommandTests.swift:364:        XCTAssertNil(json["reportDir"])
+Tests/GrantivaCLITests/RunCommandTests.swift:917:    func testASetupFailureReadyFileHasTheErrorAndNoMissingReportDir() async throws {
+Tests/GrantivaCLITests/RunCommandTests.swift:943:        XCTAssertNil(state.reportDir)
+Tests/GrantivaCLITests/RunCommandTests.swift:954:        XCTAssertTrue(kept.reportDir?.hasPrefix("/") == true, "\(String(describing: kept.reportDir))")
+Tests/GrantivaCLITests/RunCommandTests.swift:955:        XCTAssertTrue(kept.reportDir?.hasSuffix("/out") == true, "\(String(describing: kept.reportDir))")
+Tests/GrantivaCLITests/RunSessionContractTests.swift:200:        let json = try await runJSON(passing: false, reportDir: "rep")
+Tests/GrantivaCLITests/RunSessionContractTests.swift:207:    func testAPassingDocumentCarriesReportDirLikeAFailingOne() async throws {
+Tests/GrantivaCLITests/RunSessionContractTests.swift:208:        let pass = try await runJSON(passing: true, reportDir: "rep")
+Tests/GrantivaCLITests/RunSessionContractTests.swift:209:        let fail = try await runJSON(passing: false, reportDir: "rep")
+Tests/GrantivaCLITests/RunSessionContractTests.swift:210:        let passDir = try XCTUnwrap(pass["reportDir"] as? String)
+Tests/GrantivaCLITests/RunSessionContractTests.swift:211:        let failDir = try XCTUnwrap(fail["reportDir"] as? String)
+Tests/GrantivaCLITests/RunSessionContractTests.swift:216:        let none = try await runJSON(passing: true, reportDir: nil)
+Tests/GrantivaCLITests/RunSessionContractTests.swift:217:        XCTAssertNil(none["reportDir"])
+Tests/GrantivaCLITests/RunSessionContractTests.swift:221:        let pass = try await runJSON(passing: true, reportDir: "rep")
+Tests/GrantivaCLITests/RunSessionContractTests.swift:222:        let fail = try await runJSON(passing: false, reportDir: "rep")
+Tests/GrantivaCLITests/RunSessionContractTests.swift:243:    private func runJSON(passing: Bool, reportDir: String?) async throws -> [String: Any] {
+Tests/GrantivaCLITests/RunSessionContractTests.swift:251:            if let reportDir { arguments += ["--report-dir", reportDir] }
+Sources/GrantivaCLI/RunCommand.swift:49:    var reportDir: String?
+Sources/GrantivaCLI/RunCommand.swift:212:        json: Bool, resultOutput: ResultOutput, reportDir: String? = nil, log: (String) -> Void
+Sources/GrantivaCLI/RunCommand.swift:220:            try? resultOutput.emit(Self.failureResult(error: error, report: report, reportDir: reportDir))
+Sources/GrantivaCLI/RunCommand.swift:292:                    reportDir: Self.existingReportDir(reportDir)
+Sources/GrantivaCLI/RunCommand.swift:303:            // `error` says why, as the --json document does; `reportDir` only
+Sources/GrantivaCLI/RunCommand.swift:309:                        reportDir: Self.existingReportDir(reportDir),
+Sources/GrantivaCLI/RunCommand.swift:365:        let captureDir = reportDir.map { dir in
+Sources/GrantivaCLI/RunCommand.swift:547:                        reportDir: session.reportDir,
+Sources/GrantivaCLI/RunCommand.swift:571:                        reportDir: session.reportDir,
+Sources/GrantivaCLI/RunCommand.swift:584:                json: options.json, resultOutput: resultOutput, reportDir: Self.existingReportDir(reportDir), log: log
+Sources/GrantivaCLI/RunCommand.swift:591:            resultOutput: resultOutput, reportDir: Self.existingReportDir(reportDir)
+Sources/GrantivaCLI/RunCommand.swift:597:        var reportDir: String?
+Sources/GrantivaCLI/RunCommand.swift:606:        SessionOptions(reportDir: reportDir, timeoutSeconds: UInt64(timeout), failFast: !continueOnFailure)
+Sources/GrantivaCLI/RunCommand.swift:654:                screenOptions.reportDir = options.reportDir.map { ($0 as NSString).appendingPathComponent("screens") }
+Sources/GrantivaCLI/RunCommand.swift:697:                    RunReadyState(status: "failed", flows: flows, reportDir: flowsState?.reportDir),
+Tests/GrantivaCoreTests/RunnerTraceExportTests.swift:7:    private var reportDir: URL!
+Tests/GrantivaCoreTests/RunnerTraceExportTests.swift:13:        reportDir = scratch.appendingPathComponent("report")
+Tests/GrantivaCoreTests/RunnerTraceExportTests.swift:15:        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerTraceExportTests.swift:123:        let assets = reportDir.appendingPathComponent("assets/flow")
+Tests/GrantivaCoreTests/RunnerTraceExportTests.swift:175:        try FileManager.default.removeItem(at: reportDir)
+Tests/GrantivaCoreTests/RunnerTraceExportTests.swift:201:            reportDir: reportDir.path,
+Tests/GrantivaCoreTests/RunnerTraceExportTests.swift:231:        let directoryURL = reportDir.appendingPathComponent(directory)
+Tests/GrantivaCoreTests/RunnerTraceExportTests.swift:237:        let flows = reportDir.appendingPathComponent("flows")
+Tests/GrantivaCoreTests/RunnerTraceExportTests.swift:244:        try Data(json.utf8).write(to: reportDir.appendingPathComponent("report.json"))
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:50:        RunnerReportRewriter.rewrite(reportDir: report.path, stagedPathMap: [staged: user])
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:75:            let reportDir = "out-\(exitCode)"
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:78:                runner: runner, outputDir: "captures", reportDir: reportDir, timeoutSeconds: 30
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:81:                let text = try String(contentsOfFile: "\(scratch.path)/\(reportDir)/\(file)", encoding: .utf8)
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:164:    func testScreensRunWritesToASuppliedReportDirAndKeepsIt() async throws {
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:170:            failFast: true, reportDir: "out", timeoutSeconds: 30
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:172:        let reportDir = "\(scratch.path)/out"
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:173:        XCTAssertTrue(FileManager.default.fileExists(atPath: "\(reportDir)/report.json"), "report dir must survive the run")
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:174:        let report = try String(contentsOfFile: "\(reportDir)/report.json", encoding: .utf8)
+Tests/GrantivaCoreTests/RunnerSessionReportTests.swift:181:            URL(fileURLWithPath: reportDir).resolvingSymlinksInPath().path
+Sources/GrantivaCore/Runner/ReadyFile.swift:21:    public let reportDir: String?
+Sources/GrantivaCore/Runner/ReadyFile.swift:25:    public init(status: String, flows: [Flow], finishedAt: Date = Date(), reportDir: String? = nil, error: String? = nil) {
+Sources/GrantivaCore/Runner/ReadyFile.swift:29:        self.reportDir = reportDir
+Sources/GrantivaCore/Runner/ReadyFile.swift:165:    public static func finalFlows(reportDir: String, unfinishedAs unfinishedStatus: String) -> [RunReadyState.Flow] {
+Sources/GrantivaCore/Runner/ReadyFile.swift:166:        (load(reportDir: reportDir)?.readyState.flows ?? []).map { flow in
+Sources/GrantivaCore/Runner/ReadyFile.swift:171:    public static func load(reportDir: String) -> RunnerReportIndex? {
+Sources/GrantivaCore/Runner/ReadyFile.swift:172:        let path = "\(reportDir)/report.json"
+Sources/GrantivaCore/Runner/ReadyFile.swift:214:            reportDir: state.reportDir, error: state.error
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:11:    private var reportDir: URL!
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:17:        reportDir = scratch.appendingPathComponent("report")
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:19:        try FileManager.default.createDirectory(at: reportDir.appendingPathComponent("flows"), withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:61:        let steps = try XCTUnwrap(RunnerFailureReport.captures(reportDir: reportDir.path).first?.steps)
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:72:                                         to: reportDir.appendingPathComponent("report.json"))
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:74:                                         to: reportDir.appendingPathComponent("flows/flow-000.json"))
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:76:        let flow = try XCTUnwrap(RunnerReportSteps.report(in: reportDir.path)?.flows?.first)
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:77:        let commands = RunnerReportSteps.commands(of: flow, in: reportDir.path)
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:82:        XCTAssertEqual(RunnerReportSteps.firstFailure(in: reportDir.path)?.line,
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:85:        RunnerReportFinalizer.finalize(reportDir: reportDir.path, status: "failed", reason: "ignored for terminal report")
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:86:        RunnerReportRewriter.rewrite(reportDir: reportDir.path, stagedPathMap: ["/staged/crash.yaml": "flows/crash.yaml"])
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:128:            screens: screens, reportDir: reportDir.path, outputDir: outputDir.path, owners: owners,
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:160:        let failure = try XCTUnwrap(RunnerReportSteps.firstFailure(in: reportDir.path))
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:165:            screens: screens, reportDir: reportDir.path, outputDir: outputDir.path, owners: owners,
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:184:            reportDir: reportDir.path, status: "failed",
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:203:        let junit = try String(contentsOf: reportDir.appendingPathComponent("junit-report.xml"), encoding: .utf8)
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:209:        XCTAssertEqual(RunnerReportIndex.load(reportDir: reportDir.path)?.readyState.status, "failed")
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:214:        RunnerReportFinalizer.finalize(reportDir: reportDir.path, status: "interrupted", reason: "grantiva was interrupted")
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:223:        RunnerReportFinalizer.finalize(reportDir: reportDir.path, status: "failed", reason: "x")
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:247:        RunnerTraceTrimmer.trimTrailing(reportDir: reportDir.path)
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:249:        let assets = try FileManager.default.contentsOfDirectory(atPath: reportDir.appendingPathComponent("assets/flow-000").path).sorted()
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:251:        let allure = try FileManager.default.contentsOfDirectory(atPath: reportDir.appendingPathComponent("allure-results").path)
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:255:        let result = try String(contentsOf: reportDir.appendingPathComponent("allure-results/abc-result.json"), encoding: .utf8)
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:313:            reportDir: reportDir.path, outputDir: outputDir.path,
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:327:        let url = reportDir.appendingPathComponent(relative)
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:333:        let data = try Data(contentsOf: reportDir.appendingPathComponent(relative))
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:28:        reportDir: String? = nil,
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:35:        readyReportDir: String? = nil
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:45:            reportDir: reportDir ?? scratch.path,
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:51:        request.readyReportDir = readyReportDir
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:68:        let reportDir = scratch.appendingPathComponent("report")
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:69:        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:72:        let report = reportDir.appendingPathComponent("report.json").path
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:89:            reportDir: reportDir.path,
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:123:        let reportDir = scratch.appendingPathComponent("report")
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:124:        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:127:        let report = reportDir.appendingPathComponent("report.json").path
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:135:            reportDir: reportDir.path,
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:190:        let reportDir = scratch.appendingPathComponent("report")
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:191:        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:197:        let report = reportDir.appendingPathComponent("report.json").path
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:204:            reportDir: reportDir.path,
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:216:    func testPreparedReportDirectoryCannotPublishAStaleReadyVerdict() async throws {
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:220:        let reportDir = scratch.appendingPathComponent("reused-report")
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:221:        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:222:        let report = reportDir.appendingPathComponent("report.json")
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:225:        try RunnerReportWorkspace.prepare(at: reportDir.path)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:236:            reportDir: reportDir.path,
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:255:        let reportDir = scratch.appendingPathComponent("report")
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:256:        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:257:        let report = reportDir.appendingPathComponent("report.json").path
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:271:            reportDir: reportDir.path,
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:282:        XCTAssertNil(state.reportDir, "an ephemeral report dir is deleted on exit and must not be advertised")
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:285:    func testTheWatcherAdvertisesOnlyThePreservedReportDir() async throws {
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:290:            let reportDir = scratch.appendingPathComponent("report-\(preserved)")
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:291:            try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:292:            let report = reportDir.appendingPathComponent("report.json").path
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:301:                reportDir: reportDir.path,
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:303:                readyReportDir: preserved ? reportDir.path : nil
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:305:            XCTAssertEqual(try ReadyFile.read(readyPath).reportDir, preserved ? reportDir.path : nil)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:385:        let reportDir = scratch.appendingPathComponent("report")
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:386:        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:391:            script: holdingRunner(report: reportDir.appendingPathComponent("report.json").path, sessions: store.directory,
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:393:            lease: lease, reportDir: reportDir.path, readyFile: ReadyFileSignal(path: readyPath),
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:410:        let reportDir = scratch.appendingPathComponent("report")
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:411:        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:416:            script: holdingRunner(report: reportDir.appendingPathComponent("report.json").path, sessions: store.directory,
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:418:            lease: lease, reportDir: reportDir.path, readyFile: ReadyFileSignal(path: readyPath),
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:437:            let reportDir = scratch.appendingPathComponent("report-\(name)")
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:438:            try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:446:                script: holdingRunner(report: reportDir.appendingPathComponent("report.json").path, sessions: store.directory,
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:448:                lease: lease, reportDir: reportDir.path, readyFile: ReadyFileSignal(path: readyPath),
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:465:        let reportDir = scratch.appendingPathComponent("report-crash")
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:466:        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:471:            script: holdingRunner(report: reportDir.appendingPathComponent("report.json").path, sessions: store.directory,
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:473:            lease: lease, reportDir: reportDir.path, readyFile: ReadyFileSignal(path: readyPath),
+Sources/GrantivaCore/Runner/RunnerSession+Screens.swift:32:        reportDir: String,
+Sources/GrantivaCore/Runner/RunnerSession+Screens.swift:41:        let report = RunnerReportSteps.report(in: reportDir)
+Sources/GrantivaCore/Runner/RunnerSession+Screens.swift:42:        let commands = report?.flows?.first.map { RunnerReportSteps.commands(of: $0, in: reportDir) } ?? []
+Sources/GrantivaCore/Runner/RunnerSession+Screens.swift:46:        let assetsDir = "\(reportDir)/assets"
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:64:                reportDir: scratch.path,
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:149:        let reportDir = scratch.appendingPathComponent("report")
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:150:        try FileManager.default.createDirectory(at: reportDir.appendingPathComponent("flows"), withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:152:            .write(to: reportDir.appendingPathComponent("report.json"), atomically: true, encoding: .utf8)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:154:            .write(to: reportDir.appendingPathComponent("flows/flow-000.json"), atomically: true, encoding: .utf8)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:156:        let failure = try XCTUnwrap(RunnerReportSteps.firstFailure(in: reportDir.path))
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:181:    func testAnEphemeralReportDirectoryIsNeverPrinted() {
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:183:        let filter = RunnerOutputFilter(ephemeralReportDir: "/var/folders/jv/T/grantiva-report-ABC")
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:192:    func testAKeptReportDirectoryIsPrintedAsTheRunnerWroteIt() {
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:193:        let filter = RunnerOutputFilter(ephemeralReportDir: nil)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:200:        let expected = RunnerOutputFilter(ephemeralReportDir: "/var/folders/jv/T/grantiva-report-ABC").apply(text)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:201:        var filter = RunnerOutputFilter(ephemeralReportDir: "/var/folders/jv/T/grantiva-report-ABC")
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:214:        var filter = RunnerOutputFilter(ephemeralReportDir: "/var/folders/x/grantiva-report-1")
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:445:        let reportDir = scratch.appendingPathComponent("skipped-report")
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:446:        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:448:            .write(to: reportDir.appendingPathComponent("report.json"), atomically: true, encoding: .utf8)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:450:        report.record(reportDir: reportDir.path, preservedReportDir: nil)
+Tests/GrantivaCoreTests/ReadyFileTests.swift:218:    func testLoadsFromAReportDirectory() throws {
+Tests/GrantivaCoreTests/ReadyFileTests.swift:219:        let reportDir = scratch.appendingPathComponent("report")
+Tests/GrantivaCoreTests/ReadyFileTests.swift:220:        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/ReadyFileTests.swift:222:            .write(to: reportDir.appendingPathComponent("report.json"), atomically: true, encoding: .utf8)
+Tests/GrantivaCoreTests/ReadyFileTests.swift:224:        let report = try XCTUnwrap(RunnerReportIndex.load(reportDir: reportDir.path))
+Tests/GrantivaCoreTests/ReadyFileTests.swift:226:        XCTAssertNil(RunnerReportIndex.load(reportDir: scratch.appendingPathComponent("missing").path))
+Tests/GrantivaCoreTests/ReadyFileTests.swift:232:        let reportDir = scratch.appendingPathComponent("report")
+Tests/GrantivaCoreTests/ReadyFileTests.swift:233:        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/ReadyFileTests.swift:235:            .write(to: reportDir.appendingPathComponent("report.json"), atomically: true, encoding: .utf8)
+Tests/GrantivaCoreTests/ReadyFileTests.swift:237:        let flows = RunnerReportIndex.finalFlows(reportDir: reportDir.path, unfinishedAs: "interrupted")
+Tests/GrantivaCoreTests/ReadyFileTests.swift:240:        XCTAssertEqual(RunnerReportIndex.finalFlows(reportDir: scratch.appendingPathComponent("missing").path, unfinishedAs: "failed"), [])
+Tests/GrantivaCoreTests/ReadyFileTests.swift:243:    func testErrorAndReportDirAreOmittedWhenAbsent() throws {
+Tests/GrantivaCoreTests/ReadyFileTests.swift:247:        XCTAssertFalse(json.contains("reportDir"), json)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:440:        let reportDir = "\(directory)/ci-reports"
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:441:        try FileManager.default.createDirectory(atPath: reportDir, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:443:        claim.temporaryDirectories = [reportDir]
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:449:        XCTAssertTrue(FileManager.default.fileExists(atPath: reportDir))
+Tests/GrantivaCoreTests/RunnerArtifactCollectorTests.swift:7:    private var reportDir: URL!
+Tests/GrantivaCoreTests/RunnerArtifactCollectorTests.swift:13:        reportDir = scratch.appendingPathComponent("report")
+Tests/GrantivaCoreTests/RunnerArtifactCollectorTests.swift:15:        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+Tests/GrantivaCoreTests/RunnerArtifactCollectorTests.swift:112:            reportDir: reportDir.path,
+Tests/GrantivaCoreTests/RunnerArtifactCollectorTests.swift:128:        let directoryURL = reportDir.appendingPathComponent(directory)
+Tests/GrantivaCoreTests/RunnerArtifactCollectorTests.swift:135:        try Data(json.utf8).write(to: reportDir.appendingPathComponent("report.json"))
+Sources/GrantivaCore/Runner/RunnerReportSteps.swift:59:    static func report(in reportDir: String) -> Report? {
+Sources/GrantivaCore/Runner/RunnerReportSteps.swift:60:        let root = URL(fileURLWithPath: reportDir, isDirectory: true).standardizedFileURL
+Sources/GrantivaCore/Runner/RunnerReportSteps.swift:67:    static func commands(of flow: Report.Flow, in reportDir: String) -> [FlowData.Command] {
+Sources/GrantivaCore/Runner/RunnerReportSteps.swift:69:        let root = URL(fileURLWithPath: reportDir, isDirectory: true).standardizedFileURL
+Sources/GrantivaCore/Runner/RunnerReportSteps.swift:151:    static func firstFailure(in reportDir: String) -> Failure? {
+Sources/GrantivaCore/Runner/RunnerReportSteps.swift:152:        guard let report = report(in: reportDir) else { return nil }
+Sources/GrantivaCore/Runner/RunnerReportSteps.swift:155:            let commands = commands(of: flow, in: reportDir)
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:5:final class RunnerSessionCleanupTests: XCTestCase {
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:47:    func testAnEphemeralReportDirIsNotWrittenToTheReadyFile() async throws {
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:51:        _ = try await scratch.runFlows(reportDir: nil)
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:55:        XCTAssertNil(state.reportDir)
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:58:    func testAPreservedReportDirIsWrittenToTheReadyFile() async throws {
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:61:        let reportDir = scratch.root.appendingPathComponent("report").path
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:63:        _ = try await scratch.runFlows(reportDir: reportDir)
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:66:        XCTAssertEqual(state.reportDir, reportDir)
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:67:        XCTAssertTrue(FileManager.default.fileExists(atPath: "\(reportDir)/report.json"))
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:86:                reportDir: nil,
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:100:        XCTAssertNil(state.reportDir)
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:117:        _ = try? await scratch.runFlows(reportDir: nil, sleepSeconds: 30, failureReport: report)
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:142:                reportDir: nil,
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:173:                reportDir: nil,
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:184:        XCTAssertNil(report.reportDir, "an ephemeral report dir is gone and must not be named")
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:193:    func testARunnerFailureNamesAPreservedReportDir() async throws {
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:197:        let reportDir = scratch.root.appendingPathComponent("report").path
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:200:            reportDir: reportDir, reportJSON: Self.failedReport, exitStatus: 1, failureReport: report
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:203:        XCTAssertEqual(report.reportDir, reportDir)
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:292:        reportDir: String?,
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:340:            reportDir: reportDir,
+Sources/GrantivaCore/Runner/RunnerExecution.swift:41:        let reportDir: String
+Sources/GrantivaCore/Runner/RunnerExecution.swift:44:        var readyReportDir: String?
+Sources/GrantivaCore/Runner/RunnerExecution.swift:129:                flows: RunnerReportIndex.finalFlows(reportDir: request.reportDir, unfinishedAs: "interrupted"),
+Sources/GrantivaCore/Runner/RunnerExecution.swift:130:                reportDir: request.readyReportDir
+Sources/GrantivaCore/Runner/RunnerExecution.swift:201:                if let index = RunnerReportIndex.load(reportDir: request.reportDir),
+Sources/GrantivaCore/Runner/RunnerExecution.swift:222:                            reportDir: request.readyReportDir
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:52:    /// assets in `reportDir`, the matching Allure attachments, and every
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:54:    static func trimTrailing(reportDir: String) {
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:56:        let root = URL(fileURLWithPath: reportDir, isDirectory: true)
+Sources/GrantivaCore/Runner/RunnerArtifactCollector.swift:36:        reportDir: String,
+Sources/GrantivaCore/Runner/RunnerArtifactCollector.swift:44:            reportDir: reportDir,
+Sources/GrantivaCore/Runner/RunnerArtifactCollector.swift:48:        let reportFlows = RunnerReportSteps.report(in: reportDir)?.flows ?? []
+Sources/GrantivaCore/Runner/RunnerArtifactCollector.swift:90:            var steps = reportFlow.map { RunnerReportSteps.steps(RunnerReportSteps.commands(of: $0, in: reportDir), pathMap: pathMap) } ?? []
+Sources/GrantivaCore/Runner/RunnerArtifactCollector.swift:108:        reportDir: String,
+Sources/GrantivaCore/Runner/RunnerArtifactCollector.swift:112:        let reportURL = URL(fileURLWithPath: reportDir, isDirectory: true).standardizedFileURL
+Sources/GrantivaCore/Runner/RunnerArtifactCollector.swift:121:            reportDir: reportDir,
+Sources/GrantivaCore/Runner/RunnerArtifactCollector.swift:137:        reportDir: String,
+Sources/GrantivaCore/Runner/RunnerArtifactCollector.swift:142:        let reportURL = URL(fileURLWithPath: reportDir, isDirectory: true).standardizedFileURL
+Sources/GrantivaCore/Runner/RunnerFailureReport.swift:11:    private var storedReportDir: String?
+Sources/GrantivaCore/Runner/RunnerFailureReport.swift:35:    func recordScreens(_ captures: [ScreenCapture], preservedReportDir: String?) {
+Sources/GrantivaCore/Runner/RunnerFailureReport.swift:39:        if storedReportDir == nil { storedReportDir = preservedReportDir }
+Sources/GrantivaCore/Runner/RunnerFailureReport.swift:74:    public var reportDir: String? {
+Sources/GrantivaCore/Runner/RunnerFailureReport.swift:77:        return storedReportDir
+Sources/GrantivaCore/Runner/RunnerFailureReport.swift:81:        reportDir: String, preservedReportDir: String?, screenshots: [String: [ScreenCapture.Screenshot]] = [:],
+Sources/GrantivaCore/Runner/RunnerFailureReport.swift:84:        let captures = Self.captures(reportDir: reportDir, pathMap: pathMap).map { capture -> ScreenCapture in
+Sources/GrantivaCore/Runner/RunnerFailureReport.swift:89:        let skipped = (RunnerReportSteps.report(in: reportDir)?.flows ?? [])
+Sources/GrantivaCore/Runner/RunnerFailureReport.swift:95:        storedReportDir = preservedReportDir
+Sources/GrantivaCore/Runner/RunnerFailureReport.swift:99:    static func captures(reportDir: String, pathMap: [String: String] = [:]) -> [ScreenCapture] {
+Sources/GrantivaCore/Runner/RunnerFailureReport.swift:100:        guard let report = RunnerReportSteps.report(in: reportDir) else { return [] }
+Sources/GrantivaCore/Runner/RunnerFailureReport.swift:103:            var steps = RunnerReportSteps.steps(RunnerReportSteps.commands(of: flow, in: reportDir), pathMap: pathMap)
+Sources/GrantivaCore/Runner/RunnerReportFinalizer.swift:17:    static func finalize(reportDir: String, status: String, reason: String) {
+Sources/GrantivaCore/Runner/RunnerReportFinalizer.swift:18:        let root = URL(fileURLWithPath: reportDir, isDirectory: true)
+Sources/GrantivaCore/Runner/RunnerSession.swift:84:        reportDir overrideReportDir: String? = nil,
+Sources/GrantivaCore/Runner/RunnerSession.swift:130:        let reportDir: String
+Sources/GrantivaCore/Runner/RunnerSession.swift:131:        let preserveReportDir: Bool
+Sources/GrantivaCore/Runner/RunnerSession.swift:132:        if let overrideReportDir, !overrideReportDir.isEmpty {
+Sources/GrantivaCore/Runner/RunnerSession.swift:133:            reportDir = overrideReportDir.hasPrefix("/")
+Sources/GrantivaCore/Runner/RunnerSession.swift:134:                ? overrideReportDir
+Sources/GrantivaCore/Runner/RunnerSession.swift:135:                : FileManager.default.currentDirectoryPath + "/" + overrideReportDir
+Sources/GrantivaCore/Runner/RunnerSession.swift:136:            preserveReportDir = true
+Sources/GrantivaCore/Runner/RunnerSession.swift:138:            reportDir = FileManager.default.temporaryDirectory
+Sources/GrantivaCore/Runner/RunnerSession.swift:141:            preserveReportDir = false
+Sources/GrantivaCore/Runner/RunnerSession.swift:142:            simulatorLease.recordTemporaryDirectory(reportDir)
+Sources/GrantivaCore/Runner/RunnerSession.swift:148:        try RunnerReportWorkspace.prepare(at: reportDir)
+Sources/GrantivaCore/Runner/RunnerSession.swift:151:        let readyReportDir = preserveReportDir ? reportDir : nil
+Sources/GrantivaCore/Runner/RunnerSession.swift:155:            if !preserveReportDir {
+Sources/GrantivaCore/Runner/RunnerSession.swift:156:                try? FileManager.default.removeItem(atPath: reportDir)
+Sources/GrantivaCore/Runner/RunnerSession.swift:160:            if preserveReportDir {
+Sources/GrantivaCore/Runner/RunnerSession.swift:161:                RunnerReportRewriter.rewrite(reportDir: reportDir, stagedPathMap: [flowPath: "screens"])
+Sources/GrantivaCore/Runner/RunnerSession.swift:166:                reportDir: reportDir, outputDir: outputDir,
+Sources/GrantivaCore/Runner/RunnerSession.swift:171:            if preserveReportDir, snapshot.lowercased() == "trailing" {
+Sources/GrantivaCore/Runner/RunnerSession.swift:172:                RunnerTraceTrimmer.trimTrailing(reportDir: reportDir)
+Sources/GrantivaCore/Runner/RunnerSession.swift:186:            reportDir: reportDir,
+Sources/GrantivaCore/Runner/RunnerSession.swift:215:                reportDir: reportDir,
+Sources/GrantivaCore/Runner/RunnerSession.swift:216:                readyReportDir: readyReportDir,
+Sources/GrantivaCore/Runner/RunnerSession.swift:223:                    ephemeralReportDir: preserveReportDir ? nil : reportDir,
+Sources/GrantivaCore/Runner/RunnerSession.swift:235:            let failure = RunnerReportSteps.firstFailure(in: reportDir)
+Sources/GrantivaCore/Runner/RunnerSession.swift:246:                RunnerReportFinalizer.finalize(reportDir: reportDir, status: verdict, reason: reason)
+Sources/GrantivaCore/Runner/RunnerSession.swift:250:                flows: RunnerReportIndex.finalFlows(reportDir: reportDir, unfinishedAs: verdict),
+Sources/GrantivaCore/Runner/RunnerSession.swift:251:                reportDir: readyReportDir
+Sources/GrantivaCore/Runner/RunnerSession.swift:255:                    screens: screens, reportDir: reportDir, outputDir: outputDir, owners: generated.owners,
+Sources/GrantivaCore/Runner/RunnerSession.swift:258:                preservedReportDir: readyReportDir
+Sources/GrantivaCore/Runner/RunnerSession.swift:277:            flows: RunnerReportIndex.load(reportDir: reportDir)?.readyState.flows ?? [],
+Sources/GrantivaCore/Runner/RunnerSession.swift:278:            reportDir: readyReportDir
+Sources/GrantivaCore/Runner/RunnerSession.swift:282:        let assetsDir = "\(reportDir)/assets"
+Sources/GrantivaCore/Runner/RunnerSession.swift:290:            screens: screens, reportDir: reportDir, outputDir: outputDir, owners: generated.owners,
+Sources/GrantivaCore/Runner/RunnerSession.swift:379:        reportDir overrideReportDir: String? = nil,
+Sources/GrantivaCore/Runner/RunnerSession.swift:481:        let reportDir: String
+Sources/GrantivaCore/Runner/RunnerSession.swift:482:        let preserveReportDir: Bool
+Sources/GrantivaCore/Runner/RunnerSession.swift:483:        if let overrideReportDir, !overrideReportDir.isEmpty {
+Sources/GrantivaCore/Runner/RunnerSession.swift:484:            let resolved = overrideReportDir.hasPrefix("/")
+Sources/GrantivaCore/Runner/RunnerSession.swift:485:                ? overrideReportDir
+Sources/GrantivaCore/Runner/RunnerSession.swift:486:                : FileManager.default.currentDirectoryPath + "/" + overrideReportDir
+Sources/GrantivaCore/Runner/RunnerSession.swift:487:            reportDir = resolved
+Sources/GrantivaCore/Runner/RunnerSession.swift:488:            preserveReportDir = true
+Sources/GrantivaCore/Runner/RunnerSession.swift:490:            reportDir = FileManager.default.temporaryDirectory
+Sources/GrantivaCore/Runner/RunnerSession.swift:493:            preserveReportDir = false
+Sources/GrantivaCore/Runner/RunnerSession.swift:494:            simulatorLease.recordTemporaryDirectory(reportDir)
+Sources/GrantivaCore/Runner/RunnerSession.swift:501:        try RunnerReportWorkspace.prepare(at: reportDir)
+Sources/GrantivaCore/Runner/RunnerSession.swift:504:        let readyReportDir = preserveReportDir ? reportDir : nil
+Sources/GrantivaCore/Runner/RunnerSession.swift:508:            if !preserveReportDir {
+Sources/GrantivaCore/Runner/RunnerSession.swift:509:                try? FileManager.default.removeItem(atPath: reportDir)
+Sources/GrantivaCore/Runner/RunnerSession.swift:515:            if preserveReportDir {
+Sources/GrantivaCore/Runner/RunnerSession.swift:516:                RunnerReportRewriter.rewrite(reportDir: reportDir, stagedPathMap: reportPathMap)
+Sources/GrantivaCore/Runner/RunnerSession.swift:521:                reportDir: reportDir, outputDir: outputDir, snapshot: snapshot,
+Sources/GrantivaCore/Runner/RunnerSession.swift:524:            if preserveReportDir, snapshot.lowercased() == "trailing" {
+Sources/GrantivaCore/Runner/RunnerSession.swift:525:                RunnerTraceTrimmer.trimTrailing(reportDir: reportDir)
+Sources/GrantivaCore/Runner/RunnerSession.swift:537:            reportDir: reportDir,
+Sources/GrantivaCore/Runner/RunnerSession.swift:564:                reportDir: reportDir,
+Sources/GrantivaCore/Runner/RunnerSession.swift:565:                readyReportDir: readyReportDir,
+Sources/GrantivaCore/Runner/RunnerSession.swift:571:                outputFilter: RunnerOutputFilter(ephemeralReportDir: preserveReportDir ? nil : reportDir)
+Sources/GrantivaCore/Runner/RunnerSession.swift:595:                RunnerReportFinalizer.finalize(reportDir: reportDir, status: verdict, reason: why)
+Sources/GrantivaCore/Runner/RunnerSession.swift:599:                flows: RunnerReportIndex.finalFlows(reportDir: reportDir, unfinishedAs: verdict),
+Sources/GrantivaCore/Runner/RunnerSession.swift:600:                reportDir: readyReportDir
+Sources/GrantivaCore/Runner/RunnerSession.swift:602:            let failure = RunnerReportSteps.firstFailure(in: reportDir).map { failure in
+Sources/GrantivaCore/Runner/RunnerSession.swift:612:                reportDir: reportDir, outputDir: outputDir,
+Sources/GrantivaCore/Runner/RunnerSession.swift:618:                reportDir: reportDir, preservedReportDir: readyReportDir, screenshots: screenshots, pathMap: outputPathMap
+Sources/GrantivaCore/Runner/RunnerSession.swift:623:               let index = RunnerReportIndex.load(reportDir: reportDir),
+Sources/GrantivaCore/Runner/RunnerSession.swift:640:            flows: RunnerReportIndex.load(reportDir: reportDir)?.readyState.flows ?? [],
+Sources/GrantivaCore/Runner/RunnerSession.swift:641:            reportDir: readyReportDir
+Sources/GrantivaCore/Runner/RunnerSession.swift:648:            reportDir: reportDir,
+Sources/GrantivaCore/Runner/RunnerSession.swift:701:        reportDir: String,
+Sources/GrantivaCore/Runner/RunnerSession.swift:708:        args += ["test", "--output", reportDir, "--flatten"]
+Sources/GrantivaCore/Runner/RunnerSession.swift:748:        reportDir: String,
+Sources/GrantivaCore/Runner/RunnerSession.swift:761:                reportDir: reportDir,
+Sources/GrantivaCore/Runner/RunnerSession.swift:786:            let reportFlow = RunnerReportSteps.report(in: reportDir)?.flows?.first { $0.id == flow.id }
+Sources/GrantivaCore/Runner/RunnerSession.swift:788:                reportFlow.map { RunnerReportSteps.commands(of: $0, in: reportDir) } ?? []
+Sources/GrantivaCore/Runner/RunnerSession.swift:794:            let reportRoot = URL(fileURLWithPath: reportDir, isDirectory: true).standardizedFileURL
+Sources/GrantivaCore/Runner/RunnerNarration.swift:82:    init(ephemeralReportDir: String? = nil, waitLabels: [Int: String] = [:]) {
+Sources/GrantivaCore/Runner/RunnerNarration.swift:83:        if let dir = ephemeralReportDir, !dir.isEmpty {
+Sources/GrantivaCore/Runner/RunnerReportRewriter.swift:12:    static func rewrite(reportDir: String, stagedPathMap: [String: String]) {
+Sources/GrantivaCore/Runner/RunnerReportRewriter.swift:16:        let root = URL(fileURLWithPath: reportDir, isDirectory: true)
+Tests/GrantivaCoreTests/RunnerSessionAppIdTests.swift:63:            reportDir: "/tmp/report",
+Tests/GrantivaCoreTests/RunnerSessionAppIdTests.swift:91:            reportDir: "/tmp/report",
+Tests/GrantivaCoreTests/RunnerReportWorkspaceTests.swift:19:        let reportDir = scratch.appendingPathComponent("nested/report")
+Tests/GrantivaCoreTests/RunnerReportWorkspaceTests.swift:21:        try RunnerReportWorkspace.prepare(at: reportDir.path)
+Tests/GrantivaCoreTests/RunnerReportWorkspaceTests.swift:25:            atPath: reportDir.path, isDirectory: &isDirectory
+Tests/GrantivaCoreTests/RunnerReportWorkspaceTests.swift:31:        let reportDir = scratch.appendingPathComponent("report")
+Tests/GrantivaCoreTests/RunnerReportWorkspaceTests.swift:32:        let assetsDir = reportDir.appendingPathComponent("assets/old-flow")
+Tests/GrantivaCoreTests/RunnerReportWorkspaceTests.swift:38:            to: reportDir.appendingPathComponent("report.json")
+Tests/GrantivaCoreTests/RunnerReportWorkspaceTests.swift:41:            to: reportDir.appendingPathComponent("notes.txt")
+Tests/GrantivaCoreTests/RunnerReportWorkspaceTests.swift:44:        try RunnerReportWorkspace.prepare(at: reportDir.path)
+Tests/GrantivaCoreTests/RunnerReportWorkspaceTests.swift:47:            atPath: reportDir.appendingPathComponent("report.json").path
+Tests/GrantivaCoreTests/RunnerReportWorkspaceTests.swift:50:            atPath: reportDir.appendingPathComponent("assets").path
+Tests/GrantivaCoreTests/RunnerReportWorkspaceTests.swift:53:            try String(contentsOf: reportDir.appendingPathComponent("notes.txt"), encoding: .utf8),

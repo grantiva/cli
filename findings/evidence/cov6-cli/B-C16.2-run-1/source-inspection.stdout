@@ -1,0 +1,25 @@
+Tests/GrantivaAPITests/OrgAdminAPITests.swift:30:        let hook = String(decoding: try JSONEncoder().encode(CreateWebhookRequest(url: "https://x", events: ["device.new"])), as: UTF8.self)
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:20:            [try! decoder.decode(Webhook.self, from: Data(#"{"id":"W1","url":"https://x","events":["device.new"],"isActive":true,"description":null,"createdAt":null,"updatedAt":null}"#.utf8))]
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:126:        XCTAssertNoThrow(try ConsoleWebhooksCommand.CreateCommand.parse(["https://ops.example.com/h", "--event", "device.new"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:128:        XCTAssertThrowsError(try ConsoleWebhooksCommand.CreateCommand.parse(["http://ops.example.com/h", "--event", "device.new"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:129:        XCTAssertThrowsError(try ConsoleWebhooksCommand.CreateCommand.parse([" https://ops.example.com/h", "--event", "device.new"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:130:        XCTAssertThrowsError(try ConsoleWebhooksCommand.CreateCommand.parse(["https://ops.example.com/h#fragment", "--event", "device.new"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:131:        XCTAssertThrowsError(try ConsoleWebhooksCommand.CreateCommand.parse(["https://ops.example.com/h", "--event", " \n "]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:133:        XCTAssertThrowsError(try ConsoleWebhooksCommand.UpdateCommand.parse(["W1", "--event", "\t"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:137:    func testUnknownWebhookEventsAreLeftToTheServer() {
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:138:        XCTAssertNoThrow(try ConsoleWebhooksCommand.CreateCommand.parse(["https://x.example.com", "--event", "brand.new.event"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:139:        XCTAssertNoThrow(try ConsoleWebhooksCommand.UpdateCommand.parse(["wh_1", "--event", "brand.new.event"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:142:    func testWebhookEventsIsNotASubcommand() {
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:143:        XCTAssertThrowsError(try ConsoleWebhooksCommand.parseAsRoot(["events"]))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:159:        client.listWebhooks = { [Webhook(id: "W1", url: "https://example.com/h", events: ["device.new"], isActive: true)] }
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:162:            return try! JSONDecoder().decode(WebhookCreated.self, from: Data(#"{"id":"W2","url":"https://example.com/h","events":["device.new"],"isActive":true,"description":"ops","secret":"whsec_once","createdAt":null}"#.utf8))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:171:        XCTAssertEqual(capturedRequest, CreateWebhookRequest(url: "https://example.com/h", events: ["device.new"], description: "ops"))
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:182:            return Webhook(id: id, url: "https://example.com/h", events: body.events ?? ["device.new"], isActive: body.isActive ?? true, description: body.description)
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:195:            Call(id: "W3", body: PatchWebhookRequest(events: ["flag.updated", "device.high_risk"], description: "security")),
+Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift:211:            return try! JSONDecoder().decode(WebhookDelivery.self, from: Data(#"{"id":"D1","webhookId":"W1","eventType":"device.new","status":"delivered","httpStatus":204,"responseBody":null,"error":null,"attemptCount":2,"nextRetryAt":null,"deliveredAt":null,"createdAt":null}"#.utf8))
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:79:            discussion: "Example:\n  grantiva console webhooks create https://ops.example.com/grantiva --event device.high_risk --event flag.updated"
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:87:            try ConsoleWebhooksCommand.validateEvents(event)
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:97:            do { created = try await client.createWebhook(CreateWebhookRequest(url: url, events: event, description: description)) } catch {
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:135:        static let configuration = CommandConfiguration(commandName: "update", abstract: "Change a webhook's events or description.")
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:143:            try ConsoleWebhooksCommand.validateEvents(event)
+Sources/GrantivaCLI/ConsoleOrgAdminCommands.swift:147:            try await ConsoleWebhooksCommand.patch(webhook, PatchWebhookRequest(events: event.isEmpty ? nil : event, description: description), options: options, client: client)

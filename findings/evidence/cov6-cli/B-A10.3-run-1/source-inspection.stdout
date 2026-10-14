@@ -1,0 +1,212 @@
+Tests/GrantivaCLITests/DefaultSimulatorCommandTests.swift:105:                guard command == "xcrun simctl list devices --json" else { throw GrantivaError.commandFailed("unexpected: \(command)", 1) }
+Sources/GrantivaCLI/RecordCommand.swift:235:            throw GrantivaError.commandFailed("Grantiva recording produced no video at \(outputPath)", 1)
+Sources/GrantivaCLI/RecordCommand.swift:292:            throw GrantivaError.commandFailed("Grantiva recording has no readable duration", 1)
+Sources/GrantivaCLI/RecordCommand.swift:297:            throw GrantivaError.commandFailed(
+Sources/GrantivaCLI/RecordCommand.swift:318:                throw GrantivaError.commandFailed("Could not create PNG at \(reportedPath)", 1)
+Sources/GrantivaCLI/RecordCommand.swift:322:                throw GrantivaError.commandFailed("Could not write PNG at \(reportedPath)", 1)
+Sources/GrantivaCLI/DriverCommand.swift:365:        return .commandFailed(reason + (logPath.map { " Log: \($0)" } ?? ""), 1)
+Sources/GrantivaCLI/DriverCommand.swift:389:            return .commandFailed("The runner \(ended) before UIAutomator2 was up on \(serial).\(log)", 1)
+Sources/GrantivaCLI/DriverCommand.swift:394:        return .commandFailed("The runner could not start UIAutomator2 on \(serial): \(reason).\(remedy)\(log)", 1)
+Sources/GrantivaCLI/DriverCommand.swift:524:                throw GrantivaError.commandFailed("The runner exited with status \(status); the session has ended.", 1)
+Sources/GrantivaCLI/DriverCommand.swift:562:            throw GrantivaError.commandFailed("Could not open runner log: \(logPath)", 1)
+Sources/GrantivaCLI/DriverCommand.swift:595:                throw GrantivaError.commandFailed("The app launch flow failed on \(launch.device.udid). Log: \(logPath)", 1)
+Sources/GrantivaCLI/DriverCommand.swift:607:                throw GrantivaError.commandFailed("Timed out waiting for the UIAutomator2 session to start. Log: \(logPath)", 1)
+Sources/GrantivaCLI/DriverCommand.swift:730:                throw GrantivaError.commandFailed("The app launch flow failed on \(launch.device.udid).", 1)
+Sources/GrantivaCLI/DriverCommand.swift:750:                throw GrantivaError.commandFailed("Timed out waiting for the UIAutomator2 session to start", 1)
+Sources/GrantivaCLI/DriverCommand.swift:1010:            return .commandFailed("WebDriverAgent failed to build. Check that Xcode is installed and the simulator runtime is available.\(log)", 1)
+Sources/GrantivaCLI/DriverCommand.swift:1012:        return .commandFailed("Timed out waiting for WDA to start.\(log)", 1)
+Sources/GrantivaCLI/DriverCommand.swift:1399:            throw GrantivaError.commandFailed(
+Sources/GrantivaCLI/DriverCommand.swift:1424:            throw GrantivaError.commandFailed("Failed to get hierarchy: \(msg)", 1)
+Sources/GrantivaCLI/DriverCommand.swift:1435:            throw GrantivaError.commandFailed("Empty hierarchy response", 1)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:318:            throw GrantivaError.commandFailed("ps failed", 1)
+Sources/GrantivaCLI/ConsoleOpenCommand.swift:85:            throw GrantivaError.commandFailed("open \(url) exited with code \(status)", status)
+Sources/GrantivaCLI/HierarchyCommand.swift:107:            throw GrantivaError.commandFailed("GrantivaAgent returned a non-HTTP response", 1)
+Sources/GrantivaCLI/HierarchyCommand.swift:111:            throw GrantivaError.commandFailed(
+Sources/GrantivaCLI/HierarchyCommand.swift:142:                throw GrantivaError.commandFailed("GrantivaAgent returned a page source that is neither XML nor a JSON tree.", 1)
+Tests/GrantivaCLITests/Support/LeaseDirectoryGuard.swift:31:            throw GrantivaError.commandFailed("default lease directory refused for \(udid)", 1)
+Tests/GrantivaCLITests/Support/LeaseDirectoryGuard.swift:85:                throw GrantivaError.commandFailed(message, 1)
+Tests/GrantivaCLITests/CICompletionStateTests.swift:41:                throw GrantivaError.commandFailed("upload failed", 1)
+Tests/GrantivaCLITests/CICompletionStateTests.swift:57:            throw GrantivaError.commandFailed("backend unavailable", 1)
+Sources/GrantivaCLI/CICommand.swift:118:                throw GrantivaError.commandFailed(
+Sources/GrantivaCLI/CICommand.swift:515:                    throw GrantivaError.commandFailed(
+Tests/GrantivaCLITests/ConsoleOpenCommandTests.swift:44:            guard case GrantivaError.commandFailed(let invocation, let status) = error else {
+Tests/GrantivaCLITests/RunSessionContractTests.swift:147:            error: GrantivaError.commandFailed("Runner failed (exit 1)", 1), report: report
+Sources/GrantivaCLI/DiffCommand.swift:661:                throw GrantivaError.commandFailed(
+Sources/GrantivaCLI/DiffCommand.swift:670:                throw GrantivaError.commandFailed(
+Sources/GrantivaCLI/DiffCommand.swift:676:                throw GrantivaError.commandFailed(
+Tests/GrantivaCLITests/RunCommandTests.swift:108:                throw GrantivaError.commandFailed("Runner failed (exit 1)", 1)
+Tests/GrantivaCLITests/RunCommandTests.swift:144:            GrantivaError.commandFailed("Simulator TEST is already owned by another Grantiva run", 1),
+Tests/GrantivaCLITests/RunCommandTests.swift:167:                runScreens: { _, _, _ in throw GrantivaError.commandFailed("Runner failed (exit 1)", 1) },
+Tests/GrantivaCLITests/RunCommandTests.swift:396:        let error = GrantivaError.commandFailed("Runner interrupted:\n", 0)
+Tests/GrantivaCLITests/RunCommandTests.swift:566:        let error = GrantivaError.commandFailed("Runner interrupted:\n", 130)
+Tests/GrantivaCLITests/RunCommandTests.swift:577:        let error = GrantivaError.commandFailed("Runner interrupted:\n", 130)
+Tests/GrantivaCLITests/RunCommandTests.swift:624:        let error = GrantivaError.commandFailed("Runner failed", 1)
+Tests/GrantivaCLITests/RunCommandTests.swift:736:        XCTAssertFalse(RunCommand.isInterruptedRelease(GrantivaError.commandFailed("Runner failed (exit 1)", 1)))
+Tests/GrantivaCLITests/RunCommandTests.swift:737:        XCTAssertTrue(RunCommand.isInterruptedRelease(GrantivaError.commandFailed("Runner interrupted", 130)))
+Tests/GrantivaCLITests/RunCommandTests.swift:741:        XCTAssertFalse(RunCommand.isInterruptedRelease(GrantivaError.commandFailed("Runner interrupted", 130)))
+Tests/GrantivaCLITests/RemediationCommandTests.swift:15:        case notAuthenticated, configNotFound, commandFailed, invalidArgument, diffSizeMismatch, noCaptures
+Tests/GrantivaCLITests/RemediationCommandTests.swift:29:            case .commandFailed: .commandFailed("x", 1)
+Tests/GrantivaCLITests/RemediationCommandTests.swift:57:            case .commandFailed: .commandFailed
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:236:        driver.hierarchy = { throw GrantivaError.commandFailed("Failed to parse WDA hierarchy XML: bad", 1) }
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:58:            throw GrantivaError.commandFailed("extract failed", 1)
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:99:            throw GrantivaError.commandFailed("extract failed", 1)
+Tests/GrantivaMCPTests/DefaultSimulatorOwnershipTests.swift:39:                throw GrantivaError.commandFailed("unexpected command: \(command)", 1)
+Tests/GrantivaMCPTests/BuildToolsTests.swift:129:            throw GrantivaError.commandFailed("xcodebuild: error: Scheme X is not currently configured for the test action.", 66)
+Tests/GrantivaCoreTests/ShellQuotingTests.swift:38:        } catch let GrantivaError.commandFailed(message, status) {
+Tests/GrantivaCoreTests/ShellQuotingTests.swift:80:            XCTFail("expected commandFailed")
+Tests/GrantivaCoreTests/ShellQuotingTests.swift:81:        } catch GrantivaError.commandFailed(let message, let code) {
+Tests/GrantivaMCPTests/ContextToolTests.swift:21:                if listFails { throw GrantivaError.commandFailed("adb devices", 1) }
+Sources/GrantivaCore/Build/XcodeBuildRunner.swift:46:            if case .commandFailed(let msg, _) = error {
+Sources/GrantivaCore/Build/XcodeBuildRunner.swift:110:            if case .commandFailed(let msg, _) = error {
+Tests/GrantivaMCPTests/HierarchyNotificationTests.swift:74:        driver.hierarchy = { throw GrantivaError.commandFailed("Failed to get hierarchy from WDA", 1) }
+Tests/GrantivaMCPTests/Support/LeaseDirectoryGuard.swift:31:            throw GrantivaError.commandFailed("default lease directory refused for \(udid)", 1)
+Tests/GrantivaMCPTests/Support/LeaseDirectoryGuard.swift:85:                throw GrantivaError.commandFailed(message, 1)
+Sources/GrantivaCLI/RunCommand.swift:334:        guard relay.isReleasingHold, case .commandFailed(_, 130) = error as? GrantivaError else { return false }
+Sources/GrantivaMCP/Tools/SessionScreenCapture.swift:51:            throw GrantivaError.commandFailed(
+Sources/GrantivaMCP/Tools/SessionScreenCapture.swift:74:                throw GrantivaError.commandFailed(
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:166:        let shell = ScriptedShell([.success("package:com.example uid:10123"), .failure(GrantivaError.commandFailed("offline", 1))])
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:214:        let shell = ScriptedShell([.success("arm64-v8a"), .failure(GrantivaError.commandFailed("no java", 1)), .success("BUILD SUCCESSFUL")])
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:240:        let shell = ScriptedShell([.failure(GrantivaError.commandFailed("no java", 1)), .success("BUILD SUCCESSFUL")])
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:398:        let unknown = await platform(ScriptedShell([.failure(GrantivaError.commandFailed("adb: device 'emulator-5554' not found", 1))]))
+Tests/GrantivaMCPTests/ScriptToolsTests.swift:216:        driver.hierarchy = { throw GrantivaError.commandFailed("Failed to get hierarchy from WDA", 1) }
+Tests/GrantivaCoreTests/XcodeBuildRunnerTests.swift:33:        let executor = ScriptedExecutor([.failure(GrantivaError.commandFailed("warning: w\nerror: broken", 65))])
+Tests/GrantivaCoreTests/XcodeBuildRunnerTests.swift:70:        let executor = ScriptedExecutor([.failure(GrantivaError.commandFailed(output, 65))])
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:65:        let shell = ScriptedShell([.failure(GrantivaError.commandFailed("e: Main.kt:3:1 Unresolved reference\nFAILURE: Build failed with an exception.", 1))])
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:91:        let shell = ScriptedShell([.failure(GrantivaError.commandFailed(log, 1))])
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:159:        let shell = ScriptedShell([.failure(GrantivaError.commandFailed(Self.unknownVariantLog, 1)), .success(Self.appTasks)])
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:184:        let shell = ScriptedShell([.failure(GrantivaError.commandFailed(log, 1)), .success(projects)])
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:194:            .failure(GrantivaError.commandFailed(Self.unknownVariantLog, 1)),
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:195:            .failure(GrantivaError.commandFailed("daemon died", 1)),
+Sources/GrantivaCore/Shell.swift:51:        throw GrantivaError.commandFailed(
+Sources/GrantivaCore/Shell.swift:93:/// stdin, trimmed stdout, a non-zero exit throws `commandFailed` with stderr
+Sources/GrantivaCore/Shell.swift:130:        throw GrantivaError.commandFailed(
+Tests/GrantivaCoreTests/AndroidSDKTests.swift:71:        let none = await AndroidSDK.javaHome(environment: [:], execute: { _ in throw GrantivaError.commandFailed("no java", 1) })
+Tests/GrantivaCoreTests/SimulatorManagerTests.swift:697:                throw GrantivaError.commandFailed("unexpected command: \(command)", 1)
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:59:            .commandFailed("test", 1),
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:72:    func testCommandFailedRendersSentenceMessagesWithoutExitSuffix() {
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:74:        XCTAssertEqual(GrantivaError.commandFailed(message, 1).errorDescription, message)
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:126:        XCTAssertFalse(SimulatorLease.isOwnershipRefusal(GrantivaError.commandFailed("Runner failed (exit 1)", 1)))
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:245:        XCTAssertTrue(SimulatorLease.isOwnershipRefusal(GrantivaError.commandFailed(message, 1)))
+Tests/GrantivaCoreTests/AndroidCaptureSettingsTests.swift:120:    private static let gone = GrantivaError.commandFailed("adb: device 'emulator-5554' not found", 1)
+Tests/GrantivaCoreTests/AndroidCaptureSettingsTests.swift:121:    private static let offline = GrantivaError.commandFailed("adb: device offline", 1)
+Tests/GrantivaCoreTests/AndroidCaptureSettingsTests.swift:213:            .failure(GrantivaError.commandFailed("Security exception: permission denied", 1)),
+Tests/GrantivaCoreTests/AndroidCaptureSettingsTests.swift:224:        XCTAssertTrue(AndroidCaptureSettings.deviceLeftAdb(GrantivaError.commandFailed("adb: no devices/emulators found", 1)))
+Tests/GrantivaCoreTests/AndroidCaptureSettingsTests.swift:225:        XCTAssertTrue(AndroidCaptureSettings.deviceLeftAdb(GrantivaError.commandFailed("adb: error: closed", 1)))
+Tests/GrantivaCoreTests/AndroidCaptureSettingsTests.swift:226:        XCTAssertTrue(AndroidCaptureSettings.deviceLeftAdb(GrantivaError.commandFailed("adb: device still connecting", 1)))
+Tests/GrantivaCoreTests/AndroidCaptureSettingsTests.swift:227:        XCTAssertFalse(AndroidCaptureSettings.deviceLeftAdb(GrantivaError.commandFailed("Security exception", 1)))
+Tests/GrantivaCoreTests/AndroidCaptureSettingsTests.swift:228:        XCTAssertFalse(AndroidCaptureSettings.deviceLeftAdb(GrantivaError.commandFailed("/system/bin/sh: settings: not found", 127)),
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:16:            throw GrantivaError.commandFailed("Unexpected command: \(command)", 1)
+Tests/GrantivaCoreTests/ProjectDetectorTests.swift:52:            settings: .failure(GrantivaError.commandFailed("settings failed", 1)),
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:84:        let executor = ScriptedExecutor([.failure(GrantivaError.commandFailed("No such app", 2))])
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:164:        let missing = IOSPlatform(execute: { _ in throw GrantivaError.commandFailed("No such file or directory", 2) })
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:168:            throw GrantivaError.commandFailed("Unable to lookup in current state: Shutdown", 149)
+Tests/GrantivaCoreTests/DoctorTests.swift:245:            throw GrantivaError.commandFailed("xcrun: error: invalid DEVELOPER_DIR path (/nonexistent)", 1)
+Tests/GrantivaCoreTests/ADBTests.swift:58:            .failure(GrantivaError.commandFailed("adb: failed to install app.apk: Failure [INSTALL_FAILED_UPDATE_INCOMPATIBLE: ...]", 1)),
+Tests/GrantivaCoreTests/ADBTests.swift:72:        let shell = ScriptedShell([.failure(GrantivaError.commandFailed("INSTALL_FAILED_INSUFFICIENT_STORAGE", 1))])
+Tests/GrantivaCoreTests/ADBTests.swift:175:        let shell = ScriptedShell([.failure(GrantivaError.commandFailed(Self.monkeyTrace, 252))])
+Tests/GrantivaCoreTests/ADBTests.swift:208:        let shell = ScriptedShell([.failure(GrantivaError.commandFailed(output, 251))])
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:288:        XCTAssertTrue(RunnerSession.isRunnerOutcomeFailure(GrantivaError.commandFailed(message, 1)))
+Tests/GrantivaCoreTests/Support/LeaseDirectoryGuard.swift:31:            throw GrantivaError.commandFailed("default lease directory refused for \(udid)", 1)
+Tests/GrantivaCoreTests/Support/LeaseDirectoryGuard.swift:85:                throw GrantivaError.commandFailed(message, 1)
+Sources/GrantivaMCP/Tools/VRTTools.swift:98:        } catch GrantivaError.commandFailed(let message, _) {
+Sources/GrantivaMCP/Tools/VRTTools.swift:110:        } catch GrantivaError.commandFailed(let message, _) {
+Sources/GrantivaMCP/Tools/VRTTools.swift:134:        } catch GrantivaError.commandFailed(let message, _) {
+Sources/GrantivaCore/Platform/IOSPlatform.swift:70:        } catch GrantivaError.commandFailed(let message, let status)
+Sources/GrantivaCore/Platform/IOSPlatform.swift:243:            throw GrantivaError.commandFailed("Grantiva recording produced no video: \(message)", recorder.terminationStatus)
+Sources/GrantivaCore/GrantivaError.swift:12:    case commandFailed(String, Int32)
+Sources/GrantivaCore/GrantivaError.swift:49:        case .commandFailed(let message, _):
+Sources/GrantivaCore/Diff/ScreenshotNormalizer.swift:45:            throw GrantivaError.commandFailed("Could not create exact-target screenshot context", 1)
+Sources/GrantivaCore/Diff/ScreenshotNormalizer.swift:54:            throw GrantivaError.commandFailed("Could not render exact-target screenshot", 1)
+Sources/GrantivaCore/Diff/ScreenshotNormalizer.swift:59:            throw GrantivaError.commandFailed("Could not write exact-target screenshot", 1)
+Sources/GrantivaCore/Diff/ScreenshotNormalizer.swift:63:            throw GrantivaError.commandFailed("Could not finalize exact-target screenshot", 1)
+Sources/GrantivaCore/Diff/BaselineStore.swift:139:        save: { _, _ in throw GrantivaError.commandFailed("BaselineStore.failing: save", 1) },
+Sources/GrantivaCore/Diff/BaselineStore.swift:140:        load: { _ in throw GrantivaError.commandFailed("BaselineStore.failing: load", 1) },
+Sources/GrantivaCore/Diff/BaselineStore.swift:141:        list: { throw GrantivaError.commandFailed("BaselineStore.failing: list", 1) },
+Sources/GrantivaCore/Diff/BaselineStore.swift:142:        delete: { _ in throw GrantivaError.commandFailed("BaselineStore.failing: delete", 1) },
+Sources/GrantivaCore/Android/ADB.swift:55:            throw GrantivaError.commandFailed("Could not read the AVD name of \(serial)", 1)
+Sources/GrantivaCore/Android/ADB.swift:75:            guard case .commandFailed(let message, _) = error,
+Sources/GrantivaCore/Android/ADB.swift:90:        } catch GrantivaError.commandFailed(let message, _) {
+Sources/GrantivaCore/Android/ADB.swift:118:        return .commandFailed("Could not launch \(applicationId) on \(serial): \(reason)", 1)
+Sources/GrantivaCore/Android/ADB.swift:193:            throw GrantivaError.commandFailed("Could not forward a local port to \(serial):\(devicePort): \(output)", 1)
+Sources/GrantivaCore/Android/AndroidProvenance.swift:109:            throw GrantivaError.commandFailed("Could not open the emulator ledger lock: \(String(cString: strerror(errno)))", 1)
+Sources/GrantivaCore/Android/AndroidProvenance.swift:113:            throw GrantivaError.commandFailed("Could not lock the emulator ledger: \(String(cString: strerror(errno)))", 1)
+Sources/GrantivaCore/Android/AndroidCaptureSettings.swift:166:        if case GrantivaError.commandFailed(let message, _) = error { text = message } else { text = "\(error)" }
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:58:            throw GrantivaError.commandFailed(
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:77:            throw GrantivaError.commandFailed("GET /wd/hub/sessions failed (HTTP \(status))", 1)
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:116:            throw GrantivaError.commandFailed("\(failure) (HTTP \(status))", 1)
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:124:            throw GrantivaError.commandFailed("Empty hierarchy response", 1)
+Sources/GrantivaCore/Android/UIAutomator2Client.swift:187:                    throw GrantivaError.commandFailed("Failed to read the focused element (HTTP \(activeStatus))", 1)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:259:        let threw = await EmulatorManager.listeningPIDs(port: 5554, execute: { _ in throw GrantivaError.commandFailed("x", 1) })
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:589:        let shell = ScriptedShell([.failure(GrantivaError.commandFailed("emulator missing", 127))])
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:924:            .failure(GrantivaError.commandFailed("offline", 1)),
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:1008:            .failure(GrantivaError.commandFailed("adb: not found", 127)),
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:1039:            guard case GrantivaError.commandFailed(_, let code) = error else { return XCTFail("\(error)") }
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:1051:            .failure(GrantivaError.commandFailed("Warning: Failed to find package '\(image)'\n[=====    ] 40% Fetch remote repository", 3)),
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:1058:            guard case GrantivaError.commandFailed(_, let code) = error else { return XCTFail("\(error)") }
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:1077:            .failure(GrantivaError.commandFailed("Error: Package path is not valid. Valid system image paths are:\nsystem-images;android-35;google_apis;arm64-v8a\nnull", 1)),
+Tests/GrantivaMCPTests/MCPServerTests.swift:512:                if n == 1 { throw GrantivaError.commandFailed("adb forward", 1) }
+Sources/GrantivaCore/Android/UIAutomator2HierarchyParser.swift:27:            throw GrantivaError.commandFailed("Failed to encode UIAutomator2 hierarchy XML", 1)
+Sources/GrantivaCore/Android/UIAutomator2HierarchyParser.swift:33:            throw GrantivaError.commandFailed("Failed to parse UIAutomator2 hierarchy XML: \(detail)", 1)
+Sources/GrantivaCore/WDA/WDAClient.swift:104:                    throw GrantivaError.commandFailed("WDA not responding on port \(port)", 1)
+Sources/GrantivaCore/WDA/WDAClient.swift:141:                    throw failure(data, fallback: GrantivaError.commandFailed("Failed to tap at (\(x), \(y))", 1))
+Sources/GrantivaCore/WDA/WDAClient.swift:211:                    throw failure(data, fallback: GrantivaError.commandFailed("Failed to swipe \(direction)", 1))
+Sources/GrantivaCore/WDA/WDAClient.swift:218:                    throw GrantivaError.commandFailed("Failed to take screenshot via WDA", 1)
+Sources/GrantivaCore/WDA/WDAClient.swift:385:            throw failure(data, fallback: GrantivaError.commandFailed("Failed to get hierarchy from WDA", 1))
+Sources/GrantivaCore/WDA/WDAClient.swift:395:        throw GrantivaError.commandFailed("Empty hierarchy response", 1)
+Sources/GrantivaCore/WDA/WDAClient.swift:404:        status: { throw GrantivaError.commandFailed("DriverClient.failing", 1) },
+Sources/GrantivaCore/WDA/WDAClient.swift:405:        hierarchy: { throw GrantivaError.commandFailed("DriverClient.failing", 1) },
+Sources/GrantivaCore/WDA/WDAClient.swift:406:        hierarchyXML: { throw GrantivaError.commandFailed("DriverClient.failing", 1) },
+Sources/GrantivaCore/WDA/WDAClient.swift:407:        tapByLabel: { _ in throw GrantivaError.commandFailed("DriverClient.failing", 1) },
+Sources/GrantivaCore/WDA/WDAClient.swift:408:        tapByCoordinate: { _, _ in throw GrantivaError.commandFailed("DriverClient.failing", 1) },
+Sources/GrantivaCore/WDA/WDAClient.swift:409:        typeText: { _ in throw GrantivaError.commandFailed("DriverClient.failing", 1) },
+Sources/GrantivaCore/WDA/WDAClient.swift:410:        swipe: { _ in throw GrantivaError.commandFailed("DriverClient.failing", 1) },
+Sources/GrantivaCore/WDA/WDAClient.swift:411:        screenshot: { throw GrantivaError.commandFailed("DriverClient.failing", 1) }
+Sources/GrantivaCore/WDA/WDAClient.swift:431:            throw GrantivaError.commandFailed("Failed to encode WDA hierarchy XML", 1)
+Sources/GrantivaCore/WDA/WDAClient.swift:437:            throw GrantivaError.commandFailed("Failed to parse WDA hierarchy XML: \(detail)", 1)
+Sources/GrantivaCore/Android/GradleBuildRunner.swift:63:            guard case .commandFailed(let message, _) = error else { throw error }
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:145:                        throw GrantivaError.commandFailed(
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:178:                    throw GrantivaError.commandFailed(
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:190:                    throw GrantivaError.commandFailed(
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:354:            throw GrantivaError.commandFailed("Could not open simulator capacity lock: \(String(cString: strerror(errno)))", 1)
+Sources/GrantivaCore/Simulator/SimulatorCapacity.swift:358:            throw GrantivaError.commandFailed("Could not acquire simulator capacity lock: \(String(cString: strerror(errno)))", 1)
+Sources/GrantivaCore/Runner/LogStreamer.swift:351:        case commandFailed
+Sources/GrantivaCore/Runner/LogStreamer.swift:393:                guard process.terminationStatus == 0 else { throw InventoryError.commandFailed }
+Sources/GrantivaCore/Auth/AuthStore.swift:100:            throw GrantivaError.commandFailed("Could not create secure auth file: \(String(cString: strerror(errno)))", 1)
+Sources/GrantivaCore/Auth/AuthStore.swift:118:            throw GrantivaError.commandFailed("Could not write secure auth file: \(String(cString: strerror(writeError)))", 1)
+Sources/GrantivaCore/Auth/AuthStore.swift:123:            throw GrantivaError.commandFailed("Could not install secure auth file: \(String(cString: strerror(renameError)))", 1)
+Sources/GrantivaCore/Auth/AuthStore.swift:133:        save: { _ in throw GrantivaError.commandFailed("AuthStore.failing: save", 1) },
+Sources/GrantivaCore/Auth/AuthStore.swift:134:        delete: { throw GrantivaError.commandFailed("AuthStore.failing: delete", 1) }
+Sources/GrantivaCore/Runner/SimulatorLease.swift:121:            throw GrantivaError.commandFailed(
+Sources/GrantivaCore/Runner/SimulatorLease.swift:148:        throw GrantivaError.commandFailed("Could not lock simulator \(udid): its lease file at \(path) kept changing.", 1)
+Sources/GrantivaCore/Runner/SimulatorLease.swift:161:            throw GrantivaError.commandFailed(
+Sources/GrantivaCore/Runner/SimulatorLease.swift:173:                throw GrantivaError.commandFailed(ownershipMessage(udid: udid, holder: holder, platform: platform), 1)
+Sources/GrantivaCore/Runner/SimulatorLease.swift:175:            throw GrantivaError.commandFailed(
+Sources/GrantivaCore/Runner/SimulatorLease.swift:194:            throw GrantivaError.commandFailed(ownershipMessage(udid: udid, holder: holder, platform: platform), 1)
+Sources/GrantivaCore/Runner/SimulatorLease.swift:216:        guard case GrantivaError.commandFailed(let message, _)? = error as? GrantivaError else { return false }
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:149:            throw GrantivaError.commandFailed("Could not open simulator provenance lock: \(String(cString: strerror(errno)))", 1)
+Sources/GrantivaCore/Simulator/SimulatorProvenance.swift:154:            throw GrantivaError.commandFailed("Could not acquire simulator provenance lock: \(String(cString: strerror(lockError)))", 1)
+Sources/GrantivaCore/Runner/RunnerManager.swift:123:                throw GrantivaError.commandFailed("Failed to extract \(tarball.lastPathComponent)", process.terminationStatus)
+Sources/GrantivaCore/Runner/RunnerManager.swift:379:                throw GrantivaError.commandFailed("Could not open the runner install lock \(lockPath)", errno)
+Sources/GrantivaCore/Runner/RunnerArtifactCollector.swift:118:            throw GrantivaError.commandFailed("Could not read runner artifact index: \(error)", 1)
+Sources/GrantivaCore/Runner/RunnerArtifactCollector.swift:250:        .commandFailed("Invalid runner artifact index: \(reason)", 1)
+Sources/GrantivaCore/Android/EmulatorManager.swift:227:            throw GrantivaError.commandFailed("Could not open the emulator log file", 1)
+Sources/GrantivaCore/Android/EmulatorManager.swift:353:            return GrantivaError.commandFailed(
+Sources/GrantivaCore/Android/EmulatorManager.swift:378:                            throw GrantivaError.commandFailed(
+Sources/GrantivaCore/Android/EmulatorManager.swift:388:                            throw GrantivaError.commandFailed(
+Sources/GrantivaCore/Android/EmulatorManager.swift:405:        throw GrantivaError.commandFailed(
+Sources/GrantivaCore/Android/EmulatorManager.swift:438:            } catch GrantivaError.commandFailed(let message, let code) {
+Sources/GrantivaCore/Android/EmulatorManager.swift:439:                throw GrantivaError.commandFailed("avdmanager could not create AVD \(avd): \(Self.cleanedToolMessage(message))", code)
+Sources/GrantivaCore/Android/EmulatorManager.swift:475:        } catch GrantivaError.commandFailed(let message, let code) {
+Sources/GrantivaCore/Android/EmulatorManager.swift:488:        return GrantivaError.commandFailed(
+Sources/GrantivaCore/Android/EmulatorManager.swift:583:        } catch GrantivaError.commandFailed(let message, let code) {
+Sources/GrantivaCore/Android/EmulatorManager.swift:584:            throw GrantivaError.commandFailed("avdmanager could not delete AVD \(name): \(Self.cleanedToolMessage(message))", code)
+Sources/GrantivaCore/Android/EmulatorManager.swift:658:                    throw GrantivaError.commandFailed(
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:34:        throw GrantivaError.commandFailed("Timed out waiting for simulator recording to start", 1)
+Sources/GrantivaCore/Runner/RecorderLifecycle.swift:51:            throw GrantivaError.commandFailed("Timed out stopping simulator recording", 1)
+Sources/GrantivaCore/Runner/RunnerSession.swift:261:            throw GrantivaError.commandFailed(
+Sources/GrantivaCore/Runner/RunnerSession.swift:284:            throw GrantivaError.commandFailed(
+Sources/GrantivaCore/Runner/RunnerSession.swift:305:        guard case .commandFailed(let message, _) = error as? GrantivaError else { return false }
+Sources/GrantivaCore/Runner/RunnerSession.swift:628:            throw GrantivaError.commandFailed(
+Sources/GrantivaCore/Runner/ChildProcess.swift:62:            throw GrantivaError.commandFailed("Could not initialize spawn attributes for \(executable)", 1)
+Sources/GrantivaCore/Runner/ChildProcess.swift:89:            throw GrantivaError.commandFailed("Could not initialize spawn file actions for \(executable)", 1)
+Sources/GrantivaCore/Runner/ChildProcess.swift:138:            throw GrantivaError.commandFailed(

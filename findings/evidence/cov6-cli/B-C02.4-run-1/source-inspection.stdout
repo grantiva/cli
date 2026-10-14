@@ -1,0 +1,33 @@
+Sources/GrantivaCLI/DeviceRunnerSessions.swift:39:        waitForExit: { pid, deadline in await waitForExit(pid, timeout: RunnerSessionStopper.capped(10, by: deadline)) },
+Sources/GrantivaCLI/DeviceRunnerSessions.swift:101:            if await waitForExit(pid, deadline) { outcomes.append(.terminated(runnerPid: pid, udid: udid, killed: false)) }
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:5:final class EmulatorManagerTests: XCTestCase {
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:108:    private func deadPID() throws -> Int32 {
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:154:    /// `boot_completed=1` on the serial. The boot must fail and leave no record.
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:162:        emulators.killOn = "sys.boot_completed"            // the duplicate dies during the first probe
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:339:            .success("1"),                                        // sys.boot_completed
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:411:            .success("1"),                                               // sys.boot_completed
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:491:            .success("1"),                                 // boot_completed
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:511:            "'\(root)/platform-tools/adb' -s 'emulator-5554' shell getprop 'sys.boot_completed'",
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:667:        try ledger.register(StartedEmulatorRecord(serial: "emulator-5556", avd: "Gone", pid: try deadPID()))
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:678:    func testSessionsPruneADeadPIDRecordWhoseSerialRunsTheSameAVD() async throws {
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:680:        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: try deadPID()))
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:808:        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: try deadPID()))
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:821:    /// A dead pid's serial reused by someone else's emulator is not ours.
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:824:        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Old", pid: try deadPID()))
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:840:    /// C02 / AND-F03: dead pid, same AVD name, live serial. An AVD name does
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:842:    func testTeardownRefusesADeadPIDRecordEvenWhenTheSerialRunsTheSameAVD() async throws {
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:844:        try ledger.register(StartedEmulatorRecord(serial: "emulator-5556", avd: "qa-android-1", pid: try deadPID()))
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:898:    /// C02: the user's emulator-5554 carries a dead-pid record with its own
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:900:    func testTeardownAllSkipsADeadPIDRecordWhoseSerialRunsTheSameAVD() async throws {
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:902:        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: try deadPID()))
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:906:            // emulator-5554: dead pid, serial listed; refused and dropped
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:1113:        var claim = SimulatorLeaseClaim(pid: try deadPID(), udid: "emulator-5554", startedAt: Date(), runnerPID: try deadPID(), keepAlive: true)
+Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift:236:    /// An orphan whose holder is dead is terminated only while its pid is
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift:281:        let dead = try writeRunnerSession(pid: 12109, nanos: 1_791_747_326_192_132_000, port: 8987, sessionId: "dead")
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:61:    func testADeadPidIsNeverMarked() throws {
+Tests/GrantivaCoreTests/ChildProcessTests.swift:246:        while Date() < deadline, kill(-child.pid, 0) == 0 { usleep(50_000) }
+Sources/GrantivaCore/Android/EmulatorManager.swift:343:    /// Done when `sys.boot_completed` is 1, `pm path android` answers, and the
+Sources/GrantivaCore/Android/EmulatorManager.swift:363:            if (try? await adb.getprop(serial: serial, "sys.boot_completed")) == "1",
+Sources/GrantivaCore/Runner/LogStreamer.swift:179:                          Date() < deadline, identity(pid) == original else { continue }
+Sources/GrantivaCore/Runner/LogStreamer.swift:180:                    if Date() >= terminateDeadline, signalled[pid] == original {
+Sources/GrantivaCore/Runner/LogStreamer.swift:358:        deadline: Date, executable: String = "/bin/ps", arguments: [String] = ["-ww", "-axo", "pid=,command="],

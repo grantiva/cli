@@ -1,0 +1,14 @@
+dd5d3336296a41014a45070cc5a8c4295a0873ec
+chore: package semantic back button runner (#217)
+Sources/GrantivaCLI/DriverCommand.swift:67:        return Result(path: manager.runnerPath(), version: RunnerManager.runnerVersion, extracted: extracted)
+Sources/GrantivaCLI/DriverCommand.swift:91:            Output.line(try JSONOutput.string(["version": RunnerManager.runnerVersion]))
+Sources/GrantivaCLI/DriverCommand.swift:93:            Output.line("grantiva-runner \(RunnerManager.runnerVersion)")
+Sources/GrantivaMCP/Tools/SessionCapture.swift:224:    /// bundled grantiva-runner (1.1.28-grantiva.15) reads them.
+Sources/GrantivaMCP/Tools/SessionCapture.swift:387:/// grantiva-runner's selector rules (1.1.28-grantiva.15), so a capture
+Sources/GrantivaCore/Runner/RunnerManager.swift:39:    public static let runnerVersion = "1.1.28-grantiva.16"
+Sources/GrantivaCore/Runner/RunnerManager.swift:44:    public static let installStamp = runnerVersion + "+android-drivers-2"
+Sources/GrantivaCore/Runner/RunnerManager.swift:144:            + "it is from another grantiva release than this binary (which expects grantiva-runner \(runnerVersion)). "
+Sources/GrantivaCore/Runner/RunnerManager.swift:162:        bundleMismatchWarning(bundle: resourceBundle, installed: runnerVersion, installDir: currentInstallDir)
+Sources/GrantivaCore/Runner/RunnerManager.swift:177:        guard first, let warning = bundleMismatchWarning(bundle: nil, installed: runnerVersion, installDir: currentInstallDir) else { return }
+Sources/GrantivaCore/Runner/RunnerManager.swift:312:                    at: $0, expected: runnerVersion,
+Sources/GrantivaCore/Runner/RunnerManager.swift:505:    /// (`grantiva-runner 1.1.28-grantiva.15`), or why there is none: the

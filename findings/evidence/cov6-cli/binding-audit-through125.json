@@ -1,0 +1,65 @@
+{
+  "status": "PASS_CURRENT_BINDINGS_WITH_EXCLUDED_FIRST_ATTEMPT",
+  "candidateManifestSHA256": "191e59afdca010e488f1825d5064fc05facde89f065e71bac9e1ecee91c3d30c",
+  "recipeStaticFindings": [
+    {
+      "path": "run-batch1.py",
+      "hits": [
+        {
+          "line": 13,
+          "text": "script=ev/'CLI-003/regenerate-help.sh'; script.parent.mkdir(exist_ok=True); shutil.copy2('/Users/kyle/Developer/grantiva-cli/.worktrees/cov5-cli/findings/evidence/cov5-cli/CLI-003-rerun-2/regenerate-help.sh',script)"
+        }
+      ],
+      "disposition": "provenance/input-only; no stale binary/bundle/home executed"
+    },
+    {
+      "path": "run-batch5-safe.py",
+      "hits": [
+        {
+          "line": 14,
+          "text": "p=new('142');subprocess.run(['cp','-c',b,str(p/'grantiva')],check=True);subprocess.run(['cp','-cR','/private/tmp/grantiva-completion-candidate4-x_i_t3pq/previous-qa-candidate3/grantiva_GrantivaCore.bundle',str(p/'grantiva_GrantivaCore.bundle')],check=True);r+=[run('CLI-142','install',p,[str(p/'grantiva'),'runner','install'])]"
+        }
+      ],
+      "disposition": "EXCLUDED_DO_NOT_EXECUTE"
+    }
+  ],
+  "executedStaleBindings": [],
+  "correctedCLI142": {
+    "binary": "/private/tmp/grantiva-candidate5-coverage-qjr26z3g/cli-scratch/batch5-safe/142/grantiva",
+    "expectedSHA256": "b0e9eb55baab8bcb15727de658be0c28c9205b4c83b6013e3532996f5ae6843d",
+    "actualSHA256": "b0e9eb55baab8bcb15727de658be0c28c9205b4c83b6013e3532996f5ae6843d",
+    "matched": true,
+    "bundle": "/private/tmp/grantiva-candidate5-coverage-qjr26z3g/cli-scratch/batch5-safe/142/grantiva_GrantivaCore.bundle",
+    "files": [
+      {
+        "path": "Contents/Info.plist",
+        "expectedSHA256": "26dc2d519347ea93b00d3fe876aef6821c12818af0ab3c5f7f4fec47128dbf9b",
+        "actualSHA256": "26dc2d519347ea93b00d3fe876aef6821c12818af0ab3c5f7f4fec47128dbf9b",
+        "matched": true
+      },
+      {
+        "path": "Contents/Resources/android-drivers.tar.gz",
+        "expectedSHA256": "59cbbf5725cfe682e857b8e1e3ec1a063a265c537aeee1fb57c5d4b8a5c1fb2c",
+        "actualSHA256": "59cbbf5725cfe682e857b8e1e3ec1a063a265c537aeee1fb57c5d4b8a5c1fb2c",
+        "matched": true
+      },
+      {
+        "path": "Contents/Resources/grantiva-runner-amd64.tar.gz",
+        "expectedSHA256": "cb8cf912c80da1183591becb5d701953984f35beaccf506e7b570920d9813805",
+        "actualSHA256": "cb8cf912c80da1183591becb5d701953984f35beaccf506e7b570920d9813805",
+        "matched": true
+      },
+      {
+        "path": "Contents/Resources/grantiva-runner-arm64.tar.gz",
+        "expectedSHA256": "9b20219924504b5b30a85182708caa693caa8b15d3c4f5988cc563be877ba580",
+        "actualSHA256": "9b20219924504b5b30a85182708caa693caa8b15d3c4f5988cc563be877ba580",
+        "matched": true
+      }
+    ],
+    "allMatched": true,
+    "gradedEvidence": "CLI-142-run-2/install-current.command.json"
+  },
+  "authorizedRunnerHome": "/private/tmp/grantiva-candidate5-coverage-qjr26z3g/cli-runner-home",
+  "authorizedSession": "candidate5-cli",
+  "resumeRule": "Every newly adapted recipe must pass this stale-binding scan before execution; old fixture recipes may be consulted but executable binary, bundle, home, source candidate and output bindings must be current."
+}

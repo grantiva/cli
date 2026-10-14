@@ -1,0 +1,181 @@
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:95:    func testDriverAttachmentDoesNotPublishReadyBeforeLaunchSettles() async {
+Sources/GrantivaCLI/DriverCommand.swift:216:        - waitForAnimationToEnd:
+Sources/GrantivaCLI/DriverCommand.swift:279:    /// The session flow's `waitForAnimationToEnd` was meant to hold the runner
+Sources/GrantivaCLI/DriverCommand.swift:281:    /// settles on either platform, so without `--keep-alive` the runner
+Sources/GrantivaCLI/RunCommand+Result.swift:122:    /// `takeScreenshot` captures are in its `screenshots`.
+Tests/GrantivaCLITests/RunSessionContractTests.swift:233:        XCTAssertEqual(passSteps.map { $0["action"] as? String }, ["launchApp", "takeScreenshot"])
+Tests/GrantivaCLITests/RunSessionContractTests.swift:247:            "smoke.yaml": "appId: com.placeholder\n---\n- launchApp\n- takeScreenshot: Home\n",
+Tests/GrantivaCLITests/RunSessionContractTests.swift:272:            ? #"{"commands":[{"index":0,"type":"launchApp","yaml":"launchApp","status":"passed","duration":1800},{"index":1,"type":"takeScreenshot","yaml":"takeScreenshot","status":"passed","duration":120,"artifacts":{"screenshotAfter":"assets/flow-000/cmd-001-Home.png"}}]}"#
+Sources/GrantivaCLI/RunCommand.swift:241:    /// Where `run` keeps its takeScreenshot shots and failure screenshots
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:25:        - takeScreenshot: "Swiped"
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:119:    func testBareWaitForAnimationToEndIsASettleStep() throws {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:121:        - waitForAnimationToEnd
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:122:        - takeScreenshot: "Settled"
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:125:        XCTAssertEqual(steps[0].settle, MaestroFlowParser.defaultSettleSeconds)
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:129:    func testWaitForAnimationToEndGeneratesASettleNotASleep() {
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:131:            screens: [.init(name: "S", path: .steps([.init(settle: 3)]))], bundleId: "com.example.app"
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:133:        XCTAssertTrue(yaml.contains("- waitForAnimationToEnd:\n    timeout: 3000\n"), yaml)
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:296:        - waitForAnimationToEnd
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:300:        - takeScreenshot: "Detail"
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:307:        - takeScreenshot: "After"
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:310:        // The generator settles after each interaction and before each
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:311:        // screenshot (A04); the source's own waitForAnimationToEnd replaces
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:312:        // the generated settle after the tap rather than doubling it.
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:320:        - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:325:        - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:327:        - takeScreenshot: "Detail"
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:331:        - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:335:        - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:339:        - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:341:        - takeScreenshot: "After"
+Sources/GrantivaMCP/Tools/SessionCapture.swift:21:    static let settleTimeout = 5.0
+Sources/GrantivaMCP/Tools/SessionCapture.swift:138:        // The one launch is timed (terminate, launch, settle): the first
+Sources/GrantivaMCP/Tools/SessionCapture.swift:144:        await settle(driver: driver, timeout: settleTimeout, pause: pause)
+Sources/GrantivaMCP/Tools/SessionCapture.swift:166:            await settle(driver: driver, timeout: settleTimeout, pause: pause)
+Sources/GrantivaMCP/Tools/SessionCapture.swift:168:            // From the driver, as the runner's takeScreenshot does: the
+Sources/GrantivaMCP/Tools/SessionCapture.swift:193:            await settle(driver: driver, timeout: settleTimeout, pause: pause)
+Sources/GrantivaMCP/Tools/SessionCapture.swift:197:            await settle(driver: driver, timeout: settleTimeout, pause: pause)
+Sources/GrantivaMCP/Tools/SessionCapture.swift:201:            await settle(driver: driver, timeout: settleTimeout, pause: pause)
+Sources/GrantivaMCP/Tools/SessionCapture.swift:206:        if let seconds = step.settle {
+Sources/GrantivaMCP/Tools/SessionCapture.swift:207:            await settle(driver: driver, timeout: seconds, pause: pause)
+Sources/GrantivaMCP/Tools/SessionCapture.swift:367:    static func settle(driver: DriverClient, timeout: Double, pause: @escaping @Sendable (Double) async -> Void) async {
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:123:        try write("grantiva.yml", "appId: com.example.demo\n---\n- launchApp\n- takeScreenshot: Home\n")
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:240:            - takeScreenshot: Home
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:39:        XCTAssertTrue(yaml.contains(#"takeScreenshot: "Result: \"final\"""#))
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:56:    private let settle = "- waitForAnimationToEnd:\n    timeout: 5000"
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:58:    // C09: `wait: N` sleeps N seconds; waitForAnimationToEnd is only an upper bound.
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:85:    // are the settle lines and the wait step.
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:104:            - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:106:            - takeScreenshot: "Home"
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:108:            - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:112:            - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:115:            - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:120:            - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:122:            - takeScreenshot: "Profile"
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:126:            - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:128:            - takeScreenshot: "Waited"
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:134:    // A04: a settle wait between each interaction and the next screenshot.
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:135:    func testTapIsFollowedBySettleBeforeScreenshot() {
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:140:            yaml.hasSuffix("- tapOn: \"Deep Links\"\n\(settle)\n- takeScreenshot: \"Deep Links\"\n"),
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:156:    /// element with text inside the app's content view) before the settle
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:158:    /// pass the settle alone. iOS is unchanged.
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:165:        \(settle)
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:166:        - takeScreenshot: "Home"
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:173:        XCTAssertTrue(ios.contains("- launchApp\n\(settle)\n- takeScreenshot: \"Home\""), ios)
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:176:    func testSwipeAndTypeAreFollowedBySettle() {
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:182:        XCTAssertTrue(yaml.contains("- swipe:\n    direction: UP\n\(settle)\n- inputText: \"abc\"\n\(settle)\n- assertVisible"), yaml)
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:183:        XCTAssertTrue(yaml.hasSuffix("- assertVisible: \"Done\"\n\(settle)\n- takeScreenshot: \"S\"\n"), yaml)
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:186:    func testEveryScreenshotIsPrecededByOneSettle() {
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:193:        XCTAssertTrue(yaml.contains("- launchApp\n\(settle)\n- takeScreenshot: \"Home\""), yaml)
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:194:        XCTAssertEqual(yaml.components(separatedBy: "waitForAnimationToEnd").count - 1, 2, yaml)
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:213:    func testExplicitSettleReplacesTheGeneratedOne() {
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:214:        let screens = [GrantivaConfig.Screen(name: "S", path: .steps([.init(tap: "Go"), .init(settle: 2)]))]
+Tests/GrantivaCoreTests/FlowGeneratorTests.swift:216:        XCTAssertTrue(yaml.hasSuffix("- tapOn: \"Go\"\n- waitForAnimationToEnd:\n    timeout: 2000\n- takeScreenshot: \"S\"\n"), yaml)
+Sources/GrantivaMCP/Tools/UITools.swift:157:            // Brief settle time for animations
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:6:/// (K17, K21-b), captures that are only `takeScreenshot` points (K82-a), a
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:28:    func testOnlyTakeScreenshotPointsBecomeCaptures() throws {
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:49:        XCTAssertEqual(steps.map(\.action), ["launchApp", "tapOn: text=\"Favorites\"", "waitForAnimationToEnd", "takeScreenshot"])
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:59:         {"index":2,"type":"takeScreenshot","yaml":"takeScreenshot","status":"skipped"}]
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:118:        // launchApp, settle, shot Home, tapOn, settle, settle-before-shot is skipped, shot Favorites
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:135:        // Favorites: the tap and the settle it generated (400 + 500 ms).
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:150:         {"index":1,"yaml":"waitForAnimationToEnd","status":"passed","duration":100},
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:151:         {"index":2,"yaml":"takeScreenshot","status":"passed","duration":100},
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:154:         {"index":4,"yaml":"waitForAnimationToEnd","status":"skipped"},
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:155:         {"index":5,"yaml":"takeScreenshot","status":"skipped"},
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:156:         {"index":6,"yaml":"waitForAnimationToEnd","status":"skipped"},
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:157:         {"index":7,"yaml":"takeScreenshot","status":"skipped"}]
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:279:     {"index":2,"type":"waitForAnimationToEnd","yaml":"waitForAnimationToEnd","status":"passed","duration":601},
+Tests/GrantivaCoreTests/RunnerReportContractTests.swift:280:     {"index":3,"type":"takeScreenshot","yaml":"takeScreenshot","status":"passed","duration":145,
+Tests/GrantivaCoreTests/RunnerSessionCleanupTests.swift:162:    static let failedFlow = #"{"id":"flow-000","name":"smoke","commands":[{"id":"cmd-000","type":"launchApp","yaml":"launchApp","status":"passed"},{"id":"cmd-001","type":"tapOn","yaml":"tapOn: text=\"Remove\"","status":"failed","error":{"type":"element_not_found","message":"Element not found: text='Remove'"}},{"id":"cmd-002","type":"takeScreenshot","yaml":"takeScreenshot","status":"skipped"}]}"#
+Tests/GrantivaMCPTests/MCPServerTests.swift:347:    /// server's `--platform` flag settles it.
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:294:        XCTAssertTrue(MaestroFlowParser.isMaestroFormat("- takeScreenshot: \"Home\""))
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:309:        - takeScreenshot: "Login"
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:312:        - takeScreenshot: "Welcome"
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:344:        - takeScreenshot: "Result"
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:394:        - takeScreenshot: "Scrolled"
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:408:        - takeScreenshot: "After Scroll"
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:424:        - takeScreenshot: "Swiped"
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:440:        - takeScreenshot: "After Flows"
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:460:        - takeScreenshot: "Tapped"
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:477:    func testParseWaitForAnimationToEnd() throws {
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:479:        - waitForAnimationToEnd:
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:481:        - takeScreenshot: "Settled"
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:486:            XCTAssertEqual(steps[0].settle, 3.0) // 3000ms → 3.0s, a settle, not a sleep
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:498:        - takeScreenshot: "Ready"
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:533:        - takeScreenshot: "Result"
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:545:        - takeScreenshot: "Result"
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:559:        - takeScreenshot: "Launch"
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:561:        - takeScreenshot: "Second"
+Tests/GrantivaCoreTests/GrantivaCoreTests.swift:588:        - takeScreenshot: "Clean"
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:223:        // launchApp, tapOn, settle, evalScript (index 3), settle, takeScreenshot
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:230:            ✓ waitForAnimationToEnd (700ms)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:274:        // launchApp, settle, takeScreenshot Home, tapOn, settle, takeScreenshot Broken
+Tests/GrantivaCoreTests/FlowStagingTests.swift:73:    // MARK: - K83: a sub-flow's takeScreenshot is a screen
+Tests/GrantivaCoreTests/FlowStagingTests.swift:76:        try "appId: com.kylebrowning.Landmarks\n---\n- tapOn: \"Landmarks\"\n- takeScreenshot: \"FromSub\"\n"
+Tests/GrantivaCoreTests/FlowStagingTests.swift:80:                "appId: com.kylebrowning.Landmarks\n---\n- launchApp\n\(runFlow)\n- takeScreenshot: \"Main\"\n",
+Tests/GrantivaCoreTests/FlowStagingTests.swift:93:            "appId: x\n---\n- launchApp\n- runFlow: plain.yaml\n- takeScreenshot: \"Main\"\n",
+Tests/GrantivaCoreTests/FlowStagingTests.swift:102:        try "appId: x\n---\n- runFlow: a.yaml\n- takeScreenshot: \"InA\"\n"
+Tests/GrantivaCoreTests/FlowStagingTests.swift:105:            "appId: x\n---\n- runFlow: missing.yaml\n- runFlow: a.yaml\n- takeScreenshot: \"Main\"\n",
+Tests/GrantivaCoreTests/FlowStagingTests.swift:115:        try "appId: x\n---\n- takeScreenshot: \"Main\"\n"
+Tests/GrantivaCoreTests/FlowStagingTests.swift:118:            "appId: x\n---\n- runFlow: sub.yaml\n- tapOn: \"Go\"\n- takeScreenshot: \"Main\"\n",
+Tests/GrantivaCoreTests/FlowStagingTests.swift:126:        try "appId: com.example\n---\n- launchApp\n- runFlow: sub.yaml\n- takeScreenshot: \"Main\"\n"
+Tests/GrantivaCoreTests/FlowStagingTests.swift:128:        try "appId: com.example\n---\n- takeScreenshot: \"FromSub\"\n"
+Tests/GrantivaCoreTests/FlowStagingTests.swift:151:        - takeScreenshot: "S"
+Tests/GrantivaCoreTests/FlowStagingTests.swift:187:        - takeScreenshot: "S"
+Tests/GrantivaCoreTests/FlowStagingTests.swift:208:    - waitForAnimationToEnd
+Tests/GrantivaCoreTests/FlowStagingTests.swift:209:    - takeScreenshot: "Home Swiped"
+Tests/GrantivaCoreTests/FlowStagingTests.swift:219:    - takeScreenshot: "Caching Maestro"
+Sources/GrantivaCore/Config/GrantivaConfig.swift:53:            /// Maestro `waitForAnimationToEnd`: wait until the screen is still,
+Sources/GrantivaCore/Config/GrantivaConfig.swift:55:            public var settle: Double? = nil
+Sources/GrantivaCore/Config/GrantivaConfig.swift:82:                settle: Double? = nil,
+Sources/GrantivaCore/Config/GrantivaConfig.swift:98:                self.settle = settle
+Sources/GrantivaCore/Diff/DiffResult.swift:52:    /// A configured screen, or a flow run with `run` (whose `takeScreenshot`
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:14:/// - takeScreenshot: "Login Screen"
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:17:/// Each `takeScreenshot` becomes a named screen in Grantiva. Commands between
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:27:    /// `takeScreenshot`s is a screen like one in the parent; other sub-flows
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:112:            if trimmed.hasPrefix("- takeScreenshot:") { return true }
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:183:    /// Each `takeScreenshot` creates a screen boundary, including one inside a
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:204:                    "\(source): screen \"\(screen.name)\" is also taken in \(earlier); give one of the takeScreenshot steps another name."
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:223:                case .takeScreenshot(let name):
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:250:        // Remaining steps after the last takeScreenshot → one more screen
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:295:              commands.contains(where: { ($0 as? [String: Any])?["takeScreenshot"] != nil }) else { return nil }
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:307:        case takeScreenshot(name: String?)
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:321:            case "waitForAnimationToEnd": return .step(.init(settle: defaultSettleSeconds))
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:430:        // A settle, not a sleep: it returns as soon as the screen is still.
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:431:        if dict.keys.contains("waitForAnimationToEnd") {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:432:            let timeout = (dict["waitForAnimationToEnd"] as? [String: Any])?["timeout"]
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:433:            let seconds = asDouble(timeout).map { $0 / 1000.0 } ?? defaultSettleSeconds
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:434:            return .step(.init(settle: seconds))
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:462:        if let val = dict["takeScreenshot"] {
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:463:            return .takeScreenshot(name: val as? String)
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:493:    /// Upper bound for `waitForAnimationToEnd` without a `timeout:`.
+Sources/GrantivaCore/Config/MaestroFlowParser.swift:494:    static let defaultSettleSeconds = 5.0
+Sources/GrantivaCore/Runner/RunnerExecution.swift:192:        // runner is holding and the verdict is settled, so the first Ctrl-C
+Sources/GrantivaCore/Runner/RunnerSession.swift:281:        // The runner saves takeScreenshot outputs in assets/<flow-id>/cmd-NNN-<name>.png
+Sources/GrantivaCore/Runner/RunnerSession.swift:947:        } else if let seconds = step.settle {
+Sources/GrantivaCore/Runner/SignalRelay.swift:166:    /// verdict is settled. `RunnerExecution`'s readiness watcher calls this.
+Sources/GrantivaCore/Runner/RunnerArtifactCollector.swift:31:    /// `takeScreenshot` captures, copied to `outputDir` as
+Sources/GrantivaCore/Runner/RunnerTraceTrimmer.swift:10:/// shots. Named `takeScreenshot` captures are never trace shots and stay.
+Sources/GrantivaCore/Runner/FlowGenerator.swift:20:    /// top-level command came from. `step` is nil for the launch, the settle
+Sources/GrantivaCore/Runner/FlowGenerator.swift:73:                        appendSettle(to: &lines)
+Sources/GrantivaCore/Runner/FlowGenerator.swift:94:                        appendSettle(to: &lines)
+Sources/GrantivaCore/Runner/FlowGenerator.swift:98:                        appendSettle(to: &lines)
+Sources/GrantivaCore/Runner/FlowGenerator.swift:105:                    if let seconds = step.settle {
+Sources/GrantivaCore/Runner/FlowGenerator.swift:106:                        // An explicit settle replaces the generated one before it.
+Sources/GrantivaCore/Runner/FlowGenerator.swift:107:                        if lines.suffix(2).first == "- waitForAnimationToEnd:" { lines.removeLast(2) }
+Sources/GrantivaCore/Runner/FlowGenerator.swift:108:                        lines.append("- waitForAnimationToEnd:")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:133:                        appendSettle(to: &lines)
+Sources/GrantivaCore/Runner/FlowGenerator.swift:137:            appendSettle(to: &lines)
+Sources/GrantivaCore/Runner/FlowGenerator.swift:138:            lines.append("- takeScreenshot: \(FlowEnvironment.quoted(screen.name))")
+Sources/GrantivaCore/Runner/FlowGenerator.swift:214:    /// a cold start shows before its first frame. The settle alone cannot
+Sources/GrantivaCore/Runner/FlowGenerator.swift:230:    /// Upper bound for the settle wait after a tap, swipe, or typed text and
+Sources/GrantivaCore/Runner/FlowGenerator.swift:231:    /// before each screenshot. `waitForAnimationToEnd` returns as soon as two
+Sources/GrantivaCore/Runner/FlowGenerator.swift:234:    static let settleTimeoutMs = 5000
+Sources/GrantivaCore/Runner/FlowGenerator.swift:237:    /// the destination; without a settle the next screenshot can show the
+Sources/GrantivaCore/Runner/FlowGenerator.swift:238:    /// previous screen. A settle directly after another settle (including a
+Sources/GrantivaCore/Runner/FlowGenerator.swift:239:    /// Maestro `waitForAnimationToEnd`) is skipped.
+Sources/GrantivaCore/Runner/FlowGenerator.swift:240:    private static func appendSettle(to lines: inout [String]) {
+Sources/GrantivaCore/Runner/FlowGenerator.swift:241:        if lines.suffix(2).first == "- waitForAnimationToEnd:" { return }
+Sources/GrantivaCore/Runner/FlowGenerator.swift:242:        lines.append(contentsOf: ["- waitForAnimationToEnd:", "    timeout: \(settleTimeoutMs)"])
+Sources/GrantivaCore/Runner/FlowGenerator.swift:283:        appendSettle(to: &lines)
+Sources/GrantivaCore/Runner/FlowGenerator.swift:300:    /// command, and `waitForAnimationToEnd` is only an upper bound: it returns

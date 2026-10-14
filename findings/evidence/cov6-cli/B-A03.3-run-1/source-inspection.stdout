@@ -1,0 +1,268 @@
+Tests/GrantivaCLITests/AndroidCommandTests.swift:53:    func testRunOnAndroidWithoutAnApplicationIDFailsAfterBootWithTheAndroidMessage() async throws {
+Tests/GrantivaCLITests/AndroidCommandTests.swift:62:            XCTAssertTrue("\(error)".contains("--application-id"), "\(error)")
+Tests/GrantivaCLITests/AndroidCommandTests.swift:69:        var command = try RunCommand.parse(["--no-build", "--application-id", "com.fake", "--logs", "--logs-tag", "Fake", "--timeout", "30"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:124:    func testBuildInstallOnAndroidUsesTheBuiltApplicationID() async throws {
+Tests/GrantivaCLITests/AndroidCommandTests.swift:135:    /// emits applicationId and device{name, serial}, not bundleId/simulator.
+Tests/GrantivaCLITests/AndroidCommandTests.swift:142:        XCTAssertEqual(Set(json.keys), ["status", "applicationId", "device", "appPath"], stdout)
+Tests/GrantivaCLITests/AndroidCommandTests.swift:144:        XCTAssertEqual(json["applicationId"] as? String, "com.fake.built")
+Tests/GrantivaCLITests/AndroidCommandTests.swift:206:    func testBuildInstallOnAndroidLaunchesTheBuiltApplicationID() async throws {
+Tests/GrantivaCLITests/AndroidCommandTests.swift:216:    /// stream starts after install, with the application ID from the build.
+Tests/GrantivaCLITests/AndroidCommandTests.swift:217:    func testRunOnAndroidStartsTheLogStreamAfterInstallWithTheBuiltApplicationID() async throws {
+Tests/GrantivaCLITests/AndroidCommandTests.swift:229:    private func configureApplicationID(_ id: String) throws {
+Tests/GrantivaCLITests/AndroidCommandTests.swift:233:        application_id: \(id)
+Tests/GrantivaCLITests/AndroidCommandTests.swift:239:    /// A03: a built variant (`--variant paidDebug`) is installed and tested
+Tests/GrantivaCLITests/AndroidCommandTests.swift:240:    /// under the output metadata's applicationId, not `application_id`.
+Tests/GrantivaCLITests/AndroidCommandTests.swift:241:    func testRunOnAndroidTestsTheBuiltVariantsApplicationIDOverConfig() async throws {
+Tests/GrantivaCLITests/AndroidCommandTests.swift:242:        try configureApplicationID("com.fake.configured")
+Tests/GrantivaCLITests/AndroidCommandTests.swift:253:    func testRunOnAndroidTestsTheAppFilesApplicationIDOverConfig() async throws {
+Tests/GrantivaCLITests/AndroidCommandTests.swift:254:        try configureApplicationID("com.fake.configured")
+Tests/GrantivaCLITests/AndroidCommandTests.swift:266:    func testBuildInstallOnAndroidUsesTheBuiltApplicationIDOverConfig() async throws {
+Tests/GrantivaCLITests/AndroidCommandTests.swift:267:        try configureApplicationID("com.fake.configured")
+Tests/GrantivaCLITests/AndroidCommandTests.swift:276:    /// Review round 1: `--application-id` picks the test target, but the APK
+Tests/GrantivaCLITests/AndroidCommandTests.swift:278:    func testBuildInstallWithAnApplicationIDOverrideInstallsUnderTheAppsOwnID() async throws {
+Tests/GrantivaCLITests/AndroidCommandTests.swift:279:        var command = try InstallCommand.parse(["--variant", "paidDebug", "--application-id", "com.fake.flag"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:287:    func testRunWithAnApplicationIDOverrideInstallsUnderTheAppsOwnID() async throws {
+Tests/GrantivaCLITests/AndroidCommandTests.swift:288:        var command = try RunCommand.parse(["--application-id", "com.fake.flag", "--timeout", "30"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:314:        var command = try CICommand.CIRunCommand.parse(["--no-build", "--application-id", "com.fake"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:327:        var command = try RunCommand.parse(["--no-build", "--application-id", "com.fake", "--timeout", "30"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:391:        var command = try InstallCommand.parse(["--no-launch", "--no-build", "--application-id", "com.fake.app"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:400:        var command = try InstallCommand.parse(["--no-launch", "--no-build", "--application-id", "com.fake.app", "--json"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:411:        var command = try InstallCommand.parse(["--no-build", "--application-id", "com.fake.app"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:428:        var command = try InstallCommand.parse(["--no-build", "--application-id", "com.fake.app"])
+Tests/GrantivaCLITests/AndroidCommandTests.swift:440:        var command = try RunCommand.parse(["--no-build", "--application-id", "com.fake.app", "--timeout", "30"])
+Tests/GrantivaCLITests/InstallCommandTests.swift:111:    /// A10: Android names the application ID and the adb serial.
+Tests/GrantivaCLITests/InstallCommandTests.swift:115:            applicationId: "com.kylebrowning.landmarks",
+Tests/GrantivaCLITests/InstallCommandTests.swift:122:        XCTAssertEqual(Set(json.keys), ["status", "applicationId", "device", "appPath"])
+Tests/GrantivaCLITests/InstallCommandTests.swift:123:        XCTAssertEqual(json["applicationId"] as? String, "com.kylebrowning.landmarks")
+Tests/GrantivaCLITests/InstallCommandTests.swift:134:            status: .skipped, applicationId: "com.kylebrowning.landmarks",
+Tests/GrantivaCLITests/InstallCommandTests.swift:137:        XCTAssertEqual(Set(android.keys), ["status", "applicationId", "device", "appPath"])
+Sources/GrantivaCLI/DriverCommand.swift:117:        "bundleId" and "udid" on iOS or "applicationId" and "serial" on Android, \
+Sources/GrantivaCLI/DriverCommand.swift:133:    @Option(name: .long, help: "Application ID (Android; reads from grantiva-android.yml if omitted)")
+Sources/GrantivaCLI/DriverCommand.swift:134:    var applicationId: String?
+Sources/GrantivaCLI/DriverCommand.swift:187:        let resolvedAppID = try Self.appID(platform: platform, bundleId: bundleId, applicationId: applicationId, config: config)
+Sources/GrantivaCLI/DriverCommand.swift:204:        options.note("  \(platform == .ios ? "Bundle ID" : "Application ID"): \(resolvedAppID)")
+Sources/GrantivaCLI/DriverCommand.swift:252:    static func appID(platform: Platform, bundleId: String?, applicationId: String?, config: GrantivaConfig?) throws -> String {
+Sources/GrantivaCLI/DriverCommand.swift:255:            if applicationId != nil { throw TargetOptions.otherPlatformFlagError("--application-id", platform: .ios) }
+Sources/GrantivaCLI/DriverCommand.swift:262:            guard let id = applicationId ?? config?.android?.applicationId else {
+Sources/GrantivaCLI/DriverCommand.swift:263:                throw GrantivaError.invalidArgument("No application ID. Pass --application-id or set application_id in grantiva-android.yml.")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:386:        XCTAssertEqual(try RunnerStartCommand.appID(platform: .ios, bundleId: "a.b", applicationId: nil, config: nil), "a.b")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:387:        XCTAssertEqual(try RunnerStartCommand.appID(platform: .ios, bundleId: nil, applicationId: nil, config: GrantivaConfig(bundleId: "c.d")), "c.d")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:388:        XCTAssertThrowsError(try RunnerStartCommand.appID(platform: .ios, bundleId: nil, applicationId: nil, config: nil)) {
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:391:        XCTAssertEqual(try RunnerStartCommand.appID(platform: .android, bundleId: nil, applicationId: "e.f", config: nil), "e.f")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:392:        XCTAssertEqual(try RunnerStartCommand.appID(platform: .android, bundleId: nil, applicationId: nil,
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:393:                                                    config: GrantivaConfig(platform: .android, android: AndroidProject(applicationId: "g.h"))), "g.h")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:394:        XCTAssertThrowsError(try RunnerStartCommand.appID(platform: .android, bundleId: nil, applicationId: nil, config: nil)) {
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:395:            XCTAssertTrue("\($0)".contains("--application-id"), "\($0)")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:652:        XCTAssertNil(ios["applicationId"])
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:661:        XCTAssertEqual(android["applicationId"] as? String, "com.example")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:862:    private static let startKeysAndroid: Set<String> = ["status", "pid", "port", "platform", "applicationId", "bundle_id", "udid", "serial"]
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:887:        XCTAssertEqual(exited["applicationId"] as? String, "com.kylebrowning.landmarks")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:910:        XCTAssertTrue(json["applicationId"] is NSNull)
+Sources/GrantivaCLI/RunnerLifecycleDocument.swift:6:/// `udid` on iOS, `applicationId` + `serial` on Android). `bundle_id`, and
+Sources/GrantivaCLI/RunnerLifecycleDocument.swift:62:                // `applicationId` is Android's name; `bundle_id` stays beside
+Sources/GrantivaCLI/RunnerLifecycleDocument.swift:64:                try container.encode(appID, forKey: "applicationId")
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:16:    var buildResult = BuildResult(success: true, duration: 0, warnings: [], errors: [], productPath: "/fake/app.apk", applicationId: "com.fake.built")
+Sources/GrantivaCLI/CICommand.swift:328:                    builtAppID = buildResult.applicationId
+Sources/GrantivaCLI/InitCommand.swift:20:    @Option(name: .long, help: "Application ID (Android)")
+Sources/GrantivaCLI/InitCommand.swift:21:    var applicationId: String?
+Sources/GrantivaCLI/InitCommand.swift:36:        try Self.checkFlags(for: platform, scheme: scheme, bundleId: bundleId, applicationId: applicationId)
+Sources/GrantivaCLI/InitCommand.swift:45:                applicationId: applicationId,
+Sources/GrantivaCLI/InitCommand.swift:216:    static func checkFlags(for platform: Platform, scheme: String?, bundleId: String?, applicationId: String?) throws {
+Sources/GrantivaCLI/InitCommand.swift:218:            ? [("--application-id", applicationId != nil)]
+Sources/GrantivaCLI/InitCommand.swift:225:    static func androidTemplate(module: String, applicationId: String?, emulator: String) -> String {
+Sources/GrantivaCLI/InitCommand.swift:226:        let idLine = applicationId.map { "application_id: \($0)" } ?? "# application_id: com.example.myapp   # read from the build when omitted"
+Tests/GrantivaCLITests/TargetOptionsTests.swift:49:            android: AndroidProject(module: "mobile", variant: "release", applicationId: "com.cfg", emulator: "Cfg_AVD", buildArgs: ["-Pa=1"])
+Tests/GrantivaCLITests/TargetOptionsTests.swift:60:        let flags = try TargetOptions.parse(["--module", "app", "--variant", "debug", "--application-id", "com.flag", "--device", "emulator-5556"])
+Tests/GrantivaCLITests/TargetOptionsTests.swift:74:    /// A03: `--app-file app-paid-debug.apk` with `application_id` set to the
+Tests/GrantivaCLITests/TargetOptionsTests.swift:76:    func testAndroidResolutionPrefersTheAPKsApplicationIDOverConfig() async throws {
+Tests/GrantivaCLITests/TargetOptionsTests.swift:78:            flows: ["f.yaml"], platform: .android, android: AndroidProject(applicationId: "com.kylebrowning.landmarks")
+Tests/GrantivaCLITests/TargetOptionsTests.swift:80:        let resolved = try TargetOptions.resolveAndroid(
+Tests/GrantivaCLITests/TargetOptionsTests.swift:81:            moduleFlag: nil, variantFlag: nil, applicationIdFlag: nil, emulatorFlag: nil, deviceFlag: nil,
+Tests/GrantivaCLITests/TargetOptionsTests.swift:85:        XCTAssertEqual(resolved.android?.applicationId, "com.kylebrowning.landmarks.paid")
+Tests/GrantivaCLITests/TargetOptionsTests.swift:94:        XCTAssertTrue(configWarning?.contains("application_id \(free)") == true, "\(fromApp)")
+Tests/GrantivaCLITests/TargetOptionsTests.swift:98:        XCTAssertEqual(overridden.id, free, "--application-id still overrides")
+Tests/GrantivaCLITests/TargetOptionsTests.swift:99:        XCTAssertTrue(overridden.warning?.contains("--application-id \(free) differs") == true, "\(overridden)")
+Tests/GrantivaCLITests/TargetOptionsTests.swift:111:        let install = try XCTUnwrap(AndroidProject.applicationID(override: nil, binary: paid, configured: free, purpose: .installing).warning)
+Tests/GrantivaCLITests/TargetOptionsTests.swift:112:        XCTAssertEqual(install, "application_id \(free) in grantiva-android.yml differs from the app's own application ID \(paid); installing \(paid). Update application_id to match.")
+Tests/GrantivaCLITests/TargetOptionsTests.swift:113:        let run = try XCTUnwrap(AndroidProject.applicationID(override: nil, binary: paid, configured: free, purpose: .testing).warning)
+Tests/GrantivaCLITests/TargetOptionsTests.swift:115:        let flagged = try XCTUnwrap(AndroidProject.applicationID(override: free, binary: paid, configured: nil, purpose: .installing).warning)
+Tests/GrantivaCLITests/TargetOptionsTests.swift:118:        XCTAssertEqual(AndroidProject.applicationID(override: nil, binary: paid, configured: free).warning, run, "testing is the default")
+Tests/GrantivaCLITests/TargetOptionsTests.swift:121:    func testInstalledAppIDPrefersTheBuiltVariantsIDOnAndroidOnly() throws {
+Tests/GrantivaCLITests/TargetOptionsTests.swift:122:        let config = GrantivaConfig(platform: .android, android: AndroidProject(applicationId: "com.cfg"))
+Tests/GrantivaCLITests/TargetOptionsTests.swift:123:        let resolved = ResolvedProject(bundleId: "com.cfg", android: AndroidProject(applicationId: "com.cfg"))
+Tests/GrantivaCLITests/TargetOptionsTests.swift:140:    func testInvalidApplicationIDIsRejected() async throws {
+Tests/GrantivaCLITests/TargetOptionsTests.swift:142:            _ = try await TargetOptions.parse(["--application-id", "bad id"]).resolve(platform: .android, config: nil, skipBuild: true, appID: nil)
+Tests/GrantivaCLITests/TargetOptionsTests.swift:145:            XCTAssertEqual(message, "Application ID \"bad id\" is not a valid Android application ID (letters, digits, underscores, at least one dot).")
+Tests/GrantivaCLITests/TargetOptionsTests.swift:148:            XCTAssertThrowsError(try TargetOptions.resolveAndroid(
+Tests/GrantivaCLITests/TargetOptionsTests.swift:149:                moduleFlag: nil, variantFlag: nil, applicationIdFlag: bad, emulatorFlag: nil, deviceFlag: nil, config: nil, appID: nil
+Tests/GrantivaCLITests/TargetOptionsTests.swift:152:        let ok = try TargetOptions.resolveAndroid(
+Tests/GrantivaCLITests/TargetOptionsTests.swift:153:            moduleFlag: nil, variantFlag: nil, applicationIdFlag: "com.example_app.Demo1", emulatorFlag: nil, deviceFlag: nil, config: nil, appID: nil
+Tests/GrantivaCLITests/TargetOptionsTests.swift:156:        XCTAssertNil(try TargetOptions.resolveAndroid(
+Tests/GrantivaCLITests/TargetOptionsTests.swift:157:            moduleFlag: nil, variantFlag: nil, applicationIdFlag: nil, emulatorFlag: nil, deviceFlag: nil, config: nil, appID: nil
+Tests/GrantivaCLITests/TargetOptionsTests.swift:170:        XCTAssertTrue(TargetOptions.appIDMessage(for: .android).contains("--application-id"))
+Sources/GrantivaCLI/DiffCommand.swift:121:                    builtAppID = buildResult.applicationId
+Sources/GrantivaCLI/DiffCommand.swift:384:                        builtAppID = buildResult.applicationId
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:92:                status: .installed, applicationId: "com.kylebrowning.landmarks",
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:100:                status: .skipped, applicationId: "com.kylebrowning.landmarks",
+Tests/GrantivaCLITests/JSONKeyCasingContractTests.swift:182:            let appKey = platform == .android ? "applicationId" : "bundleId"
+Tests/GrantivaCLITests/InitAndroidTests.swift:33:        XCTAssertTrue(yaml.contains("# application_id:"), yaml)
+Tests/GrantivaCLITests/InitAndroidTests.swift:40:    func testInitWithTheFlagAndAnApplicationIDWritesItUncommented() async throws {
+Tests/GrantivaCLITests/InitAndroidTests.swift:41:        try await InitCommand.parse(["--platform", "android", "--application-id", "com.example.app"]).run()
+Tests/GrantivaCLITests/InitAndroidTests.swift:43:        XCTAssertTrue(yaml.contains("\napplication_id: com.example.app\n"), yaml)
+Tests/GrantivaCLITests/InitAndroidTests.swift:88:    func testApplicationIdWithTheIOSPlatformIsRejectedByName() async {
+Tests/GrantivaCLITests/InitAndroidTests.swift:90:        await assertInitFails(["--platform", "ios", "--application-id", "a.b"], mentioning: "--application-id is an Android option, but this is an iOS project")
+Tests/GrantivaCLITests/PlatformOptionTests.swift:93:        let iosAppID = TargetOptions.otherPlatformFlagError("--application-id", platform: .ios).errorDescription
+Tests/GrantivaCLITests/PlatformOptionTests.swift:94:        XCTAssertThrowsError(try RunnerStartCommand.appID(platform: .ios, bundleId: nil, applicationId: "a.b", config: nil)) { error in
+Sources/GrantivaCLI/BuildCommand.swift:170:            builtAppID = result.applicationId
+Sources/GrantivaCLI/BuildCommand.swift:214:                applicationId: bid,
+Sources/GrantivaCLI/BuildCommand.swift:340:/// `build install --json` on Android: application ID and adb serial instead
+Sources/GrantivaCLI/BuildCommand.swift:350:    let applicationId: String
+Sources/GrantivaCLI/BuildCommand.swift:354:    enum CodingKeys: String, CodingKey { case status, applicationId, device, appPath }
+Sources/GrantivaCLI/BuildCommand.swift:360:        try c.encode(applicationId, forKey: .applicationId)
+Tests/GrantivaCLITests/RunSessionContractTests.swift:160:        let flagged = try TargetOptions.parse(["--application-id", "com.flag"])
+Tests/GrantivaCLITests/RunSessionContractTests.swift:250:            var arguments = ["--json", "--no-build", "--application-id", "com.fake", "--device", Self.fakeSerial()]
+Sources/GrantivaCLI/TargetOptions.swift:50:    @Option(name: .long, help: "Application ID (Android; read from the build or the APK when omitted)")
+Sources/GrantivaCLI/TargetOptions.swift:51:    var applicationId: String?
+Sources/GrantivaCLI/TargetOptions.swift:83:            ("--module", module != nil), ("--variant", variant != nil), ("--application-id", applicationId != nil),
+Sources/GrantivaCLI/TargetOptions.swift:116:            return try Self.resolveAndroid(
+Sources/GrantivaCLI/TargetOptions.swift:117:                moduleFlag: module, variantFlag: variant, applicationIdFlag: applicationId,
+Sources/GrantivaCLI/TargetOptions.swift:123:    /// Flags over config; the application ID ranks the flag over the APK's own
+Sources/GrantivaCLI/TargetOptions.swift:126:    static func resolveAndroid(
+Sources/GrantivaCLI/TargetOptions.swift:127:        moduleFlag: String?, variantFlag: String?, applicationIdFlag: String?,
+Sources/GrantivaCLI/TargetOptions.swift:131:        let applicationId = androidAppID(flag: applicationIdFlag, binary: appID, configured: configured.applicationId).id
+Sources/GrantivaCLI/TargetOptions.swift:132:        if let applicationId, applicationId.wholeMatch(of: /[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+/) == nil {
+Sources/GrantivaCLI/TargetOptions.swift:134:                "Application ID \"\(applicationId)\" is not a valid Android application ID (letters, digits, underscores, at least one dot)."
+Sources/GrantivaCLI/TargetOptions.swift:140:            applicationId: applicationId,
+Sources/GrantivaCLI/TargetOptions.swift:146:            bundleId: applicationId,
+Sources/GrantivaCLI/TargetOptions.swift:166:    /// See `AndroidProject.applicationID(override:binary:configured:)`.
+Sources/GrantivaCLI/TargetOptions.swift:168:        AndroidProject.applicationID(override: flag, binary: binary, configured: configured, purpose: purpose)
+Sources/GrantivaCLI/TargetOptions.swift:183:        let (id, warning) = Self.androidAppID(flag: applicationId, binary: binaryID, configured: config?.android?.applicationId, purpose: purpose)
+Sources/GrantivaCLI/TargetOptions.swift:189:    /// on Android the app's own ID, even when `--application-id` names
+Sources/GrantivaCLI/TargetOptions.swift:205:            return "Application ID is required. Pass --application-id, set application_id in grantiva-android.yml, build from source, or pass --app-file <apk>."
+Tests/GrantivaCLITests/RunCommandTests.swift:287:                "--json", "--no-build", "--application-id", "com.fake", "--timeout", "30", "--report-dir", "rep",
+Tests/GrantivaCLITests/RunCommandTests.swift:323:            var command = try RunCommand.parse(["--quiet", "--no-build", "--application-id", "com.fake", "--timeout", "30"])
+Tests/GrantivaCLITests/RunCommandTests.swift:369:            var command = try RunCommand.parse(["--json", "--application-id", "com.fake", "--timeout", "30"])
+Tests/GrantivaCLITests/RunCommandTests.swift:371:            fake.buildResult = BuildResult(success: false, duration: 0, warnings: [], errors: ["e: Main.kt:3 unresolved"], productPath: nil, applicationId: nil)
+Tests/GrantivaCLITests/RunCommandTests.swift:826:            files: ["grantiva-android.yml": "application_id: com.example\n"],
+Sources/GrantivaCLI/RunCommand.swift:388:                    explicit: target.bundleId ?? target.applicationId ?? config?.bundleId ?? config?.android?.applicationId
+Sources/GrantivaCLI/RunCommand.swift:498:            builtAppID = buildResult.applicationId
+Sources/GrantivaCLI/RunCommand.swift:609:    /// `--flow` without `--bundle-id`/`--application-id` or a configured ID
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:44:    func testSuccessfulBuildReturnsApkAndApplicationId() async throws {
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:48:        {"version":3,"artifactType":{"type":"APK","kind":"Directory"},"applicationId":"com.example.app","variantName":"debug",
+Tests/GrantivaCoreTests/GradleBuildRunnerTests.swift:60:        XCTAssertEqual(result.applicationId, "com.example.app")
+Tests/GrantivaCoreTests/RunnerSessionInfoTests.swift:30:    func testAnAndroidSessionFileUsesApplicationIdAndPort() throws {
+Tests/GrantivaCoreTests/RunnerSessionInfoTests.swift:35:        XCTAssertEqual(json["applicationId"] as? String, "com.kylebrowning.landmarks")
+Tests/GrantivaCoreTests/RunnerSessionInfoTests.swift:52:        XCTAssertNil(json["applicationId"])
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:24:            application_id: com.example.demo
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:35:        XCTAssertEqual(android.applicationId, "com.example.demo")
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:149:            application_id: com.example
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:307:        try write("grantiva-android.yml", "application_id: com.example.android\n")
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:327:            application_id: com.kylebrowning.landmarks
+Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:411:            application_id: com.kylebrowning.landmarks
+Sources/GrantivaCore/Build/BuildResult.swift:11:    public let applicationId: String?
+Sources/GrantivaCore/Build/BuildResult.swift:21:        applicationId: String? = nil
+Sources/GrantivaCore/Build/BuildResult.swift:30:        self.applicationId = applicationId
+Tests/GrantivaCoreTests/TableFormatterTests.swift:58:            productPath: "/b/app-debug.apk", applicationId: "com.x"
+Tests/GrantivaCoreTests/FlowStagingTests.swift:226:        XCTAssertEqual(config.android?.applicationId, "com.kylebrowning.landmarks")
+Tests/GrantivaCoreTests/FlowStagingTests.swift:243:            AndroidProject.applicationID(override: "com.flag", binary: nil, configured: config.android?.applicationId).id,
+Sources/GrantivaCore/Build/AppBinaryResolver.swift:124:    /// The bundle ID (iOS) or application ID (Android) read from the binary, when known.
+Sources/GrantivaMCP/Tools/SessionCapture.swift:56:        let configuredID = platform == .ios ? config.bundleId : config.android?.applicationId
+Sources/GrantivaMCP/Tools/SessionCapture.swift:60:                : "Application ID is required for screen capture. Set application_id in grantiva-android.yml.")
+Tests/GrantivaMCPTests/MCPTestSupport.swift:135:    var buildResult = BuildResult(success: true, duration: 0, warnings: [], errors: [], productPath: "/fake/app.apk", applicationId: "com.fake.built")
+Tests/GrantivaCoreTests/DoctorTests.swift:211:        try "application_id: com.kylebrowning.landmarks\nscreens:\n  - name: Home\n    path: launch\n  bad: : :\n"
+Sources/GrantivaMCP/Tools/BuildTools.swift:115:                applicationId: configured.applicationId,
+Sources/GrantivaMCP/Tools/BuildTools.swift:121:                bundleId: configured.applicationId, buildSettings: configured.buildArgs,
+Sources/GrantivaMCP/Tools/BuildTools.swift:220:        // Android tests the app the build produced, not application_id in the
+Sources/GrantivaMCP/Tools/BuildTools.swift:225:            ? AndroidProject.applicationID(override: nil, binary: buildResult.applicationId, configured: config?.android?.applicationId)
+Sources/GrantivaMCP/Tools/BuildTools.swift:226:            : (resolved.bundleId ?? buildResult.applicationId ?? buildResult.productPath.flatMap(bundleIdentifier(ofApp:)), nil)
+Sources/GrantivaMCP/Tools/BuildTools.swift:234:            return toolError("no application_id in grantiva-android.yml and the build did not report one. Cannot launch app.")
+Sources/GrantivaMCP/Tools/BuildTools.swift:247:            text = "App built and launched.\nModule: \(android.module) (\(android.variant))\nApplication ID: \(appID)\nDevice: \(booted.name) (\(booted.udid))"
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:132:            "'/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(apk))",
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:212:        {"applicationId":"com.example.free","variantName":"freeDebug","elements":[{"type":"SINGLE","filters":[],"outputFile":"mobile-free-debug.apk"}]}
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:226:        XCTAssertEqual(result.applicationId, "com.example.free")
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:236:        {"applicationId":"com.example","variantName":"debug","elements":[
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:309:            "JAVA_HOME='/jdk' '/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(apk))",
+Sources/GrantivaCore/Android/AndroidPlatform.swift:141:        try? await adb.isInstalled(serial: deviceID, applicationId: appID)
+Sources/GrantivaCore/Android/AndroidPlatform.swift:145:        try await adb.install(serial: deviceID, apk: productPath, applicationId: appID)
+Sources/GrantivaCore/Android/AndroidPlatform.swift:149:        try await adb.launch(serial: deviceID, applicationId: appID)
+Sources/GrantivaCore/Android/AndroidPlatform.swift:153:        try await adb.forceStop(serial: deviceID, applicationId: appID)
+Sources/GrantivaCore/Android/AndroidPlatform.swift:157:        try await adb.uninstall(serial: deviceID, applicationId: appID)
+Sources/GrantivaCore/Android/AndroidPlatform.swift:170:        let id = try? await execute("\(prefix)\(shellQuoted(sdk.apkanalyzer)) manifest application-id \(shellQuoted(absolute))")
+Sources/GrantivaCore/Android/AndroidPlatform.swift:213:            throw GrantivaError.invalidArgument("--logs on Android needs the application ID to filter logcat; pass --application-id.")
+Sources/GrantivaCore/Android/AndroidPlatform.swift:215:        guard let uid = try await adb.packageUID(serial: deviceID, applicationId: appID) else {
+Sources/GrantivaCore/Android/AndroidPlatform.swift:276:            _ = try? await adb.forceStop(serial: deviceID, applicationId: package)
+Tests/GrantivaMCPTests/BuildToolsTests.swift:9:    private let androidConfig = GrantivaConfig(platform: .android, android: AndroidProject(module: "app", variant: "debug", applicationId: nil, emulator: "Pixel_8_API_35"))
+Tests/GrantivaMCPTests/BuildToolsTests.swift:48:    func testRunOnAndroidInstallsAndLaunchesWithTheBuiltApplicationID() async throws {
+Tests/GrantivaMCPTests/BuildToolsTests.swift:56:        XCTAssertTrue(try textContent(of: result).contains("Application ID: com.fake.built"))
+Tests/GrantivaMCPTests/BuildToolsTests.swift:59:    func testRunOnAndroidWarnsWhenTheConfiguredApplicationIDDisagreesWithTheBuild() async throws {
+Tests/GrantivaMCPTests/BuildToolsTests.swift:61:        let config = GrantivaConfig(platform: .android, android: AndroidProject(applicationId: "com.fake.configured", emulator: "Pixel_8_API_35"))
+Tests/GrantivaMCPTests/BuildToolsTests.swift:66:        XCTAssertTrue(text.contains("Application ID: com.fake.built"), text)
+Tests/GrantivaMCPTests/BuildToolsTests.swift:67:        XCTAssertTrue(text.contains("Warning: application_id com.fake.configured"), text)
+Sources/GrantivaMCP/Tools/ContextTool.swift:59:                if let id = android.applicationId { configLines.append("  application_id: \(id)") }
+Sources/GrantivaMCP/Tools/ContextTool.swift:94:                  \(platform == .ios ? "bundle_id" : "application_id"): \(appID)
+Sources/GrantivaCore/Android/GradleBuildRunner.swift:89:            applicationId: located.metadata.applicationId
+Sources/GrantivaCore/Android/APKOutputMetadata.swift:25:    public let applicationId: String
+Tests/GrantivaCoreTests/APKOutputMetadataTests.swift:25:    {"version":3,"artifactType":{"type":"APK","kind":"Directory"},"applicationId":"com.example.app","variantName":"debug",
+Tests/GrantivaCoreTests/APKOutputMetadataTests.swift:30:    {"version":3,"artifactType":{"type":"APK","kind":"Directory"},"applicationId":"com.example.app","variantName":"freeDebug",
+Tests/GrantivaCoreTests/APKOutputMetadataTests.swift:42:        XCTAssertEqual(located.metadata.applicationId, "com.example.app")
+Tests/GrantivaMCPTests/ContextToolTests.swift:129:        let config = GrantivaConfig(platform: .android, android: AndroidProject(module: "app", variant: "debug", applicationId: "dev.grantiva.example", emulator: "Pixel_8_API_35"))
+Tests/GrantivaMCPTests/ContextToolTests.swift:137:        XCTAssertTrue(text.contains("application_id: dev.grantiva.example"), text)
+Tests/GrantivaMCPTests/ContextToolTests.swift:197:        XCTAssertTrue(forwarded.contains("application_id: com.kylebrowning.landmarks"), forwarded)
+Tests/GrantivaCoreTests/ADBTests.swift:33:        try await adb.launch(serial: serial, applicationId: "com.example.app")
+Tests/GrantivaCoreTests/ADBTests.swift:34:        try await adb.forceStop(serial: serial, applicationId: "com.example.app")
+Tests/GrantivaCoreTests/ADBTests.swift:35:        try await adb.uninstall(serial: serial, applicationId: "com.example.app")
+Tests/GrantivaCoreTests/ADBTests.swift:63:        try await adb.install(serial: "emulator-5554", apk: "/b/app.apk", applicationId: "com.example.app")
+Tests/GrantivaCoreTests/ADBTests.swift:75:            try await adb.install(serial: "emulator-5554", apk: "/b/app.apk", applicationId: "com.example.app")
+Tests/GrantivaCoreTests/ADBTests.swift:95:        XCTAssertEqual(ADB.parsePackageUID(output, applicationId: "com.android.settings"), 1000)
+Tests/GrantivaCoreTests/ADBTests.swift:96:        XCTAssertNil(ADB.parsePackageUID(output, applicationId: "com.android"))
+Tests/GrantivaCoreTests/ADBTests.swift:177:            try await ADB(path: adbPath, execute: shell.execute).launch(serial: "emulator-5554", applicationId: "com.example.app")
+Tests/GrantivaCoreTests/ADBTests.swift:193:            try await ADB(path: adbPath, execute: shell.execute).launch(serial: "emulator-5554", applicationId: "com.example.app")
+Tests/GrantivaCoreTests/ADBTests.swift:210:            try await ADB(path: adbPath, execute: shell.execute).launch(serial: "emulator-5554", applicationId: "com.example.app")
+Tests/GrantivaCoreTests/ADBTests.swift:220:        let installed = try await adb.isInstalled(serial: "emulator-5554", applicationId: "com.example.app")
+Tests/GrantivaCoreTests/ADBTests.swift:224:        let otherInstalled = try await ADB(path: adbPath, execute: other.execute).isInstalled(serial: "emulator-5554", applicationId: "com.example.app")
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:40:    /// `runner start/stop` write `bundle_id` beside `applicationId`.
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:41:    public static let platformTwins: [String: [String]] = ["bundle_id": ["applicationId"]]
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:46:    /// `applicationId`. The README lists them; the contract test checks the
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift:50:        ("applicationId", "bundleId", true),
+Sources/GrantivaCore/Config/GrantivaConfig.swift:367:        // `appId:` is the application ID and the Gradle side takes its
+Sources/GrantivaCore/Config/GrantivaConfig.swift:374:                    config.android = AndroidProject(applicationId: config.bundleId)
+Sources/GrantivaCore/Config/AndroidProject.swift:8:    public var applicationId: String?
+Sources/GrantivaCore/Config/AndroidProject.swift:16:        applicationId: String? = nil,
+Sources/GrantivaCore/Config/AndroidProject.swift:23:        self.applicationId = applicationId
+Sources/GrantivaCore/Config/AndroidProject.swift:29:    /// The application ID a run installs and tests. The app's own ID (read
+Sources/GrantivaCore/Config/AndroidProject.swift:30:    /// from the APK or the Gradle output metadata) wins over `application_id`
+Sources/GrantivaCore/Config/AndroidProject.swift:32:    /// override (`--application-id`) still wins; a disagreement either way is
+Sources/GrantivaCore/Config/AndroidProject.swift:35:    public static func applicationID(override: String?, binary: String?, configured: String?, purpose: Purpose = .testing) -> (id: String?, warning: String?) {
+Sources/GrantivaCore/Config/AndroidProject.swift:40:                return (override, "--application-id \(override) differs from the app's own application ID \(binary); testing \(override). Drop --application-id to test \(binary).")
+Sources/GrantivaCore/Config/AndroidProject.swift:43:                return (override, "--application-id \(override) differs from the app's own application ID \(binary); installing \(binary) and launching \(override). Drop --application-id to launch \(binary).")
+Sources/GrantivaCore/Config/AndroidProject.swift:50:                return (binary, "application_id \(configured) in grantiva-android.yml differs from the app's own application ID \(binary); testing \(binary). Update application_id or pass --application-id to override.")
+Sources/GrantivaCore/Config/AndroidProject.swift:52:                return (binary, "application_id \(configured) in grantiva-android.yml differs from the app's own application ID \(binary); installing \(binary). Update application_id to match.")
+Sources/GrantivaCore/Config/AndroidProject.swift:64:        case applicationId = "application_id"
+Sources/GrantivaCore/Config/AndroidProject.swift:73:        applicationId = try c.decodeIfPresent(String.self, forKey: .applicationId)
+Sources/GrantivaCore/Android/ADB.swift:70:    public func install(serial: String, apk: String, applicationId: String?) async throws {
+Sources/GrantivaCore/Android/ADB.swift:77:                  let applicationId else { throw error }
+Sources/GrantivaCore/Android/ADB.swift:78:            try await uninstall(serial: serial, applicationId: applicationId)
+Sources/GrantivaCore/Android/ADB.swift:86:    public func launch(serial: String, applicationId: String) async throws {
+Sources/GrantivaCore/Android/ADB.swift:89:            output = try await execute(line(serial, "shell monkey -p \(shellQuoted(applicationId)) -c android.intent.category.LAUNCHER --pct-syskeys 0 1 2>&1"))
+Sources/GrantivaCore/Android/ADB.swift:91:            throw Self.launchFailure(output: message, applicationId: applicationId, serial: serial)
+Sources/GrantivaCore/Android/ADB.swift:94:            throw Self.launchFailure(output: output, applicationId: applicationId, serial: serial)
+Sources/GrantivaCore/Android/ADB.swift:103:    static func launchFailure(output: String, applicationId: String, serial: String) -> GrantivaError {
+Sources/GrantivaCore/Android/ADB.swift:106:                GrantivaError.notInstalledRoot(appID: applicationId, device: serial)
+Sources/GrantivaCore/Android/ADB.swift:118:        return .commandFailed("Could not launch \(applicationId) on \(serial): \(reason)", 1)
+Sources/GrantivaCore/Android/ADB.swift:123:    public func isInstalled(serial: String, applicationId: String) async throws -> Bool {
+Sources/GrantivaCore/Android/ADB.swift:124:        let output = try await shell(serial: serial, "pm list packages \(shellQuoted(applicationId))")
+Sources/GrantivaCore/Android/ADB.swift:125:        return output.components(separatedBy: .newlines).contains { $0.trimmingCharacters(in: .whitespaces) == "package:\(applicationId)" }
+Sources/GrantivaCore/Android/ADB.swift:128:    public func forceStop(serial: String, applicationId: String) async throws {
+Sources/GrantivaCore/Android/ADB.swift:129:        _ = try await execute(line(serial, "shell am force-stop \(shellQuoted(applicationId))"))
+Sources/GrantivaCore/Android/ADB.swift:132:    public func uninstall(serial: String, applicationId: String) async throws {
+Sources/GrantivaCore/Android/ADB.swift:133:        _ = try await execute(line(serial, "shell pm uninstall \(shellQuoted(applicationId))"))
+Sources/GrantivaCore/Android/ADB.swift:175:    public func packageUID(serial: String, applicationId: String) async throws -> Int? {
+Sources/GrantivaCore/Android/ADB.swift:176:        Self.parsePackageUID(try await shell(serial: serial, "pm list packages -U \(shellQuoted(applicationId))"), applicationId: applicationId)
+Sources/GrantivaCore/Android/ADB.swift:180:    public static func parsePackageUID(_ output: String, applicationId: String) -> Int? {
+Sources/GrantivaCore/Android/ADB.swift:183:            guard fields.count == 2, fields[0] == "package:\(applicationId)", fields[1].hasPrefix("uid:") else { continue }
+Sources/GrantivaCore/Android/EmulatorManager.swift:633:            _ = try? await adb.forceStop(serial: serial, applicationId: package)
+Sources/GrantivaCore/Runner/KeepAliveSessionStore.swift:105:    /// The app the session launched (bundle ID or application ID). Absent in
+Sources/GrantivaCore/Runner/RunnerSessionInfo.swift:6:/// does on the same platform: `bundleId` and `udid` on iOS, `applicationId`
+Sources/GrantivaCore/Runner/RunnerSessionInfo.swift:20:    /// The app the session launched: bundle ID on iOS, application ID on Android.
+Sources/GrantivaCore/Runner/RunnerSessionInfo.swift:75:        try container.encode(bundleId, forKey: android ? "applicationId" : "bundleId")
+Sources/GrantivaCore/Runner/RunnerSessionInfo.swift:89:        bundleId = try container.decodeIfPresent(String.self, forKey: "applicationId")

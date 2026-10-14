@@ -1,0 +1,222 @@
+Sources/GrantivaCLI/DriverCommand.swift:567:                executable: "/usr/bin/nohup",
+Sources/GrantivaCLI/DriverCommand.swift:667:            executable: launch.runnerBin,
+Tests/GrantivaCLITests/RecordCommandTests.swift:22:        process.executableURL = URL(fileURLWithPath: "/usr/bin/tail")
+Tests/GrantivaCLITests/RecordCommandTests.swift:34:        process.executableURL = URL(fileURLWithPath: "/bin/sh")
+Tests/GrantivaCLITests/RecordCommandTests.swift:92:        process.executableURL = URL(fileURLWithPath: "/usr/bin/tail")
+Tests/GrantivaCLITests/Support/FakeDevicePlatform.swift:80:        record("logStream(\(appID ?? "-"),\(filter ?? "-"))"); return LogStreamCommand(executable: "/bin/echo", arguments: ["fake log"])
+Tests/GrantivaCLITests/DocsContractTests.swift:141:        process.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
+Tests/GrantivaCLITests/EmulatorCommandTests.swift:278:        process.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCLITests/TeardownHelperReapTests.swift:41:        process.executableURL = URL(fileURLWithPath: "/bin/zsh")
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:37:    func testInstallWritesVersionAndExecutableRunner() throws {
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:139:        XCTAssertTrue(fm.isExecutableFile(atPath: a.binary))
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:166:        let besideExecutable = URL(fileURLWithPath: "\(root)/bin")
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:167:        let bundleURL = besideExecutable.appendingPathComponent("grantiva_GrantivaCore.bundle")
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:172:            besideExecutable,
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:538:            process.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
+Tests/GrantivaCoreTests/RunnerManagerTests.swift:618:        process.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
+Sources/GrantivaCLI/AuthCommand.swift:100:            process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
+Sources/GrantivaCLI/ConsoleOpenCommand.swift:92:        process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
+Tests/GrantivaCoreTests/AndroidPlatformTests.swift:150:        XCTAssertEqual(command.executable, "/sdk/platform-tools/adb")
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:28:        let data = DefaultSimulator.catalogJSON(executable: "/bin/sleep", arguments: ["30"], timeout: 0.5)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:35:        let data = DefaultSimulator.catalogJSON(executable: "/bin/echo", arguments: ["hello"], timeout: 5)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:37:        XCTAssertNil(DefaultSimulator.catalogJSON(executable: "/usr/bin/false", arguments: [], timeout: 5))
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:9:            SubprocessLog.commandLine(executable: "/usr/bin/xcrun", arguments: ["simctl", "io", "ABC", "recordVideo", "--codec=h264", "/tmp/a b.mp4"], environment: [:]),
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:16:            executable: "/bin/runner", arguments: ["--api-key", "gk_live_secret", "--token=abc123", "x=gk_live_secret"],
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:26:            SubprocessLog.ended(executable: "/bin/x", arguments: ["a"], status: 0, signal: nil)
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:27:            SubprocessLog.ended(executable: "/bin/x", arguments: ["a"], status: 1, signal: nil)
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:28:            SubprocessLog.ended(executable: "/bin/x", arguments: ["a"], status: 0, signal: SIGINT)
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:29:            SubprocessLog.ended(executable: "/bin/x", arguments: ["a"], status: 0, signal: SIGKILL)
+Tests/GrantivaCoreTests/SubprocessLogTests.swift:38:        process.executableURL = URL(fileURLWithPath: "/bin/sh")
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:68:        XCTAssertEqual(command.executable, "/usr/bin/xcrun")
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:71:            "--predicate", defaultLogPredicate(forBundleID: "com.example", executable: "Example"), "--level", "debug",
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:75:            "/usr/bin/plutil -extract CFBundleExecutable raw -o - '/sims/ABC/Containers/Bundle/Application/X/Example.app/Info.plist'",
+Tests/GrantivaCoreTests/IOSPlatformTests.swift:87:        XCTAssertEqual(command.arguments.suffix(2), ["--predicate", defaultLogPredicate(forBundleID: "com.example")])
+Tests/GrantivaCoreTests/ADBTests.swift:234:            .sync(serial: "emulator-5554", timeoutSeconds: 5, isExecutable: { _ in true }, warn: warnings.append)
+Tests/GrantivaCoreTests/ADBTests.swift:246:        XCTAssertTrue(warnings.lines[0].contains("/nonexistent/perl is not executable"), warnings.lines[0])
+Tests/GrantivaCoreTests/ChildProcessTests.swift:35:            executable: "/bin/sh",
+Tests/GrantivaCoreTests/ChildProcessTests.swift:57:            executable: "/bin/sh",
+Tests/GrantivaCoreTests/ChildProcessTests.swift:91:            executable: "/bin/sh",
+Tests/GrantivaCoreTests/ChildProcessTests.swift:111:            executable: "/bin/sh",
+Tests/GrantivaCoreTests/ChildProcessTests.swift:133:            child = try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:153:            executable: "/bin/sh", arguments: ["-c", "sleep 30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:173:            executable: "/bin/sh", arguments: ["-c", "sleep 30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:202:            executable: "/bin/sh", arguments: ["-c", "trap '' INT TERM; while :; do sleep 0.1; done"],
+Tests/GrantivaCoreTests/ChildProcessTests.swift:222:            executable: "/bin/sh", arguments: ["-c", "trap '' HUP; sleep 30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:237:            executable: "/bin/sh", arguments: ["-c", "sleep 30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:256:            executable: "/bin/sh", arguments: ["-c", "trap '' INT TERM; while :; do sleep 0.1; done"],
+Tests/GrantivaCoreTests/ChildProcessTests.swift:275:                executable: "/bin/sh", arguments: ["-c", "exit 3"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:287:                executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output
+Tests/GrantivaCoreTests/ChildProcessTests.swift:313:            executable: "/usr/bin/perl", arguments: ["-e", "print $SIG{HUP} // 'DEFAULT'"],
+Tests/GrantivaCoreTests/ChildProcessTests.swift:326:            try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:340:            try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:354:                try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:373:        let child = try ChildProcess.spawn(executable: "/bin/sh", arguments: ["-c", "exit 4"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:385:        let sleeper = try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/ChildProcessTests.swift:397:        let child = try ChildProcess.spawn(executable: "/bin/sh", arguments: ["-c", "exit 0"], stdout: output, stderr: output)
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:20:        func spawn(_ executable: String, _ arguments: [String]) throws -> Int32 { pid }
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:25:        func spawn(_ executable: String, _ arguments: [String]) throws -> Int32 {
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:26:            calls.append((executable, arguments)); return getpid() // a live pid, so the liveness check passes
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:63:            process.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:110:        process.executableURL = URL(fileURLWithPath: "/usr/bin/true")
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:182:        child.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:228:        child.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/EmulatorManagerTests.swift:458:        let child = try ChildProcess.spawn(executable: "/usr/bin/false", arguments: [], stdin: devnull, stdout: devnull, stderr: devnull)
+Tests/GrantivaCoreTests/RunnerSessionOutputTests.swift:57:                executable: "/bin/sh",
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:150:        child.executableURL = URL(fileURLWithPath: "/usr/bin/true")
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:177:        child.executableURL = URL(fileURLWithPath: "/usr/bin/lockf")
+Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:206:        child.executableURL = URL(fileURLWithPath: "/usr/bin/true")
+Sources/GrantivaCLI/RunCommand.swift:23:    @Flag(name: .long, help: "Stream app logs from the simulator or emulator into this terminal, prefixed with [log] (iOS and Android). On iOS the filter defaults to lines whose subsystem starts with the app's bundle ID or whose process is the app's executable; on Android, to lines from the app's uid.")
+Sources/GrantivaCLI/RunCommand.swift:429:        // app's executable, both of which exist only once the app is
+Sources/GrantivaCLI/RunCommand.swift:442:                try streamer.start(executable: stream.executable, arguments: stream.arguments)
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:88:        unrelated.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:297:            process.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:364:        runner.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/SimulatorReaperTests.swift:369:        dead.executableURL = URL(fileURLWithPath: "/usr/bin/true")
+Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:98:        process.executableURL = URL(fileURLWithPath: "/usr/bin/zip")
+Tests/GrantivaCoreTests/LogStreamerTests.swift:71:            deadline: began.addingTimeInterval(0.1), executable: "/bin/sleep", arguments: ["0.5"],
+Tests/GrantivaCoreTests/LogStreamerTests.swift:92:                    deadline: deadline, executable: "/bin/sleep", arguments: ["30"],
+Tests/GrantivaCoreTests/LogStreamerTests.swift:113:            deadline: Date().addingTimeInterval(2), executable: "/usr/bin/printf", arguments: ["%s", expected]
+Tests/GrantivaCoreTests/LogStreamerTests.swift:118:    func testOwnedLogMatchingRequiresExecutableAndThisRunMarker() {
+Tests/GrantivaCoreTests/LogStreamerTests.swift:133:        try streamer.start(executable: "/usr/bin/true", arguments: [])
+Tests/GrantivaCoreTests/LogStreamerTests.swift:143:        child.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/LogStreamerTests.swift:147:        other.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Tests/GrantivaCoreTests/LogStreamerTests.swift:159:        try streamer.start(executable: "/usr/bin/true", arguments: [])
+Tests/GrantivaCoreTests/LogStreamerTests.swift:215:    func testStartWithExplicitExecutableStreamsItsOutputWithThePrefix() throws {
+Tests/GrantivaCoreTests/LogStreamerTests.swift:217:        try streamer.start(executable: "/bin/echo", arguments: ["hello from a fake log"])
+Tests/GrantivaCoreTests/LogStreamerTests.swift:219:        // that start(executable:arguments:) exists and does not throw for a
+Tests/GrantivaCoreTests/LogStreamerTests.swift:220:        // real executable. Output goes to stderr and is not captured here.
+Tests/GrantivaCoreTests/LogStreamerTests.swift:229:        try streamer.start(executable: "/bin/sleep", arguments: ["30"])
+Tests/GrantivaCoreTests/LogStreamerTests.swift:241:        try streamer.start(executable: "/bin/sleep", arguments: ["30"])
+Tests/GrantivaCoreTests/LogStreamerTests.swift:249:        try streamer.start(executable: "/bin/sleep", arguments: ["30"])
+Tests/GrantivaCoreTests/LogStreamerTests.swift:261:            try streamer.start(executable: "/bin/sleep", arguments: ["30"])
+Tests/GrantivaCoreTests/LogStreamerTests.swift:294:    func testDefaultPredicateMatchesTheAppsExecutable() {
+Tests/GrantivaCoreTests/LogStreamerTests.swift:295:        let predicate = defaultLogPredicate(forBundleID: "com.kylebrowning.Landmarks", executable: "Landmarks")
+Tests/GrantivaCoreTests/LogStreamerTests.swift:304:    func testDefaultPredicateWithoutAnExecutableKeepsTheBundleClauses() {
+Tests/GrantivaCoreTests/LogStreamerTests.swift:306:            defaultLogPredicate(forBundleID: "com.example"),
+Tests/GrantivaCoreTests/LogStreamerTests.swift:311:    func testExecutableNamesAreEscaped() {
+Tests/GrantivaCoreTests/LogStreamerTests.swift:312:        let predicate = defaultLogPredicate(forBundleID: "com.example", executable: "My \"App\"")
+Tests/GrantivaCoreTests/LogStreamerTests.swift:316:    func testSimctlBannerLinesAreDroppedFromTheStream() {
+Tests/GrantivaCoreTests/LogStreamerTests.swift:317:        let decoder = PrefixedLineDecoder(dropping: LogStreamer.isStreamBanner)
+Tests/GrantivaCoreTests/RunnerExecutionTests.swift:38:            executable: "/bin/sh",
+Tests/GrantivaCoreTests/RunnerStopMarkerTests.swift:21:        process.executableURL = URL(fileURLWithPath: "/bin/sleep")
+Sources/GrantivaCore/Build/AppBinaryResolver.swift:68:        process.executableURL = URL(fileURLWithPath: "/usr/bin/unzip")
+Sources/GrantivaCore/Shell.swift:15:    process.executableURL = URL(fileURLWithPath: "/bin/zsh")
+Sources/GrantivaCore/Shell.swift:78:    process.executableURL = URL(fileURLWithPath: "/usr/bin/which")
+Sources/GrantivaCore/Shell.swift:100:    precondition(!argv.isEmpty, "runProcess needs an executable")
+Sources/GrantivaCore/Shell.swift:102:    process.executableURL = URL(fileURLWithPath: argv[0])
+Sources/GrantivaCore/Platform/IOSPlatform.swift:131:            let executable = await installedExecutable(appID: appID, deviceID: deviceID)
+Sources/GrantivaCore/Platform/IOSPlatform.swift:132:            predicate = defaultLogPredicate(forBundleID: appID, executable: executable)
+Sources/GrantivaCore/Platform/IOSPlatform.swift:140:        return LogStreamCommand(executable: "/usr/bin/xcrun", arguments: args)
+Sources/GrantivaCore/Platform/IOSPlatform.swift:143:    /// The installed app's `CFBundleExecutable`, or nil when the app is not
+Sources/GrantivaCore/Platform/IOSPlatform.swift:145:    func installedExecutable(appID: String, deviceID: String) async -> String? {
+Sources/GrantivaCore/Platform/IOSPlatform.swift:149:        let executable = try? await execute(
+Sources/GrantivaCore/Platform/IOSPlatform.swift:150:            "/usr/bin/plutil -extract CFBundleExecutable raw -o - \(shellQuoted(container + "/Info.plist"))"
+Sources/GrantivaCore/Platform/IOSPlatform.swift:152:        return executable?.isEmpty == false ? executable : nil
+Sources/GrantivaCore/Platform/IOSPlatform.swift:195:        recorder.executableURL = URL(fileURLWithPath: "/usr/bin/xcrun")
+Sources/GrantivaCore/Android/AndroidPlatform.swift:227:        return LogStreamCommand(executable: adb.path, arguments: args)
+Sources/GrantivaCore/Platform/DevicePlatform.swift:60:    public let executable: String
+Sources/GrantivaCore/Platform/DevicePlatform.swift:63:    public init(executable: String, arguments: [String]) {
+Sources/GrantivaCore/Platform/DevicePlatform.swift:64:        self.executable = executable
+Sources/GrantivaCore/Android/ADB.swift:242:    /// fires rather than left running. Without an executable perl the flush
+Sources/GrantivaCore/Android/ADB.swift:248:        isExecutable: (String) -> Bool = { FileManager.default.isExecutableFile(atPath: $0) },
+Sources/GrantivaCore/Android/ADB.swift:252:        guard isExecutable(perl) else {
+Sources/GrantivaCore/Android/ADB.swift:253:            warn("\(perl) is not executable, so `adb shell sync` runs without its \(timeoutSeconds) s alarm; a hung flush is abandoned (not killed) when the teardown's wait ends.")
+Sources/GrantivaCore/Android/EmulatorManager.swift:82:    public typealias Spawn = @Sendable (_ executable: String, _ arguments: [String]) throws -> Int32
+Sources/GrantivaCore/Android/EmulatorManager.swift:221:    public static let detachedSpawn: Spawn = { executable, arguments in
+Sources/GrantivaCore/Android/EmulatorManager.swift:233:            executable: executable, arguments: arguments,
+Sources/GrantivaMCP/Tools/VRTTools.swift:60:    static var executable: String {
+Sources/GrantivaMCP/Tools/VRTTools.swift:61:        if let path = Bundle.main.executablePath { return path }
+Sources/GrantivaMCP/Tools/VRTTools.swift:67:    static func captureCommand(platform: Platform, executable: String = VRTTools.executable) -> [String] {
+Sources/GrantivaMCP/Tools/VRTTools.swift:68:        [executable, "diff", "capture", "--no-build", "--json", "--platform", platform.rawValue]
+Sources/GrantivaMCP/Tools/VRTTools.swift:71:    static func compareCommand(platform: Platform, executable: String = VRTTools.executable) -> [String] {
+Sources/GrantivaMCP/Tools/VRTTools.swift:72:        [executable, "diff", "compare", "--json", "--platform", platform.rawValue]
+Sources/GrantivaMCP/Tools/VRTTools.swift:77:    static func approveCommand(platform: Platform, screens: [String], executable: String = VRTTools.executable) -> [String] {
+Sources/GrantivaMCP/Tools/VRTTools.swift:78:        [executable, "diff", "approve", "--json", "--platform", platform.rawValue] + screens
+Sources/GrantivaMCP/Tools/VRTTools.swift:93:        executable: String = VRTTools.executable, environment: [String: String]? = nil
+Sources/GrantivaMCP/Tools/VRTTools.swift:96:            let output = try await runProcess(captureCommand(platform: platform, executable: executable), environment: environment)
+Sources/GrantivaMCP/Tools/VRTTools.swift:105:        executable: String = VRTTools.executable, environment: [String: String]? = nil
+Sources/GrantivaMCP/Tools/VRTTools.swift:108:            let output = try await runProcess(compareCommand(platform: platform, executable: executable), environment: environment)
+Sources/GrantivaMCP/Tools/VRTTools.swift:128:        executable: String = VRTTools.executable, environment: [String: String]? = nil
+Sources/GrantivaMCP/Tools/VRTTools.swift:132:            let output = try await runProcess(approveCommand(platform: platform, screens: screens, executable: executable), environment: environment)
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:127:        let executable = haystack.split(whereSeparator: { $0 == " " || $0 == "\t" }).first.map(String.init) ?? ""
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:128:        let name = URL(fileURLWithPath: executable).lastPathComponent
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:151:    /// Confirms that a persisted lease PID still names a Grantiva executable.
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:157:            let executable = fields[2].split(whereSeparator: { $0 == " " || $0 == "\t" }).first
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:158:            guard let executable else { return false }
+Sources/GrantivaCore/Simulator/SimulatorReaper.swift:159:            let name = URL(fileURLWithPath: String(executable)).lastPathComponent.lowercased()
+Sources/GrantivaCore/Simulator/SimulatorLog.swift:93:            process.executableURL = URL(fileURLWithPath: "/bin/zsh")
+Sources/GrantivaCore/Runner/RunnerExecution.swift:33:        let executable: String
+Sources/GrantivaCore/Runner/RunnerExecution.swift:75:                executable: request.executable,
+Sources/GrantivaCore/Runner/RunnerManager.swift:53:    /// bundles' resource dirs, the executable's directory) plus the directory
+Sources/GrantivaCore/Runner/RunnerManager.swift:68:            Bundle.main.executableURL?.resolvingSymlinksInPath().deletingLastPathComponent(),
+Sources/GrantivaCore/Runner/RunnerManager.swift:105:                "The \(resourceBundleName).bundle resource bundle was not found next to the grantiva executable, "
+Sources/GrantivaCore/Runner/RunnerManager.swift:118:            process.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
+Sources/GrantivaCore/Runner/RunnerManager.swift:186:            return "The \(resourceBundleName).bundle resource bundle was not found next to the grantiva executable. "
+Sources/GrantivaCore/Runner/RunnerManager.swift:199:        process.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
+Sources/GrantivaCore/Runner/RunnerManager.swift:510:        process.executableURL = URL(fileURLWithPath: path)
+Sources/GrantivaCore/Runner/RunnerManager.swift:596:        process.executableURL = URL(fileURLWithPath: "/usr/bin/pgrep")
+Sources/GrantivaCore/Runner/RunnerSession.swift:208:                executable: runnerBin,
+Sources/GrantivaCore/Runner/RunnerSession.swift:557:                executable: runnerBin,
+Sources/GrantivaCore/Runner/ChildProcess.swift:27:    let executable: String
+Sources/GrantivaCore/Runner/ChildProcess.swift:35:    private init(pid: pid_t, executable: String, arguments: [String], logged: Bool) {
+Sources/GrantivaCore/Runner/ChildProcess.swift:37:        self.executable = executable
+Sources/GrantivaCore/Runner/ChildProcess.swift:42:    /// Spawns `executable` in a new process group.
+Sources/GrantivaCore/Runner/ChildProcess.swift:50:        executable: String,
+Sources/GrantivaCore/Runner/ChildProcess.swift:62:            throw GrantivaError.commandFailed("Could not initialize spawn attributes for \(executable)", 1)
+Sources/GrantivaCore/Runner/ChildProcess.swift:89:            throw GrantivaError.commandFailed("Could not initialize spawn file actions for \(executable)", 1)
+Sources/GrantivaCore/Runner/ChildProcess.swift:109:        let argv = [executable] + arguments
+Sources/GrantivaCore/Runner/ChildProcess.swift:133:            result = posix_spawn(&pid, executable, &actions, &attributes, &cArgv, &cEnv)
+Sources/GrantivaCore/Runner/ChildProcess.swift:135:            result = posix_spawn(&pid, executable, &actions, &attributes, &cArgv, environ)
+Sources/GrantivaCore/Runner/ChildProcess.swift:139:                "Could not spawn \(executable): \(String(cString: strerror(result)))",
+Sources/GrantivaCore/Runner/ChildProcess.swift:143:        if logged { SubprocessLog.started(executable: executable, arguments: arguments) }
+Sources/GrantivaCore/Runner/ChildProcess.swift:144:        return ChildProcess(pid: pid, executable: executable, arguments: arguments, logged: logged)
+Sources/GrantivaCore/Runner/ChildProcess.swift:252:            SubprocessLog.ended(executable: executable, arguments: arguments, status: status, signal: signal)
+Sources/GrantivaCore/Runner/ChildProcess.swift:362:                executable: "/bin/sh",
+Sources/GrantivaCore/Runner/WDADeviceHome.swift:37:        process.executableURL = URL(fileURLWithPath: "/usr/bin/xcrun")
+Sources/GrantivaCore/Runner/RunnerNarration.swift:5:/// The runner's banner, setup lines, per-step lines, summary table and report
+Sources/GrantivaCore/Runner/SubprocessLog.swift:13:    public static func started(executable: String, arguments: [String]) {
+Sources/GrantivaCore/Runner/SubprocessLog.swift:14:        emit("$ \(commandLine(executable: executable, arguments: arguments))")
+Sources/GrantivaCore/Runner/SubprocessLog.swift:18:    public static func ended(executable: String, arguments: [String], status: Int32, signal: Int32?) {
+Sources/GrantivaCore/Runner/SubprocessLog.swift:19:        let command = commandLine(executable: executable, arguments: arguments)
+Sources/GrantivaCore/Runner/SubprocessLog.swift:37:            executable: process.executableURL?.path ?? "", arguments: process.arguments ?? [],
+Sources/GrantivaCore/Runner/SubprocessLog.swift:43:        commandLine(executable: process.executableURL?.path ?? "", arguments: process.arguments ?? [])
+Sources/GrantivaCore/Runner/SubprocessLog.swift:47:        executable: String, arguments: [String],
+Sources/GrantivaCore/Runner/SubprocessLog.swift:68:        return ([quoted(executable)] + words).joined(separator: " ")
+Sources/GrantivaCore/Runner/LogStreamer.swift:14:    /// forwarded at all (for example the log tool's own banners).
+Sources/GrantivaCore/Runner/LogStreamer.swift:130:        /// Arguments mentioning it on another executable never confer ownership.
+Sources/GrantivaCore/Runner/LogStreamer.swift:211:        try start(executable: "/usr/bin/xcrun", arguments: args)
+Sources/GrantivaCore/Runner/LogStreamer.swift:216:    public func start(executable: String, arguments: [String]) throws {
+Sources/GrantivaCore/Runner/LogStreamer.swift:226:        if URL(fileURLWithPath: executable).lastPathComponent == "xcrun",
+Sources/GrantivaCore/Runner/LogStreamer.swift:239:        p.executableURL = URL(fileURLWithPath: executable)
+Sources/GrantivaCore/Runner/LogStreamer.swift:247:        let outDecoder = PrefixedLineDecoder(dropping: Self.isStreamBanner)
+Sources/GrantivaCore/Runner/LogStreamer.swift:248:        let errDecoder = PrefixedLineDecoder(dropping: Self.isStreamBanner)
+Sources/GrantivaCore/Runner/LogStreamer.swift:358:        deadline: Date, executable: String = "/bin/ps", arguments: [String] = ["-ww", "-axo", "pid=,command="],
+Sources/GrantivaCore/Runner/LogStreamer.swift:365:        process.executableURL = URL(fileURLWithPath: executable)
+Sources/GrantivaCore/Runner/LogStreamer.swift:425:    static let isStreamBanner: @Sendable (String) -> Bool = { line in
+Sources/GrantivaCore/Runner/LogStreamer.swift:436:/// app's executable name (`CFBundleExecutable`) is known it also matches that
+Sources/GrantivaCore/Runner/LogStreamer.swift:439:public func defaultLogPredicate(forBundleID bundleID: String, executable: String? = nil) -> String {
+Sources/GrantivaCore/Runner/LogStreamer.swift:441:    if let executable, !executable.isEmpty {
+Sources/GrantivaCore/Runner/LogStreamer.swift:442:        predicate += " OR process == \(predicateString(executable))"
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:395:        process.executableURL = binary
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:426:    /// The executable is a sibling of the test bundle in the build products
+Tests/GrantivaCLITests/OutputStreamContractTests.swift:432:            if FileManager.default.isExecutableFile(atPath: candidate.path) { return candidate }
+Tests/GrantivaMCPTests/MCPTestSupport.swift:171:    func logStream(deviceID: String, appID: String?, filter: String?, level: LogStreamLevel?) async throws -> LogStreamCommand { LogStreamCommand(executable: "/bin/echo", arguments: []) }
+Tests/GrantivaMCPTests/VRTToolsTests.swift:33:        XCTAssertEqual(VRTTools.captureCommand(platform: .ios, executable: exe), [exe, "diff", "capture", "--no-build", "--json", "--platform", "ios"])
+Tests/GrantivaMCPTests/VRTToolsTests.swift:34:        XCTAssertEqual(VRTTools.compareCommand(platform: .android, executable: exe), [exe, "diff", "compare", "--json", "--platform", "android"])
+Tests/GrantivaMCPTests/VRTToolsTests.swift:36:            VRTTools.approveCommand(platform: .android, screens: ["Home; touch x", "It's", "$(touch y)"], executable: exe),
+Tests/GrantivaMCPTests/VRTToolsTests.swift:39:        XCTAssertEqual(VRTTools.approveCommand(platform: .ios, screens: [], executable: exe), [exe, "diff", "approve", "--json", "--platform", "ios"])
+Tests/GrantivaMCPTests/VRTToolsTests.swift:43:    func testCommandsStartWithTheRunningExecutablesAbsolutePath() throws {
+Tests/GrantivaMCPTests/VRTToolsTests.swift:44:        let running = try XCTUnwrap(Bundle.main.executablePath)
+Tests/GrantivaMCPTests/VRTToolsTests.swift:46:        XCTAssertEqual(VRTTools.executable, running)
+Tests/GrantivaMCPTests/VRTToolsTests.swift:70:            executable: own.path
+Tests/GrantivaMCPTests/VRTToolsTests.swift:83:            try await VRTTools.capture(platform: .ios, arguments: [:], executable: own.path),
+Tests/GrantivaMCPTests/VRTToolsTests.swift:84:            try await VRTTools.compare(platform: .ios, arguments: [:], executable: own.path),
+Tests/GrantivaMCPTests/VRTToolsTests.swift:85:            try await VRTTools.approve(platform: .ios, arguments: [:], executable: own.path),
+Tests/GrantivaMCPTests/VRTToolsTests.swift:92:        let approve = try await VRTTools.approve(platform: .ios, arguments: [:], executable: plain.path)
+Tests/GrantivaMCPTests/VRTToolsTests.swift:118:            try await VRTTools.capture(platform: .ios, arguments: [:], executable: own.path, environment: path),
+Tests/GrantivaMCPTests/VRTToolsTests.swift:119:            try await VRTTools.compare(platform: .android, arguments: [:], executable: own.path, environment: path),
+Tests/GrantivaMCPTests/VRTToolsTests.swift:120:            try await VRTTools.approve(platform: .ios, arguments: ["screens": .array([.string("Home")])], executable: own.path, environment: path),
+Sources/GrantivaCore/Runner/RunnerSessionInfo.swift:145:            guard let executable = fields[2].split(whereSeparator: { $0 == " " || $0 == "\t" }).first else {
+Sources/GrantivaCore/Runner/RunnerSessionInfo.swift:148:            return URL(fileURLWithPath: String(executable)).lastPathComponent.lowercased() == "grantiva-runner"
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:60:        executable: String = "/usr/bin/xcrun",
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:65:        process.executableURL = URL(fileURLWithPath: executable)

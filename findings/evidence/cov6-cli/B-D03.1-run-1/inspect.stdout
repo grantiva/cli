@@ -1,0 +1,11 @@
+
+`ensure` prints the UDID on stdout and nothing else, so it can be captured
+directly:
+
+```bash
+udid=$(grantiva simulator ensure --name "iPhone 17 Pro")
+grantiva run --simulator "$udid" --flow flows/login.yaml
+```
+
+The human-readable line (`Reused iPhone 17 Pro (…) — Booted`) goes to stderr, so
+a terminal still shows it while a command substitution ignores it. `--json`
