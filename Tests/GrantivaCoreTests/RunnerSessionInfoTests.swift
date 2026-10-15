@@ -121,11 +121,48 @@ final class RunnerSessionInfoTests: XCTestCase {
     func testTheStartingErrorNamesEachPlatformsDriver() {
         XCTAssertEqual(
             RunnerSessionInfo.startingError(platform: .android).localizedDescription,
-            "The runner session is starting (UIAutomator2 has no session yet). Retry in a few seconds."
+            "The runner session is starting (UIAutomator2 has no session yet; its port is not known yet). Retry in a few seconds."
         )
         XCTAssertEqual(
             RunnerSessionInfo.startingError(platform: .ios).localizedDescription,
-            "The runner session is starting (WDA has no session yet). Retry in a few seconds."
+            "The runner session is starting (WDA has no session yet; its port is not known yet). Retry in a few seconds."
+        )
+    }
+
+    // Side finding 12 (B-R05.1, N-13): the port, once the runner reported it.
+    func testTheStartingErrorNamesThePortOnceItIsKnown() {
+        XCTAssertEqual(
+            RunnerSessionInfo.startingError(platform: .ios, port: 8581).localizedDescription,
+            "The runner session is starting (WDA on port 8581 has no session yet). Retry in a few seconds."
+        )
+        XCTAssertEqual(
+            RunnerSessionInfo.startingError(platform: .ios, port: 8581).localizedDescription,
+            WDAClient.sessionStartingMessage(port: 8581)
+        )
+        XCTAssertEqual(
+            RunnerSessionInfo.startingError(platform: .android, port: 8202).localizedDescription,
+            "The runner session is starting (UIAutomator2 on port 8202 has no session yet). Retry in a few seconds."
+        )
+        XCTAssertEqual(
+            RunnerSessionInfo.startingError(platform: .ios, port: 0).localizedDescription,
+            RunnerSessionInfo.startingError(platform: .ios).localizedDescription
+        )
+    }
+
+    func testAStartingSessionRecordsItsPortOnceKnownAndStaysStarting() throws {
+        let starting = RunnerSessionInfo.starting(
+            pid: 5, bundleId: "a.b", udid: "U", startedAt: Date(), platform: .ios, port: 8190
+        )
+        XCTAssertFalse(starting.isReady)
+        let json = try object(starting)
+        XCTAssertEqual(json["state"] as? String, "starting")
+        XCTAssertEqual(json["port"] as? Int, 8190)
+        let decoded = try RunnerSessionInfo.decode(starting.encoded())
+        XCTAssertFalse(decoded.isReady)
+        XCTAssertEqual(decoded.wdaPort, 8190)
+        XCTAssertEqual(
+            decoded.startingError.localizedDescription,
+            "The runner session is starting (WDA on port 8190 has no session yet). Retry in a few seconds."
         )
     }
 }

@@ -169,7 +169,7 @@ public struct GrantivaMCPServer: Sendable {
            session.isAlive, session.drivesPlatform(platform) {
             _ = try DeviceID.validate(session.udid, flag: "session UDID")
             // Written at launch, before the driver answers (L38-a).
-            guard session.isReady else { throw RunnerSessionInfo.startingError(platform: platform) }
+            guard session.isReady else { throw RunnerSessionInfo.startingError(platform: platform, port: session.wdaPort) }
             return session
         }
         let project = KeepAliveOwner.canonicalDirectory(projectDirectory.path)

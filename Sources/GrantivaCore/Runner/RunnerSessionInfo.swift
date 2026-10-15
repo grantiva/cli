@@ -17,7 +17,8 @@ public struct RunnerSessionInfo: Codable, Sendable {
     }
 
     public let pid: Int32
-    /// The driver port (`port` in the file); 0 while the session is starting.
+    /// The driver port (`port` in the file); 0 while a starting session's
+    /// runner has not reported it yet.
     public let wdaPort: UInt16
     /// The app the session launched: bundle ID on iOS, application ID on Android.
     public let bundleId: String
@@ -46,9 +47,13 @@ public struct RunnerSessionInfo: Codable, Sendable {
     }
 
     /// The file `runner start` writes the moment it spawns the runner, before
-    /// the driver answers: no port yet.
-    public static func starting(pid: Int32, bundleId: String, udid: String, startedAt: Date, platform: Platform) -> RunnerSessionInfo {
-        RunnerSessionInfo(pid: pid, wdaPort: 0, bundleId: bundleId, udid: udid, startedAt: startedAt, platform: platform, state: .starting)
+    /// the driver answers: no port yet. It is written again with `port` once
+    /// the runner reports WDA's port, still `starting` until WDA has its
+    /// session (side finding 12).
+    public static func starting(
+        pid: Int32, bundleId: String, udid: String, startedAt: Date, platform: Platform, port: UInt16 = 0
+    ) -> RunnerSessionInfo {
+        RunnerSessionInfo(pid: pid, wdaPort: port, bundleId: bundleId, udid: udid, startedAt: startedAt, platform: platform, state: .starting)
     }
 
     /// False while the runner has been spawned but its driver has not
@@ -56,10 +61,19 @@ public struct RunnerSessionInfo: Codable, Sendable {
     public var isReady: Bool { state != .starting }
 
     /// What session tools, `resources/read` and `dump-hierarchy` answer while
-    /// a session is starting.
-    public static func startingError(platform: Platform) -> GrantivaError {
+    /// a session is starting. It names the driver's port once the runner has
+    /// reported it (`port` > 0), and says the port is not known yet before.
+    public static func startingError(platform: Platform, port: UInt16? = nil) -> GrantivaError {
         let driver = platform == .android ? "UIAutomator2" : "WDA"
-        return .unavailable("The runner session is starting (\(driver) has no session yet). Retry in a few seconds.")
+        if let port, port > 0 {
+            return .unavailable("The runner session is starting (\(driver) on port \(port) has no session yet). Retry in a few seconds.")
+        }
+        return .unavailable("The runner session is starting (\(driver) has no session yet; its port is not known yet). Retry in a few seconds.")
+    }
+
+    /// `startingError` for this session, with the port it recorded.
+    public var startingError: GrantivaError {
+        Self.startingError(platform: resolvedPlatform, port: wdaPort)
     }
 
     private var resolvedPlatform: Platform {
@@ -70,7 +84,7 @@ public struct RunnerSessionInfo: Codable, Sendable {
         var container = encoder.container(keyedBy: LegacyJSONKeys.self)
         let android = resolvedPlatform == .android
         try container.encode(pid, forKey: "pid")
-        if isReady {
+        if isReady || wdaPort > 0 {
             try container.encode(wdaPort, forKey: "port")
             try container.encode(wdaPort, forKey: "wdaPort")
         }

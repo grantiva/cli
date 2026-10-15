@@ -44,19 +44,22 @@ so and to retry in a few seconds, never the "Start one with `grantiva runner sta
 is starting from the moment `grantiva runner start` (with or without `--detach`) or `grantiva run
 --keep-alive` in this project spawns its runner until the driver answers. Two texts cover that window:
 
-- `Error: The runner session is starting (WDA has no session yet). Retry in a few seconds.`
-  (`UIAutomator2` in place of `WDA` on Android) while there is no driver port to ask yet:
+- `Error: The runner session is starting (WDA has no session yet; its port is not known yet). Retry in a few seconds.`
+  (`UIAutomator2` in place of `WDA` on Android) while the runner has not reported its driver port:
   `runner start` writes `.grantiva/session.json` with `"state": "starting"` and no port the moment it
-  spawns the runner (rewritten with `"state": "ready"` and the port once the driver answers), and a
-  `run --keep-alive` runner (or a `runner start` runner, whose session flow runs first) is starting
-  until it publishes its keep-alive session, which it does once its flows have finished. The MCP tools
-  and resources, `grantiva runner dump-hierarchy` and `grantiva hierarchy` all print this one, for a
-  starting `session.json` and for a runner that has not published yet: they share one session
-  lookup with `runner stop` and both teardowns, which find such a runner too.
+  spawns the runner, and a `run --keep-alive` runner (or a `runner start` runner, whose session flow
+  runs first) is starting until it publishes its keep-alive session, which it does once its flows have
+  finished. The MCP tools and resources, `grantiva runner dump-hierarchy` and `grantiva hierarchy` all
+  print this one, for a starting `session.json` and for a runner that has not published yet: they share
+  one session lookup with `runner stop` and both teardowns, which find such a runner too.
 - `Error: The runner session is starting (WDA on port <port> has no session yet). Retry in a few seconds.`
-  on iOS once the port is known but WebDriverAgent has not opened its session, for example in the
-  seconds after `runner start --detach` returns. The MCP tools and resources print it; `grantiva runner
-  dump-hierarchy` and `grantiva hierarchy` read the page source without a WDA session and do not.
+  once the port is known but the driver has no session yet. On iOS, `runner start` rewrites
+  `.grantiva/session.json` with the port (still `"state": "starting"`) as soon as the runner reports
+  WDA's port, while its launch flow is still running, and with `"state": "ready"` once WDA answers; the
+  MCP tools and resources and `grantiva runner dump-hierarchy` print this text in that window
+  (`grantiva hierarchy` reads keep-alive sessions, not `session.json`, and prints the first text until
+  the runner publishes). The MCP tools and resources also print it once a session is ready but WebDriverAgent has
+  not opened its session.
 
 A call made once the driver is ready attaches as usual. `grantiva_screenshot` is the exception once
 `--detach` has returned and the session records its device: it takes the screenshot with `simctl` or `adb`, not WDA, so it

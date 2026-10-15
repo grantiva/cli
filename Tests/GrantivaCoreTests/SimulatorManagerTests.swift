@@ -269,6 +269,43 @@ final class SimulatorManagerTests: XCTestCase {
         XCTAssertEqual(try capacity.sessions(snapshot: snapshot), [])
     }
 
+    // A Grantiva-created simulator shut down and booted again with plain
+    // `simctl` is no longer the boot Grantiva recorded: its old record is
+    // stale. Teardown must neither shut it down nor delete it, and it holds
+    // no slot.
+    func testTeardownLeavesASimulatorRebootedOutsideGrantivaAlone() async throws {
+        let simctl = FakeSimctl(devices: [])
+        let (manager, capacity, provenance) = makeManager(simctl)
+        let ensured = try await manager.ensure(name: "side iPhone 17", runtime: "26.0", boot: true)
+        let session = capacity.sessionId ?? "simulator:\(ensured.udid)"
+
+        simctl.rebootOutsideGrantiva(ensured.udid)
+        let before = simctl.commands.count
+
+        let sessions = try await manager.managedSessions()
+        XCTAssertEqual(sessions, [])
+        let outcomes = try await manager.teardown(sessionId: session)
+
+        XCTAssertEqual(outcomes, [])
+        let after = simctl.commands.dropFirst(before)
+        XCTAssertFalse(after.contains { $0.contains("simctl shutdown") || $0.contains("simctl delete") }, "\(after)")
+        XCTAssertEqual(simctl.device(ensured.udid)?.state, "Booted")
+        XCTAssertTrue(try provenance.contains(udid: ensured.udid))
+    }
+
+    // The boot Grantiva recorded is still the device's boot: teardown ends it.
+    func testTeardownStillEndsTheBootGrantivaRecorded() async throws {
+        let simctl = FakeSimctl(devices: [])
+        let (manager, capacity, _) = makeManager(simctl)
+        let ensured = try await manager.ensure(name: "side iPhone 17", runtime: "26.0", boot: true)
+        let session = capacity.sessionId ?? "simulator:\(ensured.udid)"
+
+        let outcomes = try await manager.teardown(sessionId: session)
+
+        XCTAssertEqual(outcomes.map(\.deleted), [true])
+        XCTAssertNil(simctl.device(ensured.udid))
+    }
+
     func testEnsureTakesADurableSlotAndARunTakesAnEphemeralOne() async throws {
         let simctl = FakeSimctl(devices: [
             .init(name: "A", udid: "A-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
@@ -647,9 +684,12 @@ final class FakeSimctl: @unchecked Sendable {
         var state: String
         var runtime: String
         var type: String
+        /// simctl's `lastUsedAt`: the moment of the device's current boot.
+        var lastUsedAt: String? = nil
     }
 
     private let lock = NSLock()
+    private var boots = 0
     private var devices: [Device]
     private var recorded: [String] = []
     private var created: [String] = []
@@ -662,6 +702,8 @@ final class FakeSimctl: @unchecked Sendable {
     var createdUDIDs: [String] { lock.withLock { created } }
     func device(_ udid: String) -> Device? { lock.withLock { devices.first { $0.udid == udid } } }
     func add(_ device: Device) { lock.withLock { devices.append(device) } }
+    /// `xcrun simctl shutdown` then `boot` run by hand, outside Grantiva.
+    func rebootOutsideGrantiva(_ udid: String) { lock.withLock { setState(udid, "Booted") } }
 
     func execute(_ command: String) async throws -> String {
         if command.hasPrefix("xcrun simctl delete "), let onDelete { onDelete(command) }
@@ -700,16 +742,23 @@ final class FakeSimctl: @unchecked Sendable {
     }
 
     private func setState(_ udid: String, _ state: String) {
-        if let index = devices.firstIndex(where: { $0.udid == udid }) { devices[index].state = state }
+        guard let index = devices.firstIndex(where: { $0.udid == udid }) else { return }
+        devices[index].state = state
+        if state == "Booted" {
+            boots += 1
+            devices[index].lastUsedAt = "2026-10-15T00:00:\(String(format: "%02d", boots))Z"
+        }
     }
 
     private func deviceListJSON() -> String {
         var byRuntime: [String: [[String: Any]]] = [:]
         for device in devices {
-            byRuntime["com.apple.CoreSimulator.SimRuntime.\(device.runtime)", default: []].append([
+            var entry: [String: Any] = [
                 "name": device.name, "udid": device.udid, "state": device.state,
                 "isAvailable": true, "deviceTypeIdentifier": device.type,
-            ])
+            ]
+            if let lastUsedAt = device.lastUsedAt { entry["lastUsedAt"] = lastUsedAt }
+            byRuntime["com.apple.CoreSimulator.SimRuntime.\(device.runtime)", default: []].append(entry)
         }
         let data = try! JSONSerialization.data(withJSONObject: ["devices": byRuntime])
         return String(decoding: data, as: UTF8.self)
