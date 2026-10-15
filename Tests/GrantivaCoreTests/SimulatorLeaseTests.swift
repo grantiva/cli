@@ -285,6 +285,24 @@ extension SimulatorLeaseTests {
         XCTAssertNil(try JSONDecoder.leaseDecoder.decode(SimulatorLeaseClaim.self, from: Data(legacy.utf8)).temporaryDirectories)
     }
 
+    // B3-L35: every temp directory a run records also goes into the
+    // device's ledger, which outlives the claim the next run overwrites.
+    func testRecordedTemporaryDirectoriesReachTheDevicesLedger() throws {
+        let lease = try SimulatorLease.acquire(udid: "SIM-LEDGER", directory: leaseDirectory)
+        lease.recordRunner(pid: 4242, keepAlive: false)
+        lease.recordTemporaryDirectory("/tmp/grantiva-A")
+        lease.recordTemporaryDirectory("/tmp/grantiva-report-B")
+
+        let records = SimulatorLease.temporaryDirectoryRecords(udid: "SIM-LEDGER", directory: leaseDirectory)
+        XCTAssertEqual(records, [TemporaryDirectoryRecord(pid: getpid(), runnerPID: 4242, paths: ["/tmp/grantiva-A", "/tmp/grantiva-report-B"])])
+        lease.release()
+        // The ledger forgets a run once its directories are gone.
+        XCTAssertEqual(SimulatorLease.temporaryDirectoryRecords(udid: "SIM-LEDGER", directory: leaseDirectory), [])
+        XCTAssertFalse(FileManager.default.fileExists(
+            atPath: SimulatorLease.temporaryDirectoryLedgerPath(udid: "SIM-LEDGER", directory: leaseDirectory)
+        ))
+    }
+
     // K107-a: a released lease leaves no file behind.
     func testReleaseRemovesTheLockFile() throws {
         let lease = try SimulatorLease.acquire(udid: "SIM-GONE", directory: leaseDirectory)

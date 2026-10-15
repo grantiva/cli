@@ -117,7 +117,7 @@ struct EmulatorCommand: AsyncParsableCommand {
     struct Teardown: AsyncParsableCommand {
         static let configuration = CommandConfiguration(
             abstract: "Kill emulators Grantiva started: one by serial, or all of them. Stops the UIAutomator2 server and removes the serial's adb forwards first.",
-            discussion: "A runner session on a torn-down serial (`grantiva runner start` or `grantiva run --keep-alive`) is stopped too, and its session files are removed; --json reports it as runnerSessionStopped. The guest's writes are flushed (`adb shell sync`) before the emulator is killed, so an app installed just before survives the next boot. Session files of a runner that had already died, and the temp directories of a killed run on the serial, are removed and listed (sessionFilesRemoved, temporaryDirectoriesRemoved)."
+            discussion: "A runner session on a torn-down serial (`grantiva runner start` or `grantiva run --keep-alive`) is stopped too, and its session files are removed; --json reports it as runnerSessionStopped. The guest's writes are flushed (`adb shell sync`) before the emulator is killed, so an app installed just before survives the next boot. Session files of a runner that had already died, and the temp directories of every killed run on the serial, are removed and listed (sessionFilesRemoved, temporaryDirectoriesRemoved)."
         )
         @OptionGroup var options: GlobalOptions
 

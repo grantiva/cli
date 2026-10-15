@@ -62,6 +62,30 @@ public struct SimulatorLeaseClaim: Codable, Sendable, Equatable {
     }
 }
 
+/// One run's temp directories in a device's ledger (B3-L35).
+///
+/// The lease claim names only the current holder's temp directories, and the
+/// next run on the device overwrites it, so a force teardown after several
+/// killed runs used to find only the last one's. Each run's directories are
+/// therefore also kept in `<udid>.tmpdirs.json` beside the lease file, which
+/// no claim overwrites; a teardown removes those of every run that is gone.
+public struct TemporaryDirectoryRecord: Codable, Sendable, Equatable {
+    public let pid: Int32
+    public var runnerPID: Int32?
+    public var paths: [String]
+
+    public init(pid: Int32, runnerPID: Int32?, paths: [String]) {
+        self.pid = pid
+        self.runnerPID = runnerPID
+        self.paths = paths
+    }
+
+    /// True while the run or its runner is still running.
+    public var isLive: Bool {
+        SimulatorLeaseClaim.isAlive(pid) || runnerPID.map(SimulatorLeaseClaim.isAlive) == true
+    }
+}
+
 /// A cross-process lease that prevents two Grantiva runner invocations from
 /// managing WebDriverAgent on the same simulator at the same time.
 ///
@@ -322,6 +346,76 @@ public final class SimulatorLease: @unchecked Sendable {
             guard let base = buffer.baseAddress else { return }
             _ = Darwin.write(descriptor, base, buffer.count)
         }
+        if let directories = snapshot.temporaryDirectories, !directories.isEmpty {
+            Self.recordTemporaryDirectories(
+                directories, pid: snapshot.pid, runnerPID: snapshot.runnerPID, ledgerPath: Self.ledgerPath(forLeasePath: path)
+            )
+        }
+    }
+
+    // MARK: - The device's temp directory ledger (B3-L35)
+
+    static func ledgerPath(forLeasePath leasePath: String) -> String {
+        (leasePath.hasSuffix(".lock") ? String(leasePath.dropLast(".lock".count)) : leasePath) + ".tmpdirs.json"
+    }
+
+    /// Where `udid`'s ledger of run temp directories lives, beside its lease.
+    public static func temporaryDirectoryLedgerPath(udid: String, directory: String? = nil) -> String {
+        ledgerPath(forLeasePath: leasePath(udid: udid, directory: directory))
+    }
+
+    /// The runs whose temp directories `udid`'s ledger names.
+    public static func temporaryDirectoryRecords(udid: String, directory: String? = nil) -> [TemporaryDirectoryRecord] {
+        loadLedger(temporaryDirectoryLedgerPath(udid: udid, directory: directory))
+    }
+
+    /// Records that run `pid` (with runner `runnerPID`) created `paths` on
+    /// `udid`, replacing that run's earlier record.
+    public static func recordTemporaryDirectories(
+        _ paths: [String], pid: Int32, runnerPID: Int32?, udid: String, directory: String? = nil
+    ) {
+        recordTemporaryDirectories(
+            paths, pid: pid, runnerPID: runnerPID, ledgerPath: temporaryDirectoryLedgerPath(udid: udid, directory: directory)
+        )
+    }
+
+    static func recordTemporaryDirectories(_ paths: [String], pid: Int32, runnerPID: Int32?, ledgerPath: String) {
+        var records = loadLedger(ledgerPath).filter { $0.pid != pid }
+        records.append(TemporaryDirectoryRecord(pid: pid, runnerPID: runnerPID, paths: paths))
+        saveLedger(pruned(records, keeping: pid), to: ledgerPath)
+    }
+
+    /// Drops records whose directories are all gone (a run that ended
+    /// cleanly removed them), except `pid`'s.
+    static func pruned(_ records: [TemporaryDirectoryRecord], keeping pid: Int32? = nil) -> [TemporaryDirectoryRecord] {
+        records.filter { record in
+            record.pid == pid || record.paths.contains { FileManager.default.fileExists(atPath: $0) }
+        }
+    }
+
+    static func loadLedger(_ path: String) -> [TemporaryDirectoryRecord] {
+        guard let data = FileManager.default.contents(atPath: path), !data.isEmpty else { return [] }
+        return (try? JSONDecoder().decode([TemporaryDirectoryRecord].self, from: data)) ?? []
+    }
+
+    /// Writes `records`, or removes the ledger when there are none.
+    static func saveLedger(_ records: [TemporaryDirectoryRecord], to path: String) {
+        guard !records.isEmpty else {
+            try? FileManager.default.removeItem(atPath: path)
+            return
+        }
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        guard let data = try? encoder.encode(records) else { return }
+        try? FileManager.default.createDirectory(
+            atPath: (path as NSString).deletingLastPathComponent, withIntermediateDirectories: true
+        )
+        try? data.write(to: URL(fileURLWithPath: path), options: .atomic)
+    }
+
+    /// Replaces `udid`'s ledger with `records` (empty removes it).
+    public static func saveTemporaryDirectoryRecords(_ records: [TemporaryDirectoryRecord], udid: String, directory: String? = nil) {
+        saveLedger(records, to: temporaryDirectoryLedgerPath(udid: udid, directory: directory))
     }
 
     /// Reads the claim recorded in a lease file, if any. Does not take the lock,
@@ -405,6 +499,12 @@ public final class SimulatorLease: @unchecked Sendable {
         _ = ftruncate(descriptor, 0)
         if Self.isFile(descriptor, at: path) {
             _ = unlink(path)
+        }
+        // A run that ended cleanly has removed its temp directories: its
+        // ledger record (and any other whose directories are gone) goes.
+        let ledger = Self.ledgerPath(forLeasePath: path)
+        if FileManager.default.fileExists(atPath: ledger) {
+            Self.saveLedger(Self.pruned(Self.loadLedger(ledger)), to: ledger)
         }
         _ = flock(descriptor, LOCK_UN)
         Darwin.close(descriptor)
