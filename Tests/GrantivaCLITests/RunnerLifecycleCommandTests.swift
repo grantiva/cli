@@ -122,6 +122,43 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         XCTAssertFalse(detached.value, "detached start transfers the accepted forward to session ownership")
     }
 
+    /// L68: with the app installed, Android startup holds until the generated
+    /// launch flow passes, so an immediate hierarchy read shows the app.
+    func testInstalledAndroidAppHoldsStartupUntilTheLaunchFlowPasses() async {
+        let polls = LockedValue(0)
+        let detached = LockedValue(0)
+        let result = await RunnerStartCommand.waitForAndroidService(
+            attach: {
+                DriverAttachment(
+                    client: .failing, port: 61220, sessionID: "new",
+                    detach: { detached.set(detached.value + 1) }
+                )
+            },
+            timeout: 5,
+            launchStatus: {
+                polls.set(polls.value + 1)
+                return polls.value < 3 ? nil : "passed"
+            },
+            sleep: {}
+        )
+        XCTAssertEqual(result.attachment?.sessionID, "new")
+        XCTAssertEqual(polls.value, 3, "startup must wait while the launch flow is still running")
+        XCTAssertEqual(detached.value, 2, "attachments taken before the launch passed are released")
+        XCTAssertFalse(result.launchFailed)
+    }
+
+    /// L68: a launch that fails with the app installed ends startup promptly.
+    func testInstalledAndroidAppLaunchFailureEndsStartup() async {
+        let result = await RunnerStartCommand.waitForAndroidService(
+            attach: { DriverAttachment(client: .failing, port: 61221, sessionID: "new", detach: {}) },
+            timeout: 5,
+            launchStatus: { "failed" },
+            sleep: { XCTFail("a failed launch is not waited on") }
+        )
+        XCTAssertNil(result.attachment)
+        XCTAssertTrue(result.launchFailed)
+    }
+
     func testAndroidServiceStillRejectsAStaleAttachment() async {
         let polls = LockedValue(0)
         let detached = LockedValue(0)

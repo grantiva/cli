@@ -335,15 +335,18 @@ struct RunnerStartCommand: AsyncParsableCommand {
         return UIAutomator2Wait(exitStatus: runnerExit())
     }
 
-    /// Android `runner start` owns an automation service, not an application
-    /// launch. The generated launch flow may fail because the target app is not
-    /// installed while UIAutomator2 is already usable; a new attachment is the
-    /// readiness boundary. Stale-session and runner-death handling remain in
-    /// the shared waiter.
+    /// Android `runner start` owns an automation service. When the target app
+    /// is installed, startup also waits for the generated launch flow to pass,
+    /// so a hierarchy read right after a detached start shows the app (L68)
+    /// and a launch that fails ends startup promptly. When the app is not
+    /// installed, a new attachment is the readiness boundary: the launch flow
+    /// is bound to fail while UIAutomator2 is already usable (B2-K32).
+    /// Stale-session and runner-death handling remain in the shared waiter.
     static func waitForAndroidService(
         attach: @Sendable () async throws -> DriverAttachment,
         timeout: TimeInterval,
         staleSessionID: String? = nil,
+        launchStatus: (@Sendable () -> String?)? = nil,
         runnerExit: @Sendable () -> Int32? = { nil },
         sleep: @Sendable () async -> Void = { try? await Task.sleep(for: .seconds(1)) }
     ) async -> UIAutomator2Wait {
@@ -351,6 +354,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
             attach: attach,
             timeout: timeout,
             staleSessionID: staleSessionID,
+            launchStatus: launchStatus ?? { "passed" },
             runnerExit: runnerExit,
             sleep: sleep
         )
@@ -446,10 +450,17 @@ struct RunnerStartCommand: AsyncParsableCommand {
     private static func waitForUIAutomator2Port(_ launch: Launch, child: ChildProcess) async -> (attachment: DriverAttachment?, exitStatus: Int32?, launchFailed: Bool) {
         let device = launch.platformDevice
         let serial = launch.device.udid
+        // Unknown counts as installed: waiting for the launch flow is the
+        // safe default, and an install it cannot see fails it promptly.
+        let installed = await device.isInstalled(appID: launch.appID, deviceID: serial) ?? true
+        let reportDir = launch.reportDir
+        var launchStatus: (@Sendable () -> String?)?
+        if installed { launchStatus = { completedLaunchStatus(reportDir: reportDir) } }
         let wait = await Self.waitForAndroidService(
             attach: { try await device.attachDriver(deviceID: serial, port: nil) },
             timeout: uiAutomator2WaitTimeout(),
             staleSessionID: launch.staleSessionID,
+            launchStatus: launchStatus,
             runnerExit: { child.poll() }
         )
         return (wait.attachment, wait.exitStatus, wait.launchFailed)
