@@ -32,6 +32,9 @@ public final class SignalRelay: @unchecked Sendable {
     private var installed = false
     private var sources: [DispatchSourceSignal] = []
     private var groups: [pid_t] = []
+    /// Per tracked group: what ends the helpers its runner started outside
+    /// the group (B4-L72.3).
+    private var groupHelperReaps: [pid_t: @Sendable () -> Void] = [:]
     private var beforeTerminationCleanups: [(id: UInt64, body: @Sendable () -> Void)] = []
     private var cleanups: [(id: UInt64, body: @Sendable () -> Void)] = []
     private var nextID: UInt64 = 1
@@ -42,6 +45,7 @@ public final class SignalRelay: @unchecked Sendable {
     private var armedGroups: Set<pid_t> = []
     private var releasedGroups: Set<pid_t> = []
     private var releasing = false
+    private var exitStatusProvider: (@Sendable () -> Int32?)?
 
     private init() {}
 
@@ -102,6 +106,16 @@ public final class SignalRelay: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         groups.removeAll { $0 == pgid }
+        groupHelperReaps[pgid] = nil
+    }
+
+    /// Registers `body` to run once the tracked group `pgid` has been
+    /// stopped by an interrupt, before the cleanups release the device: it
+    /// ends what the runner started outside its own group, which signalling
+    /// the group never reaches (WebDriverAgent's `xcodebuild` and the
+    /// `simctl diagnose` it starts, B4-L72.3). Dropped by `untrack(group:)`.
+    public func afterGroupTermination(group pgid: pid_t, _ body: @escaping @Sendable () -> Void) {
+        lock.withLock { groupHelperReaps[pgid] = body }
     }
 
     /// Registers work to run when grantiva is interrupted — releasing a lease,
@@ -256,6 +270,20 @@ public final class SignalRelay: @unchecked Sendable {
         respond(to: signalNumber, release: release)
     }
 
+    /// Sets what decides the status an interrupt exits with once its
+    /// cleanups have run: nil from the provider (or no provider) is
+    /// 128 + signal. A foreground `runner start` that a teardown marked
+    /// exits 0, as a teardown's stop is documented to (B3-L54.1).
+    public func setExitStatus(_ provider: (@Sendable () -> Int32?)?) {
+        lock.withLock { exitStatusProvider = provider }
+    }
+
+    /// The status the interrupt sequence for `signalNumber` exits with.
+    func exitStatus(for signalNumber: Int32) -> Int32 {
+        let provider = lock.withLock { exitStatusProvider }
+        return provider?() ?? 128 + signalNumber
+    }
+
     private func handle(_ signalNumber: Int32) {
         // A signal arriving while cleanups run exits at once. In practice only
         // a different signal gets here (SIGTERM after SIGINT): a repeat of the
@@ -264,7 +292,7 @@ public final class SignalRelay: @unchecked Sendable {
         // guarantee against a hung cleanup. A release of an armed hold
         // returns at once, so a second Ctrl-C during it interrupts.
         guard respond(to: signalNumber) else { return }
-        exit(128 + signalNumber)
+        exit(exitStatus(for: signalNumber))
     }
 
     /// Returns false when a termination is already under way.
@@ -280,6 +308,7 @@ public final class SignalRelay: @unchecked Sendable {
         // exit must already see that this was an interrupt.
         terminating = true
         let trackedGroups = groups
+        let helperReaps = groups.compactMap { groupHelperReaps[$0] }
         let pendingBeforeTermination = beforeTerminationCleanups.map(\.body)
         let pendingCleanups = cleanups.map(\.body)
         lock.unlock()
@@ -292,6 +321,7 @@ public final class SignalRelay: @unchecked Sendable {
         for pgid in trackedGroups {
             ChildProcess.terminateGroup(pgid, gracePeriod: 5)
         }
+        for reap in helperReaps { reap() }
         for cleanup in pendingCleanups { cleanup() }
         return true
     }

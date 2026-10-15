@@ -199,6 +199,27 @@ struct RunnerStartCommand: AsyncParsableCommand {
         let simulatorLease = try SimulatorLease.acquire(udid: booted.udid, platform: platform)
         var handedOff = false
         defer { if !handedOff { simulatorLease.release() } }
+        var releaseLease: UInt64?
+        defer {
+            if let releaseLease {
+                SignalRelay.shared.removeCleanup(releaseLease)
+                SignalRelay.shared.setExitStatus(nil)
+            }
+        }
+        if !detach {
+            // From the moment this process holds the lease, a teardown can
+            // stop it, before there is any runner or session file to mark
+            // (B3-L54.1): it marks this process, and the interrupt ends the
+            // start in order (exit 0) instead of killing it.
+            let foregroundRunner = Self.foregroundRunner
+            let options = options
+            SignalRelay.shared.setExitStatus {
+                guard let ending = Self.teardownEnding(grantivaPid: getpid(), runnerPid: foregroundRunner.value) else { return nil }
+                options.note(ending)
+                return 0
+            }
+            releaseLease = SignalRelay.shared.onTermination { simulatorLease.release() }
+        }
 
         let deviceNoun = platform == .ios ? "Simulator" : "Device"
         options.note("Starting runner...")
@@ -244,6 +265,8 @@ struct RunnerStartCommand: AsyncParsableCommand {
             simulatorLease.handOff(to: runnerPid)
             handedOff = true
         } else {
+            let removeTempDir = Self.removeOnInterrupt(tempDir)
+            defer { SignalRelay.shared.removeCleanup(removeTempDir) }
             // Held by this process until the runner ends; the `defer` above
             // (or the interrupt cleanup) releases it.
             try await startForeground(launch, lease: simulatorLease)
@@ -402,25 +425,35 @@ struct RunnerStartCommand: AsyncParsableCommand {
     }
 
     /// The error `runner start` ends with when the runner exits before its
-    /// UIAutomator2 session is up, carrying the runner's reason (L48), or
-    /// how it ended when it gave none (`status 1`, `killed by SIGKILL`).
-    static func startupExitError(serial: String, status: Int32, signal: Int32? = nil, lastError: String?, logPath: String?) -> GrantivaError {
+    /// UIAutomator2 session (`driver`; WDA on iOS) is up, carrying the
+    /// runner's reason (L48), or how it ended when it gave none (`status 1`,
+    /// `killed by SIGKILL`).
+    static func startupExitError(
+        serial: String, status: Int32, signal: Int32? = nil, lastError: String?, logPath: String?,
+        driver: String = "UIAutomator2"
+    ) -> GrantivaError {
         let log = logPath.map { " Log: \($0)" } ?? ""
         var reason = lastError ?? ""
-        for prefix in ["Error:", "failed to create driver:", "start UIAutomator2:"] {
+        for prefix in ["Error:", "failed to create driver:", "start UIAutomator2:", "WDA start failed:"] {
             reason = reason.trimmingCharacters(in: .whitespaces)
             if reason.hasPrefix(prefix) { reason = String(reason.dropFirst(prefix.count)) }
         }
         reason = reason.trimmingCharacters(in: .whitespaces)
-        while reason.hasSuffix(".") { reason.removeLast() }
+        while reason.hasSuffix(".") || reason.hasSuffix(":") { reason.removeLast() }
         guard !reason.isEmpty else {
             let ended = signal.map { "was killed by \(SubprocessLog.signalName($0))" } ?? "exited (status \(status))"
-            return .commandFailed("The runner \(ended) before UIAutomator2 was up on \(serial).\(log)", 1)
+            return .commandFailed("The runner \(ended) before \(driver) was up on \(serial).\(log)", 1)
         }
-        let remedy = reason.contains("not ready after")
+        let remedy = driver == "UIAutomator2" && reason.contains("not ready after")
             ? " Raise the limit with \(AndroidPlatform.driverStartTimeoutVariable)=<seconds>."
             : ""
-        return .commandFailed("The runner could not start UIAutomator2 on \(serial): \(reason).\(remedy)\(log)", 1)
+        return .commandFailed("The runner could not start \(driver) on \(serial): \(reason).\(remedy)\(log)", 1)
+    }
+
+    /// `startupExitError` for an iOS runner that exited before WDA was up
+    /// (B4-L72.4, B4-PC.4): its own last `Error:` line, or how it ended.
+    static func iosStartupExitError(udid: String, status: Int32, signal: Int32?, lastError: String?, logPath: String?) -> GrantivaError {
+        startupExitError(serial: udid, status: status, signal: signal, lastError: lastError, logPath: logPath, driver: "WDA")
     }
 
     /// How long `runner start` waits for the UIAutomator2 session:
@@ -582,8 +615,51 @@ struct RunnerStartCommand: AsyncParsableCommand {
         )
     }
 
-    private static func removeKeepAliveOwner(_ launch: Launch, runnerPid: Int32) {
-        KeepAliveSessionStore().removeOwner(runnerPid: runnerPid)
+    /// Everything a start that did not get its runner up recorded for
+    /// `runnerPid`: the keep-alive owner, the runner's own
+    /// `<pid>-*.grantiva` (a runner stopped by a signal never removes it,
+    /// B4-PC.7) and `.grantiva/session.json`.
+    static func discardStartedSession(runnerPid: Int32, store: KeepAliveSessionStore = KeepAliveSessionStore()) {
+        store.removeSessionFiles(runnerPid: runnerPid)
+        removeSessionFile(of: runnerPid)
+    }
+
+    /// The foreground runner's pid once spawned, for the teardown line.
+    static let foregroundRunner = PidBox()
+
+    final class PidBox: @unchecked Sendable {
+        private let lock = NSLock()
+        private var stored: Int32?
+        var value: Int32? {
+            get { lock.withLock { stored } }
+            set { lock.withLock { stored = newValue } }
+        }
+    }
+
+    /// The teardown line when a teardown marked this `runner start` itself
+    /// (`grantivaPid`), which it does when it finds the start holding the
+    /// lease; the marker is removed. Nil when nothing marked it.
+    static func teardownEnding(grantivaPid: Int32, runnerPid: Int32?, marker: RunnerStopMarker = RunnerStopMarker()) -> String? {
+        guard marker.isMarked(runnerPid: grantivaPid, runnerStartTime: RunnerStopMarker.processStartTime(grantivaPid)) else {
+            return nil
+        }
+        marker.remove(runnerPid: grantivaPid)
+        return "Runner stopped by teardown (pid \(runnerPid ?? grantivaPid)); the session has ended."
+    }
+
+    /// Ctrl-C exits through the signal relay, past the `defer` that removes
+    /// the start's `grantiva-session-<uuid>` directory (B4-PC.8).
+    static func removeOnInterrupt(_ directory: URL) -> UInt64 {
+        SignalRelay.shared.onTermination { try? FileManager.default.removeItem(at: directory) }
+    }
+
+    /// Ends the WebDriverAgent helpers an iOS runner that is gone left in
+    /// its run directory (a SIGKILLed runner cannot, B4-L72.4).
+    static func reapRunnerHelpers(_ launch: Launch, runnerPid: Int32) async {
+        guard launch.platform == .ios else { return }
+        var reaper = RunnerHelperReaper.live()
+        reaper.killsXcodebuildAtOnce = true
+        _ = await reaper.sweep(exitedRunnerPid: runnerPid, udid: launch.device.udid)
     }
 
     // MARK: - Detached start
@@ -628,22 +704,22 @@ struct RunnerStartCommand: AsyncParsableCommand {
         let runnerStartTime = RunnerStopMarker.processStartTime(runnerPid)
         Self.recordKeepAliveOwner(launch, runnerPid: runnerPid, detached: true)
         try Self.recordStarting(launch, runnerPid: runnerPid)
-        func abandon() {
+        func abandon() async {
             child.terminateGroup(gracePeriod: 1)
             _ = child.wait()
-            Self.removeKeepAliveOwner(launch, runnerPid: runnerPid)
-            Self.removeSessionFile(of: runnerPid)
+            await Self.reapRunnerHelpers(launch, runnerPid: runnerPid)
+            Self.discardStartedSession(runnerPid: runnerPid)
         }
 
         let port: UInt16
         if launch.platform == .android {
             let wait = await Self.waitForUIAutomator2Port(launch, child: child)
             if wait.launchFailed {
-                abandon()
+                await abandon()
                 throw GrantivaError.commandFailed("The app launch flow failed on \(launch.device.udid). Log: \(logPath)", 1)
             }
             if let status = wait.exitStatus {
-                abandon()
+                await abandon()
                 let text = (try? String(contentsOfFile: logPath, encoding: .utf8)) ?? ""
                 throw Self.startupExitError(
                     serial: launch.device.udid, status: status, signal: child.terminatingSignal,
@@ -651,20 +727,27 @@ struct RunnerStartCommand: AsyncParsableCommand {
                 )
             }
             guard let attachment = wait.attachment else {
-                abandon()
+                await abandon()
                 throw GrantivaError.commandFailed("Timed out waiting for the UIAutomator2 session to start. Log: \(logPath)", 1)
             }
             port = UInt16(clamping: attachment.port)
         } else {
             // Poll the log file for WDA's port or a failed build.
-            let startup = try await waitForWDAPort(logFile: logPath, timeout: 60)
+            let startup = try await waitForWDAPort(logFile: logPath, timeout: 60, runnerExited: { child.poll() != nil })
             guard case .port(let found)? = startup else {
-                abandon()
+                await abandon()
+                if startup == .runnerExited {
+                    let text = (try? String(contentsOfFile: logPath, encoding: .utf8)) ?? ""
+                    throw Self.iosStartupExitError(
+                        udid: launch.device.udid, status: child.wait(), signal: child.terminatingSignal,
+                        lastError: Self.lastErrorLine(in: text), logPath: logPath
+                    )
+                }
                 throw Self.wdaStartupError(startup, logPath: logPath)
             }
             let launchWait = await Self.waitForIOSLaunchFlow(port: found, reportDir: launch.reportDir, runnerExit: { child.poll() })
             guard launchWait.attachment != nil else {
-                abandon()
+                await abandon()
                 throw Self.iosLaunchError(launchWait, logPath: logPath)
             }
             port = found
@@ -709,6 +792,12 @@ struct RunnerStartCommand: AsyncParsableCommand {
     /// cleanup and exits 130), `runner stop` from another shell, or the runner
     /// exiting on its own. The runner's output streams to stderr meanwhile.
     private func startForeground(_ launch: Launch, lease: SimulatorLease) async throws {
+        // Interrupted (or torn down) while setting up: the relay is ending
+        // this process; spawn nothing.
+        if SignalRelay.shared.isTerminating {
+            await Self.awaitSignalRelayExit()
+            throw ExitCode(130)
+        }
         let stdoutPipe = Pipe()
         let stderrPipe = Pipe()
         let child = try ChildProcess.spawn(
@@ -721,10 +810,15 @@ struct RunnerStartCommand: AsyncParsableCommand {
         )
         try? stdoutPipe.fileHandleForWriting.close()
         try? stderrPipe.fileHandleForWriting.close()
+        Self.foregroundRunner.value = child.pid
         // What a teardown's stop marker must name to count for this runner.
         let runnerStartTime = RunnerStopMarker.processStartTime(child.pid)
         // `kill -9` of this process must not leave the runner holding the device.
-        let lifeline = child.bindLifetimeToParent(sessionDirectory: KeepAliveSessionStore.defaultDirectory)
+        let lifeline = child.bindLifetimeToParent(
+            sessionDirectory: KeepAliveSessionStore.defaultDirectory,
+            ownedRunnerBase: launch.platform == .ios ? launch.runnerDir : nil,
+            ownedDeviceID: launch.platform == .ios ? launch.device.udid : nil
+        )
         Self.recordKeepAliveOwner(launch, runnerPid: child.pid, detached: false)
         lease.recordRunner(pid: child.pid, keepAlive: true)
 
@@ -741,6 +835,11 @@ struct RunnerStartCommand: AsyncParsableCommand {
             lease.release()
         }
         Self.trackRunner(group: child.processGroup, platform: launch.platform)
+        // Ctrl-C before WDA is up: the runner leaves WDA's xcodebuild, which
+        // runs in a group of its own, behind (B4-L72.3).
+        if launch.platform == .ios {
+            RunnerHelperReaper.reapOnInterrupt(group: child.processGroup, udid: launch.device.udid)
+        }
         let startupInterrupt = SignalRelay.shared.onTermination { cleanup.run() }
         defer {
             SignalRelay.shared.untrack(group: child.processGroup)
@@ -802,7 +901,8 @@ struct RunnerStartCommand: AsyncParsableCommand {
             let startup = await Self.waitForForegroundWDAPort(
                 chunks: output.chunks,
                 timeout: Self.foregroundWDATimeout,
-                probe: Self.probeKnownWDAPorts
+                probe: Self.probeKnownWDAPorts,
+                runnerExited: { child.poll() != nil }
             )
             output.endStartup()
             guard case .port(let found)? = startup else {
@@ -810,12 +910,24 @@ struct RunnerStartCommand: AsyncParsableCommand {
                 // marked the runner, before stopping it.
                 let requested = requestedStop()
                 child.terminateGroup(gracePeriod: 1)
+                if SignalRelay.shared.isTerminating {
+                    cleanup.run()
+                    await Self.awaitSignalRelayExit()
+                    throw Self.foregroundStartupError(startup)
+                }
+                let status = child.wait()
+                await Self.reapRunnerHelpers(launch, runnerPid: runnerPid)
                 cleanup.run()
-                if SignalRelay.shared.isTerminating { throw Self.foregroundStartupError(startup) }
                 if let requested {
-                    let ending = try Self.foregroundEnding(status: child.wait(), pid: runnerPid, stop: requested)
+                    let ending = try Self.foregroundEnding(status: status, pid: runnerPid, stop: requested)
                     options.note(ending)
                     return
+                }
+                if startup == .runnerExited {
+                    throw Self.iosStartupExitError(
+                        udid: launch.device.udid, status: status, signal: child.terminatingSignal,
+                        lastError: Self.lastErrorLine(in: output.recentText), logPath: nil
+                    )
                 }
                 throw Self.foregroundStartupError(startup)
             }
@@ -825,7 +937,10 @@ struct RunnerStartCommand: AsyncParsableCommand {
                 child.terminateGroup(gracePeriod: 1)
                 let status = child.wait()
                 cleanup.run()
-                if SignalRelay.shared.isTerminating { throw ExitCode(130) }
+                if SignalRelay.shared.isTerminating {
+                    await Self.awaitSignalRelayExit()
+                    throw ExitCode(130)
+                }
                 if let requested {
                     let ending = try Self.foregroundEnding(status: status, pid: runnerPid, stop: requested)
                     options.note(ending)
@@ -899,13 +1014,18 @@ struct RunnerStartCommand: AsyncParsableCommand {
             cleanup: { cleanup.run() }
         )
         if SignalRelay.shared.isTerminating {
-            // Ctrl-C: the relay is reaping and exits 130 once its cleanups
-            // finish; do not race it to a 0. Capped like `run`'s wait.
-            try? await Task.sleep(for: .seconds(30))
+            await Self.awaitSignalRelayExit()
             throw ExitCode(130)
         }
         let ending = try Self.foregroundEnding(status: status, pid: child.pid, stop: stopRequested.value)
         options.note(ending)
+    }
+
+    /// Ctrl-C: the relay is reaping (WDA's xcodebuild included, B4-L72.3)
+    /// and exits 130 once its cleanups finish; returning first would end the
+    /// process mid-reap. Capped like `run`'s wait.
+    static func awaitSignalRelayExit() async {
+        try? await Task.sleep(for: .seconds(30))
     }
 
     /// Holds until `waitForExit` returns, running `cleanup` exactly once:
@@ -939,6 +1059,8 @@ struct RunnerStartCommand: AsyncParsableCommand {
     enum WDAStartup: Equatable {
         case port(UInt16)
         case buildFailed
+        /// The runner exited (its output ended) before WDA was up.
+        case runnerExited
     }
 
     /// How long `runner start` waits for WDA once the runner reports that it
@@ -962,7 +1084,8 @@ struct RunnerStartCommand: AsyncParsableCommand {
     static func waitForForegroundWDAPort(
         chunks: AsyncStream<Data>,
         timeout: @escaping @Sendable (_ isBuilding: @escaping @Sendable () -> Bool) async -> Void,
-        probe: @escaping @Sendable () async -> UInt16?
+        probe: @escaping @Sendable () async -> UInt16?,
+        runnerExited: @escaping @Sendable () -> Bool = { false }
     ) async -> WDAStartup? {
         let building = BuildFlag()
         return await withTaskGroup(of: WDAStartup?.self) { group in
@@ -980,10 +1103,25 @@ struct RunnerStartCommand: AsyncParsableCommand {
                         return .port(port)
                     }
                 }
-                return nil
+                // The output ends when the runner exits; that is no timeout
+                // (B4-L72.4, B4-PC.4).
+                return Task.isCancelled ? nil : .runnerExited
             }
             group.addTask {
                 await timeout { building.isSet }
+                return nil
+            }
+            // An orphaned helper can hold the runner's pipe open after the
+            // runner itself has gone, so the output may never end.
+            group.addTask {
+                while !Task.isCancelled {
+                    if runnerExited() {
+                        // Let the output's last lines (the runner's reason) arrive.
+                        try? await Task.sleep(for: .milliseconds(500))
+                        return .runnerExited
+                    }
+                    try? await Task.sleep(for: .milliseconds(250))
+                }
                 return nil
             }
 
@@ -1031,7 +1169,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
     /// Poll a log file until the runner reports WDA's port or a failed WDA
     /// build, or the timeout elapses.
-    private func waitForWDAPort(logFile: String, timeout: TimeInterval) async throws -> WDAStartup? {
+    private func waitForWDAPort(
+        logFile: String, timeout: TimeInterval, runnerExited: () -> Bool
+    ) async throws -> WDAStartup? {
         let started = Date()
         var deadline = started.addingTimeInterval(timeout)
         var extendedForBuild = false
@@ -1047,6 +1187,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
                let port = await Self.probeKnownWDAPorts() {
                 return .port(port)
             }
+            if runnerExited() { return .runnerExited }
         }
         return nil
     }
@@ -1056,6 +1197,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
         let log = logPath.map { " Log: \($0)" } ?? ""
         if startup == .buildFailed {
             return .commandFailed("WebDriverAgent failed to build. Check that Xcode is installed and the simulator runtime is available.\(log)", 1)
+        }
+        if startup == .runnerExited {
+            return .commandFailed("The runner exited before WDA was up.\(log)", 1)
         }
         return .commandFailed("Timed out waiting for WDA to start.\(log)", 1)
     }

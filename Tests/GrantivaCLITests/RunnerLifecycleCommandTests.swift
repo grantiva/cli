@@ -251,6 +251,112 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         XCTAssertTrue(RunnerStartCommand.foregroundStartupError(nil).localizedDescription.contains("Timed out"))
     }
 
+    /// B4-L72.4 / B4-PC.4: the runner's output ends because the runner
+    /// exited (SIGKILL, or its own "WDA failed to start after 4 attempts").
+    /// That is not a timeout, and neither is a runner that died while
+    /// something else (an orphaned xcodebuild) still holds its pipe.
+    func testForegroundPortDiscoveryReportsARunnerThatExited() async {
+        let ended = await RunnerStartCommand.waitForForegroundWDAPort(
+            chunks: AsyncStream { $0.finish() },
+            timeout: { _ in try? await Task.sleep(for: .seconds(5)) }, probe: { nil }
+        )
+        XCTAssertEqual(ended, .runnerExited)
+
+        let (stream, continuation) = AsyncStream<Data>.makeStream()
+        defer { continuation.finish() }
+        let started = Date()
+        let exited = await RunnerStartCommand.waitForForegroundWDAPort(
+            chunks: stream,
+            timeout: { _ in try? await Task.sleep(for: .seconds(5)) }, probe: { nil },
+            runnerExited: { true }
+        )
+        XCTAssertEqual(exited, .runnerExited)
+        XCTAssertLessThan(Date().timeIntervalSince(started), 2)
+    }
+
+    func testAnIOSRunnerThatExitsDuringStartupSaysWhyInsteadOfTimedOut() {
+        let udid = "5C109004-BC92-4128-A6C9-43F0BE1960FF"
+        let output = """
+          ↻ Retrying (attempt 4/4)...
+        Error: failed to create driver: WDA start failed: WDA failed to start after 4 attempts: xcodebuild exited: signal: killed before WDA became ready:
+
+        Build settings from configuration file '/private/tmp/home/grantiva-wda.xcconfig':
+        === attempt 4/4 ===
+        """
+        let failed = RunnerStartCommand.iosStartupExitError(
+            udid: udid, status: 1, signal: nil, lastError: RunnerStartCommand.lastErrorLine(in: output), logPath: nil
+        )
+        XCTAssertEqual(
+            "\(failed)",
+            "\(GrantivaError.commandFailed("The runner could not start WDA on \(udid): WDA failed to start after 4 attempts: xcodebuild exited: signal: killed before WDA became ready.", 1))"
+        )
+        let killed = RunnerStartCommand.iosStartupExitError(
+            udid: udid, status: SIGKILL, signal: SIGKILL, lastError: nil, logPath: "/tmp/r.log"
+        )
+        XCTAssertTrue("\(killed)".contains("The runner was killed by SIGKILL before WDA was up on \(udid). Log: /tmp/r.log"), "\(killed)")
+        XCTAssertFalse("\(killed)".contains("Timed out"), "\(killed)")
+        XCTAssertFalse("\(killed)".contains("UIAutomator2"), "\(killed)")
+        let exited = RunnerStartCommand.iosStartupExitError(udid: udid, status: 1, signal: nil, lastError: nil, logPath: nil)
+        XCTAssertTrue("\(exited)".contains("The runner exited (status 1) before WDA was up"), "\(exited)")
+        // A genuine timeout still says so.
+        XCTAssertTrue(RunnerStartCommand.wdaStartupError(nil, logPath: nil).localizedDescription.contains("Timed out"))
+    }
+
+    /// B4-PC.7: a detached start that fails (an app that is not installed)
+    /// leaves no keep-alive owner and no `<pid>-*.grantiva` behind.
+    func testAFailedDetachedStartLeavesNoSharedSessionFiles() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("pc7-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: directory) }
+        let store = KeepAliveSessionStore(directory: directory, isProcessAlive: { _ in false })
+        store.recordOwner(udid: "5C109004-BC92-4128-A6C9-43F0BE1960FF", runnerPid: 4242, platform: .ios, detached: true)
+        FileManager.default.createFile(atPath: "\(directory)/4242-1792089048161055000.grantiva", contents: Data("{}".utf8))
+        FileManager.default.createFile(atPath: "\(directory)/4243-1792089048161055000.grantiva", contents: Data("{}".utf8))
+
+        RunnerStartCommand.discardStartedSession(runnerPid: 4242, store: store)
+
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: directory), ["4243-1792089048161055000.grantiva"])
+    }
+
+    /// B4-PC.8: Ctrl-C exits through the signal relay, so the `defer` that
+    /// removes `$TMPDIR/grantiva-session-<uuid>` never runs; the relay must.
+    func testAnInterruptRemovesTheStartsTemporaryDirectory() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-session-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: directory.appendingPathComponent("report"), withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let token = RunnerStartCommand.removeOnInterrupt(directory)
+        defer {
+            SignalRelay.shared.removeCleanup(token)
+            SignalRelay.shared.resetTerminationForTesting()
+        }
+
+        SignalRelay.shared.simulateTerminationForTesting()
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: directory.path))
+    }
+
+    /// B3-L54.1: a teardown that marked this `runner start` (itself, before
+    /// it had a runner) ends it with the teardown line, and the marker goes.
+    func testATeardownMarkOnTheStartItselfEndsItInOrder() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("l54-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: directory) }
+        let marker = RunnerStopMarker(directory: directory)
+        let me = getpid()
+        XCTAssertNil(RunnerStartCommand.teardownEnding(grantivaPid: me, runnerPid: nil, marker: marker))
+
+        XCTAssertTrue(try marker.mark(runnerPid: me, ownerPid: me))
+        XCTAssertEqual(
+            RunnerStartCommand.teardownEnding(grantivaPid: me, runnerPid: 4242, marker: marker),
+            "Runner stopped by teardown (pid 4242); the session has ended."
+        )
+        XCTAssertFalse(FileManager.default.fileExists(atPath: marker.path(me)))
+
+        XCTAssertTrue(try marker.mark(runnerPid: me, ownerPid: me))
+        XCTAssertEqual(
+            RunnerStartCommand.teardownEnding(grantivaPid: me, runnerPid: nil, marker: marker),
+            "Runner stopped by teardown (pid \(me)); the session has ended."
+        )
+    }
+
     func testAlreadyStartingDocumentsPreserveNullPortOnBothPlatforms() throws {
         for platform: Platform in [.ios, .android] {
             let json = try decode(RunnerLifecycleDocument(

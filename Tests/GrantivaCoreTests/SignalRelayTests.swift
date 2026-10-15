@@ -64,4 +64,49 @@ final class SignalRelayTests: XCTestCase {
         SignalRelay.shared.track(group: 12346, deviceNoun: "emulator")
         XCTAssertEqual(SignalRelay.shared.deviceNoun, "emulator")
     }
+
+    /// B4-L72.3: an interrupt ends what a tracked runner started outside its
+    /// group (WDA's xcodebuild). The hook runs after the group is stopped and
+    /// before the cleanups release the device, and only while the group is
+    /// tracked.
+    func testGroupHelperReapRunsAfterTheGroupStopsAndBeforeTheCleanups() throws {
+        let child = try ChildProcess.spawn(
+            executable: "/bin/sleep", arguments: ["30"],
+            stdout: FileHandle.nullDevice.fileDescriptor, stderr: FileHandle.nullDevice.fileDescriptor, logged: false
+        )
+        let reaper = DispatchQueue.global()
+        reaper.async { child.wait() }
+        let order = Locked<[String]>([])
+        SignalRelay.shared.track(group: child.processGroup, deviceNoun: "simulator")
+        SignalRelay.shared.afterGroupTermination(group: child.processGroup) {
+            order.append(child.isRunning ? "helpers (runner alive)" : "helpers")
+        }
+        let token = SignalRelay.shared.onTermination { order.append("cleanup") }
+        defer {
+            SignalRelay.shared.removeCleanup(token)
+            SignalRelay.shared.untrack(group: child.processGroup)
+            SignalRelay.shared.resetTerminationForTesting()
+        }
+
+        SignalRelay.shared.simulateTerminationForTesting()
+
+        XCTAssertEqual(order.value, ["helpers", "cleanup"])
+
+        // Untracked, the hook is gone with the group.
+        SignalRelay.shared.resetTerminationForTesting()
+        SignalRelay.shared.untrack(group: child.processGroup)
+        SignalRelay.shared.simulateTerminationForTesting()
+        XCTAssertEqual(order.value, ["helpers", "cleanup", "cleanup"])
+    }
+
+    /// B3-L54.1: a teardown that lands before the runner exists ends the
+    /// start in order: the exit status is the provider's, not 128 + signal.
+    func testAnExitStatusProviderDecidesTheInterruptsStatus() {
+        defer { SignalRelay.shared.setExitStatus(nil) }
+        XCTAssertEqual(SignalRelay.shared.exitStatus(for: SIGINT), 130)
+        SignalRelay.shared.setExitStatus { 0 }
+        XCTAssertEqual(SignalRelay.shared.exitStatus(for: SIGINT), 0)
+        SignalRelay.shared.setExitStatus { nil }
+        XCTAssertEqual(SignalRelay.shared.exitStatus(for: SIGTERM), 143)
+    }
 }
