@@ -35,6 +35,32 @@ final class SimulatorReaperTests: XCTestCase {
         XCTAssertEqual(owners.map(\.kind), [.grantiva])
     }
 
+    /// B4-L76.4: exercise the complete force result, not only the matcher.
+    /// Positional strings that resemble Grantiva paths/arguments must cause no
+    /// signal target and no claim that the device was reclaimed.
+    func testForceTeardownWithOnlyPositionalLookalikesSignalsAndReportsNothing() async throws {
+        let directory = temporaryDirectory()
+        let snapshot = """
+        100 100 /usr/bin/python3 helper.py /path/to/grantiva \(udid)
+        101 101 /usr/bin/python3 helper.py /path/to/grantiva-runner --device \(udid)
+        """
+        let result = try await SimulatorReaper.forceTeardown(
+            udid: udid,
+            capacity: SimulatorCapacity(directory: directory),
+            leaseDirectory: directory,
+            runnerBase: "\(directory)/runner",
+            sessions: KeepAliveSessionStore(directory: "\(directory)/sessions"),
+            snapshot: { snapshot },
+            gracePeriod: 0
+        )
+
+        XCTAssertEqual(result.processes, [], "no process was selected for signalling")
+        XCTAssertFalse(result.runnerSessionStopped)
+        XCTAssertEqual(result.reapedProcesses, [])
+        XCTAssertEqual(result.sessionFilesRemoved, [])
+        XCTAssertFalse(result.reclaimed)
+    }
+
     func testFindsRunnerWebDriverAgentAndDiagnose() {
         let found = SimulatorReaper.processes(owning: udid, psOutput: sample)
         let byPID = Dictionary(uniqueKeysWithValues: found.map { ($0.pid, $0.kind) })

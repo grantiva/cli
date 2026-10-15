@@ -383,6 +383,21 @@ public struct KeepAliveSessionStore: Sendable {
             + startingOwners(includingOrphans: includingOrphans).map { KeepAliveSession(starting: $0.owner, path: $0.path) }
     }
 
+    /// Existing session metadata paths for `udid`, before a teardown stops
+    /// their runners. The stop removes these files itself; force teardown uses
+    /// this snapshot to report that preliminary cleanup rather than losing it
+    /// when its later reaper sees an already-clean session directory.
+    public func sessionFilePaths(udid: String) -> [String] {
+        let fm = FileManager.default
+        let paths = sessions(includingOrphans: true)
+            .filter { $0.udid?.caseInsensitiveCompare(udid) == .orderedSame }
+            .flatMap { session in
+                [session.path, ownerPath(runnerPid: session.pid)]
+            }
+            .filter { fm.fileExists(atPath: $0) }
+        return Array(Set(paths)).sorted()
+    }
+
     /// The live foreground `runner start` sessions recorded for `udid`, whose
     /// holder is alive: the runners a teardown of that device marks before
     /// stopping them (L36). Detached starts and `run --keep-alive` runs read

@@ -146,7 +146,10 @@ struct SimulatorCommand: AsyncParsableCommand {
             if !options.json { stopped.lines.forEach(Output.line) }
 
             if force {
-                try await runForce(reaped: stopped.reaped, stopped: stopped.stopped)
+                try await runForce(
+                    reaped: stopped.reaped, stopped: stopped.stopped,
+                    sessionFilesRemoved: stopped.sessionFilesRemoved
+                )
                 return
             }
 
@@ -214,20 +217,29 @@ struct SimulatorCommand: AsyncParsableCommand {
         /// and the helpers (`simctl diagnose`, …) ended per device (L63),
         /// keyed by the uppercased UDID so a `--udid` in any case matches.
         static func stopRunnerSessions(
-            udids: [String], stop: (String) async -> [RunnerSessionStopper.Outcome]
-        ) async -> (stopped: [String], lines: [String], reaped: [String: [ReapedProcess]]) {
+            udids: [String],
+            sessionFiles: (String) -> [String] = { KeepAliveSessionStore().sessionFilePaths(udid: $0) },
+            stop: (String) async -> [RunnerSessionStopper.Outcome]
+        ) async -> (
+            stopped: [String], lines: [String], reaped: [String: [ReapedProcess]],
+            sessionFilesRemoved: [String: [String]]
+        ) {
             var stopped: [String] = []
             var lines: [String] = []
             var reaped: [String: [ReapedProcess]] = [:]
+            var sessionFilesRemoved: [String: [String]] = [:]
             for udid in udids {
+                let before = sessionFiles(udid)
                 let outcomes = await stop(udid)
                 if !outcomes.isEmpty { stopped.append(udid) }
                 lines += outcomes.map(DeviceRunnerSessions.render)
                 let helpers = outcomes.flatMap(\.reaped)
                 lines += RunnerStopCommand.reapedLines(helpers, udid: udid)
                 if !helpers.isEmpty { reaped[udid.uppercased(), default: []] += helpers }
+                let removed = before.filter { !FileManager.default.fileExists(atPath: $0) }
+                if !removed.isEmpty { sessionFilesRemoved[udid.uppercased()] = removed }
             }
-            return (stopped, lines, reaped)
+            return (stopped, lines, reaped, sessionFilesRemoved)
         }
 
         static func marking(
@@ -245,7 +257,10 @@ struct SimulatorCommand: AsyncParsableCommand {
 
         /// `reaped`: the helpers the runner-session stop already ended per
         /// device, listed in each result's `reapedProcesses` (L63).
-        private func runForce(reaped: [String: [ReapedProcess]] = [:], stopped: [String] = []) async throws {
+        private func runForce(
+            reaped: [String: [ReapedProcess]] = [:], stopped: [String] = [],
+            sessionFilesRemoved: [String: [String]] = [:]
+        ) async throws {
             var udids: [String] = []
             if let target {
                 udids = [target]
@@ -264,7 +279,9 @@ struct SimulatorCommand: AsyncParsableCommand {
             for target in udids {
                 results.append(try await SimulatorReaper.forceTeardown(udid: target))
             }
-            results = Self.addingReaped(reaped, to: results, stopped: stopped)
+            results = Self.addingReaped(
+                reaped, to: results, stopped: stopped, sessionFilesRemoved: sessionFilesRemoved
+            )
 
             let output = try Self.forceOutput(results, json: options.json)
             output.lines.forEach(Output.line)
@@ -273,11 +290,17 @@ struct SimulatorCommand: AsyncParsableCommand {
 
         /// `results` with the helpers the runner-session stop ended on each
         /// device; a device that had some counts as reclaimed.
-        static func addingReaped(_ reaped: [String: [ReapedProcess]], to results: [ForceTeardownResult], stopped: [String] = []) -> [ForceTeardownResult] {
+        static func addingReaped(
+            _ reaped: [String: [ReapedProcess]], to results: [ForceTeardownResult], stopped: [String] = [],
+            sessionFilesRemoved: [String: [String]] = [:]
+        ) -> [ForceTeardownResult] {
             results.map { result in
                 var result = result
                 result.runnerSessionStopped = stopped.contains { $0.caseInsensitiveCompare(result.udid) == .orderedSame }
                 result.reapedProcesses = reaped[result.udid.uppercased()] ?? []
+                result.sessionFilesRemoved = Array(Set(
+                    result.sessionFilesRemoved + (sessionFilesRemoved[result.udid.uppercased()] ?? [])
+                )).sorted()
                 if result.runnerSessionStopped || !result.reapedProcesses.isEmpty { result.reclaimed = true }
                 return result
             }
