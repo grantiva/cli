@@ -219,6 +219,33 @@ final class RunnerHelperReaperTests: XCTestCase {
         XCTAssertTrue(alive.value.isEmpty, "\(alive.value)")
     }
 
+    /// `runner stop` of a live runner: once the runner is gone its xcodebuild
+    /// takes SIGINT, and the diagnose that starts in that window is reaped by
+    /// a second look, as the exited-runner sweep does.
+    func testStoppingALiveRunnerReapsTheDiagnoseItsXcodebuildStartsAfterSIGINT() async {
+        let table = Locked("\(runner)\n\(xcodebuild)")
+        let signals = Locked<[String]>([])
+        let alive = Locked<Set<Int32>>([101, 102])
+        var reaper = reaper(table: table, signals: signals, alive: alive)
+        let late = diagnose(ppid: 1)
+        let orphan = orphanedXcodebuild
+        reaper.signal = { pid, signal in
+            signals.append("\(signal == SIGKILL ? "KILL" : signal == SIGINT ? "INT" : "\(signal)") \(pid)")
+            alive.mutate { $0.remove(abs(pid)) }
+            if abs(pid) == 101 { table.mutate { $0 = late } }
+        }
+
+        let (_, reaped) = await reaper.stopping(runnerPid: 100, udid: udid) { () async -> Int in
+            // The runner's group stopped; its xcodebuild, reparented, lives on.
+            table.mutate { $0 = orphan }
+            return 0
+        }
+
+        XCTAssertEqual(reaped.map(\.pid), [101, 102])
+        XCTAssertTrue(signals.value.contains("INT 102"), "\(signals.value)")
+        XCTAssertTrue(alive.value.isEmpty, "\(alive.value)")
+    }
+
     /// xcodebuild spells a `/private/tmp` runner home `/tmp` in the
     /// diagnose it starts; the live reaper knows both spellings.
     func testTheLiveReaperMatchesBothSpellingsOfAPrivateRunnerHome() {

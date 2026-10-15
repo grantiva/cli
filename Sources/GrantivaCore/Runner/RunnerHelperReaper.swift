@@ -189,7 +189,17 @@ public struct RunnerHelperReaper: Sendable {
         lineage = await sampler.value
         // A runner that is still alive still uses its helpers.
         guard !isAlive(runnerPid) else { return (value, []) }
-        return (value, await reap(udid: udid, lineage: lineage))
+        // A helper that took SIGINT here (WebDriverAgent's xcodebuild) can
+        // start a `simctl diagnose` in that window: look again, as the
+        // exited-runner sweep does.
+        var reaped: [ReapedProcess] = []
+        for _ in 0..<2 {
+            let round = await reap(udid: udid, lineage: lineage, excluding: reaped)
+            reaped += round
+            if round.isEmpty { break }
+            if let deadline, Date() >= deadline { break }
+        }
+        return (value, reaped.sorted { $0.pid < $1.pid })
     }
 
     /// For a runner that had already exited: ends only helpers that write
