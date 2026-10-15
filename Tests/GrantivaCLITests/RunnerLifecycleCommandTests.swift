@@ -81,6 +81,67 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         XCTAssertTrue(detached.value)
     }
 
+    func testForegroundAndroidServicePublishesANewAttachmentWithoutAnAppLaunchReport() async {
+        let detached = LockedValue(false)
+        let result = await RunnerStartCommand.waitForAndroidService(
+            attach: {
+                DriverAttachment(
+                    client: .failing, port: 61211, sessionID: "new",
+                    detach: { detached.set(true) }
+                )
+            },
+            timeout: 0,
+            sleep: { XCTFail("A new Android service is immediately ready") }
+        )
+        XCTAssertEqual(result.attachment?.sessionID, "new")
+        XCTAssertEqual(result.attachment?.port, 61211)
+        XCTAssertFalse(result.launchFailed)
+        XCTAssertFalse(detached.value, "the accepted forward belongs to the runner session")
+    }
+
+    func testDetachedAndroidServicePublishesANewAttachmentDespiteAFailedAppLaunchReport() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try Data(#"{"status":"failed","flows":[{"name":"launch","status":"failed"}]}"#.utf8)
+            .write(to: directory.appendingPathComponent("report.json"))
+
+        let detached = LockedValue(false)
+        let result = await RunnerStartCommand.waitForAndroidService(
+            attach: {
+                DriverAttachment(
+                    client: .failing, port: 61212, sessionID: "new-detached",
+                    detach: { detached.set(true) }
+                )
+            },
+            timeout: 0,
+            sleep: { XCTFail("A usable Android service is independent of the generated app launch report") }
+        )
+        XCTAssertEqual(result.attachment?.sessionID, "new-detached")
+        XCTAssertFalse(result.launchFailed)
+        XCTAssertFalse(detached.value, "detached start transfers the accepted forward to session ownership")
+    }
+
+    func testAndroidServiceStillRejectsAStaleAttachment() async {
+        let polls = LockedValue(0)
+        let detached = LockedValue(0)
+        let result = await RunnerStartCommand.waitForAndroidService(
+            attach: {
+                polls.set(polls.value + 1)
+                let id = polls.value == 1 ? "old" : "new"
+                return DriverAttachment(
+                    client: .failing, port: 61210 + polls.value, sessionID: id,
+                    detach: { detached.set(detached.value + 1) }
+                )
+            },
+            timeout: 1,
+            staleSessionID: "old",
+            sleep: {}
+        )
+        XCTAssertEqual(result.attachment?.sessionID, "new")
+        XCTAssertEqual(detached.value, 1, "only the stale forward is released")
+    }
+
     func testUnfinishedLaunchStaysBoundedAndReleasesRejectedForwards() async {
         let detached = LockedValue(0)
         let result = await RunnerStartCommand.waitForUIAutomator2(

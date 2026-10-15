@@ -296,8 +296,11 @@ struct RunnerStartCommand: AsyncParsableCommand {
         var launchFailed = false
     }
 
-    /// Polls until the runner has its own UIAutomator2 session and the launch
-    /// report is passed. A nil launch status means the app is still settling.
+    /// Polls until the runner has its own UIAutomator2 session and the supplied
+    /// readiness predicate passes. A nil launch status means the caller's
+    /// additional readiness condition is still settling. Android runner start
+    /// uses the default service-only predicate; iOS separately requires its
+    /// generated launch flow to pass.
     /// The successful attachment is returned un-detached: its forward is the
     /// port `session.json` records and `dump-hierarchy` and the MCP server use.
     /// `runnerExit` (the spawned runner's status once it has exited) ends the
@@ -330,6 +333,27 @@ struct RunnerStartCommand: AsyncParsableCommand {
             await sleep()
         } while Date() < deadline
         return UIAutomator2Wait(exitStatus: runnerExit())
+    }
+
+    /// Android `runner start` owns an automation service, not an application
+    /// launch. The generated launch flow may fail because the target app is not
+    /// installed while UIAutomator2 is already usable; a new attachment is the
+    /// readiness boundary. Stale-session and runner-death handling remain in
+    /// the shared waiter.
+    static func waitForAndroidService(
+        attach: @Sendable () async throws -> DriverAttachment,
+        timeout: TimeInterval,
+        staleSessionID: String? = nil,
+        runnerExit: @Sendable () -> Int32? = { nil },
+        sleep: @Sendable () async -> Void = { try? await Task.sleep(for: .seconds(1)) }
+    ) async -> UIAutomator2Wait {
+        await waitForUIAutomator2(
+            attach: attach,
+            timeout: timeout,
+            staleSessionID: staleSessionID,
+            runnerExit: runnerExit,
+            sleep: sleep
+        )
     }
 
     /// WDA's port is only transport discovery; startup also owns a launch flow.
@@ -422,11 +446,10 @@ struct RunnerStartCommand: AsyncParsableCommand {
     private static func waitForUIAutomator2Port(_ launch: Launch, child: ChildProcess) async -> (attachment: DriverAttachment?, exitStatus: Int32?, launchFailed: Bool) {
         let device = launch.platformDevice
         let serial = launch.device.udid
-        let wait = await Self.waitForUIAutomator2(
+        let wait = await Self.waitForAndroidService(
             attach: { try await device.attachDriver(deviceID: serial, port: nil) },
             timeout: uiAutomator2WaitTimeout(),
             staleSessionID: launch.staleSessionID,
-            launchStatus: { completedLaunchStatus(reportDir: launch.reportDir) },
             runnerExit: { child.poll() }
         )
         return (wait.attachment, wait.exitStatus, wait.launchFailed)
