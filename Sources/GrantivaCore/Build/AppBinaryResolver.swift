@@ -6,7 +6,7 @@ public struct AppBinaryResolver: Sendable {
     /// Resolves an app file path, handling IPA extraction if needed.
     /// Returns the path to a .app bundle ready for `simctl install`.
     public static func resolve(_ path: String) throws -> ResolvedBinary {
-        let absPath = (path as NSString).standardizingPath
+        let absPath = canonicalPath(path)
         let fm = FileManager.default
 
         // Reject the wrong kind of binary (e.g. an .apk) before checking that
@@ -28,6 +28,22 @@ public struct AppBinaryResolver: Sendable {
             try validateSimulatorBuild(absPath)
             return ResolvedBinary(appPath: absPath, tempDir: nil)
         }
+    }
+
+    /// The spelling an app file's path is reported and used in: absolute, with
+    /// its directory resolved the way realpath(3) resolves it, as the other
+    /// reported paths are (`/tmp/x/A.app` and `/private/tmp/x/A.app` are both
+    /// `/private/tmp/x/A.app`; `standardizingPath` instead turned the second
+    /// into the first, B4-L53.P5). The last component is kept as given, so a
+    /// symlinked bundle is not swapped for its target. A missing directory
+    /// leaves the standardized absolute path.
+    public static func canonicalPath(_ path: String) -> String {
+        let absolute = URL(fileURLWithPath: path).standardizedFileURL
+        let name = absolute.lastPathComponent
+        let parent = absolute.deletingLastPathComponent().path
+        guard let resolved = realpath(parent, nil) else { return absolute.path }
+        defer { free(resolved) }
+        return URL(fileURLWithPath: String(cString: resolved), isDirectory: true).appendingPathComponent(name).path
     }
 
     /// Extract bundle ID from a .app bundle's Info.plist.

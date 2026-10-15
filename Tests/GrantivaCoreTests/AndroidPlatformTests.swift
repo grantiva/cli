@@ -107,6 +107,17 @@ final class AndroidPlatformTests: XCTestCase {
         XCTAssertFalse(allowed.commands.isEmpty)
     }
 
+    /// N-12: a capture never starts with a key-focused row highlighted.
+    func testPrepareRestoresTouchModeOnAnEmulator() async {
+        let shell = ScriptedShell()
+        shell.fallback = "cur=1080x2400\nmInTouchMode=false\n"
+        await platform(shell).prepareForCapture(deviceID: "emulator-5554")
+        XCTAssertTrue(
+            shell.commands.contains { $0.contains("input motionevent DOWN 0 2399 && input motionevent CANCEL 0 2399") },
+            "\(shell.commands)"
+        )
+    }
+
     func testPrepareRestoresACrashedRunFirst() async throws {
         let state = AndroidCaptureSettings.statePath(serial: "emulator-5554", directory: scratch.path)
         try JSONEncoder().encode(["global/window_animation_scale": "1.0"] as [String: String?]).write(to: URL(fileURLWithPath: state))
@@ -125,11 +136,13 @@ final class AndroidPlatformTests: XCTestCase {
         try Data().write(to: URL(fileURLWithPath: apk))
         let shell = ScriptedShell([.success(""), .success("com.example.app\n")])
         let resolved = try await platform(shell).resolveBinary(apk)
-        XCTAssertEqual(resolved.appPath, apk)
+        // The realpath(3) spelling, as on iOS (B4-L53.P5).
+        let canonical = AppBinaryResolver.canonicalPath(apk)
+        XCTAssertEqual(resolved.appPath, canonical)
         XCTAssertEqual(resolved.appID, "com.example.app")
         XCTAssertEqual(shell.commands, [
             "/usr/libexec/java_home",
-            "'/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(apk))",
+            "'/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(canonical))",
         ])
 
         do {
@@ -306,7 +319,7 @@ final class AndroidPlatformTests: XCTestCase {
         XCTAssertEqual(resolved.appID, "com.example.app")
         XCTAssertEqual(shell.commands, [
             "/usr/libexec/java_home",
-            "JAVA_HOME='/jdk' '/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(apk))",
+            "JAVA_HOME='/jdk' '/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(AppBinaryResolver.canonicalPath(apk)))",
         ])
     }
 

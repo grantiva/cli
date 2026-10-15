@@ -13,9 +13,35 @@ final class AppBinaryResolverTests: XCTestCase {
     func testValidSimulatorAppResolvesAndExposesBundleId() throws {
         let app = try makeApp(platforms: ["iPhoneSimulator"], bundleId: "com.example.app")
         let result = try AppBinaryResolver.resolve(app.path)
-        XCTAssertEqual(result.appPath, app.path)
+        XCTAssertEqual(result.appPath, AppBinaryResolver.canonicalPath(app.path))
         XCTAssertNil(result.tempDir)
         XCTAssertEqual(AppBinaryResolver.bundleId(from: app.path), "com.example.app")
+    }
+
+    /// B4-L53.P5: `appPath` is reported in realpath(3) spelling, as the
+    /// other reported paths are (`dataContainerPath`, keep-alive owners):
+    /// `/tmp/x` and `/private/tmp/x` both report `/private/tmp/x`, rather
+    /// than `standardizingPath` turning `/private/tmp/x` into `/tmp/x`.
+    func testAppPathIsReportedInItsRealpathSpellingWhicheverSpellingIsGiven() throws {
+        let dir = URL(fileURLWithPath: "/tmp/grantiva-binary-tests-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        addTeardownBlock { try? FileManager.default.removeItem(at: dir) }
+        let app = dir.appendingPathComponent("Fixture.app")
+        try FileManager.default.createDirectory(at: app, withIntermediateDirectories: true)
+        let plist = try PropertyListSerialization.data(
+            fromPropertyList: ["CFBundleIdentifier": "com.example.app", "CFBundleSupportedPlatforms": ["iPhoneSimulator"]],
+            format: .xml, options: 0
+        )
+        try plist.write(to: app.appendingPathComponent("Info.plist"))
+        let expected = "/private" + app.path
+        XCTAssertEqual(try AppBinaryResolver.resolve(app.path).appPath, expected)
+        XCTAssertEqual(try AppBinaryResolver.resolve("/private" + app.path).appPath, expected)
+        XCTAssertEqual(try AppBinaryResolver.resolve(app.path + "/").appPath, expected)
+    }
+
+    func testCanonicalPathKeepsTheLastComponentAndFallsBackForAMissingParent() {
+        XCTAssertEqual(AppBinaryResolver.canonicalPath("/private/tmp/x/../y.app"), "/private/tmp/y.app")
+        XCTAssertEqual(AppBinaryResolver.canonicalPath("/definitely/missing/Test.app"), "/definitely/missing/Test.app")
     }
 
     func testDeviceBuildIsRejected() throws {

@@ -158,7 +158,7 @@ public struct AndroidPlatform: DevicePlatform {
     }
 
     public func resolveBinary(_ path: String) async throws -> ResolvedBinary {
-        let absolute = (path as NSString).standardizingPath
+        let absolute = AppBinaryResolver.canonicalPath(path)
         guard absolute.lowercased().hasSuffix(".apk") else {
             throw GrantivaError.invalidBinary("Expected an .apk file for Android, got: \"\(URL(fileURLWithPath: absolute).lastPathComponent)\"")
         }
@@ -191,6 +191,13 @@ public struct AndroidPlatform: DevicePlatform {
             try await captureSettings.prepare(serial: deviceID)
         } catch {
             GrantivaLog.logger.warning("could not apply capture settings on \(deviceID): \(error)")
+        }
+        // Earlier key input must not leave a row highlighted in the captures
+        // (N-12); both the CLI and the MCP capture paths come through here.
+        do {
+            try await adb.restoreTouchMode(serial: deviceID)
+        } catch {
+            GrantivaLog.logger.warning("could not restore touch mode on \(deviceID): \(error)")
         }
     }
 

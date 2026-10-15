@@ -41,6 +41,22 @@ final class RunnerSessionOutputTests: XCTestCase {
         XCTAssertFalse(message.contains("Received interrupt"), message)
     }
 
+    /// B3-L48.2: the runner's own `Error:` line is the detail of one error,
+    /// not a second `Error:` under a bare `Runner failed (exit 1):` line.
+    func testTheRunnersErrorLineIsFoldedIntoOneError() {
+        let message = RunnerSession.failureMessage(
+            reason: "Runner failed (exit 1)",
+            stderr: "Error: failed to create driver: start UIAutomator2: UIAutomator2 server not ready after 1s on each of 2 starts\n"
+        )
+        XCTAssertEqual(
+            message,
+            "Runner failed (exit 1): failed to create driver: start UIAutomator2: UIAutomator2 server not ready after 1s on each of 2 starts"
+        )
+        XCTAssertFalse(message.contains("Error:"), message)
+        let multi = RunnerSession.failureMessage(reason: "Runner failed (exit 1)", stderr: "warning: slow\nError: boom\n")
+        XCTAssertEqual(multi, "Runner failed (exit 1):\nwarning: slow\nboom")
+    }
+
     func testAGenuineInterruptStillSaysInterrupted() {
         let message = RunnerSession.failureMessage(reason: "Runner interrupted", stderr: "")
         XCTAssertTrue(message.hasPrefix("Runner interrupted"), message)

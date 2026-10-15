@@ -34,7 +34,13 @@ public enum RunnerSession {
                 .filter { !isSignalAcknowledgement($0) }
                 .joined(separator: "\n")
         }
-        detail = detail.trimmingCharacters(in: .whitespacesAndNewlines)
+        // The runner prefixes its own errors with `Error:`; under our reason
+        // that read as a second error after a bare `Runner failed (exit 1):`
+        // line (B3-L48.2), so the detail drops the prefix.
+        detail = detail.components(separatedBy: "\n")
+            .map(Self.droppingErrorPrefix)
+            .joined(separator: "\n")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
         let step = failedStep ?? failure.map(\.line).flatMap { $0.isEmpty ? nil : $0 }
 
         var message = reason
@@ -43,7 +49,9 @@ public enum RunnerSession {
             message += reason.hasSuffix(".") ? "\n\(step)" : ": \(step)"
         }
         if !detail.isEmpty {
-            message += (step == nil && !reason.hasSuffix(".")) ? ":\n\(detail)" : "\n\(detail)"
+            // A one-line detail completes the reason on the same line.
+            let joiner = detail.contains("\n") ? ":\n" : ": "
+            message += (step == nil && !reason.hasSuffix(".")) ? joiner + detail : "\n\(detail)"
         } else if step == nil, !reason.hasSuffix(".") {
             message += runnerOutputShown ? "; see the runner output above." : "."
         }
@@ -51,6 +59,13 @@ public enum RunnerSession {
             message += "\n\(RunnerReportSteps.hierarchyHint)"
         }
         return message
+    }
+
+    /// `line` without the runner's leading `Error:` prefix.
+    static func droppingErrorPrefix(_ line: String) -> String {
+        let trimmed = line.drop { $0 == " " }
+        guard trimmed.hasPrefix("Error:") else { return line }
+        return String(trimmed.dropFirst("Error:".count)).trimmingCharacters(in: .whitespaces)
     }
 
     /// The runner's line for a signal it received (`Received interrupt,
