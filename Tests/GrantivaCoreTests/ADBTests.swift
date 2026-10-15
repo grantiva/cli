@@ -22,6 +22,38 @@ final class ADBTests: XCTestCase {
         XCTAssertFalse(ADBDevice(serial: "emulator-5556", state: "offline").isUsable)
     }
 
+    // MARK: - N-12: touch mode before captures
+
+    /// Key input leaves the display out of touch mode, and the focused row
+    /// stays highlighted in every capture after it. A touch DOWN then CANCEL
+    /// at the bottom-left corner pixel (the navigation bar, never a click
+    /// target, and cancelled so nothing is pressed) restores touch mode.
+    func testRestoreTouchModeCancelsATouchAtTheBottomLeftCornerOnlyWhenOutOfTouchMode() async throws {
+        let shell = ScriptedShell([.success("    init=1080x2400 420dpi cur=1080x2400 app=1080x2400\n    mInTouchMode=false\n")])
+        let restored = try await ADB(path: adbPath, execute: shell.execute).restoreTouchMode(serial: "emulator-5560")
+        XCTAssertTrue(restored)
+        XCTAssertEqual(shell.commands.count, 2)
+        XCTAssertTrue(shell.commands[0].contains("dumpsys window"), shell.commands[0])
+        XCTAssertEqual(
+            shell.commands[1],
+            "'/sdk/platform-tools/adb' -s 'emulator-5560' shell 'input motionevent DOWN 0 2399 && input motionevent CANCEL 0 2399'"
+        )
+
+        let inTouchMode = ScriptedShell([.success("cur=1080x2400 app=1080x2400\nmInTouchMode=true\n")])
+        let untouched = try await ADB(path: adbPath, execute: inTouchMode.execute).restoreTouchMode(serial: "emulator-5560")
+        XCTAssertFalse(untouched)
+        XCTAssertEqual(inTouchMode.commands.count, 1)
+    }
+
+    func testTouchModeStateParsesTheCurrentLogicalSize() {
+        // Landscape: the logical height is the short side.
+        let landscape = ADB.parseTouchModeState("init=1080x2400 420dpi cur=2400x1080 app=2400x1017\n  mInTouchMode=false")
+        XCTAssertEqual(landscape?.inTouchMode, false)
+        XCTAssertEqual(landscape?.height, 1080)
+        XCTAssertNil(ADB.parseTouchModeState("mInTouchMode=false"), "no size, no safe point to touch")
+        XCTAssertNil(ADB.parseTouchModeState("cur=1080x2400"), "no touch-mode line, nothing to restore")
+    }
+
     func testEveryCommandLineIsQuotedAndTargetsTheSerial() async throws {
         let shell = ScriptedShell()
         shell.fallback = ""

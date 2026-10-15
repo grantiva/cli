@@ -107,6 +107,17 @@ final class AndroidPlatformTests: XCTestCase {
         XCTAssertFalse(allowed.commands.isEmpty)
     }
 
+    /// N-12: a capture never starts with a key-focused row highlighted.
+    func testPrepareRestoresTouchModeOnAnEmulator() async {
+        let shell = ScriptedShell()
+        shell.fallback = "cur=1080x2400\nmInTouchMode=false\n"
+        await platform(shell).prepareForCapture(deviceID: "emulator-5554")
+        XCTAssertTrue(
+            shell.commands.contains { $0.contains("input motionevent DOWN 0 2399 && input motionevent CANCEL 0 2399") },
+            "\(shell.commands)"
+        )
+    }
+
     func testPrepareRestoresACrashedRunFirst() async throws {
         let state = AndroidCaptureSettings.statePath(serial: "emulator-5554", directory: scratch.path)
         try JSONEncoder().encode(["global/window_animation_scale": "1.0"] as [String: String?]).write(to: URL(fileURLWithPath: state))

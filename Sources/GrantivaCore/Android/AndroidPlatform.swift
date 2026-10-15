@@ -192,6 +192,13 @@ public struct AndroidPlatform: DevicePlatform {
         } catch {
             GrantivaLog.logger.warning("could not apply capture settings on \(deviceID): \(error)")
         }
+        // Earlier key input must not leave a row highlighted in the captures
+        // (N-12); both the CLI and the MCP capture paths come through here.
+        do {
+            try await adb.restoreTouchMode(serial: deviceID)
+        } catch {
+            GrantivaLog.logger.warning("could not restore touch mode on \(deviceID): \(error)")
+        }
     }
 
     public func restoreAfterCapture(deviceID: String) async {
