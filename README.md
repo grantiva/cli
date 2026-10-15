@@ -420,8 +420,10 @@ device: `bundleId` and `udid` on iOS, `applicationId` and `serial` on Android
 `port` and the app ID are `null` when the session did not record them. On top
 of them a stop document has `runnerPid`, `killed` and `reaped`, and
 `alreadyExited` and `sessions` when they apply. An `already_running` result for
-a session that is still starting has `"port": null`, and its text says
-`Runner already running (pid N, starting)`. `runnerPid` is the stable field: it
+a session that is still starting has `"port": null` until the runner reports
+WDA's port, and its text says `Runner already running (pid N, starting)`;
+once `session.json` records the port, both report it
+(`Runner already running (pid N, starting, WDA port P)`). `runnerPid` is the stable field: it
 is always the runner's pid, while `pid` is the grantiva process that was
 holding a released `run --keep-alive` session. `killed` is true when the runner
 ignored SIGINT and SIGTERM and took SIGKILL, false otherwise. A stop that found the runner

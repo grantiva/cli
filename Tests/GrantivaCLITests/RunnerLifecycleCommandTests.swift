@@ -368,6 +368,28 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         }
     }
 
+    // A starting session whose runner already reported WDA's port records
+    // it (side finding 12); `already_running` reports it too.
+    func testAlreadyRunningReportsTheRecordedPortOfAStartingSession() throws {
+        let udid = "921A0945-7157-4533-BA1F-21E8132D3E40"
+        let withPort = RunnerSessionInfo.starting(pid: 123, bundleId: "a.b", udid: udid, startedAt: Date(), platform: .ios, port: 8190)
+        let known = RunnerStartCommand.alreadyRunning(withPort)
+        XCTAssertEqual(try decode(known.document)["port"] as? Int, 8190)
+        XCTAssertEqual(known.lines.first, "Runner already running (pid 123, starting, WDA port 8190)")
+
+        let noPort = RunnerStartCommand.alreadyRunning(
+            RunnerSessionInfo.starting(pid: 123, bundleId: "a.b", udid: udid, startedAt: Date(), platform: .ios)
+        )
+        XCTAssertTrue(try decode(noPort.document)["port"] is NSNull)
+        XCTAssertEqual(noPort.lines.first, "Runner already running (pid 123, starting)")
+
+        let ready = RunnerStartCommand.alreadyRunning(
+            RunnerSessionInfo(pid: 123, wdaPort: 8190, bundleId: "a.b", udid: udid, startedAt: Date(), platform: .ios)
+        )
+        XCTAssertEqual(try decode(ready.document)["port"] as? Int, 8190)
+        XCTAssertEqual(ready.lines, ["Runner already running (pid 123, WDA port 8190)", "Use 'grantiva runner stop' to stop it first."])
+    }
+
     func testDetachedStartsAllocateIndependentLogFiles() throws {
         let directory = FileManager.default.temporaryDirectory
             .appendingPathComponent("grantiva-detached-log-test-\(UUID().uuidString)", isDirectory: true)

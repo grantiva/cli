@@ -113,7 +113,8 @@ struct RunnerStartCommand: AsyncParsableCommand {
         session until `grantiva runner stop`.
 
         --json prints one document: {"status": "started" | "already_running", \
-        "pid": <number>, "port": <number> (null for a session still starting), \
+        "pid": <number>, "port": <number> (null for a session still starting \
+        whose port is not known yet), \
         "platform": "ios" | "android", plus \
         "bundleId" and "udid" on iOS or "applicationId" and "serial" on Android, \
         and "log" with --detach}. "bundle_id" (and "udid" on Android) are kept \
@@ -160,17 +161,11 @@ struct RunnerStartCommand: AsyncParsableCommand {
         if let existing = try? RunnerSessionInfo.load(), existing.isAlive,
            let snapshot = try? await SimulatorReaper.processSnapshot(),
            existing.ownsRunnerProcess(in: snapshot) {
+            let already = Self.alreadyRunning(existing)
             if options.json {
-                Output.line(try JSONOutput.string(RunnerLifecycleDocument(
-                    status: "already_running", pid: existing.pid, port: existing.isReady ? existing.wdaPort : nil,
-                    appID: existing.bundleId, deviceID: existing.udid,
-                    platform: existing.platform ?? (DeviceID.isAndroidSerial(existing.udid) ? .android : .ios), log: nil
-                )))
+                Output.line(try JSONOutput.string(already.document))
             } else {
-                let label = Self.portLabel(DeviceID.isAndroidSerial(existing.udid) ? .android : .ios)
-                let state = existing.isReady ? "\(label) \(existing.wdaPort)" : "starting"
-                Output.line("Runner already running (pid \(existing.pid), \(state))")
-                Output.line("Use 'grantiva runner stop' to stop it first.")
+                already.lines.forEach { Output.line($0) }
             }
             return
         }
@@ -271,6 +266,23 @@ struct RunnerStartCommand: AsyncParsableCommand {
             // (or the interrupt cleanup) releases it.
             try await startForeground(launch, lease: simulatorLease)
         }
+    }
+
+    /// What `runner start` says when a session is already running: its
+    /// port whenever `session.json` records one, including a starting
+    /// session whose runner has reported WDA's port.
+    static func alreadyRunning(_ existing: RunnerSessionInfo) -> (document: RunnerLifecycleDocument, lines: [String]) {
+        let platform = existing.platform ?? (DeviceID.isAndroidSerial(existing.udid) ? .android : .ios)
+        let port = existing.wdaPort > 0 ? existing.wdaPort : nil
+        let document = RunnerLifecycleDocument(
+            status: "already_running", pid: existing.pid, port: port,
+            appID: existing.bundleId, deviceID: existing.udid, platform: platform, log: nil
+        )
+        let portText = port.map { "\(portLabel(platform)) \($0)" }
+        let state = existing.isReady
+            ? (portText ?? "starting")
+            : (["starting"] + [portText].compactMap { $0 }).joined(separator: ", ")
+        return (document, ["Runner already running (pid \(existing.pid), \(state))", "Use 'grantiva runner stop' to stop it first."])
     }
 
     static func appID(platform: Platform, bundleId: String?, applicationId: String?, config: GrantivaConfig?) throws -> String {
