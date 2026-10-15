@@ -3,6 +3,17 @@ import Yams
 @testable import GrantivaCore
 
 final class FlowReferenceResolverTests: XCTestCase {
+    func testBareStopAppRoundTripsAsSemanticYAMLNull() throws {
+        let rewritten = try FlowReferenceResolver.resolve(
+            in: "appId: com.header.app\n---\n- stopApp:\n- stopApp: \"null\"\n",
+            relativeTo: "/project"
+        )
+        let commands = try XCTUnwrap(MaestroFlowParser.splitDocuments(rewritten).commands)
+        let loaded = try XCTUnwrap(try Yams.load(yaml: commands) as? [[String: Any]])
+        XCTAssertTrue(loaded[0]["stopApp"] is NSNull, rewritten)
+        XCTAssertEqual(loaded[1]["stopApp"] as? String, "null", rewritten)
+    }
+
     func testResolvesQuotedUnquotedAndSpacedScalarPaths() throws {
         let yaml = """
         appId: com.example
