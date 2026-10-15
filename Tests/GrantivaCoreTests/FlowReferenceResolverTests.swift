@@ -135,6 +135,24 @@ final class FlowReferenceResolverTests: XCTestCase {
         }
     }
 
+    func testScreensCycleNamesTheConfigFileItCameFrom() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("cycle-android-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+        try "appId: x\n---\n- runFlow: b.yaml\n".write(to: root.appendingPathComponent("a.yaml"), atomically: true, encoding: .utf8)
+        try "appId: x\n---\n- runFlow: a.yaml\n".write(to: root.appendingPathComponent("b.yaml"), atomically: true, encoding: .utf8)
+
+        let screen = GrantivaConfig.Screen(name: "S", path: .steps([.init(runFlow: "a.yaml")]))
+        XCTAssertThrowsError(try FlowCycleValidator.validate(
+            flowPaths: [], screens: [screen], configFileName: Platform.android.configFileName, cwd: root.path
+        )) {
+            XCTAssertEqual(
+                $0.localizedDescription,
+                "Invalid argument: circular dependency detected: grantiva-android.yml -> a.yaml -> b.yaml -> a.yaml"
+            )
+        }
+    }
+
     func testCyclePreflightLeavesValidAndUnreadableReferencesForTheRunner() throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("acyclic-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)

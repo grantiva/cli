@@ -28,6 +28,12 @@ extension VRTTools {
     /// Steps only the runner can run; nil when the session's driver can.
     static func runnerOnlyStep(_ step: GrantivaConfig.Screen.Step) -> String? {
         if step.runFlow != nil { return "runFlow" }
+        if let app = step.app { return app.rawValue }
+        switch step.tapGesture {
+        case .doubleTap: return "a double tap"
+        case .longPress: return "a long press"
+        case .tap: break
+        }
         if step.swipeFrom != nil { return "a swipe from an element" }
         if step.swipeStart != nil || step.swipeEnd != nil { return "a swipe between points" }
         if step.swipeDuration != nil { return "a swipe with a duration" }
@@ -104,7 +110,7 @@ extension VRTTools {
             do {
                 captures = try await captureScreens(
                     config.screens, appID: appID, udid: udid, platform: platform, driver: driver, device: device,
-                    outputDir: outputDir, pause: pause
+                    outputDir: outputDir, environment: config.environment, pause: pause
                 )
             } catch {
                 await device.restoreAfterCapture(deviceID: udid)
@@ -135,14 +141,16 @@ extension VRTTools {
     /// once, then each screen's steps followed by its screenshot.
     static func captureScreens(
         _ screens: [GrantivaConfig.Screen], appID: String, udid: String, platform: Platform, driver: DriverClient,
-        device: any DevicePlatform, outputDir: String, pause: @escaping @Sendable (Double) async -> Void
+        device: any DevicePlatform, outputDir: String, environment: [String: String] = [:],
+        pause: @escaping @Sendable (Double) async -> Void
     ) async throws -> [ScreenCapture] {
         // The one launch is timed (terminate, launch, settle): the first
         // launch-only screen reports it; a later one reports null, since the
         // app was not launched again for it. Never 0 (L23).
         let launchStart = Date()
         try? await device.terminate(appID: appID, deviceID: udid)
-        try await device.launch(appID: appID, deviceID: udid)
+        // The config header's `env:`, as the runner's `launchApp` passes it.
+        try await device.launch(appID: appID, deviceID: udid, environment: environment)
         await waitForLaunch(driver: driver, timeout: launchTimeout, pause: pause)
         await settle(driver: driver, timeout: settleTimeout, pause: pause)
         var launchDuration: Double? = Date().timeIntervalSince(launchStart)
@@ -156,7 +164,10 @@ extension VRTTools {
                     let action = RunnerSession.stepAction(for: step)
                     let stepStart = Date()
                     do {
-                        try await run(step, rules: rules, driver: driver, pause: pause)
+                        try await run(
+                            FlowEnvironment.substitutingVariables(in: step, variables: environment),
+                            rules: rules, driver: driver, pause: pause
+                        )
                     } catch {
                         throw StepFailure(screen: screen.name, step: index + 1, action: action, reason: describe(error))
                     }

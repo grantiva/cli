@@ -177,6 +177,7 @@ struct DiffCommand: AsyncParsableCommand {
                         screens: resolved.screens, appID: bid, udid: booted.udid, platform: platform,
                         driver: attachment.client, device: device, outputDir: outputDir,
                         expectedPixels: captureTarget.pixelDimensions,
+                        environment: resolved.environment,
                         timeoutSeconds: SessionScreenCapture.defaultTimeoutSeconds
                     )
                 } catch {
@@ -192,6 +193,7 @@ struct DiffCommand: AsyncParsableCommand {
                     platform: device,
                     runner: runnerManager,
                     outputDir: outputDir,
+                    flowEnvironment: resolved.environment,
                     expectedPixels: captureTarget.pixelDimensions
                 )
             }
@@ -413,6 +415,7 @@ struct DiffCommand: AsyncParsableCommand {
                     udid: booted.udid,
                     platform: device,
                     outputDir: captureDir,
+                    flowEnvironment: resolved.environment,
                     expectedPixels: expectedPixels
                 )
                 invocationCaptures = captures

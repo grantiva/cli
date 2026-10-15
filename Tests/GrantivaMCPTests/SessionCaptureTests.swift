@@ -94,6 +94,38 @@ final class SessionCaptureTests: XCTestCase {
         // UIAutomator2: text is `value`, content-desc `name`.
         XCTAssertTrue(VRTTools.hasLabelledElement(["type": "hierarchy", "children": [["type": "android.widget.TextView", "value": "Landmarks"]]]))
     }
+
+    /// `${VAR}` in a step resolves from the config header's `env:` through a
+    /// session too, as the runner resolves it; the step keeps its written name.
+    func testStepLabelsResolveHeaderVariables() {
+        var step = GrantivaConfig.Screen.Step(assertVisible: "${EMPTY_TEXT}")
+        step.swipeFrom = "row ${N}"
+        let resolved = FlowEnvironment.substitutingVariables(
+            in: step, variables: ["EMPTY_TEXT": "No landmarks yet", "N": "2"]
+        )
+        XCTAssertEqual(resolved.assertVisible, "No landmarks yet")
+        XCTAssertEqual(resolved.swipeFrom, "row 2")
+        XCTAssertEqual(
+            FlowEnvironment.substitutingVariables(in: .init(tap: "${OTHER}"), variables: ["N": "2"]).tap, "${OTHER}"
+        )
+    }
+
+    /// The config header's `env:` reaches the app the session relaunches,
+    /// as it does through the runner's `launchApp`.
+    func testTheRelaunchCarriesTheConfigHeaderEnvironment() async throws {
+        let device = MCPFakeDevicePlatform(platform: .ios)
+        let output = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-env-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
+        addTeardownBlock { try? FileManager.default.removeItem(at: output) }
+
+        _ = try await VRTTools.captureScreens(
+            [GrantivaConfig.Screen(name: "Home", path: .launch)],
+            appID: "com.example", udid: "UDID-1", platform: .ios,
+            driver: MCPTestSupport.fakeDriver(recorder: WDARecorder()), device: device,
+            outputDir: output.path, environment: ["LANDMARKS_SEED": "empty"], pause: { _ in }
+        )
+        XCTAssertTrue(device.calls.contains("launch(com.example,LANDMARKS_SEED=empty)"), "\(device.calls)")
+    }
 }
 
 private final class LockedCounter: @unchecked Sendable {
@@ -101,4 +133,5 @@ private final class LockedCounter: @unchecked Sendable {
     private var count = 0
     var value: Int { lock.withLock { count } }
     func increment() -> Int { lock.withLock { count += 1; return count } }
+
 }

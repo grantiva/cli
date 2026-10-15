@@ -8,8 +8,11 @@ public enum FlowCycleValidator {
         let written: String
     }
 
+    /// `configFileName` is the file the screens came from, named first in a
+    /// chain that starts at a screen's `run_flow`.
     public static func validate(
         flowPaths: [String], screens: [GrantivaConfig.Screen],
+        configFileName: String = Platform.ios.configFileName,
         cwd: String = FileManager.default.currentDirectoryPath
     ) throws {
         for flow in flowPaths {
@@ -26,7 +29,7 @@ public enum FlowCycleValidator {
                 let path = absolute(operand, relativeTo: cwd)
                 if let chain = cycle(startingAt: Target(nativePath: path, written: operand), cwd: cwd) {
                     throw GrantivaError.invalidArgument(
-                        "circular dependency detected: \((["grantiva.yml"] + chain).joined(separator: " -> "))"
+                        "circular dependency detected: \(([configFileName] + chain).joined(separator: " -> "))"
                     )
                 }
             }

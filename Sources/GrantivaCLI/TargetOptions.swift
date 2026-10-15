@@ -162,7 +162,8 @@ struct TargetFlags<Boot: BootFlagVisibility>: ParsableArguments {
             flows: config?.flows ?? [],
             diff: config?.diff ?? .init(),
             a11y: config?.a11y ?? .init(),
-            android: android
+            android: android,
+            environment: config?.environment ?? [:]
         )
     }
 

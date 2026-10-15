@@ -64,6 +64,16 @@ public struct XcodeBuildRunner: Sendable {
         _ = try await execute("xcrun simctl launch \(shellQuoted(udid)) \(shellQuoted(bundleId))")
     }
 
+    /// `launch` with process environment for the app: simctl passes each
+    /// `SIMCTL_CHILD_KEY` variable of its own environment to the app as `KEY`.
+    public func launch(bundleId: String, udid: String, environment: [String: String]) async throws {
+        guard !environment.isEmpty else { return try await launch(bundleId: bundleId, udid: udid) }
+        let assignments = environment.keys.sorted().map { shellQuoted("SIMCTL_CHILD_\($0)=\(environment[$0] ?? "")") }
+        _ = try await execute(
+            "env \(assignments.joined(separator: " ")) xcrun simctl launch \(shellQuoted(udid)) \(shellQuoted(bundleId))"
+        )
+    }
+
     public func dataContainerPath(bundleId: String, udid: String) async throws -> String {
         try await execute("xcrun simctl get_app_container \(shellQuoted(udid)) \(shellQuoted(bundleId)) data")
             .trimmingCharacters(in: .whitespacesAndNewlines)

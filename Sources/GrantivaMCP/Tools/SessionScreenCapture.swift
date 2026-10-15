@@ -22,6 +22,7 @@ public enum SessionScreenCapture {
         device: any DevicePlatform,
         outputDir: String,
         expectedPixels: SimulatorProvisionResult.Dimensions?,
+        environment: [String: String] = [:],
         timeoutSeconds: UInt64 = defaultTimeoutSeconds
     ) async throws -> [ScreenCapture] {
         for screen in screens {
@@ -43,7 +44,7 @@ public enum SessionScreenCapture {
             captures = try await withTimeout(seconds: timeoutSeconds) {
                 try await VRTTools.captureScreens(
                     screens, appID: appID, udid: udid, platform: platform, driver: driver, device: device,
-                    outputDir: outputDir, pause: { try? await Task.sleep(for: .seconds($0)) }
+                    outputDir: outputDir, environment: environment, pause: { try? await Task.sleep(for: .seconds($0)) }
                 )
             }
         } catch let failure as VRTTools.StepFailure {

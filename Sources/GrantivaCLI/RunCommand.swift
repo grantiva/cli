@@ -407,7 +407,9 @@ struct RunCommand: AsyncParsableCommand {
 
         // Cycles are input errors. Reject them before runner installation,
         // simulator boot, WDA startup, or failure-screenshot collection.
-        try FlowCycleValidator.validate(flowPaths: resolved.flows, screens: resolved.screens)
+        try FlowCycleValidator.validate(
+            flowPaths: resolved.flows, screens: resolved.screens, configFileName: platform.configFileName
+        )
 
         // A default simulator the user created is refused before anything is said or prepared (L08).
         try await device.checkDefault(for: resolved)
@@ -546,6 +548,7 @@ struct RunCommand: AsyncParsableCommand {
                         keepAlive: keepAlive,
                         snapshot: snapshot.rawValue,
                         environment: launchEnvironment,
+                        flowEnvironment: resolved.environment,
                         readyFile: readyFile,
                         expectedPixels: expectedPixels,
                         failFast: session.failFast,

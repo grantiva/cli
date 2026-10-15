@@ -93,6 +93,7 @@ public enum RunnerSession {
         keepAlive: Bool = false,
         snapshot: String = "failure",
         environment: [String: String] = [:],
+        flowEnvironment: [String: String] = [:],
         readyFile: String? = nil,
         expectedPixels: SimulatorProvisionResult.Dimensions? = nil,
         failFast: Bool = false,
@@ -118,7 +119,8 @@ public enum RunnerSession {
         // the user wrote rather than a temp copy.
         let configFileName = platform.platform.configFileName
         let generated = try FlowGenerator.writeTempWithMap(
-            screens: screens, bundleId: bundleId, environment: environment, platform: platform.platform,
+            screens: screens, bundleId: bundleId, environment: environment,
+            flowEnvironment: flowEnvironment, platform: platform.platform,
             fileName: configFileName
         )
         let flowPath = generated.path
@@ -238,7 +240,8 @@ public enum RunnerSession {
                     ephemeralReportDir: preserveReportDir ? nil : reportDir,
                     waitLabels: FlowGenerator.waitLabels(
                         inGenerated: FlowGenerator.generate(
-                            screens: screens, bundleId: bundleId, environment: environment, platform: platform.platform
+                            screens: screens, bundleId: bundleId, environment: environment,
+                            flowEnvironment: flowEnvironment, platform: platform.platform
                         )
                     )
                 )
@@ -953,8 +956,20 @@ public enum RunnerSession {
     /// the live line, and `(exact)` after a label that must match exactly (L18).
     public static func stepAction(for step: GrantivaConfig.Screen.Step) -> String {
         func exact(_ isExact: Bool) -> String { isExact ? " (exact)" : "" }
-        if let label = step.tap {
-            return (step.tapById ? "Tap on id \"\(label)\"" : "Tap on \"\(label)\"") + exact(step.tapExact)
+        if let app = step.app {
+            switch app {
+            case .launchApp: return "Launch app"
+            case .stopApp: return "Stop app"
+            case .killApp: return "Kill app"
+            }
+        } else if let label = step.tap {
+            let verb: String
+            switch step.tapGesture {
+            case .tap: verb = "Tap on"
+            case .doubleTap: verb = "Double tap on"
+            case .longPress: verb = "Long press on"
+            }
+            return (step.tapById ? "\(verb) id \"\(label)\"" : "\(verb) \"\(label)\"") + exact(step.tapExact)
         } else if let direction = step.swipe {
             return step.swipeFrom.map { "Swipe \(direction) from \"\($0)\"" } ?? "Swipe \(direction)"
         } else if let text = step.type {

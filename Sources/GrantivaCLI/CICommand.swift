@@ -357,6 +357,7 @@ struct CICommand: AsyncParsableCommand {
                     platform: device,
                     runner: runnerManager,
                     outputDir: captureDir,
+                    flowEnvironment: resolved.environment,
                     expectedPixels: expectedPixels
                 )
                 rlog("Capture complete")

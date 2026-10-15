@@ -11,9 +11,13 @@ public enum FlowGenerator {
         screens: [GrantivaConfig.Screen],
         bundleId: String,
         environment: [String: String] = [:],
+        flowEnvironment: [String: String] = [:],
         platform: Platform = .ios
     ) -> String {
-        generateWithMap(screens: screens, bundleId: bundleId, environment: environment, platform: platform).yaml
+        generateWithMap(
+            screens: screens, bundleId: bundleId, environment: environment,
+            flowEnvironment: flowEnvironment, platform: platform
+        ).yaml
     }
 
     /// Which configured screen (and which of its steps) a generated
@@ -27,10 +31,15 @@ public enum FlowGenerator {
     /// The generated flow plus the owner of each of its top-level commands, in
     /// order, so the runner's per-command report can be read back per screen
     /// and per step.
+    ///
+    /// `flowEnvironment` is the config's header `env:`: it becomes the
+    /// generated flow's `env:` (so `${VAR}` in a step resolves) and the base
+    /// of every launch's environment, which `environment` (`--env`) overrides.
     public static func generateWithMap(
         screens: [GrantivaConfig.Screen],
         bundleId: String,
-        environment: [String: String] = [:],
+        environment cliEnvironment: [String: String] = [:],
+        flowEnvironment: [String: String] = [:],
         platform: Platform = .ios
     ) -> (yaml: String, owners: [CommandOwner]) {
         var lines: [String] = []
@@ -45,31 +54,49 @@ public enum FlowGenerator {
         // Header
         lines.append("appId: \(FlowEnvironment.quoted(bundleId))")
         lines.append("name: \(FlowEnvironment.quoted(screensFlowName))")
+        if !flowEnvironment.isEmpty {
+            lines.append("env:")
+            for key in flowEnvironment.keys.sorted() {
+                lines.append("  \(key): \(FlowEnvironment.quoted(flowEnvironment[key] ?? ""))")
+            }
+        }
         lines.append("---")
+        let environment = flowEnvironment.merging(cliEnvironment) { _, cli in cli }
 
         // launchApp creates the WDA session — required before any interaction.
         // `--env` values ride the runner's existing launchApp field for the
         // platform: `environment:` on iOS, `arguments:` (intent extras) on Android.
-        if environment.isEmpty {
-            lines.append("- launchApp")
-        } else {
-            lines.append("- launchApp:")
-            lines.append("    \(FlowEnvironment.launchField(for: platform)):")
-            for key in environment.keys.sorted() {
-                lines.append("      \(key): \(FlowEnvironment.quoted(environment[key] ?? ""))")
+        func appendLaunch() {
+            if environment.isEmpty {
+                lines.append("- launchApp")
+            } else {
+                lines.append("- launchApp:")
+                lines.append("    \(FlowEnvironment.launchField(for: platform)):")
+                for key in environment.keys.sorted() {
+                    lines.append("      \(key): \(FlowEnvironment.quoted(environment[key] ?? ""))")
+                }
+            }
+            if platform == .android {
+                lines += appDrawnWait
             }
         }
-        if platform == .android {
-            lines += appDrawnWait
-        }
+        appendLaunch()
 
         for (screenIndex, screen) in screens.enumerated() {
             if screenIndex == 0 { claim(CommandOwner(screen: screen.name, step: nil)) }
             if case .steps(let steps) = screen.path {
                 for (stepIndex, step) in steps.enumerated() {
                     defer { claim(CommandOwner(screen: screen.name, step: stepIndex)) }
+                    if let app = step.app {
+                        if app == .launchApp {
+                            appendLaunch()
+                            appendSettle(to: &lines)
+                        } else {
+                            lines.append("- \(app.rawValue)")
+                        }
+                    }
                     if let label = step.tap {
-                        appendSelector("tapOn", label, byId: step.tapById, exact: step.tapExact, to: &lines)
+                        appendSelector(step.tapGesture.rawValue, label, byId: step.tapById, exact: step.tapExact, to: &lines)
                         appendSettle(to: &lines)
                     }
                     if let direction = step.swipe {
@@ -166,12 +193,14 @@ public enum FlowGenerator {
         screens: [GrantivaConfig.Screen],
         bundleId: String,
         environment: [String: String] = [:],
+        flowEnvironment: [String: String] = [:],
         platform: Platform = .ios,
         runFlowBaseDirectory: String = FileManager.default.currentDirectoryPath,
         fileName: String = "flow.yaml"
     ) throws -> String {
         try writeTempWithMap(
-            screens: screens, bundleId: bundleId, environment: environment, platform: platform,
+            screens: screens, bundleId: bundleId, environment: environment,
+            flowEnvironment: flowEnvironment, platform: platform,
             runFlowBaseDirectory: runFlowBaseDirectory, fileName: fileName
         ).path
     }
@@ -182,6 +211,7 @@ public enum FlowGenerator {
         screens: [GrantivaConfig.Screen],
         bundleId: String,
         environment: [String: String] = [:],
+        flowEnvironment: [String: String] = [:],
         platform: Platform = .ios,
         runFlowBaseDirectory: String = FileManager.default.currentDirectoryPath,
         fileName: String = "flow.yaml"
@@ -192,7 +222,10 @@ public enum FlowGenerator {
             .appendingPathComponent("grantiva-flows-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
         var asWritten: [String: String] = [:]
-        let generated = generateWithMap(screens: screens, bundleId: bundleId, environment: environment, platform: platform)
+        let generated = generateWithMap(
+            screens: screens, bundleId: bundleId, environment: environment,
+            flowEnvironment: flowEnvironment, platform: platform
+        )
         let yaml = try FlowReferenceResolver.resolve(
             in: generated.yaml,
             relativeTo: runFlowBaseDirectory,
