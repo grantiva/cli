@@ -256,7 +256,16 @@ final class RunnerExecutionTests: XCTestCase {
         try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
         let report = reportDir.appendingPathComponent("report.json").path
         let readyPath = scratch.appendingPathComponent("ready.json").path
-        let signal = ReadyFileSignal(path: readyPath)
+        let pidPath = scratch.appendingPathComponent("active-runner.pid").path
+        let runnerWasAliveWhenReadyWasWritten = Locked(false)
+        let signal = ReadyFileSignal(path: readyPath) { state, path in
+            if let rawPID = try? String(contentsOfFile: pidPath, encoding: .utf8)
+                    .trimmingCharacters(in: .whitespacesAndNewlines),
+               let pid = Int32(rawPID) {
+                runnerWasAliveWhenReadyWasWritten.mutate { $0 = kill(pid, 0) == 0 }
+            }
+            try ReadyFile.write(state, to: path)
+        }
 
         let interrupter = Task.detached {
             try await Task.sleep(nanoseconds: 1_000_000_000)
@@ -264,6 +273,7 @@ final class RunnerExecutionTests: XCTestCase {
         }
         let outcome = await RunnerExecution.run(request(
             script: """
+            echo $$ > \(pidPath)
             printf '{"status":"running","flows":[{"name":"qa-longwait","status":"running"}]}' > \(report)
             sleep 30
             """,
@@ -280,6 +290,10 @@ final class RunnerExecutionTests: XCTestCase {
         XCTAssertEqual(state.status, "interrupted")
         XCTAssertEqual(state.flows, [RunReadyState.Flow(name: "qa-longwait", status: "interrupted")])
         XCTAssertNil(state.reportDir, "an ephemeral report dir is deleted on exit and must not be advertised")
+        XCTAssertTrue(
+            runnerWasAliveWhenReadyWasWritten.value,
+            "the terminal ready file must be durable before the active runner group is terminated"
+        )
     }
 
     func testTheWatcherAdvertisesOnlyThePreservedReportDir() async throws {

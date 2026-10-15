@@ -126,17 +126,20 @@ enum RunnerExecution {
         SignalRelay.shared.track(group: child.processGroup, deviceNoun: SignalRelay.deviceNoun(for: request.platform ?? .ios))
         let lease = request.lease
         let readyFile = request.readyFile
-        let cleanupToken = SignalRelay.shared.onTermination {
+        let readyToken = SignalRelay.shared.beforeTermination {
             readyFile.write(RunReadyState(
                 status: "interrupted",
                 flows: RunnerReportIndex.finalFlows(reportDir: request.reportDir, unfinishedAs: "interrupted"),
                 reportDir: request.readyReportDir
             ))
+        }
+        let cleanupToken = SignalRelay.shared.onTermination {
             lease.release()
         }
         defer {
             SignalRelay.shared.disarmHold(group: child.processGroup)
             SignalRelay.shared.untrack(group: child.processGroup)
+            SignalRelay.shared.removeCleanup(readyToken)
             SignalRelay.shared.removeCleanup(cleanupToken)
         }
 

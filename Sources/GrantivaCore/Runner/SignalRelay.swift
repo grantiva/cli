@@ -32,6 +32,7 @@ public final class SignalRelay: @unchecked Sendable {
     private var installed = false
     private var sources: [DispatchSourceSignal] = []
     private var groups: [pid_t] = []
+    private var beforeTerminationCleanups: [(id: UInt64, body: @Sendable () -> Void)] = []
     private var cleanups: [(id: UInt64, body: @Sendable () -> Void)] = []
     private var nextID: UInt64 = 1
     private var terminating = false
@@ -117,9 +118,26 @@ public final class SignalRelay: @unchecked Sendable {
         return id
     }
 
+    /// Registers bounded state publication that must happen before tracked
+    /// process groups are terminated. This is intentionally separate from
+    /// ordinary cleanup: a terminal ready file records the interruption before
+    /// observers can see the runner die, while leases and process metadata are
+    /// still released only after the process tree has been reaped.
+    @discardableResult
+    public func beforeTermination(_ body: @escaping @Sendable () -> Void) -> UInt64 {
+        install()
+        lock.lock()
+        defer { lock.unlock() }
+        let id = nextID
+        nextID += 1
+        beforeTerminationCleanups.append((id: id, body: body))
+        return id
+    }
+
     public func removeCleanup(_ id: UInt64) {
         lock.lock()
         defer { lock.unlock() }
+        beforeTerminationCleanups.removeAll { $0.id == id }
         cleanups.removeAll { $0.id == id }
     }
 
@@ -134,13 +152,15 @@ public final class SignalRelay: @unchecked Sendable {
 
     /// Test seam: runs the registered cleanups without exiting the process.
     public func runCleanupsForTesting() {
-        for cleanup in snapshotCleanups() { cleanup() }
+        let snapshot = snapshotCleanups()
+        for cleanup in snapshot.before { cleanup() }
+        for cleanup in snapshot.after { cleanup() }
     }
 
-    private func snapshotCleanups() -> [@Sendable () -> Void] {
+    private func snapshotCleanups() -> (before: [@Sendable () -> Void], after: [@Sendable () -> Void]) {
         lock.lock()
         defer { lock.unlock() }
-        return cleanups.map(\.body)
+        return (beforeTerminationCleanups.map(\.body), cleanups.map(\.body))
     }
 
     /// Test seam: runs the whole interrupt sequence the signal handler runs —
@@ -260,6 +280,7 @@ public final class SignalRelay: @unchecked Sendable {
         // exit must already see that this was an interrupt.
         terminating = true
         let trackedGroups = groups
+        let pendingBeforeTermination = beforeTerminationCleanups.map(\.body)
         let pendingCleanups = cleanups.map(\.body)
         lock.unlock()
 
@@ -267,6 +288,7 @@ public final class SignalRelay: @unchecked Sendable {
             FileHandle.standardError.write(Data(Self.announcement(signalName: signalName, deviceNoun: deviceNoun).utf8))
         }
 
+        for cleanup in pendingBeforeTermination { cleanup() }
         for pgid in trackedGroups {
             ChildProcess.terminateGroup(pgid, gracePeriod: 5)
         }
