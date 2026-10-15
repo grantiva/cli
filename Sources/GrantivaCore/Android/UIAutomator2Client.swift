@@ -181,10 +181,36 @@ extension DriverClient {
                 // succeed, so ask for the focused element first.
                 var active = URLRequest(url: URL(string: "\(session)/element/active")!, timeoutInterval: 60)
                 active.httpMethod = "GET"
-                let (_, activeStatus) = try await transport.send(active)
+                let (activeData, activeStatus) = try await transport.send(active)
                 if activeStatus == 404 { throw DriverClient.noFocusedField(text) }
                 guard activeStatus == 200 else {
                     throw GrantivaError.commandFailed("Failed to read the focused element (HTTP \(activeStatus))", 1)
+                }
+                if text.unicodeScalars.contains(where: { !$0.isASCII }) {
+                    let response = try JSONSerialization.jsonObject(with: activeData) as? [String: Any]
+                    let value = response?["value"] as? [String: Any]
+                    guard let id = (value?["element-6066-11e4-a52e-4f735466cecf"] ?? value?["ELEMENT"]) as? String,
+                          !id.isEmpty else {
+                        throw DriverClient.noFocusedField(text)
+                    }
+                    let element = "\(session)/element/\(id)"
+                    let before = try await R.send(transport, "GET", "\(element)/text",
+                                                  failure: "Failed to read focused field before Unicode input")
+                    guard let currentText = before["value"] as? String else {
+                        throw GrantivaError.commandFailed("Cannot read focused field before Unicode input", 1)
+                    }
+                    let hintResponse = try? await R.send(transport, "GET", "\(element)/attribute/hint",
+                                                        failure: "Failed to read focused field hint")
+                    let hint = hintResponse?["value"] as? String
+                    let masked = !currentText.isEmpty && currentText.allSatisfy { "•●*".contains($0) }
+                    // Match the native driver's whole-value path when the prefix
+                    // is known. If it could be hint/masked text, let the server
+                    // append instead of writing the displayed placeholder back.
+                    let replace = !masked && (currentText.isEmpty || !(hint ?? "").isEmpty)
+                    let valueToSend = replace && currentText != hint ? currentText + text : text
+                    _ = try await R.send(transport, "POST", "\(element)/value",
+                                         ["text": valueToSend, "replace": replace], failure: "Failed to type text")
+                    return
                 }
                 var steps: [[String: String]] = []
                 for character in text {
