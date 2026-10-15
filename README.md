@@ -183,7 +183,7 @@ Each `takeScreenshot` becomes a named screen capture point. Commands between scr
 
 The app a `run --flow` run launches is chosen in this order: `--bundle-id` / `--application-id`, then `bundle_id` / `application_id` in the config file, then the ID read from `--app-file`, then the flow's own `appId:` header (ignored when it is a `${VARIABLE}` reference), then project detection (iOS). Project detection runs only when building: with `--no-build` it is skipped, so pass `--bundle-id` or give the flow a literal `appId:`.
 
-A flow header `env:` block defines `${VAR}` values and is also passed to the app at launch, like `--env`: the runner gets it in every `launchApp` step's `environment:` (iOS) or `arguments:` (Android). `--env` wins over a value the step sets, which wins over the header.
+A flow header `env:` block (in a `run --flow` file or a Maestro-format `grantiva.yml` / `grantiva-android.yml`) defines `${VAR}` values and is also passed to the app at launch, like `--env`: the runner gets it in every `launchApp` step's `environment:` (iOS) or `arguments:` (Android). `--env` wins over a value the step sets, which wins over the header.
 
 ### Environment variables
 

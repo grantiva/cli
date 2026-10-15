@@ -192,6 +192,7 @@ struct DiffCommand: AsyncParsableCommand {
                     platform: device,
                     runner: runnerManager,
                     outputDir: outputDir,
+                    flowEnvironment: resolved.environment,
                     expectedPixels: captureTarget.pixelDimensions
                 )
             }
@@ -413,6 +414,7 @@ struct DiffCommand: AsyncParsableCommand {
                     udid: booted.udid,
                     platform: device,
                     outputDir: captureDir,
+                    flowEnvironment: resolved.environment,
                     expectedPixels: expectedPixels
                 )
                 invocationCaptures = captures

@@ -18,6 +18,9 @@ public struct GrantivaConfig: Sendable, Codable {
     public var platform: Platform = .ios
     /// Gradle-side settings. Present only when `platform == .android`.
     public var android: AndroidProject?
+    /// A Maestro-format file's header `env:` block: `${VAR}` values for its
+    /// steps, also passed to the app at every launch. Empty otherwise.
+    public var environment: [String: String] = [:]
     /// Non-fatal problems found while loading the file, such as unknown keys.
     /// Each is a complete line naming the file and line number.
     public var warnings: [String] = []

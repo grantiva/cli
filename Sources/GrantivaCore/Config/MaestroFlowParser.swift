@@ -59,7 +59,10 @@ public struct MaestroFlowParser {
             )
         }
 
-        return GrantivaConfig(bundleId: bundleId, screens: screens)
+        var config = GrantivaConfig(bundleId: bundleId, screens: screens)
+        config.environment = FlowEnvironment.headerEnvironment(content)
+        config.warnings = FlowEnvironment.headerKeyWarnings(content).map { "\(sourceName): \($0)" }
+        return config
     }
 
     /// Parse all Maestro flow files in a directory and merge into a single config.

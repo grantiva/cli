@@ -428,4 +428,46 @@ final class MaestroStandardFormsTests: XCTestCase {
         XCTAssertEqual(config.screens.map(\.name), ["Home"])
     }
 
+    // MARK: Side finding 9: a Maestro-format config's `env:` header
+
+    func testConfigHeaderEnvReachesEveryLaunchAndDefinesVariables() throws {
+        let config = try MaestroFlowParser.parse("""
+        appId: com.example.app
+        env:
+          CRASH: "1"
+          NAME: Tahoe
+        ---
+        - launchApp
+        - tapOn: "${NAME}"
+        - takeScreenshot: "Home"
+        """)
+        XCTAssertEqual(config.environment, ["CRASH": "1", "NAME": "Tahoe"])
+
+        let yaml = FlowGenerator.generate(
+            screens: config.screens, bundleId: "com.example.app",
+            environment: ["CRASH": "0"], flowEnvironment: config.environment
+        )
+        XCTAssertTrue(yaml.hasPrefix("""
+        appId: "com.example.app"
+        name: "screens"
+        env:
+          CRASH: "1"
+          NAME: "Tahoe"
+        ---
+        - launchApp:
+            environment:
+              CRASH: "0"
+              NAME: "Tahoe"
+
+        """), yaml)
+    }
+
+    func testResolvedProjectCarriesTheConfigHeaderEnv() async throws {
+        var config = GrantivaConfig(bundleId: "com.example.app")
+        config.environment = ["A": "b"]
+        let resolved = try await ResolvedProject.resolve(
+            schemeFlag: "S", config: config, loadCache: { nil }, saveCache: { _ in }, skipBuild: true
+        )
+        XCTAssertEqual(resolved.environment, ["A": "b"])
+    }
 }

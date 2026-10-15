@@ -78,6 +78,7 @@ public enum RunnerSession {
         keepAlive: Bool = false,
         snapshot: String = "failure",
         environment: [String: String] = [:],
+        flowEnvironment: [String: String] = [:],
         readyFile: String? = nil,
         expectedPixels: SimulatorProvisionResult.Dimensions? = nil,
         failFast: Bool = false,
@@ -103,7 +104,8 @@ public enum RunnerSession {
         // the user wrote rather than a temp copy.
         let configFileName = platform.platform.configFileName
         let generated = try FlowGenerator.writeTempWithMap(
-            screens: screens, bundleId: bundleId, environment: environment, platform: platform.platform,
+            screens: screens, bundleId: bundleId, environment: environment,
+            flowEnvironment: flowEnvironment, platform: platform.platform,
             fileName: configFileName
         )
         let flowPath = generated.path
@@ -223,7 +225,8 @@ public enum RunnerSession {
                     ephemeralReportDir: preserveReportDir ? nil : reportDir,
                     waitLabels: FlowGenerator.waitLabels(
                         inGenerated: FlowGenerator.generate(
-                            screens: screens, bundleId: bundleId, environment: environment, platform: platform.platform
+                            screens: screens, bundleId: bundleId, environment: environment,
+                            flowEnvironment: flowEnvironment, platform: platform.platform
                         )
                     )
                 )

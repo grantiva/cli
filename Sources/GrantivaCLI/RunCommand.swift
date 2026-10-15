@@ -548,6 +548,7 @@ struct RunCommand: AsyncParsableCommand {
                         keepAlive: keepAlive,
                         snapshot: snapshot.rawValue,
                         environment: launchEnvironment,
+                        flowEnvironment: resolved.environment,
                         readyFile: readyFile,
                         expectedPixels: expectedPixels,
                         failFast: session.failFast,
