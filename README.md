@@ -441,10 +441,11 @@ runner home. `bundle_id`, and
 --json`: `pid`, `port`, `platform`, `bundleId` and `udid` on iOS,
 `applicationId`, `serial` and `udid` on Android, plus `startedAt` and `state`.
 It is written the moment the runner is spawned with `"state": "starting"` and
-no port, and rewritten with `"state": "ready"` once the driver answers; what
+no port, rewritten with the port once the runner reports WDA's port (iOS, still
+`starting`), and rewritten with `"state": "ready"` once the driver answers; what
 commands say meanwhile is in [docs/mcp.md](docs/mcp.md#a-session-that-is-starting).
-grantiva 2.1.0 reads a `starting` file (no port yet) as no session at
-all. The 2.1 names stay beside the new ones for one release, and files
+grantiva 2.1.0 reads a `starting` file with no port yet as no session at
+all, and one with a port as a session whose WDA has no session yet. The 2.1 names stay beside the new ones for one release, and files
 written by 2.1 are still read:
 
 - `wdaPort` → `port` (.grantiva/session.json)

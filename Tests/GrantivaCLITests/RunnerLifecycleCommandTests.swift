@@ -1271,7 +1271,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
     func testDumpHierarchyOnAStartingSessionSaysItIsStarting() {
         let starting = RunnerSessionInfo.starting(pid: 5, bundleId: "a.b", udid: "emulator-5554", startedAt: Date(), platform: .android)
         XCTAssertThrowsError(try DumpHierarchyCommand.resolveTarget(port: nil, runnerSession: starting, keepAlive: nil)) {
-            XCTAssertEqual($0.localizedDescription, "The runner session is starting (UIAutomator2 has no session yet). Retry in a few seconds.")
+            XCTAssertEqual($0.localizedDescription, "The runner session is starting (UIAutomator2 has no session yet; its port is not known yet). Retry in a few seconds.")
         }
     }
 
