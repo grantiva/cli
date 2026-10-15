@@ -258,6 +258,27 @@ extension SimulatorLeaseTests {
         XCTAssertTrue(message.contains("`grantiva simulator teardown --udid SIM-1 --force`"), message)
     }
 
+    // Side finding 6: the holder took the lease moments ago, but its process
+    // started well before; "pid N, started Ns ago" is the process's age.
+    func testOwnershipMessageAgeIsTheHolderProcessAge() {
+        let claim = SimulatorLeaseClaim(pid: 100, udid: "SIM-1", startedAt: Date())
+        let message = SimulatorLease.ownershipMessage(
+            udid: "SIM-1", holder: claim, processStart: { $0 == 100 ? Date().addingTimeInterval(-42) : nil }
+        )
+        XCTAssertTrue(message.contains("(pid 100, started 42s ago)"), message)
+
+        // A process younger than the claim (a reused pid) never shortens it.
+        let old = SimulatorLeaseClaim(pid: 100, udid: "SIM-1", startedAt: Date().addingTimeInterval(-30))
+        let reused = SimulatorLease.ownershipMessage(udid: "SIM-1", holder: old, processStart: { _ in Date() })
+        XCTAssertTrue(reused.contains("(pid 100, started 30s ago)"), reused)
+    }
+
+    func testProcessStartOfThisProcessIsInThePast() throws {
+        let start = try XCTUnwrap(ProcessLookup.startTime(of: getpid()))
+        XCTAssertLessThanOrEqual(start, Date())
+        XCTAssertNil(ProcessLookup.startTime(of: -1))
+    }
+
     func testHandOffRecordsTheSessionKindAndProjectDirectory() throws {
         let lease = try SimulatorLease.acquire(udid: "SIM-KIND", directory: leaseDirectory)
         lease.handOff(to: getppid())

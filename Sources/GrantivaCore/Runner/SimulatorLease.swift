@@ -249,9 +249,22 @@ public final class SimulatorLease: @unchecked Sendable {
     /// error describes is otherwise invisible: `simulator sessions` tracks boot
     /// capacity, not runner ownership. A `runner start` session is named as
     /// one and released with `runner stop`, not reclaimed by force.
-    static func ownershipMessage(udid: String, holder: SimulatorLeaseClaim?, platform: Platform = .ios) -> String {
+    ///
+    /// "started Ns ago" is the holder process's age: the claim is written
+    /// when the lease is taken, which can be well after the process started
+    /// (it boots the device first), so the earlier of the two is used. A
+    /// process younger than its claim (a reused pid, or the runner a
+    /// `runner start` handed off to) never shortens the age.
+    static func ownershipMessage(
+        udid: String, holder: SimulatorLeaseClaim?, platform: Platform = .ios,
+        processStart: (Int32) -> Date? = ProcessLookup.startTime(of:)
+    ) -> String {
+        func age(_ holder: SimulatorLeaseClaim) -> Int {
+            let started = processStart(holder.pid).map { min($0, holder.startedAt) } ?? holder.startedAt
+            return max(0, Int(Date().timeIntervalSince(started)))
+        }
         if let holder, holder.isRunnerStartSession {
-            let age = Int(Date().timeIntervalSince(holder.startedAt))
+            let age = age(holder)
             var message = "\(platform == .ios ? "Simulator" : "Emulator") \(udid)\(sessionMarker) "
                 + "(grantiva-runner pid \(holder.runnerPID ?? holder.pid), started \(age)s ago). "
                 + "Stop it with `grantiva runner stop`"
@@ -265,7 +278,7 @@ public final class SimulatorLease: @unchecked Sendable {
             ? "Simulator \(udid)\(ownershipMarker)"
             : "Emulator \(udid)\(ownershipMarker)"
         if let holder {
-            let age = Int(Date().timeIntervalSince(holder.startedAt))
+            let age = age(holder)
             message += " (pid \(holder.pid), started \(age)s ago"
             if let runnerPID = holder.runnerPID {
                 message += ", grantiva-runner pid \(runnerPID)"

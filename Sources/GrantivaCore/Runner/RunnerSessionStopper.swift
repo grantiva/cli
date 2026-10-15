@@ -300,6 +300,14 @@ public enum ProcessLookup {
         return info
     }
 
+    /// When the process started, from the kernel; nil when it is gone.
+    public static func startTime(of pid: Int32) -> Date? {
+        guard let info = info(pid) else { return nil }
+        let start = info.kp_proc.p_un.__p_starttime
+        guard start.tv_sec > 0 else { return nil }
+        return Date(timeIntervalSince1970: TimeInterval(start.tv_sec) + TimeInterval(start.tv_usec) / 1_000_000)
+    }
+
     public static func parentPid(of pid: Int32) -> Int32? {
         info(pid).map { $0.kp_eproc.e_ppid }
     }
