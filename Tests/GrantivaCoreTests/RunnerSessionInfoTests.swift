@@ -78,6 +78,30 @@ final class RunnerSessionInfoTests: XCTestCase {
         XCTAssertEqual(decoded.startedAt, original.startedAt)
     }
 
+    // MARK: - B4-EJ.2: startedAt is an ISO 8601 UTC string (README, docs/mcp.md)
+
+    func testTheSessionFileWritesStartedAtAsAnISO8601String() throws {
+        let json = try object(RunnerSessionInfo(
+            pid: 3652, wdaPort: 8403, bundleId: "com.kylebrowning.Landmarks", udid: "5C109004-BC92-4128-A6C9-43F0BE1960FF",
+            startedAt: Date(timeIntervalSince1970: 1_792_090_092), platform: .ios
+        ))
+        XCTAssertEqual(json["startedAt"] as? String, "2026-10-15T18:48:12Z")
+        let starting = try object(RunnerSessionInfo.starting(
+            pid: 5, bundleId: "a.b", udid: "emulator-5554", startedAt: Date(timeIntervalSince1970: 0), platform: .android
+        ))
+        XCTAssertEqual(starting["startedAt"] as? String, "1970-01-01T00:00:00Z")
+    }
+
+    func testAnISO8601StartedAtDecodes() throws {
+        let data = Data(#"{"pid":1,"port":2,"bundleId":"a.b","udid":"U","startedAt":"2026-10-15T18:48:12Z","state":"ready"}"#.utf8)
+        XCTAssertEqual(try RunnerSessionInfo.decode(data).startedAt, Date(timeIntervalSince1970: 1_792_090_092))
+    }
+
+    func testANumericStartedAtFromAnOlderFileStillDecodes() throws {
+        let data = Data(#"{"pid":1,"port":2,"bundleId":"a.b","udid":"U","startedAt":813782892.5,"state":"ready"}"#.utf8)
+        XCTAssertEqual(try RunnerSessionInfo.decode(data).startedAt, Date(timeIntervalSinceReferenceDate: 813_782_892.5))
+    }
+
     // MARK: - L38-a: written at launch as `starting`
 
     func testAStartingSessionHasNoPortYet() throws {

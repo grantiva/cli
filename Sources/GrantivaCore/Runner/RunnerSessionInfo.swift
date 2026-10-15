@@ -9,6 +9,8 @@ import Foundation
 /// the new keys for one release (`LegacyJSONKeys.sessionFileTwins`) and are
 /// still read. `state` is `starting` from the moment the runner is spawned
 /// until its driver answers, then `ready` (L38-a); a file without it is ready.
+/// `startedAt` is an ISO 8601 UTC string; files from earlier builds that wrote
+/// Apple-reference seconds still decode.
 public struct RunnerSessionInfo: Codable, Sendable {
     public enum State: String, Codable, Sendable {
         case starting, ready
@@ -77,7 +79,7 @@ public struct RunnerSessionInfo: Codable, Sendable {
         try container.encode(udid, forKey: "udid")
         if android { try container.encode(udid, forKey: "serial") }
         try container.encodeIfPresent(platform?.rawValue, forKey: "platform")
-        try container.encode(startedAt, forKey: "startedAt")
+        try container.encode(Self.isoString(startedAt), forKey: "startedAt")
         try container.encode((state ?? .ready).rawValue, forKey: "state")
     }
 
@@ -93,13 +95,36 @@ public struct RunnerSessionInfo: Codable, Sendable {
             throw DecodingError.keyNotFound(LegacyJSONKeys(stringValue: "udid"), .init(codingPath: [], debugDescription: "No udid or serial"))
         }
         udid = device
-        startedAt = try container.decodeIfPresent(Date.self, forKey: "startedAt") ?? Date(timeIntervalSinceReferenceDate: 0)
+        startedAt = Self.decodeStartedAt(from: container)
         platform = try container.decodeIfPresent(Platform.self, forKey: "platform")
         state = try container.decodeIfPresent(State.self, forKey: "state")
     }
 
-    /// The file's bytes: sorted keys, dates as 2.1.0 wrote them (so 2.1.0
-    /// can still read a file this version writes).
+    /// `startedAt` as an ISO 8601 UTC string (`2026-10-15T18:48:12Z`), the
+    /// representation README and docs/mcp.md promise for every date field.
+    static func isoString(_ date: Date) -> String {
+        let formatter = ISO8601DateFormatter()
+        formatter.timeZone = TimeZone(identifier: "UTC")
+        return formatter.string(from: date)
+    }
+
+    /// Reads the ISO 8601 string this version writes, and the numeric
+    /// Apple-reference seconds that earlier builds wrote.
+    private static func decodeStartedAt(from container: KeyedDecodingContainer<LegacyJSONKeys>) -> Date {
+        let key = LegacyJSONKeys(stringValue: "startedAt")
+        if let text = try? container.decodeIfPresent(String.self, forKey: key) {
+            let formatter = ISO8601DateFormatter()
+            if let date = formatter.date(from: text) { return date }
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            if let date = formatter.date(from: text) { return date }
+        }
+        if let seconds = try? container.decodeIfPresent(Double.self, forKey: key) {
+            return Date(timeIntervalSinceReferenceDate: seconds)
+        }
+        return Date(timeIntervalSinceReferenceDate: 0)
+    }
+
+    /// The file's bytes: sorted keys, `startedAt` as an ISO 8601 string.
     public func encoded() throws -> Data {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]
