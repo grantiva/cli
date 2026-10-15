@@ -330,8 +330,9 @@ final class FlowReferenceResolverTests: XCTestCase {
         }
     }
 
-    func testCyclePreflightAbsoluteRootClosesAtTheFirstRepeatedRoot() throws {
-        let root = FileManager.default.temporaryDirectory.appendingPathComponent("cycle-absolute-root-\(UUID().uuidString)")
+    func testCyclePreflightAbsoluteRootPreservesItsAliasAndFourWrittenHops() throws {
+        let name = "cycle-absolute-root-\(UUID().uuidString)"
+        let root = URL(fileURLWithPath: "/private/tmp").appendingPathComponent(name)
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: root) }
         try "appId: x\n---\n- runFlow: b.yaml\n".write(
@@ -340,13 +341,16 @@ final class FlowReferenceResolverTests: XCTestCase {
         try "appId: x\n---\n- runFlow: a.yaml\n".write(
             to: root.appendingPathComponent("b.yaml"), atomically: true, encoding: .utf8
         )
-        XCTAssertThrowsError(try FlowCycleValidator.validate(
-            flowPaths: [root.appendingPathComponent("a.yaml").path], screens: [], cwd: root.path
-        )) {
-            XCTAssertEqual(
-                $0.localizedDescription,
-                "Invalid argument: circular dependency detected: a.yaml -> b.yaml -> a.yaml"
-            )
+        for suppliedRoot in [root.path, "/tmp/\(name)"] {
+            let supplied = "\(suppliedRoot)/a.yaml"
+            XCTAssertThrowsError(try FlowCycleValidator.validate(
+                flowPaths: [supplied], screens: [], cwd: root.path
+            )) {
+                XCTAssertEqual(
+                    $0.localizedDescription,
+                    "Invalid argument: circular dependency detected: \(supplied) -> b.yaml -> a.yaml -> b.yaml"
+                )
+            }
         }
     }
 
