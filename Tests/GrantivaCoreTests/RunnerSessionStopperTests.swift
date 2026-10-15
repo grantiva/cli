@@ -294,6 +294,59 @@ final class RunnerSessionStopperTests: XCTestCase {
         try JSONSerialization.data(withJSONObject: json).write(to: directory.appendingPathComponent("\(pid)-1.grantiva"))
     }
 
+    // MARK: - B4-L73.3: the project's .grantiva/session.json goes with the session
+
+    private func projectWithSession(pid: Int32, udid: String) throws -> URL {
+        let project = directory.appendingPathComponent("project-\(pid)")
+        try FileManager.default.createDirectory(
+            at: project.appendingPathComponent(".grantiva"), withIntermediateDirectories: true
+        )
+        try RunnerSessionInfo(pid: pid, wdaPort: 8403, bundleId: "a.b", udid: udid, startedAt: Date(), platform: .ios)
+            .encoded().write(to: project.appendingPathComponent(RunnerSessionInfo.path))
+        return project
+    }
+
+    func testStoppingADetachedSessionRemovesItsProjectSessionFile() async throws {
+        let project = try projectWithSession(pid: 701, udid: udid)
+        let alive = Locked<Set<Int32>>([701])
+        let stopper = makeStopper(alive: alive, events: Locked<[String]>([]))
+        let session = KeepAliveSession(
+            sessionId: "s", port: 8403, pid: 701, udid: udid, path: "/x",
+            projectDirectory: project.path, ownerPid: 9, detached: true
+        )
+
+        _ = try await stopper.stop(session)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: project.appendingPathComponent(RunnerSessionInfo.path).path))
+    }
+
+    func testStoppingAReleasedSessionRemovesItsProjectSessionFile() async throws {
+        let project = try projectWithSession(pid: 701, udid: udid)
+        let alive = Locked<Set<Int32>>([700, 701])
+        var stopper = makeStopper(alive: alive, events: Locked<[String]>([]))
+        stopper.parentPid = { $0 == 701 ? 700 : nil }
+        stopper.interrupt = { _ in alive.mutate { $0.subtract([700, 701]) } }
+        let session = KeepAliveSession(
+            sessionId: "s", port: 8403, pid: 701, udid: udid, path: "/x",
+            projectDirectory: project.path, ownerPid: 700, detached: false
+        )
+
+        _ = try await stopper.stop(session)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: project.appendingPathComponent(RunnerSessionInfo.path).path))
+    }
+
+    func testAProjectSessionFileOfAnotherRunnerIsKept() async throws {
+        let project = try projectWithSession(pid: 999, udid: udid)
+        let alive = Locked<Set<Int32>>([701])
+        let stopper = makeStopper(alive: alive, events: Locked<[String]>([]))
+        let session = KeepAliveSession(
+            sessionId: "s", port: 8403, pid: 701, udid: udid, path: "/x",
+            projectDirectory: project.path, ownerPid: 9, detached: true
+        )
+
+        _ = try await stopper.stop(session)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: project.appendingPathComponent(RunnerSessionInfo.path).path))
+    }
+
     private func makeStopper(alive: Locked<Set<Int32>>, events: Locked<[String]>) -> RunnerSessionStopper {
         RunnerSessionStopper(
             store: KeepAliveSessionStore(directory: directory.path, isProcessAlive: { alive.value.contains($0) }),

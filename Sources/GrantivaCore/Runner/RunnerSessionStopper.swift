@@ -183,13 +183,26 @@ public struct RunnerSessionStopper: Sendable {
                         + "Release it with kill -INT \(owner), or reclaim the device with `grantiva \(DeviceID.isAndroidSerial(udid) ? "emulator teardown --serial" : "simulator teardown --udid") \(udid) --force`."
                 )
             }
-            if !isProcessAlive(session.pid) { removeSessionFiles(session.pid) }
+            if !isProcessAlive(session.pid) {
+                removeSessionFiles(session.pid)
+                removeProjectSession(of: session)
+            }
             return .released(grantivaPid: owner, runnerPid: session.pid, udid: udid, reaped: reaped)
         }
-        return await terminate(
+        let outcome = await terminate(
             runnerPid: session.pid, udid: udid, recordedStartTime: session.runnerStartTime,
             ownedForwardPort: session.port > 0 ? session.port : nil, deadline: deadline
         )
+        removeProjectSession(of: session)
+        return outcome
+    }
+
+    /// The stopped session's `.grantiva/session.json` in the directory it was
+    /// started from, when it still records this runner (L73): teardown may
+    /// run anywhere, and a file left behind reads as a ready session.
+    private func removeProjectSession(of session: KeepAliveSession) {
+        guard let directory = session.projectDirectory else { return }
+        RunnerSessionInfo.removeProjectSession(in: directory, runnerPid: session.pid, udid: session.udid)
     }
 
     /// `timeout`, or what is left before `deadline` when that is sooner.

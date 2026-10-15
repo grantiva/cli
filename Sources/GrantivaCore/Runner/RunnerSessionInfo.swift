@@ -156,6 +156,22 @@ public struct RunnerSessionInfo: Codable, Sendable {
         try? FileManager.default.removeItem(atPath: path)
     }
 
+    /// Removes `<directory>/.grantiva/session.json` when it records the
+    /// runner `runnerPid` (on `udid`, when given): a teardown run from any
+    /// directory takes the stopped session's project file with it (L73).
+    /// A file naming another runner, or that cannot be read, is kept.
+    /// Returns the path removed.
+    @discardableResult
+    public static func removeProjectSession(in directory: String, runnerPid: Int32, udid: String? = nil) -> String? {
+        let file = (directory as NSString).appendingPathComponent(path)
+        guard let data = FileManager.default.contents(atPath: file),
+              let session = try? decode(data), session.pid == runnerPid,
+              udid.map({ session.udid.caseInsensitiveCompare($0) == .orderedSame }) ?? true,
+              (try? FileManager.default.removeItem(atPath: file)) != nil
+        else { return nil }
+        return file
+    }
+
     /// Check if the session process is still alive.
     public var isAlive: Bool {
         kill(pid, 0) == 0
