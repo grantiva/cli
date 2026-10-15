@@ -124,9 +124,24 @@ enum UIAutomator2Requests {
     ) async throws -> String {
         let url = URL(string: "\(session)/source")!
         let clock = ContinuousClock()
-        let deadline = clock.now.advanced(by: .seconds(4))
+        var toastDeadline: ContinuousClock.Instant?
         for attempt in 1...max(1, maxToastAttempts) {
-            var request = URLRequest(url: url, timeoutInterval: 60)
+            let requestTimeout: TimeInterval
+            if let toastDeadline {
+                let remaining = toastDeadline - clock.now
+                let parts = remaining.components
+                let seconds = Double(parts.seconds) + Double(parts.attoseconds) / 1_000_000_000_000_000_000
+                guard seconds > 0 else {
+                    throw GrantivaError.commandFailed("Failed to get hierarchy from UIAutomator2 after the clipboard toast expired", 1)
+                }
+                requestTimeout = max(0.001, min(60, seconds))
+            } else {
+                // The ordinary source request retains its normal timeout. The
+                // additional four-second recovery window begins only after the
+                // server proves this is the API 35 transient-toast defect.
+                requestTimeout = 60
+            }
+            var request = URLRequest(url: url, timeoutInterval: requestTimeout)
             request.httpMethod = "GET"
             let (data, status) = try await transport.send(request)
             if status == 200 {
@@ -144,13 +159,16 @@ enum UIAutomator2Requests {
             let response = String(decoding: data, as: UTF8.self)
             let transientToastBug = response.contains("UiElementSnapshot.addToastMsg")
                 && response.contains("mSealed")
-            guard transientToastBug, attempt < max(1, maxToastAttempts), clock.now < deadline else {
+            guard transientToastBug, attempt < max(1, maxToastAttempts) else {
                 throw GrantivaError.commandFailed("Failed to get hierarchy from UIAutomator2 (HTTP \(status))", 1)
             }
-            if toastRetryNanoseconds > 0 {
+            if toastDeadline == nil {
+                toastDeadline = clock.now.advanced(by: .seconds(4))
+            }
+            if toastRetryNanoseconds > 0, let toastDeadline {
                 let nextAttempt = clock.now.advanced(by: .nanoseconds(Int64(toastRetryNanoseconds)))
-                guard nextAttempt <= deadline else {
-                    throw GrantivaError.commandFailed("Failed to get hierarchy from UIAutomator2 (HTTP \(status))", 1)
+                guard nextAttempt <= toastDeadline else {
+                    throw GrantivaError.commandFailed("Failed to get hierarchy from UIAutomator2 after the clipboard toast expired", 1)
                 }
                 try await clock.sleep(until: nextAttempt)
             }
