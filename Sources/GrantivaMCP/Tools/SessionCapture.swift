@@ -22,6 +22,8 @@ extension VRTTools {
     /// How long a tap, `assert_visible` or `assert_not_visible` step waits
     /// for its element.
     static let lookupTimeout = 5.0
+    /// The longest wait for the relaunched app to show its first screen.
+    static let launchTimeout = 10.0
 
     /// Steps only the runner can run; nil when the session's driver can.
     static func runnerOnlyStep(_ step: GrantivaConfig.Screen.Step) -> String? {
@@ -141,6 +143,7 @@ extension VRTTools {
         let launchStart = Date()
         try? await device.terminate(appID: appID, deviceID: udid)
         try await device.launch(appID: appID, deviceID: udid)
+        await waitForLaunch(driver: driver, timeout: launchTimeout, pause: pause)
         await settle(driver: driver, timeout: settleTimeout, pause: pause)
         var launchDuration: Double? = Date().timeIntervalSince(launchStart)
         let rules = try await SelectorRules.current(platform: platform, screens: screens, driver: driver)
@@ -359,6 +362,34 @@ extension VRTTools {
         case let string as String: return Double(string)
         default: return nil
         }
+    }
+
+    /// Waits until the relaunched app's hierarchy shows any labelled element,
+    /// for at most `timeout` seconds (and `timeout / 0.25` reads). The device
+    /// launch returns once the process starts, while its launch screen is
+    /// still up; a launch screen does not change, so `settle` alone took it
+    /// for the settled first screen (a blank Home on iOS 27). The runner
+    /// launches through the agent, which waits for the app itself. A read
+    /// that fails counts as not yet launched.
+    static func waitForLaunch(driver: DriverClient, timeout: Double, pause: @escaping @Sendable (Double) async -> Void) async {
+        let deadline = Date().addingTimeInterval(timeout)
+        var reads = 0
+        while true {
+            if let tree = try? await driver.hierarchy(), hasLabelledElement(tree) { return }
+            reads += 1
+            if Date() >= deadline || Double(reads) * 0.25 >= timeout { return }
+            await pause(0.25)
+        }
+    }
+
+    /// Whether any element other than the application one (whose label is
+    /// the app's name) carries a label, value or name.
+    static func hasLabelledElement(_ element: [String: Any]) -> Bool {
+        if element["type"] as? String != "XCUIElementTypeApplication",
+           ["label", "value", "name"].contains(where: { !((element[$0] as? String) ?? "").isEmpty }) {
+            return true
+        }
+        return (element["children"] as? [[String: Any]] ?? []).contains(where: hasLabelledElement)
     }
 
     /// Waits until two consecutive driver screenshots match, for at most
