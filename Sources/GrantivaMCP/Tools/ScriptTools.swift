@@ -146,9 +146,9 @@ enum ScriptTools {
     private static func perform(_ step: Step, number stepNum: Int, driver: DriverClient, log: inout [String]) async throws {
         switch step {
         case .tap(let label):
-            try await driver.tapByLabel(label)
+            let match = try await UITools.tapLabel(label, driver: driver)
             try await Task.sleep(nanoseconds: 500_000_000)
-            log.append("Step \(stepNum): tapped \"\(label)\"")
+            log.append("Step \(stepNum): tapped \"\(label)\"\(UITools.matchNote(match))")
         case .tapXY(let x, let y):
             try await driver.tapByCoordinate(x, y)
             try await Task.sleep(nanoseconds: 500_000_000)
