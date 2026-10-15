@@ -125,11 +125,13 @@ final class AndroidPlatformTests: XCTestCase {
         try Data().write(to: URL(fileURLWithPath: apk))
         let shell = ScriptedShell([.success(""), .success("com.example.app\n")])
         let resolved = try await platform(shell).resolveBinary(apk)
-        XCTAssertEqual(resolved.appPath, apk)
+        // The realpath(3) spelling, as on iOS (B4-L53.P5).
+        let canonical = AppBinaryResolver.canonicalPath(apk)
+        XCTAssertEqual(resolved.appPath, canonical)
         XCTAssertEqual(resolved.appID, "com.example.app")
         XCTAssertEqual(shell.commands, [
             "/usr/libexec/java_home",
-            "'/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(apk))",
+            "'/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(canonical))",
         ])
 
         do {
@@ -306,7 +308,7 @@ final class AndroidPlatformTests: XCTestCase {
         XCTAssertEqual(resolved.appID, "com.example.app")
         XCTAssertEqual(shell.commands, [
             "/usr/libexec/java_home",
-            "JAVA_HOME='/jdk' '/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(apk))",
+            "JAVA_HOME='/jdk' '/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(AppBinaryResolver.canonicalPath(apk)))",
         ])
     }
 

@@ -158,7 +158,7 @@ public struct AndroidPlatform: DevicePlatform {
     }
 
     public func resolveBinary(_ path: String) async throws -> ResolvedBinary {
-        let absolute = (path as NSString).standardizingPath
+        let absolute = AppBinaryResolver.canonicalPath(path)
         guard absolute.lowercased().hasSuffix(".apk") else {
             throw GrantivaError.invalidBinary("Expected an .apk file for Android, got: \"\(URL(fileURLWithPath: absolute).lastPathComponent)\"")
         }
