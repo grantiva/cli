@@ -7,16 +7,30 @@ public struct SimulatorDevice: Sendable, Codable, Equatable {
     public let runtime: String
     public let isAvailable: Bool
     public let deviceTypeIdentifier: String?
+    /// simctl's `lastUsedAt`. While the device is booted it is the moment of
+    /// its current boot, so it tells one boot from the next. Internal: not
+    /// part of any JSON this type is encoded into.
+    var lastUsedAt: String?
 
     public var isBooted: Bool { state == "Booted" }
 
     public init(name: String, udid: String, state: String, runtime: String, isAvailable: Bool, deviceTypeIdentifier: String? = nil) {
+        self.init(name: name, udid: udid, state: state, runtime: runtime, isAvailable: isAvailable,
+                  deviceTypeIdentifier: deviceTypeIdentifier, lastUsedAt: nil)
+    }
+
+    init(name: String, udid: String, state: String, runtime: String, isAvailable: Bool, deviceTypeIdentifier: String?, lastUsedAt: String?) {
         self.name = name
         self.udid = udid
         self.state = state
         self.runtime = runtime
         self.isAvailable = isAvailable
         self.deviceTypeIdentifier = deviceTypeIdentifier
+        self.lastUsedAt = lastUsedAt
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case name, udid, state, runtime, isAvailable, deviceTypeIdentifier
     }
 }
 

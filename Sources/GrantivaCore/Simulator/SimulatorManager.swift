@@ -130,7 +130,10 @@ public struct SimulatorManager: Sendable, Decodable {
                 _ = try await execute("xcrun simctl boot \(device.udid)")
                 _ = try await execute("xcrun simctl bootstatus \(device.udid) -b")
             }
-            try capacity.activate(udid: device.udid, bootedByGrantiva: !current.isBooted)
+            // The boot this record belongs to: a later boot by anyone else
+            // (`simctl shutdown` then `boot`) makes the record stale.
+            let bootedAt = try await exactDevice(nameOrUDID: device.udid).lastUsedAt
+            try capacity.activate(udid: device.udid, bootedByGrantiva: !current.isBooted, bootedAt: bootedAt)
         } catch {
             try? capacity.releaseReservation(udid: device.udid)
             throw error
@@ -544,6 +547,7 @@ struct SimctlDeviceList: Decodable {
         let state: String
         let isAvailable: Bool
         let deviceTypeIdentifier: String?
+        let lastUsedAt: String?
     }
 
     var allDevices: [SimulatorDevice] {
@@ -555,7 +559,8 @@ struct SimctlDeviceList: Decodable {
                     state: dev.state,
                     runtime: runtime.replacingOccurrences(of: "com.apple.CoreSimulator.SimRuntime.", with: ""),
                     isAvailable: dev.isAvailable,
-                    deviceTypeIdentifier: dev.deviceTypeIdentifier
+                    deviceTypeIdentifier: dev.deviceTypeIdentifier,
+                    lastUsedAt: dev.lastUsedAt
                 )
             }
         }
