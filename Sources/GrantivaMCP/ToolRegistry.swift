@@ -20,8 +20,8 @@ struct ToolRegistry: Sendable {
     /// `--platform` or `GRANTIVA_PLATFORM`: a missing config is then either
     /// platform's file.
     var platformDetected = false
-    /// Reads the config file again when there was none at start, so a file
-    /// created while the server runs is used.
+    /// Reads the config file again on each call of a tool that uses it, so
+    /// a file created or edited while the server runs is used.
     var loadConfig: (@Sendable () throws -> GrantivaConfig?)? = nil
     /// The resources the client subscribed to; hierarchy updates go only to
     /// a subscriber.
@@ -218,11 +218,13 @@ struct ToolRegistry: Sendable {
         "grantiva_vrt_capture",
     ]
 
-    /// The config loaded at start, or the file as it is now when there was
-    /// none then.
+    /// The config file as it is now, so a file written or edited while the
+    /// server runs is used (a `.maestro/` fallback loaded at start is not
+    /// kept once `grantiva.yml` appears). Without a loader, the config
+    /// given at start.
     private func currentConfig() throws -> GrantivaConfig? {
-        if let config { return config }
-        return try loadConfig?()
+        guard let loadConfig else { return config }
+        return try loadConfig()
     }
 
     static func errorResult(_ error: Error) -> CallTool.Result {
