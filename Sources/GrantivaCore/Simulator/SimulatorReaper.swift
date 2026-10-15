@@ -237,7 +237,7 @@ public enum SimulatorReaper {
 
         // A killed run never ran its cleanup: remove the temp dirs its claim
         // named, once the run and its runner are gone.
-        let temporaryDirectoriesRemoved = claim.map(removeTemporaryDirectories(of:)) ?? []
+        let temporaryDirectoriesRemoved = removeTemporaryDirectories(udid: udid, leaseDirectory: leaseDirectory, claim: claim)
 
         // Clear only stale capacity records for this device. The record of a
         // session that still owns other simulators is not stale: dropping it
@@ -280,10 +280,40 @@ public enum SimulatorReaper {
     /// preserved `--report-dir` or anything else for removal.
     static func removeTemporaryDirectories(of claim: SimulatorLeaseClaim) -> [String] {
         guard !claim.isLive else { return [] }
+        return removeTemporaryDirectories(claim.temporaryDirectories ?? [])
+    }
+
+    /// The temp directories of every run on `udid` that is gone: the
+    /// claim's (the last run's) and those the device's ledger names for
+    /// earlier runs the claim no longer does (B3-L35). A live run's are
+    /// kept, as are its ledger record and the records of directories that
+    /// could not be removed. Each path is listed once.
+    public static func removeTemporaryDirectories(
+        udid: String, leaseDirectory: String?, claim: SimulatorLeaseClaim?
+    ) -> [String] {
+        var removed = claim.map(removeTemporaryDirectories(of:)) ?? []
+        var kept: [TemporaryDirectoryRecord] = []
+        for record in SimulatorLease.temporaryDirectoryRecords(udid: udid, directory: leaseDirectory) {
+            guard !record.isLive else {
+                kept.append(record)
+                continue
+            }
+            let pending = record.paths.filter { !removed.contains($0) }
+            removed += removeTemporaryDirectories(pending)
+            let left = pending.filter { FileManager.default.fileExists(atPath: $0) }
+            if !left.isEmpty { kept.append(TemporaryDirectoryRecord(pid: record.pid, runnerPID: record.runnerPID, paths: left)) }
+        }
+        SimulatorLease.saveTemporaryDirectoryRecords(kept, udid: udid, directory: leaseDirectory)
+        return removed
+    }
+
+    /// Removes `paths` that are Grantiva temp directories (`grantiva-…` in
+    /// the temp directory); anything else is never touched.
+    static func removeTemporaryDirectories(_ paths: [String]) -> [String] {
         let fm = FileManager.default
         let temp = fm.temporaryDirectory.resolvingSymlinksInPath().path
         var removed: [String] = []
-        for path in claim.temporaryDirectories ?? [] {
+        for path in paths {
             let url = URL(fileURLWithPath: path).standardizedFileURL
             let resolved = url.resolvingSymlinksInPath().path
             guard url.lastPathComponent.hasPrefix("grantiva-"),

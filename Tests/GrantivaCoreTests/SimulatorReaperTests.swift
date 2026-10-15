@@ -502,6 +502,28 @@ extension SimulatorReaperTests {
         XCTAssertEqual(object["temporaryDirectoriesRemoved"] as? [String], temps)
     }
 
+    /// B3-L35: the claim names only the last killed run; the per-device
+    /// ledger names the earlier ones, which go too. A live run's are kept.
+    func testForceTeardownRemovesTheTempDirectoriesOfEveryKilledRun() async throws {
+        let directory = temporaryDirectory()
+        let first = try makeTempDirectories(under: "\(directory)/tmp")
+        let last = try makeTempDirectories(under: "\(directory)/tmp")
+        let live = try makeTempDirectories(under: "\(directory)/tmp")
+        SimulatorLease.recordTemporaryDirectories(first, pid: 999_997, runnerPID: 999_996, udid: udid, directory: directory)
+        SimulatorLease.recordTemporaryDirectories(last, pid: 999_999, runnerPID: nil, udid: udid, directory: directory)
+        SimulatorLease.recordTemporaryDirectories(live, pid: getpid(), runnerPID: nil, udid: udid, directory: directory)
+        var claim = SimulatorLeaseClaim(pid: 999_999, udid: udid, startedAt: Date())
+        claim.temporaryDirectories = last
+        try writeClaim(claim, directory: directory)
+
+        let result = try await forceTeardown(directory: directory)
+
+        XCTAssertEqual(Set(result.temporaryDirectoriesRemoved), Set(first + last))
+        XCTAssertEqual(result.temporaryDirectoriesRemoved.count, 4)
+        for path in first + last { XCTAssertFalse(FileManager.default.fileExists(atPath: path), path) }
+        for path in live { XCTAssertTrue(FileManager.default.fileExists(atPath: path), path) }
+    }
+
     func testForceTeardownKeepsTempDirectoriesOfALiveOwner() async throws {
         let directory = temporaryDirectory()
         let temps = try makeTempDirectories(under: "\(directory)/tmp")

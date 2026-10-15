@@ -667,9 +667,13 @@ public struct EmulatorManager: Sendable {
         if record != nil {
             try provenance.remove(serial: serial)
         }
-        var temporaryDirectoriesRemoved: [String] = []
-        if let claim = SimulatorLease.claim(udid: serial, directory: leaseDirectory), !claim.isLive {
-            temporaryDirectoriesRemoved = SimulatorReaper.removeTemporaryDirectories(of: claim)
+        // Every killed run's temp dirs on the serial, not only the last
+        // run's that the claim names (B3-L35); a live run's are kept.
+        let claim = SimulatorLease.claim(udid: serial, directory: leaseDirectory)
+        let temporaryDirectoriesRemoved = SimulatorReaper.removeTemporaryDirectories(
+            udid: serial, leaseDirectory: leaseDirectory, claim: claim
+        )
+        if let claim, !claim.isLive {
             SimulatorLease.removeLeaseFile(udid: serial, directory: leaseDirectory)
         }
         return EmulatorTeardownOutcome(

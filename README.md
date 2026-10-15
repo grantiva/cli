@@ -619,7 +619,7 @@ grantiva simulator teardown --udid "$UDID" --force
 
 This kills whatever is holding that simulator (including a `simctl diagnose` the
 dying runner starts), releases the lease, removes the killed runner's keep-alive
-session files (`sessionFilesRemoved` in `--json`) and the killed run's temp directories (its staged flows and, without
+session files (`sessionFilesRemoved` in `--json`) and the temp directories of every killed run on it (staged flows and, without
 `--report-dir`, its report directory; `--json` lists them under
 `temporaryDirectoriesRemoved`, and a `--report-dir` is never touched), and clears
 any stale capacity record: a pending reservation, or a record with no session ID

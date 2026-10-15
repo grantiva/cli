@@ -1195,6 +1195,36 @@ final class EmulatorManagerTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: SimulatorLease.leasePath(udid: "emulator-5554", directory: leases)))
     }
 
+    /// B3-L35: three runs on one serial, each killed; the lease claim names
+    /// only the last, but the per-device ledger names all of them. A live
+    /// run's dirs and another serial's are left alone.
+    func testForceTeardownRemovesTheTempDirectoriesOfEveryKilledRun() async throws {
+        let leases = scratch.appendingPathComponent("leases").path
+        let serial = "emulator-5554"
+        let first = try makeTempDirectories(), second = try makeTempDirectories(), last = try makeTempDirectories()
+        let live = try makeTempDirectories(), other = try makeTempDirectories()
+        let (firstPID, secondPID, lastPID) = (try deadPID(), try deadPID(), try deadPID())
+        SimulatorLease.recordTemporaryDirectories(first, pid: firstPID, runnerPID: try deadPID(), udid: serial, directory: leases)
+        SimulatorLease.recordTemporaryDirectories(second, pid: secondPID, runnerPID: nil, udid: serial, directory: leases)
+        SimulatorLease.recordTemporaryDirectories(last, pid: lastPID, runnerPID: nil, udid: serial, directory: leases)
+        SimulatorLease.recordTemporaryDirectories(live, pid: getpid(), runnerPID: nil, udid: serial, directory: leases)
+        SimulatorLease.recordTemporaryDirectories(other, pid: try deadPID(), runnerPID: nil, udid: "emulator-5556", directory: leases)
+        var claim = SimulatorLeaseClaim(pid: lastPID, udid: serial, startedAt: Date())
+        claim.temporaryDirectories = last
+        try writeClaim(claim, leases: leases)
+        let shell = ScriptedShell()
+        shell.fallback = "List of devices attached"
+
+        let outcome = try await manager(shell, leaseDirectory: leases).teardown(serial: serial, force: true)
+
+        XCTAssertEqual(Set(outcome.temporaryDirectoriesRemoved), Set(first + second + last))
+        XCTAssertEqual(outcome.temporaryDirectoriesRemoved.count, 6, "each directory is listed once")
+        for path in first + second + last { XCTAssertFalse(FileManager.default.fileExists(atPath: path), path) }
+        for path in live + other { XCTAssertTrue(FileManager.default.fileExists(atPath: path), path) }
+        XCTAssertEqual(SimulatorLease.temporaryDirectoryRecords(udid: serial, directory: leases).map(\.pid), [getpid()])
+        XCTAssertEqual(SimulatorLease.temporaryDirectoryRecords(udid: "emulator-5556", directory: leases).count, 1)
+    }
+
     // MARK: - L46: an app installed just before a teardown survives it
 
     /// `emu kill` stops the guest without a shutdown, so whatever its page
