@@ -118,12 +118,44 @@ enum UIAutomator2Requests {
         return (try? JSONSerialization.jsonObject(with: data) as? [String: Any]) ?? [:]
     }
 
-    static func sourceXML(_ transport: UIAutomator2Transport, session: String) async throws -> String {
-        let json = try await send(transport, "GET", "\(session)/source", failure: "Failed to get hierarchy from UIAutomator2")
-        guard let xml = json["value"] as? String, !xml.isEmpty else {
-            throw GrantivaError.commandFailed("Empty hierarchy response", 1)
+    static func sourceXML(
+        _ transport: UIAutomator2Transport, session: String,
+        toastRetryNanoseconds: UInt64 = 400_000_000, maxToastAttempts: Int = 12
+    ) async throws -> String {
+        let url = URL(string: "\(session)/source")!
+        let clock = ContinuousClock()
+        let deadline = clock.now.advanced(by: .seconds(4))
+        for attempt in 1...max(1, maxToastAttempts) {
+            var request = URLRequest(url: url, timeoutInterval: 60)
+            request.httpMethod = "GET"
+            let (data, status) = try await transport.send(request)
+            if status == 200 {
+                let json = (try? JSONSerialization.jsonObject(with: data) as? [String: Any]) ?? [:]
+                guard let xml = json["value"] as? String, !xml.isEmpty else {
+                    throw GrantivaError.commandFailed("Empty hierarchy response", 1)
+                }
+                return xml
+            }
+
+            // UIAutomator2 9.11.1 tries to reflect AccessibilityNodeInfo.mSealed
+            // while adding a transient clipboard toast. Android API 35 removed
+            // that field, so source temporarily fails until this specific toast
+            // expires. Do not hide or retry any other hierarchy failure.
+            let response = String(decoding: data, as: UTF8.self)
+            let transientToastBug = response.contains("UiElementSnapshot.addToastMsg")
+                && response.contains("mSealed")
+            guard transientToastBug, attempt < max(1, maxToastAttempts), clock.now < deadline else {
+                throw GrantivaError.commandFailed("Failed to get hierarchy from UIAutomator2 (HTTP \(status))", 1)
+            }
+            if toastRetryNanoseconds > 0 {
+                let nextAttempt = clock.now.advanced(by: .nanoseconds(Int64(toastRetryNanoseconds)))
+                guard nextAttempt <= deadline else {
+                    throw GrantivaError.commandFailed("Failed to get hierarchy from UIAutomator2 (HTTP \(status))", 1)
+                }
+                try await clock.sleep(until: nextAttempt)
+            }
         }
-        return xml
+        preconditionFailure("source retry loop must return or throw")
     }
 
     static func pointer(_ transport: UIAutomator2Transport, session: String, _ steps: [[String: Any]], failure: String) async throws {
@@ -181,12 +213,18 @@ extension DriverClient {
                 // succeed, so ask for the focused element first.
                 var active = URLRequest(url: URL(string: "\(session)/element/active")!, timeoutInterval: 60)
                 active.httpMethod = "GET"
-                let (_, activeStatus) = try await transport.send(active)
+                let (activeData, activeStatus) = try await transport.send(active)
                 if activeStatus == 404 { throw DriverClient.noFocusedField(text) }
                 guard activeStatus == 200 else {
                     throw GrantivaError.commandFailed("Failed to read the focused element (HTTP \(activeStatus))", 1)
                 }
                 if text.unicodeScalars.contains(where: { !$0.isASCII }) {
+                    let response = (try? JSONSerialization.jsonObject(with: activeData)) as? [String: Any]
+                    let value = response?["value"] as? [String: Any]
+                    guard let elementID = (value?["element-6066-11e4-a52e-4f735466cecf"] ?? value?["ELEMENT"]) as? String,
+                          !elementID.isEmpty else {
+                        throw DriverClient.noFocusedField(text)
+                    }
                     // UIAutomator2 key actions split extended grapheme clusters and
                     // its element value endpoint rejects some valid Unicode strings.
                     // Paste the complete UTF-8 string through the server clipboard API.

@@ -85,6 +85,34 @@ final class UIAutomator2ClientTests: XCTestCase {
         DriverClient.uiAutomator2(endpoint: UIAutomator2Endpoint(localPort: 7000, sessionID: "abc-123"), scale: scale, transport: transport.transport)
     }
 
+    func testHierarchySourceRetriesOnlyTheAPI35ToastReflectionFailure() async throws {
+        let toastFailure = #"{"value":{"error":"unknown error","message":"mSealed","stacktrace":"UiElementSnapshot.addToastMsg"}}"#
+        let transport = ScriptedTransport([
+            (toastFailure, 500),
+            (#"{"value":"<hierarchy/>"}"#, 200),
+        ])
+        let xml = try await UIAutomator2Requests.sourceXML(
+            transport.transport, session: "http://localhost/wd/hub/session/s1",
+            toastRetryNanoseconds: 0
+        )
+        XCTAssertEqual(xml, "<hierarchy/>")
+        XCTAssertEqual(transport.calls.count, 2)
+    }
+
+    func testHierarchySourceDoesNotRetryAnUnrelatedServerFailure() async {
+        let transport = ScriptedTransport([(#"{"value":{"error":"unknown error","message":"boom"}}"#, 500)])
+        do {
+            _ = try await UIAutomator2Requests.sourceXML(
+                transport.transport, session: "http://localhost/wd/hub/session/s1",
+                toastRetryNanoseconds: 0
+            )
+            XCTFail("expected hierarchy failure")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("HTTP 500"), error.localizedDescription)
+        }
+        XCTAssertEqual(transport.calls.count, 1)
+    }
+
     func testHierarchyXMLUnwrapsTheValue() async throws {
         let transport = ScriptedTransport([(#"{"sessionId":"abc-123","value":"<hierarchy><android.view.View class=\"android.view.View\" text=\"Hi\" bounds=\"[0,0][20,40]\"/></hierarchy>"}"#, 200)])
         let xml = try await client(transport).hierarchyXML()
@@ -189,6 +217,19 @@ final class UIAutomator2ClientTests: XCTestCase {
         XCTAssertEqual(transport.calls.last?.path, "/wd/hub/session/abc-123/appium/device/set_clipboard")
         let restored = try? JSONSerialization.jsonObject(with: Data((transport.calls.last?.body ?? "").utf8)) as? [String: Any]
         XCTAssertEqual(restored?["content"] as? String, original)
+    }
+
+    func testUnicodeMalformedActiveElementDoesNotTouchClipboard() async {
+        for response in [#"{"value":null}"#, #"{"value":{}}"#, #"{"value":{"ELEMENT":""}}"#] {
+            let transport = ScriptedTransport([(response, 200)])
+            do {
+                try await client(transport).typeText("👨‍👩‍👧‍👦")
+                XCTFail("expected focused-field failure")
+            } catch {
+                XCTAssertTrue(error.localizedDescription.contains("No focused text field"), error.localizedDescription)
+            }
+            XCTAssertEqual(transport.calls.map(\.path), ["/wd/hub/session/abc-123/element/active"])
+        }
     }
 
     func testUnicodeClipboardReadFailureDoesNotMutateClipboardOrType() async {
