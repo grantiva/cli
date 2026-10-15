@@ -23,6 +23,28 @@ final class SimulatorReaperTests: XCTestCase {
         """
     }
 
+    /// B3-L54.1: before a foreground `runner start` has a runner, the
+    /// teardown finds only the grantiva holding the lease. It marks that
+    /// grantiva before signalling it, so the start ends in order.
+    func testForceTeardownMarksTheGrantivaHoldersBeforeSignallingThem() throws {
+        let directory = temporaryDirectory()
+        let marker = RunnerStopMarker(directory: directory)
+        let holder = try ChildProcess.spawn(
+            executable: "/bin/sleep", arguments: ["30"],
+            stdout: FileHandle.nullDevice.fileDescriptor, stderr: FileHandle.nullDevice.fileDescriptor, logged: false
+        )
+        defer { kill(holder.pid, SIGKILL); holder.wait() }
+        let targets = [
+            ReapedProcess(pid: holder.pid, processGroup: holder.pid, kind: .grantiva, command: "grantiva (lease holder for \(udid))"),
+            ReapedProcess(pid: 4243, processGroup: 4243, kind: .runner, command: "grantiva-runner"),
+        ]
+
+        SimulatorReaper.markHolders(targets, marker: marker)
+
+        XCTAssertTrue(marker.isMarked(runnerPid: holder.pid, runnerStartTime: RunnerStopMarker.processStartTime(holder.pid)))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: marker.path(4243)))
+    }
+
     func testArgumentLookalikesAreNotSimulatorOwners() {
         let udid = "921A0945-7157-4533-BA1F-21E8132D3E40"
         let snapshot = """

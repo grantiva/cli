@@ -334,6 +334,29 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: directory.path))
     }
 
+    /// B3-L54.1: a teardown that marked this `runner start` (itself, before
+    /// it had a runner) ends it with the teardown line, and the marker goes.
+    func testATeardownMarkOnTheStartItselfEndsItInOrder() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("l54-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: directory) }
+        let marker = RunnerStopMarker(directory: directory)
+        let me = getpid()
+        XCTAssertNil(RunnerStartCommand.teardownEnding(grantivaPid: me, runnerPid: nil, marker: marker))
+
+        XCTAssertTrue(try marker.mark(runnerPid: me, ownerPid: me))
+        XCTAssertEqual(
+            RunnerStartCommand.teardownEnding(grantivaPid: me, runnerPid: 4242, marker: marker),
+            "Runner stopped by teardown (pid 4242); the session has ended."
+        )
+        XCTAssertFalse(FileManager.default.fileExists(atPath: marker.path(me)))
+
+        XCTAssertTrue(try marker.mark(runnerPid: me, ownerPid: me))
+        XCTAssertEqual(
+            RunnerStartCommand.teardownEnding(grantivaPid: me, runnerPid: nil, marker: marker),
+            "Runner stopped by teardown (pid \(me)); the session has ended."
+        )
+    }
+
     func testAlreadyStartingDocumentsPreserveNullPortOnBothPlatforms() throws {
         for platform: Platform in [.ios, .android] {
             let json = try decode(RunnerLifecycleDocument(

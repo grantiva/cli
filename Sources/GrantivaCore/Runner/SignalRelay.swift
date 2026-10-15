@@ -45,6 +45,7 @@ public final class SignalRelay: @unchecked Sendable {
     private var armedGroups: Set<pid_t> = []
     private var releasedGroups: Set<pid_t> = []
     private var releasing = false
+    private var exitStatusProvider: (@Sendable () -> Int32?)?
 
     private init() {}
 
@@ -269,6 +270,20 @@ public final class SignalRelay: @unchecked Sendable {
         respond(to: signalNumber, release: release)
     }
 
+    /// Sets what decides the status an interrupt exits with once its
+    /// cleanups have run: nil from the provider (or no provider) is
+    /// 128 + signal. A foreground `runner start` that a teardown marked
+    /// exits 0, as a teardown's stop is documented to (B3-L54.1).
+    public func setExitStatus(_ provider: (@Sendable () -> Int32?)?) {
+        lock.withLock { exitStatusProvider = provider }
+    }
+
+    /// The status the interrupt sequence for `signalNumber` exits with.
+    func exitStatus(for signalNumber: Int32) -> Int32 {
+        let provider = lock.withLock { exitStatusProvider }
+        return provider?() ?? 128 + signalNumber
+    }
+
     private func handle(_ signalNumber: Int32) {
         // A signal arriving while cleanups run exits at once. In practice only
         // a different signal gets here (SIGTERM after SIGINT): a repeat of the
@@ -277,7 +292,7 @@ public final class SignalRelay: @unchecked Sendable {
         // guarantee against a hung cleanup. A release of an armed hold
         // returns at once, so a second Ctrl-C during it interrupts.
         guard respond(to: signalNumber) else { return }
-        exit(128 + signalNumber)
+        exit(exitStatus(for: signalNumber))
     }
 
     /// Returns false when a termination is already under way.

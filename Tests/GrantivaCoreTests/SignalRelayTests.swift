@@ -98,4 +98,15 @@ final class SignalRelayTests: XCTestCase {
         SignalRelay.shared.simulateTerminationForTesting()
         XCTAssertEqual(order.value, ["helpers", "cleanup", "cleanup"])
     }
+
+    /// B3-L54.1: a teardown that lands before the runner exists ends the
+    /// start in order: the exit status is the provider's, not 128 + signal.
+    func testAnExitStatusProviderDecidesTheInterruptsStatus() {
+        defer { SignalRelay.shared.setExitStatus(nil) }
+        XCTAssertEqual(SignalRelay.shared.exitStatus(for: SIGINT), 130)
+        SignalRelay.shared.setExitStatus { 0 }
+        XCTAssertEqual(SignalRelay.shared.exitStatus(for: SIGINT), 0)
+        SignalRelay.shared.setExitStatus { nil }
+        XCTAssertEqual(SignalRelay.shared.exitStatus(for: SIGTERM), 143)
+    }
 }

@@ -211,6 +211,9 @@ public enum SimulatorReaper {
             ))
         }
 
+        // A foreground `runner start` that has no runner yet holds only the
+        // lease: marked first, it ends in order instead of dying (B3-L54.1).
+        markHolders(targets, marker: sessions.stopMarkers)
         reap(&targets, gracePeriod: gracePeriod)
 
         // A dying runner can start a `simctl diagnose` for the device after
@@ -259,6 +262,16 @@ public enum SimulatorReaper {
             deviceHomeFailures: homes.failures,
             temporaryDirectoriesRemoved: temporaryDirectoriesRemoved
         )
+    }
+
+    /// Writes a teardown stop marker naming each grantiva process about to
+    /// be signalled as its own holder. A `runner start` reads it from its
+    /// interrupt handler and ends as stopped by teardown (exit 0); any other
+    /// grantiva ignores it, and the marker is swept once its process is gone.
+    static func markHolders(_ targets: [ReapedProcess], marker: RunnerStopMarker) {
+        for target in targets where target.kind == .grantiva && target.pid != getpid() {
+            _ = try? marker.mark(runnerPid: target.pid, ownerPid: target.pid)
+        }
     }
 
     /// Removes the temp directories `claim` recorded when neither its process

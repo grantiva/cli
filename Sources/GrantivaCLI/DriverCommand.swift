@@ -199,6 +199,27 @@ struct RunnerStartCommand: AsyncParsableCommand {
         let simulatorLease = try SimulatorLease.acquire(udid: booted.udid, platform: platform)
         var handedOff = false
         defer { if !handedOff { simulatorLease.release() } }
+        var releaseLease: UInt64?
+        defer {
+            if let releaseLease {
+                SignalRelay.shared.removeCleanup(releaseLease)
+                SignalRelay.shared.setExitStatus(nil)
+            }
+        }
+        if !detach {
+            // From the moment this process holds the lease, a teardown can
+            // stop it, before there is any runner or session file to mark
+            // (B3-L54.1): it marks this process, and the interrupt ends the
+            // start in order (exit 0) instead of killing it.
+            let foregroundRunner = Self.foregroundRunner
+            let options = options
+            SignalRelay.shared.setExitStatus {
+                guard let ending = Self.teardownEnding(grantivaPid: getpid(), runnerPid: foregroundRunner.value) else { return nil }
+                options.note(ending)
+                return 0
+            }
+            releaseLease = SignalRelay.shared.onTermination { simulatorLease.release() }
+        }
 
         let deviceNoun = platform == .ios ? "Simulator" : "Device"
         options.note("Starting runner...")
@@ -603,6 +624,29 @@ struct RunnerStartCommand: AsyncParsableCommand {
         removeSessionFile(of: runnerPid)
     }
 
+    /// The foreground runner's pid once spawned, for the teardown line.
+    static let foregroundRunner = PidBox()
+
+    final class PidBox: @unchecked Sendable {
+        private let lock = NSLock()
+        private var stored: Int32?
+        var value: Int32? {
+            get { lock.withLock { stored } }
+            set { lock.withLock { stored = newValue } }
+        }
+    }
+
+    /// The teardown line when a teardown marked this `runner start` itself
+    /// (`grantivaPid`), which it does when it finds the start holding the
+    /// lease; the marker is removed. Nil when nothing marked it.
+    static func teardownEnding(grantivaPid: Int32, runnerPid: Int32?, marker: RunnerStopMarker = RunnerStopMarker()) -> String? {
+        guard marker.isMarked(runnerPid: grantivaPid, runnerStartTime: RunnerStopMarker.processStartTime(grantivaPid)) else {
+            return nil
+        }
+        marker.remove(runnerPid: grantivaPid)
+        return "Runner stopped by teardown (pid \(runnerPid ?? grantivaPid)); the session has ended."
+    }
+
     /// Ctrl-C exits through the signal relay, past the `defer` that removes
     /// the start's `grantiva-session-<uuid>` directory (B4-PC.8).
     static func removeOnInterrupt(_ directory: URL) -> UInt64 {
@@ -748,6 +792,12 @@ struct RunnerStartCommand: AsyncParsableCommand {
     /// cleanup and exits 130), `runner stop` from another shell, or the runner
     /// exiting on its own. The runner's output streams to stderr meanwhile.
     private func startForeground(_ launch: Launch, lease: SimulatorLease) async throws {
+        // Interrupted (or torn down) while setting up: the relay is ending
+        // this process; spawn nothing.
+        if SignalRelay.shared.isTerminating {
+            await Self.awaitSignalRelayExit()
+            throw ExitCode(130)
+        }
         let stdoutPipe = Pipe()
         let stderrPipe = Pipe()
         let child = try ChildProcess.spawn(
@@ -760,6 +810,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
         )
         try? stdoutPipe.fileHandleForWriting.close()
         try? stderrPipe.fileHandleForWriting.close()
+        Self.foregroundRunner.value = child.pid
         // What a teardown's stop marker must name to count for this runner.
         let runnerStartTime = RunnerStopMarker.processStartTime(child.pid)
         // `kill -9` of this process must not leave the runner holding the device.
