@@ -347,4 +347,85 @@ final class MaestroStandardFormsTests: XCTestCase {
         XCTAssertEqual(MaestroFlowParser.appId(in: "appId: com.example.app\n---\n- launchApp"), "com.example.app")
         XCTAssertNil(MaestroFlowParser.appId(in: "- launchApp"))
     }
+
+    // MARK: Side finding 3: gestures and app lifecycle kept as written
+
+    func testDoubleTapLongPressAndLifecycleCommandsReachTheGeneratedFlow() throws {
+        let config = try MaestroFlowParser.parse("""
+        appId: com.example.app
+        ---
+        - launchApp
+        - doubleTapOn: "Row"
+        - longPressOn:
+            id: "cell"
+        - stopApp
+        - launchApp
+        - killApp:
+        - takeScreenshot: "After"
+        """)
+        let yaml = FlowGenerator.generate(screens: config.screens, bundleId: "com.example.app")
+        XCTAssertEqual(yaml, """
+        appId: "com.example.app"
+        name: "screens"
+        ---
+        - launchApp
+        - doubleTapOn: "Row"
+        - waitForAnimationToEnd:
+            timeout: 5000
+        - longPressOn:
+            id: "cell"
+        - waitForAnimationToEnd:
+            timeout: 5000
+        - stopApp
+        - launchApp
+        - waitForAnimationToEnd:
+            timeout: 5000
+        - killApp
+        - waitForAnimationToEnd:
+            timeout: 5000
+        - takeScreenshot: "After"
+
+        """)
+    }
+
+    func testRelaunchGetsTheLaunchEnvironmentAndAndroidDrawWait() throws {
+        let config = try MaestroFlowParser.parse("""
+        appId: com.example.app
+        ---
+        - launchApp
+        - tapOn: "Go"
+        - launchApp
+        - takeScreenshot: "S"
+        """)
+        let yaml = FlowGenerator.generate(
+            screens: config.screens, bundleId: "com.example.app", environment: ["K": "v"], platform: .android
+        )
+        let launches = yaml.components(separatedBy: "- launchApp:\n    arguments:\n      K: \"v\"\n").count - 1
+        XCTAssertEqual(launches, 2, yaml)
+        XCTAssertEqual(yaml.components(separatedBy: "label: \"Wait for the app to draw\"").count - 1, 2, yaml)
+    }
+
+    func testGestureAndLifecycleStepsNameTheirAction() {
+        var double = GrantivaConfig.Screen.Step(tap: "Row")
+        double.tapGesture = .doubleTap
+        var long = GrantivaConfig.Screen.Step(tap: "cell", tapById: true)
+        long.tapGesture = .longPress
+        XCTAssertEqual(RunnerSession.stepAction(for: double), "Double tap on \"Row\"")
+        XCTAssertEqual(RunnerSession.stepAction(for: long), "Long press on id \"cell\"")
+        XCTAssertEqual(RunnerSession.stepAction(for: .init(app: .stopApp)), "Stop app")
+        XCTAssertEqual(RunnerSession.stepAction(for: .init(app: .killApp)), "Kill app")
+        XCTAssertEqual(RunnerSession.stepAction(for: .init(app: .launchApp)), "Launch app")
+    }
+
+    func testTrailingStopAppAddsNoExtraScreen() throws {
+        let config = try MaestroFlowParser.parse("""
+        appId: com.example.app
+        ---
+        - launchApp
+        - takeScreenshot: "Home"
+        - stopApp
+        """)
+        XCTAssertEqual(config.screens.map(\.name), ["Home"])
+    }
+
 }

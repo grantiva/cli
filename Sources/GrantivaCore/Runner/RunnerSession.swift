@@ -938,8 +938,20 @@ public enum RunnerSession {
     /// the live line, and `(exact)` after a label that must match exactly (L18).
     public static func stepAction(for step: GrantivaConfig.Screen.Step) -> String {
         func exact(_ isExact: Bool) -> String { isExact ? " (exact)" : "" }
-        if let label = step.tap {
-            return (step.tapById ? "Tap on id \"\(label)\"" : "Tap on \"\(label)\"") + exact(step.tapExact)
+        if let app = step.app {
+            switch app {
+            case .launchApp: return "Launch app"
+            case .stopApp: return "Stop app"
+            case .killApp: return "Kill app"
+            }
+        } else if let label = step.tap {
+            let verb: String
+            switch step.tapGesture {
+            case .tap: verb = "Tap on"
+            case .doubleTap: verb = "Double tap on"
+            case .longPress: verb = "Long press on"
+            }
+            return (step.tapById ? "\(verb) id \"\(label)\"" : "\(verb) \"\(label)\"") + exact(step.tapExact)
         } else if let direction = step.swipe {
             return step.swipeFrom.map { "Swipe \(direction) from \"\($0)\"" } ?? "Swipe \(direction)"
         } else if let text = step.type {

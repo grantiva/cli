@@ -50,26 +50,37 @@ public enum FlowGenerator {
         // launchApp creates the WDA session — required before any interaction.
         // `--env` values ride the runner's existing launchApp field for the
         // platform: `environment:` on iOS, `arguments:` (intent extras) on Android.
-        if environment.isEmpty {
-            lines.append("- launchApp")
-        } else {
-            lines.append("- launchApp:")
-            lines.append("    \(FlowEnvironment.launchField(for: platform)):")
-            for key in environment.keys.sorted() {
-                lines.append("      \(key): \(FlowEnvironment.quoted(environment[key] ?? ""))")
+        func appendLaunch() {
+            if environment.isEmpty {
+                lines.append("- launchApp")
+            } else {
+                lines.append("- launchApp:")
+                lines.append("    \(FlowEnvironment.launchField(for: platform)):")
+                for key in environment.keys.sorted() {
+                    lines.append("      \(key): \(FlowEnvironment.quoted(environment[key] ?? ""))")
+                }
+            }
+            if platform == .android {
+                lines += appDrawnWait
             }
         }
-        if platform == .android {
-            lines += appDrawnWait
-        }
+        appendLaunch()
 
         for (screenIndex, screen) in screens.enumerated() {
             if screenIndex == 0 { claim(CommandOwner(screen: screen.name, step: nil)) }
             if case .steps(let steps) = screen.path {
                 for (stepIndex, step) in steps.enumerated() {
                     defer { claim(CommandOwner(screen: screen.name, step: stepIndex)) }
+                    if let app = step.app {
+                        if app == .launchApp {
+                            appendLaunch()
+                            appendSettle(to: &lines)
+                        } else {
+                            lines.append("- \(app.rawValue)")
+                        }
+                    }
                     if let label = step.tap {
-                        appendSelector("tapOn", label, byId: step.tapById, exact: step.tapExact, to: &lines)
+                        appendSelector(step.tapGesture.rawValue, label, byId: step.tapById, exact: step.tapExact, to: &lines)
                         appendSettle(to: &lines)
                     }
                     if let direction = step.swipe {

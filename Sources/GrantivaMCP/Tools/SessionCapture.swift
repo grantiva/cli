@@ -28,6 +28,12 @@ extension VRTTools {
     /// Steps only the runner can run; nil when the session's driver can.
     static func runnerOnlyStep(_ step: GrantivaConfig.Screen.Step) -> String? {
         if step.runFlow != nil { return "runFlow" }
+        if let app = step.app { return app.rawValue }
+        switch step.tapGesture {
+        case .doubleTap: return "a double tap"
+        case .longPress: return "a long press"
+        case .tap: break
+        }
         if step.swipeFrom != nil { return "a swipe from an element" }
         if step.swipeStart != nil || step.swipeEnd != nil { return "a swipe between points" }
         if step.swipeDuration != nil { return "a swipe with a duration" }
