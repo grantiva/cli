@@ -457,8 +457,8 @@ public enum RunnerSession {
 
         // Every flow reachable through runFlow, by its project-relative path
         // (the runner resolves a sub-flow's own runFlows itself). As-written
-        // operands only fill gaps; then the staged top-level paths ensure a
-        // staged path always wins (L20).
+        // operands override resolved display names; staged top-level paths
+        // still ensure a staged path always wins (L20).
         let reachablePathMap = FlowReferenceResolver.reachableFlowDisplayMap(
             roots: absoluteFlowPaths, cwd: FileManager.default.currentDirectoryPath
         ).merging(Dictionary(
@@ -467,13 +467,14 @@ public enum RunnerSession {
         )) { _, passed in passed }
         let reportPathMap = reachablePathMap
             .merging(subFlowPathMap) { canonical, written in
-                // Outside the project the resolver can only return an absolute
-                // identity, not a project-relative display name. Preserve the
-                // written operand there, unless the caller named that root absolutely.
-                (canonical as NSString).isAbsolutePath && !flowPaths.contains(canonical) ? written : canonical
+                // A resolved project-relative path is still not the operand
+                // the user wrote. Only an explicitly named root keeps its
+                // caller-provided spelling over a sub-flow reference.
+                flowPaths.contains(canonical) ? canonical : written
             }
             .merging(stagedPathMap) { _, staged in staged }
         let outputPathMap = expandedPathMap(reportPathMap)
+        let cyclePathMap = expandedPathMap(reachablePathMap.merging(stagedPathMap) { _, staged in staged })
 
         // If the caller passed --report-dir, write reports straight to it and
         // preserve on exit so CI can upload them. Otherwise fall back to an
@@ -561,6 +562,7 @@ public enum RunnerSession {
                 keepAlive: keepAlive,
                 timeoutSeconds: effectiveTimeout,
                 pathMap: outputPathMap,
+                cyclePathMap: cyclePathMap,
                 reportDir: reportDir,
                 readyReportDir: readyReportDir,
                 expectedFlows: flowPaths.count,
@@ -572,7 +574,7 @@ public enum RunnerSession {
             ))
         }
 
-        let pathRewriter = OutputRewriter(replacements: outputPathMap)
+        let pathRewriter = OutputRewriter(replacements: outputPathMap, cycleReplacements: cyclePathMap)
         let stderr = pathRewriter.rewrite(outcome.stderr)
 
         // An interrupt is checked first: the runner may exit 0 on SIGTERM, and

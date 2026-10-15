@@ -360,8 +360,11 @@ final class RunnerSessionOutputTests: XCTestCase {
     }
 
     func testRunFlowStepLinesShowTheAsWrittenSubFlowPath() async throws {
-        let project = scratch.appendingPathComponent("project")
+        let project = scratch.appendingPathComponent("project/.maestro/coverage")
         try FileManager.default.createDirectory(at: project, withIntermediateDirectories: true)
+        let cwd = FileManager.default.currentDirectoryPath
+        XCTAssertTrue(FileManager.default.changeCurrentDirectoryPath(scratch.appendingPathComponent("project").path))
+        defer { FileManager.default.changeCurrentDirectoryPath(cwd) }
         try "appId: com.example\n---\n- launchApp\n- runFlow: sub.yaml\n"
             .write(to: project.appendingPathComponent("main.yaml"), atomically: true, encoding: .utf8)
         try "appId: com.example\n---\n- launchApp\n"
@@ -400,8 +403,11 @@ final class RunnerSessionOutputTests: XCTestCase {
     }
 
     func testRunAndFailureResultsNameTheSubFlowAsWritten() async throws {
-        let project = scratch.appendingPathComponent("project-l19")
+        let project = scratch.appendingPathComponent("project-l19/.maestro/coverage")
         try FileManager.default.createDirectory(at: project, withIntermediateDirectories: true)
+        let cwd = FileManager.default.currentDirectoryPath
+        XCTAssertTrue(FileManager.default.changeCurrentDirectoryPath(scratch.appendingPathComponent("project-l19").path))
+        defer { FileManager.default.changeCurrentDirectoryPath(cwd) }
         try "appId: com.example\n---\n- launchApp\n- runFlow: sub.yaml\n"
             .write(to: project.appendingPathComponent("main.yaml"), atomically: true, encoding: .utf8)
         try "appId: com.example\n---\n- launchApp\n"

@@ -16,9 +16,11 @@ public struct OutputRewriter: Sendable {
     private let matcher: NSRegularExpression?
     private var pending = ""
     private let displayPaths: Set<String>
+    private let cycleReplacements: [String: String]?
     private static let cycleMarker = "circular dependency detected: "
 
-    public init(replacements: [String: String]) {
+    public init(replacements: [String: String], cycleReplacements: [String: String]? = nil) {
+        self.cycleReplacements = cycleReplacements
         self.displayPaths = Set(replacements.values)
         self.targets = replacements.filter { !$0.key.isEmpty }
         self.replacements = replacements.filter { !$0.key.isEmpty }
@@ -28,10 +30,17 @@ public struct OutputRewriter: Sendable {
         self.matcher = pattern.isEmpty ? nil : try? NSRegularExpression(pattern: pattern)
     }
 
-    public var isEmpty: Bool { replacements.isEmpty }
+    public var isEmpty: Bool { replacements.isEmpty && (cycleReplacements?.isEmpty ?? true) }
 
     /// Applies every substitution to a complete string.
     public func rewrite(_ text: String) -> String {
+        if let cycleReplacements, text.contains(Self.cycleMarker) {
+            let ordinary = OutputRewriter(replacements: targets)
+            let cycle = OutputRewriter(replacements: cycleReplacements)
+            return text.components(separatedBy: "\n").map { line in
+                line.contains(Self.cycleMarker) ? cycle.rewrite(line) : ordinary.rewrite(line)
+            }.joined(separator: "\n")
+        }
         var result = text
         // Match the original text once: an inserted absolute display path may
         // contain another source alias (/tmp inside /private/tmp).

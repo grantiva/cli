@@ -38,6 +38,9 @@ enum RunnerExecution {
         let timeoutSeconds: UInt64
         /// Temp-staging path → the path the user passed, for output rewriting.
         let pathMap: [String: String]
+        /// Cycle chains resolve relative hops against their preceding file;
+        /// ordinary runFlow narration retains the operand as written.
+        var cyclePathMap: [String: String]? = nil
         let reportDir: String
         /// The report dir to name in the ready file: the preserved
         /// `--report-dir`, or nil for an ephemeral one deleted on exit.
@@ -142,6 +145,7 @@ enum RunnerExecution {
         let stdoutFD = stdoutPipe.fileHandleForReading.fileDescriptor
         let stderrFD = stderrPipe.fileHandleForReading.fileDescriptor
         let pathMap = request.pathMap
+        let cyclePathMap = request.cyclePathMap
         let initialFilter = request.outputFilter
         let silenced = request.silenced
         let sink = request.narrationSink
@@ -154,7 +158,7 @@ enum RunnerExecution {
         // honours --quiet/--json for runner output.
         async let relayFinished: Void = withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async {
-                var rewriter = OutputRewriter(replacements: pathMap)
+                var rewriter = OutputRewriter(replacements: pathMap, cycleReplacements: cyclePathMap)
                 var filter = initialFilter
                 Self.drain(stdoutFD, after: runnerExited) { chunk in
                     let text = String(decoding: chunk, as: UTF8.self)
