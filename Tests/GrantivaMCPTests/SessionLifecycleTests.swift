@@ -240,6 +240,56 @@ final class SessionLifecycleTests: XCTestCase {
         XCTAssertTrue(device.calls.contains { $0.hasPrefix("build(scheme=Demo") }, "\(device.calls)")
     }
 
+    /// A project that started with only `.maestro/` (a fallback config, not
+    /// nil) still reads a `grantiva.yml` written later (side finding 1).
+    func testAConfigFileWrittenAfterAMaestroFallbackIsRead() async throws {
+        let directory = try temporaryDirectory()
+        let maestro = directory.appendingPathComponent(".maestro")
+        try FileManager.default.createDirectory(at: maestro, withIntermediateDirectories: true)
+        try "appId: com.example.app\n---\n- launchApp\n".write(
+            to: maestro.appendingPathComponent("home.yaml"), atomically: true, encoding: .utf8
+        )
+        let device = MCPFakeDevicePlatform(platform: .ios)
+        let load: @Sendable () throws -> GrantivaConfig? = { try GrantivaConfig.loadIfPresent(platform: .ios, from: directory) }
+        let fallback = try XCTUnwrap(try load())
+        var registry = ToolRegistry(
+            connection: RunnerConnection(
+                resolveSession: { throw GrantivaError.invalidArgument("No active runner session at x.") },
+                attach: { _ in throw GrantivaError.invalidArgument("unreachable") }
+            ),
+            platform: .ios, device: device, config: fallback,
+            simulatorManager: .live, buildRunner: XcodeBuildRunner(), emulators: nil,
+            projectDirectory: directory
+        )
+        registry.loadConfig = load
+        try "scheme: Demo\n".write(to: directory.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8)
+        let result = try await registry.call(name: "grantiva_build", arguments: [:], server: MCPTestSupport.disconnectedServer())
+        let text = try textContent(of: result)
+        XCTAssertNil(result.isError, text)
+        XCTAssertTrue(device.calls.contains { $0.hasPrefix("build(scheme=Demo") }, "\(device.calls)")
+    }
+
+    /// An edit to the config file after start is used by the next call.
+    func testAnEditedConfigFileIsReadOnTheNextCall() async throws {
+        let directory = try temporaryDirectory()
+        let file = directory.appendingPathComponent("grantiva.yml")
+        try "scheme: Old\n".write(to: file, atomically: true, encoding: .utf8)
+        let device = MCPFakeDevicePlatform(platform: .ios)
+        let load: @Sendable () throws -> GrantivaConfig? = { try GrantivaConfig.loadIfPresent(platform: .ios, from: directory) }
+        var registry = configlessRegistry(directory: directory, device: device)
+        registry = ToolRegistry(
+            connection: registry.connection, platform: .ios, device: device, config: try load(),
+            simulatorManager: .live, buildRunner: XcodeBuildRunner(), emulators: nil,
+            projectDirectory: directory
+        )
+        registry.loadConfig = load
+        try "scheme: New\n".write(to: file, atomically: true, encoding: .utf8)
+        let result = try await registry.call(name: "grantiva_build", arguments: [:], server: MCPTestSupport.disconnectedServer())
+        let text = try textContent(of: result)
+        XCTAssertNil(result.isError, text)
+        XCTAssertTrue(device.calls.contains { $0.hasPrefix("build(scheme=New") }, "\(device.calls)")
+    }
+
     // MARK: - vrt_capture with a live session
 
     private func screensConfig(_ screens: [GrantivaConfig.Screen]) -> GrantivaConfig {
