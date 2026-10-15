@@ -493,7 +493,7 @@ a `warning` (an advisory check such as no booted simulator) never does.
 
 Every `--json` document, and the `--ready-file` file, uses camelCase keys.
 
-Date-valued JSON fields use ISO 8601 UTC strings (for example,
+Date-valued fields in `--json` output, MCP results, ready files and `.grantiva/session.json` use ISO 8601 UTC strings (for example,
 `1970-01-01T00:00:00Z`). Scripts should parse this representation rather than
 numeric Unix or Apple-reference timestamps. The complete public date-field
 inventory is documented in [MCP and JSON compatibility](docs/mcp.md#json-date-compatibility).

@@ -184,7 +184,12 @@ numeric Unix and Apple-reference timestamps are not output alternatives. The
 fields are `timestamp` on screen captures, `detectedAt` on detected projects,
 `startedAt` on runner sessions, simulator or emulator leases and provenance,
 `acquiredAt` on simulator capacity records, `createdAt` on created-simulator
-and keep-alive ownership records, and `finishedAt` in ready files.
+and keep-alive ownership records, and `finishedAt` in ready files. These are the
+fields of `--json` output, MCP tool results, `--ready-file` files and the
+project's `.grantiva/session.json`. Bookkeeping files under the runner home and
+the runner's own `/tmp/grantiva-sessions/*.grantiva` records are internal; their
+date encodings, and the numeric `runnerStartTime` process identity in ownership
+records, are not part of this contract.
 
 The iOS tap fallback order is **label → identifier → placeholder**. Runner
 lifecycle and teardown JSON use the current camelCase keys, including
