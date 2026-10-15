@@ -164,7 +164,10 @@ extension VRTTools {
                     let action = RunnerSession.stepAction(for: step)
                     let stepStart = Date()
                     do {
-                        try await run(step, rules: rules, driver: driver, pause: pause)
+                        try await run(
+                            FlowEnvironment.substitutingVariables(in: step, variables: environment),
+                            rules: rules, driver: driver, pause: pause
+                        )
                     } catch {
                         throw StepFailure(screen: screen.name, step: index + 1, action: action, reason: describe(error))
                     }
