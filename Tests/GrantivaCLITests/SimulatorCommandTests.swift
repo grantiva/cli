@@ -334,6 +334,9 @@ final class SimulatorCommandTests: XCTestCase {
         typealias T = SimulatorCommand.Teardown
         let record = ManagedSimulatorSession(udid: "MANAGED", name: "n", sessionId: "S1", ownerPID: 1, acquiredAt: Date(), state: .active)
         XCTAssertEqual(T.runnerStopTargets(udid: "UNMANAGED", sessionId: nil, force: false, managed: [record]), [])
+        XCTAssertEqual(T.runnerStopTargets(
+            udid: "UNMANAGED", sessionId: nil, force: false, managed: [record], hasForegroundOwner: true
+        ), ["UNMANAGED"])
         XCTAssertEqual(T.runnerStopTargets(udid: "UNMANAGED", sessionId: nil, force: true, managed: [record]), ["UNMANAGED"])
         XCTAssertEqual(T.runnerStopTargets(udid: "MANAGED", sessionId: nil, force: false, managed: [record]), ["MANAGED"])
         XCTAssertEqual(T.runnerStopTargets(udid: nil, sessionId: "S1", force: false, managed: [record]), ["MANAGED"])
@@ -409,6 +412,11 @@ final class SimulatorCommandTests: XCTestCase {
         let alive = TeardownLocked<Set<Int32>>([700, 701])
         let events = TeardownLocked<[String]>([])
         let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { alive.value.contains($0) })
+        XCTAssertTrue(DeviceRunnerSessions.hasForegroundOwner(udid: udid, store: store))
+        XCTAssertFalse(DeviceRunnerSessions.hasForegroundOwner(udid: "FOREIGN-UDID", store: store))
+        XCTAssertEqual(SimulatorCommand.Teardown.runnerStopTargets(
+            udid: udid, sessionId: nil, force: false, managed: [], hasForegroundOwner: true
+        ), [udid], "a validated shared owner is actionable without a capacity-ledger record")
         let stopper = RunnerSessionStopper(
             store: store,
             isProcessAlive: { alive.value.contains($0) },

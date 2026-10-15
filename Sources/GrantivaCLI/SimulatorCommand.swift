@@ -141,7 +141,11 @@ struct SimulatorCommand: AsyncParsableCommand {
             // Runner sessions on the devices go first (K15): the runner gets
             // to release WebDriverAgent before its simulator disappears.
             let managed = (try? await SimulatorManager.live.managedSessions()) ?? []
-            let udids = Self.runnerStopTargets(udid: target, sessionId: session, force: force, managed: managed)
+            let hasForegroundOwner = target.map { DeviceRunnerSessions.hasForegroundOwner(udid: $0) } ?? false
+            let udids = Self.runnerStopTargets(
+                udid: target, sessionId: session, force: force, managed: managed,
+                hasForegroundOwner: hasForegroundOwner
+            )
             let stopped = await Self.stopRunnerSessions(udids: udids) { await DeviceRunnerSessions.live.stop(udid: $0) }
             if !options.json { stopped.lines.forEach(Output.line) }
 
@@ -204,10 +208,11 @@ struct SimulatorCommand: AsyncParsableCommand {
         /// will act on. A `--udid` without `--force` and without a ledger
         /// record is a no-op teardown, so it stops nothing either.
         static func runnerStopTargets(
-            udid: String?, sessionId: String?, force: Bool, managed: [ManagedSimulatorSession]
+            udid: String?, sessionId: String?, force: Bool, managed: [ManagedSimulatorSession],
+            hasForegroundOwner: Bool = false
         ) -> [String] {
             if let udid {
-                return force || managed.contains(where: { $0.udid == udid }) ? [udid] : []
+                return force || hasForegroundOwner || managed.contains(where: { $0.udid == udid }) ? [udid] : []
             }
             return managed.filter { $0.sessionId == sessionId }.map(\.udid)
         }
