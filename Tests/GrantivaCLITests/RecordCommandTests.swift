@@ -523,3 +523,32 @@ final class RecordCommandTests: XCTestCase {
         XCTAssertNoThrow(try GrantivaCommand.parseAsRoot(["record", "--duration", "2", "--output", "a.mov", "--platform", "ios"]))
     }
 }
+
+/// N3-08: a missing required option is a usage error of the same shape as the
+/// others, an Error line, then Usage and See, with no Help line between them.
+final class UsageErrorShapeTests: XCTestCase {
+    func testEveryUsageErrorHasTheSameShape() {
+        let cases: [[String]] = [
+            ["record", "--output", "a.mp4"],
+            ["record", "--output", "a.mov"],
+            ["record", "--duration", "0"],
+            ["record", "--device", "a", "--emulator", "b"],
+            ["record", "--duration", "2", "--output", "a.mp4", "--platform", "ios"],
+            ["record", "--duration", "2", "--device", "a", "--emulator", "b"],
+            ["emulator", "teardown", "--serial", "emulator-9999", "--all"],
+        ]
+        for arguments in cases {
+            XCTAssertThrowsError(try GrantivaCommand.parseAsRoot(arguments), "\(arguments)") { error in
+                XCTAssertEqual(GrantivaCommand.exitCode(for: error), .validationFailure, "\(arguments)")
+                let lines = GrantivaCommand.usageErrorMessage(for: error)
+                    .components(separatedBy: "\n").filter { !$0.isEmpty }
+                XCTAssertEqual(lines.count, 3, "\(arguments): \(lines)")
+                XCTAssertTrue(lines.first?.hasPrefix("Error: ") == true, "\(arguments): \(lines)")
+                XCTAssertFalse(lines.joined().contains("Invalid argument"), "\(arguments): \(lines)")
+                XCTAssertTrue(lines.count > 1 && lines[1].hasPrefix("Usage: grantiva \(arguments[0])"), "\(arguments): \(lines)")
+                XCTAssertTrue(lines.last?.trimmingCharacters(in: .whitespaces).hasPrefix("See 'grantiva \(arguments[0])") == true, "\(arguments): \(lines)")
+                XCTAssertTrue(lines.last?.hasSuffix("--help' for more information.") == true, "\(arguments): \(lines)")
+            }
+        }
+    }
+}

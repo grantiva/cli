@@ -1,4 +1,5 @@
 import ArgumentParser
+import Foundation
 import GrantivaCore
 
 @available(macOS 15, *)
@@ -26,6 +27,35 @@ public struct GrantivaCommand: AsyncParsableCommand {
     )
 
     public init() {}
+
+    /// Runs the command like ArgumentParser's `main`, except that a usage
+    /// error prints `usageErrorMessage(for:)`. N3-08: every usage error reads
+    /// the same way, an `Error:` line, then `Usage:` and `See '…--help'`.
+    /// ArgumentParser alone adds a `Help:` line describing the option to a
+    /// missing-argument error, which no other usage error has.
+    public static func main(_ arguments: [String]?) async {
+        do {
+            var command = try parseAsRoot(arguments)
+            if var asyncCommand = command as? AsyncParsableCommand {
+                try await asyncCommand.run()
+            } else {
+                try command.run()
+            }
+        } catch {
+            guard exitCode(for: error) == .validationFailure else { exit(withError: error) }
+            FileHandle.standardError.write(Data((usageErrorMessage(for: error) + "\n").utf8))
+            exit(withError: ExitCode.validationFailure)
+        }
+    }
+
+    /// The message for a usage error: ArgumentParser's, without the `Help:`
+    /// lines it adds only to a missing-argument error.
+    public static func usageErrorMessage(for error: Error) -> String {
+        fullMessage(for: error)
+            .components(separatedBy: "\n")
+            .filter { !$0.hasPrefix("Help:") }
+            .joined(separator: "\n")
+    }
 
     /// `console releases update` took the new version as `--version
     /// <version>`, which shadowed the `--version` flag every command
