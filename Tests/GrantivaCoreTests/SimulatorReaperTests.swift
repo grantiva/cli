@@ -61,6 +61,36 @@ final class SimulatorReaperTests: XCTestCase {
         XCTAssertFalse(result.reclaimed)
     }
 
+    /// K79/D2-30: a dead parent can leave WDA's xcodebuild in a separate
+    /// process group. Reclaim the helper whose argv writes into this Grantiva
+    /// device home, while leaving a developer's same-UDID xcodebuild alone.
+    func testForceTeardownReclaimsOnlyOwnershipValidatedSameUDIDHelpers() async throws {
+        let directory = temporaryDirectory()
+        let runner = "\(directory)/runner"
+        let ownedHome = "\(runner)/versions/v1/devices/\(udid)/run-701-dead"
+        let snapshot = """
+        81001 81001 /usr/bin/xcodebuild test-without-building -destination id=\(udid) -xctestrun \(ownedHome)/wda.xctestrun
+        81002 81002 /usr/bin/xcodebuild test-without-building -destination id=\(udid) -xctestrun /private/tmp/developer/wda.xctestrun
+        81003 81003 /usr/bin/xcrun simctl diagnose --udid=\(udid) --output=\(ownedHome)/diagnose
+        81004 81004 /usr/bin/xcrun simctl diagnose --udid=\(udid) --output=/private/tmp/developer/diagnose
+        """
+        let result = try await SimulatorReaper.forceTeardown(
+            udid: udid,
+            capacity: SimulatorCapacity(directory: directory),
+            leaseDirectory: directory,
+            runnerBase: runner,
+            sessions: KeepAliveSessionStore(directory: "\(directory)/sessions"),
+            snapshot: { snapshot },
+            gracePeriod: 0
+        )
+
+        XCTAssertEqual(result.processes.map(\.pid), [81001, 81003])
+        XCTAssertEqual(result.processes.map(\.kind), [.webDriverAgent, .diagnose])
+        XCTAssertFalse(result.processes.map(\.pid).contains(81002))
+        XCTAssertFalse(result.processes.map(\.pid).contains(81004))
+        XCTAssertTrue(result.reclaimed)
+    }
+
     func testFindsRunnerWebDriverAgentAndDiagnose() {
         let found = SimulatorReaper.processes(owning: udid, psOutput: sample)
         let byPID = Dictionary(uniqueKeysWithValues: found.map { ($0.pid, $0.kind) })
@@ -341,10 +371,12 @@ final class SimulatorReaperTests: XCTestCase {
         }
         let pid = late.processIdentifier
         let freshPID = fresh.processIdentifier
+        let runnerBase = "\(directory)/runner"
+        let diagnoseOutput = "\(runnerBase)/versions/v1/devices/\(udid)/run-\(runner.processIdentifier)-dead/diagnose"
         let snapshots = SnapshotSequence([
             runnerLine,
             runnerLine
-                + "\n  \(pid)  \(pid) /usr/bin/xcrun simctl diagnose --udid=\(udid) --no-archive"
+                + "\n  \(pid)  \(pid) /usr/bin/xcrun simctl diagnose --udid=\(udid) --no-archive --output=\(diagnoseOutput)"
                 + "\n  \(freshPID)  \(freshPID) /opt/homebrew/bin/grantiva run --simulator \(udid)",
         ])
 
@@ -352,6 +384,7 @@ final class SimulatorReaperTests: XCTestCase {
             udid: udid,
             capacity: SimulatorCapacity(directory: directory),
             leaseDirectory: directory,
+            runnerBase: runnerBase,
             sessions: KeepAliveSessionStore(directory: "\(directory)/sessions"),
             snapshot: { snapshots.next() },
             gracePeriod: 1

@@ -180,6 +180,16 @@ public enum SimulatorReaper {
         }
         let psOutput = try await takeSnapshot()
         var targets = processes(owning: udid, psOutput: psOutput, excludingPID: getpid())
+        let helperOwnership = RunnerHelperReaper.live(runnerBase: runnerBase ?? RunnerManager.baseDir)
+        // A device can have an unrelated developer xcodebuild or simctl
+        // diagnose at the same time. Force teardown may reclaim only helpers
+        // writing into Grantiva's device home; the UDID alone is insufficient
+        // ownership proof. Runner/grantiva processes retain their exact argv
+        // ownership checks in `kind(of:owning:)` above.
+        targets.removeAll { target in
+            (target.kind == .webDriverAgent || target.kind == .diagnose)
+                && !helperOwnership.writesIntoDeviceHome(target.command, udid: udid)
+        }
         // Before anything is reaped: whether the lease is held is a question
         // about the processes that are about to be killed.
         let leaseHeld = SimulatorLease.isHeld(udid: udid, directory: leaseDirectory)
@@ -210,7 +220,10 @@ public enum SimulatorReaper {
         if !targets.isEmpty {
             let known = Set(targets.map(\.pid))
             var late = processes(owning: udid, psOutput: try await takeSnapshot(), excludingPID: getpid())
-                .filter { $0.kind == .diagnose && !known.contains($0.pid) }
+                .filter {
+                    $0.kind == .diagnose && !known.contains($0.pid)
+                        && helperOwnership.writesIntoDeviceHome($0.command, udid: udid)
+                }
             reap(&late, gracePeriod: gracePeriod)
             targets += late
         }
