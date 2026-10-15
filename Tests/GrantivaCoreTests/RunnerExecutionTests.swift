@@ -383,10 +383,14 @@ final class RunnerExecutionTests: XCTestCase {
     /// file is written after arming); returns whether the relay would exit.
     private func signalOnceArmed(readyPath: String, release: @escaping @Sendable (pid_t) -> Void = SignalRelay.releaseGroup) -> Task<Bool, Never> {
         Task.detached {
-            // The hold is armed before the ready file is written.
-            for _ in 0..<400 where !FileManager.default.fileExists(atPath: readyPath) {
+            // The hold is armed before the ready file is written. Under heavy
+            // host load the scripted runner can take well over 10 s to get
+            // there; signalling before the hold is armed tests something
+            // else, so wait up to the request's 30 s timeout.
+            for _ in 0..<1_200 where !FileManager.default.fileExists(atPath: readyPath) {
                 try? await Task.sleep(nanoseconds: 25_000_000)
             }
+            XCTAssertTrue(FileManager.default.fileExists(atPath: readyPath), "the hold was never armed")
             return SignalRelay.shared.simulateSignalForTesting(SIGINT, release: release)
         }
     }

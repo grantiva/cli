@@ -212,7 +212,9 @@ final class SimulatorCapacityTests: XCTestCase {
     // MARK: - K67: waiting on a twin is not a capacity wait
 
     func testAPendingRecordOfAnotherLiveProcessUnderTheLimitIsADeviceWait() async throws {
-        let capacity = SimulatorCapacity(directory: directory, maximum: 6, waitTimeout: 0.05, pollInterval: 0.01)
+        // Long enough that the first poll reports its wait even on a loaded
+        // host: a first pass slower than the timeout times out unreported.
+        let capacity = SimulatorCapacity(directory: directory, maximum: 6, waitTimeout: 1, pollInterval: 0.01)
         let simulator = device(1, state: "Shutdown")
         let owner = capacity.sessionId ?? "simulator:\(simulator.udid)"
         let twin = ManagedSimulatorSession(
