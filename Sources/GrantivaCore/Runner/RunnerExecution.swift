@@ -130,6 +130,11 @@ enum RunnerExecution {
         // it started — and then releases the lease so the next run is not
         // refused by a lock whose owner is gone.
         SignalRelay.shared.track(group: child.processGroup, deviceNoun: SignalRelay.deviceNoun(for: request.platform ?? .ios))
+        // WebDriverAgent's xcodebuild runs in a group of its own: interrupted
+        // before WDA is up, the runner leaves it behind (B4-L72.3).
+        if request.platform != .android {
+            RunnerHelperReaper.reapOnInterrupt(group: child.processGroup, udid: request.lease.udid)
+        }
         let lease = request.lease
         let readyFile = request.readyFile
         let readyToken = SignalRelay.shared.beforeTermination {

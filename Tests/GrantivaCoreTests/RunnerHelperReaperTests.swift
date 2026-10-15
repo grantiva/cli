@@ -163,6 +163,33 @@ final class RunnerHelperReaperTests: XCTestCase {
         XCTAssertFalse(alive.value.contains(102))
     }
 
+    /// B4-L72.3: Ctrl-C while `runner start` (or `run`) is still starting.
+    /// The runner is gone, but WebDriverAgent's xcodebuild, in a group of its
+    /// own, was reparented to launchd and later starts a diagnose. The
+    /// interrupt reap ends it with SIGKILL at once (SIGINT is what makes it
+    /// start the diagnose) and takes a diagnose already running with it,
+    /// blocking because the signal relay's cleanups are synchronous.
+    func testAnInterruptReapKillsTheOrphanedXcodebuildAtOnceAndItsDiagnose() {
+        let run = "\(base)/versions/1.1.28/devices/\(udid)/cache/wda-builds/sim-ios26.0-iphone-wda16.12.8-r1/devices/\(udid)/run-100-1792089048161055000"
+        let orphan = "101     1   101 /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building "
+            + "-xctestrun \(run)/Products/WebDriverAgentRunner_iphonesimulator27.0-arm64.xctestrun "
+            + "-destination platform=iOS Simulator,arch=arm64,id=\(udid) -derivedDataPath \(run)/DerivedData"
+        let otherRun = orphan.replacingOccurrences(of: "run-100-", with: "run-200-").replacingOccurrences(of: "101 ", with: "103 ")
+        let table = Locked([orphan, diagnose(ppid: 101), otherRun].joined(separator: "\n"))
+        let signals = Locked<[String]>([])
+        let alive = Locked<Set<Int32>>([101, 102, 103])
+        let reaper = reaper(table: table, signals: signals, alive: alive)
+
+        let reaped = reaper.reapAfterInterrupt(runnerPid: 100, udid: udid)
+
+        XCTAssertEqual(reaped.map(\.pid), [101, 102])
+        XCTAssertTrue(signals.value.contains("KILL 101"), "\(signals.value)")
+        XCTAssertTrue(signals.value.contains("KILL -101"), "\(signals.value)")
+        XCTAssertFalse(signals.value.contains("INT 101"), "xcodebuild must not get SIGINT: \(signals.value)")
+        XCTAssertFalse(signals.value.contains { $0.hasSuffix(" 103") }, "another run's xcodebuild is not ours: \(signals.value)")
+        XCTAssertEqual(alive.value, [103])
+    }
+
     func testParsesPidParentGroupAndCommand() {
         let rows = HostProcess.parse("  101   100   100 /usr/bin/xcodebuild test-without-building\nnot a row\n")
         XCTAssertEqual(rows, [HostProcess(pid: 101, ppid: 100, pgid: 100, command: "/usr/bin/xcodebuild test-without-building")])

@@ -184,6 +184,57 @@ public struct RunnerHelperReaper: Sendable {
         await reap(udid: udid, lineage: RunnerLineage(runnerPid: exitedRunnerPid), followLineage: false)
     }
 
+    /// After an interrupt stopped runner `runnerPid` (B4-L72.3): ends the
+    /// helpers still writing into its run directory. Interrupted while WDA is
+    /// still starting, the runner leaves WebDriverAgent's `xcodebuild
+    /// test-without-building` (a process group of its own) to launchd, where
+    /// it later starts a 600 s `simctl diagnose`. That xcodebuild takes
+    /// SIGKILL at once (SIGINT is what makes it start the diagnose); a
+    /// diagnose already running gets SIGINT, then SIGKILL. A second round
+    /// catches a diagnose started while the first one ran.
+    ///
+    /// Blocks for at most `timeout`: the signal relay runs it from its
+    /// synchronous cleanup, before it releases the device and exits.
+    @discardableResult
+    public func reapAfterInterrupt(runnerPid: Int32, udid: String, timeout: TimeInterval = 8) -> [ReapedProcess] {
+        guard runnerPid > 1, !udid.isEmpty else { return [] }
+        var reaper = self
+        reaper.killsXcodebuildAtOnce = true
+        reaper.deadline = Date().addingTimeInterval(timeout)
+        let result = ReapResult()
+        let done = DispatchSemaphore(value: 0)
+        Task.detached {
+            var reaped: [ReapedProcess] = []
+            for _ in 0..<2 {
+                let round = await reaper.sweep(exitedRunnerPid: runnerPid, udid: udid).filter { found in
+                    !reaped.contains { $0.pid == found.pid && $0.command == found.command }
+                }
+                reaped += round
+                if round.isEmpty { break }
+                if let deadline = reaper.deadline, Date() >= deadline { break }
+            }
+            result.set(reaped)
+            done.signal()
+        }
+        _ = done.wait(timeout: .now() + timeout + 1)
+        return result.value.sorted { $0.pid < $1.pid }
+    }
+
+    /// Has an interrupt that stops the iOS runner leading `group` also end
+    /// the helpers it left outside the group (`reapAfterInterrupt`).
+    public static func reapOnInterrupt(group: pid_t, udid: String, relay: SignalRelay = .shared) {
+        relay.afterGroupTermination(group: group) {
+            RunnerHelperReaper.live().reapAfterInterrupt(runnerPid: group, udid: udid)
+        }
+    }
+
+    private final class ReapResult: @unchecked Sendable {
+        private let lock = NSLock()
+        private var stored: [ReapedProcess] = []
+        var value: [ReapedProcess] { lock.withLock { stored } }
+        func set(_ value: [ReapedProcess]) { lock.withLock { stored = value } }
+    }
+
     /// After a teardown stopped the runners on `udid` (L63): ends the
     /// WebDriverAgent `xcodebuild` and `simctl diagnose` still writing into
     /// the device's runner home (`<runner home>/…/devices/<udid>`), so the

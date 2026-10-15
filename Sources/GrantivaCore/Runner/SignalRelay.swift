@@ -32,6 +32,9 @@ public final class SignalRelay: @unchecked Sendable {
     private var installed = false
     private var sources: [DispatchSourceSignal] = []
     private var groups: [pid_t] = []
+    /// Per tracked group: what ends the helpers its runner started outside
+    /// the group (B4-L72.3).
+    private var groupHelperReaps: [pid_t: @Sendable () -> Void] = [:]
     private var beforeTerminationCleanups: [(id: UInt64, body: @Sendable () -> Void)] = []
     private var cleanups: [(id: UInt64, body: @Sendable () -> Void)] = []
     private var nextID: UInt64 = 1
@@ -102,6 +105,16 @@ public final class SignalRelay: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         groups.removeAll { $0 == pgid }
+        groupHelperReaps[pgid] = nil
+    }
+
+    /// Registers `body` to run once the tracked group `pgid` has been
+    /// stopped by an interrupt, before the cleanups release the device: it
+    /// ends what the runner started outside its own group, which signalling
+    /// the group never reaches (WebDriverAgent's `xcodebuild` and the
+    /// `simctl diagnose` it starts, B4-L72.3). Dropped by `untrack(group:)`.
+    public func afterGroupTermination(group pgid: pid_t, _ body: @escaping @Sendable () -> Void) {
+        lock.withLock { groupHelperReaps[pgid] = body }
     }
 
     /// Registers work to run when grantiva is interrupted — releasing a lease,
@@ -280,6 +293,7 @@ public final class SignalRelay: @unchecked Sendable {
         // exit must already see that this was an interrupt.
         terminating = true
         let trackedGroups = groups
+        let helperReaps = groups.compactMap { groupHelperReaps[$0] }
         let pendingBeforeTermination = beforeTerminationCleanups.map(\.body)
         let pendingCleanups = cleanups.map(\.body)
         lock.unlock()
@@ -292,6 +306,7 @@ public final class SignalRelay: @unchecked Sendable {
         for pgid in trackedGroups {
             ChildProcess.terminateGroup(pgid, gracePeriod: 5)
         }
+        for reap in helperReaps { reap() }
         for cleanup in pendingCleanups { cleanup() }
         return true
     }
