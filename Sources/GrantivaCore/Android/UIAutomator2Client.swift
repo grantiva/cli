@@ -103,9 +103,9 @@ public enum UIAutomator2 {
 enum UIAutomator2Requests {
     static func send(
         _ transport: UIAutomator2Transport, _ method: String, _ url: String,
-        _ body: [String: Any]? = nil, failure: String
+        _ body: [String: Any]? = nil, failure: String, timeoutInterval: TimeInterval = 60
     ) async throws -> [String: Any] {
-        var request = URLRequest(url: URL(string: url)!, timeoutInterval: 60)
+        var request = URLRequest(url: URL(string: url)!, timeoutInterval: timeoutInterval)
         request.httpMethod = method
         if let body {
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -269,14 +269,18 @@ extension DriverClient {
                     } catch {
                         pasteError = error
                     }
-                    do {
+                    let restore = Task.detached {
                         _ = try await R.send(
                             transport, "POST", "\(session)/appium/device/set_clipboard",
                             ["content": previousBase64, "contentType": "plaintext"],
-                            failure: "Failed to restore the Android clipboard"
+                            failure: "Failed to restore the Android clipboard", timeoutInterval: 5
                         )
+                    }
+                    do {
+                        _ = try await restore.value
                     } catch {
                         if let pasteError {
+                            if pasteError is CancellationError { throw pasteError }
                             throw GrantivaError.commandFailed(
                                 "\(pasteError.localizedDescription); also failed to restore the Android clipboard: \(error.localizedDescription)", 1
                             )

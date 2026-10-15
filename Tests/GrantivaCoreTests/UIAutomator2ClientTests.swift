@@ -22,6 +22,56 @@ final class ScriptedTransport: @unchecked Sendable {
     }
 }
 
+
+private final class CancellationRestoreTransport: @unchecked Sendable {
+    private let lock = NSLock()
+    private var recordedPaths: [String] = []
+    private var restoreCancellation: Bool?
+    private var restoredContentValue: String?
+    private var restoreTimeoutValue: TimeInterval?
+    let originalClipboard = Data("private clipboard".utf8).base64EncodedString()
+
+    var paths: [String] { lock.withLock { recordedPaths } }
+    var restoreWasCancelled: Bool? { lock.withLock { restoreCancellation } }
+    var restoredContent: String? { lock.withLock { restoredContentValue } }
+    var restoreTimeout: TimeInterval? { lock.withLock { restoreTimeoutValue } }
+
+    var transport: UIAutomator2Transport {
+        UIAutomator2Transport { request in
+            let path = request.url?.path ?? ""
+            self.lock.withLock { self.recordedPaths.append(path) }
+            switch path {
+            case let path where path.hasSuffix("/element/active"):
+                return (Data(#"{"value":{"ELEMENT":"f1"}}"#.utf8), 200)
+            case let path where path.hasSuffix("/get_clipboard"):
+                return (Data("{\"value\":\"\(self.originalClipboard)\"}".utf8), 200)
+            case let path where path.hasSuffix("/press_keycode"):
+                withUnsafeCurrentTask { $0?.cancel() }
+                throw CancellationError()
+            case let path where path.hasSuffix("/set_clipboard"):
+                let calls = self.lock.withLock { self.recordedPaths.filter { $0.hasSuffix("/set_clipboard") }.count }
+                if calls == 2 {
+                    let body: [String: Any]?
+                    if let data = request.httpBody {
+                        body = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
+                    } else {
+                        body = nil
+                    }
+                    self.lock.withLock {
+                        self.restoreCancellation = Task.isCancelled
+                        self.restoredContentValue = body?["content"] as? String
+                        self.restoreTimeoutValue = request.timeoutInterval
+                    }
+                    if Task.isCancelled { throw CancellationError() }
+                }
+                return (Data(#"{"value":null}"#.utf8), 200)
+            default:
+                return (Data(#"{"value":{"error":"unexpected request"}}"#.utf8), 500)
+            }
+        }
+    }
+}
+
 final class UIAutomator2ClientTests: XCTestCase {
     private let sessions = #"{"sessionId":"None","value":[{"id":"abc-123","capabilities":{}}]}"#
     private let noSessions = #"{"sessionId":"None","value":[]}"#
@@ -230,6 +280,23 @@ final class UIAutomator2ClientTests: XCTestCase {
             }
             XCTAssertEqual(transport.calls.map(\.path), ["/wd/hub/session/abc-123/element/active"])
         }
+    }
+
+    func testUnicodeCancellationRestoresClipboardOutsideCancelledTask() async {
+        let scripted = CancellationRestoreTransport()
+        do {
+            try await DriverClient.uiAutomator2(
+                endpoint: UIAutomator2Endpoint(localPort: 7000, sessionID: "abc-123"),
+                scale: 2, transport: scripted.transport
+            ).typeText("👨‍👩‍👧‍👦")
+            XCTFail("expected cancellation")
+        } catch {
+            XCTAssertTrue(error is CancellationError, "\(error)")
+        }
+        XCTAssertEqual(scripted.restoreWasCancelled, false)
+        XCTAssertEqual(scripted.restoredContent, scripted.originalClipboard)
+        XCTAssertEqual(scripted.restoreTimeout, 5)
+        XCTAssertEqual(scripted.paths.filter { $0.hasSuffix("/set_clipboard") }.count, 2)
     }
 
     func testUnicodeClipboardReadFailureDoesNotMutateClipboardOrType() async {
