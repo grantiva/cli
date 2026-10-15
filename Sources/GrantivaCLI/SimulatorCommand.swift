@@ -204,9 +204,9 @@ struct SimulatorCommand: AsyncParsableCommand {
             }
         }
 
-        /// The devices whose runner sessions teardown stops: only those it
-        /// will act on. A `--udid` without `--force` and without a ledger
-        /// record is a no-op teardown, so it stops nothing either.
+        /// Stops runners on managed devices, forced targets, or a target with
+        /// a validated foreground Grantiva owner. Without any of those,
+        /// an unmanaged device and its sessions are left alone.
         static func runnerStopTargets(
             udid: String?, sessionId: String?, force: Bool, managed: [ManagedSimulatorSession],
             hasForegroundOwner: Bool = false
