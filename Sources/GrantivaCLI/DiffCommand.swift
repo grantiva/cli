@@ -50,7 +50,7 @@ struct DiffCommand: AsyncParsableCommand {
 
         func run() async throws {
             options.applyRunnerNarration()
-            let (platform, config) = try platformOptions.loadConfig()
+            let (platform, config) = try platformOptions.loadConfig(fallback: target.fallbackPlatform)
             try target.checkFlags(for: platform, derivedDataPath: buildOptions.derivedDataPath)
             // No config means no screens: say so before scheme resolution,
             // with the same sentence `run` gives.
@@ -318,9 +318,9 @@ struct DiffCommand: AsyncParsableCommand {
             let platform: Platform
             let config: GrantivaConfig?
             if capture {
-                (platform, config) = try platformOptions.loadConfig()
+                (platform, config) = try platformOptions.loadConfig(fallback: target.fallbackPlatform)
             } else {
-                platform = try platformOptions.resolve()
+                platform = try platformOptions.resolve(fallback: target.fallbackPlatform)
                 config = try GrantivaConfig.loadIfPresent(platform: platform)
             }
             let captureDir = DiffCommand.captureDirectory(for: platform)

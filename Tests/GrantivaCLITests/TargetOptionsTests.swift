@@ -39,6 +39,15 @@ final class TargetOptionsTests: XCTestCase {
         }
     }
 
+    /// D2-12: with nothing else naming a platform, an Android-only target
+    /// flag picks Android; `--simulator` (or no target) keeps iOS.
+    func testFallbackPlatformFollowsTheTargetFlags() throws {
+        XCTAssertEqual(try TargetOptions.parse([]).fallbackPlatform, .ios)
+        XCTAssertEqual(try TargetOptions.parse(["--device", "emulator-5560"]).fallbackPlatform, .android)
+        XCTAssertEqual(try TargetOptions.parse(["--emulator", "Pixel"]).fallbackPlatform, .android)
+        XCTAssertEqual(try TargetOptions.parse(["--simulator", "iPhone 17", "--device", "emulator-5560"]).fallbackPlatform, .ios)
+    }
+
     func testDeviceSerialIsValidated() throws {
         XCTAssertThrowsError(try TargetOptions.parse(["--device", "not a serial"]).checkFlags(for: .android, derivedDataPath: nil))
     }

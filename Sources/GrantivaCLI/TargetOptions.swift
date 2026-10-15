@@ -69,6 +69,18 @@ struct TargetFlags<Boot: BootFlagVisibility>: ParsableArguments {
         try requireExclusive(("--device", device != nil), ("--emulator", emulator != nil))
     }
 
+    /// The platform when nothing else names one (no `--platform`,
+    /// GRANTIVA_PLATFORM, config file or project files): an Android-only
+    /// target (`--device`, `--emulator`) picks Android over the iOS default,
+    /// unless `--simulator` names an iOS one too (D2-12).
+    var fallbackPlatform: Platform {
+        Self.fallbackPlatform(simulator: simulator, emulator: emulator, device: device)
+    }
+
+    static func fallbackPlatform(simulator: String?, emulator: String?, device: String?) -> Platform {
+        simulator == nil && (device != nil || emulator != nil) ? .android : .ios
+    }
+
     var androidOptions: AndroidPlatform.Options {
         AndroidPlatform.Options(allowDeviceSettings: allowDeviceSettings, headless: headless)
     }

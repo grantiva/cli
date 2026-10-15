@@ -347,7 +347,7 @@ struct RunCommand: AsyncParsableCommand {
     }
 
     private func execute() async throws {
-        let (platform, config) = try platformOptions.loadConfig(includeMaestroDirectory: flow == nil)
+        let (platform, config) = try platformOptions.loadConfig(includeMaestroDirectory: flow == nil, fallback: target.fallbackPlatform)
         try target.checkFlags(
             for: platform, derivedDataPath: buildOptions.derivedDataPath,
             logsPredicate: logsPredicate, logsTag: logsTag

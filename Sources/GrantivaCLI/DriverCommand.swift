@@ -175,7 +175,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
             return
         }
 
-        let (platform, config) = try platformOptions.loadConfig()
+        let (platform, config) = try platformOptions.loadConfig(
+            fallback: TargetOptions.fallbackPlatform(simulator: simulator, emulator: emulator, device: device)
+        )
         if platform == .ios {
             if emulator != nil { throw TargetOptions.otherPlatformFlagError("--emulator", platform: .ios) }
             if device != nil { throw TargetOptions.otherPlatformFlagError("--device", platform: .ios) }

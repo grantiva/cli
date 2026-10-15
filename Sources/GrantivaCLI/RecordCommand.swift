@@ -52,7 +52,7 @@ struct RecordCommand: AsyncParsableCommand {
         try requireExclusive(("--device", device != nil), ("--emulator", emulator != nil))
         // The extension depends on the platform, so resolve it first (L26-a).
         // When it cannot be resolved here, run() reports why.
-        if let output, let platform = try? platformOptions.resolve(),
+        if let output, let platform = try? platformOptions.resolve(fallback: fallbackPlatform),
            let problem = Self.outputExtensionProblem(output, platform: platform) {
             throw ValidationError(problem)
         }
@@ -67,6 +67,12 @@ struct RecordCommand: AsyncParsableCommand {
         guard Double(last) > durationMilliseconds.rounded(.toNearestOrEven) else { return nil }
         let shownDuration = duration.rounded() == duration ? String(Int(duration)) : String(duration)
         return "--frames-at \(last) is past --duration \(shownDuration) (\(Int(durationMilliseconds.rounded())) ms)."
+    }
+
+    /// The platform when nothing else names one: `--device` and `--emulator`
+    /// are Android targets, so either picks Android over the iOS default (D2-12).
+    var fallbackPlatform: Platform {
+        TargetOptions.fallbackPlatform(simulator: simulator, emulator: emulator, device: device)
     }
 
     /// The parsed, de-duplicated `--frames-at` values. `validate()` has
@@ -212,7 +218,7 @@ struct RecordCommand: AsyncParsableCommand {
     }
 
     func run() async throws {
-        let (platform, config) = try platformOptions.loadConfig()
+        let (platform, config) = try platformOptions.loadConfig(fallback: fallbackPlatform)
         let targetName = try Self.target(platform: platform, simulator: simulator, emulator: emulator, device: device, config: config)
         if platform == .android, !(duration.isFinite && duration <= Double(AndroidPlatform.maximumRecordingSeconds)) {
             throw GrantivaError.invalidArgument(

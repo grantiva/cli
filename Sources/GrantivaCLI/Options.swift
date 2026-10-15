@@ -166,12 +166,15 @@ struct PlatformOptions: ParsableArguments {
     /// GRANTIVA_PLATFORM, no config file, no project files in this directory)
     /// the answer is iOS: before Android support every command was iOS and ran
     /// fine without a project here (`--app-file` + `--bundle-id`, a project in
-    /// a subdirectory, `diff compare` over existing captures).
+    /// a subdirectory, `diff compare` over existing captures). A command
+    /// given an Android-only target (`--device`, `--emulator`) passes
+    /// `fallback: .android` so that target decides instead (D2-12).
     func resolve(
         directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true),
-        environment: [String: String] = ProcessInfo.processInfo.environment
+        environment: [String: String] = ProcessInfo.processInfo.environment,
+        fallback: Platform = .ios
     ) throws -> Platform {
-        try PlatformResolver(directory: directory, environment: environment).resolveOrDefault(flag: platform)
+        try PlatformResolver(directory: directory, environment: environment).resolveOrDefault(flag: platform, fallback: fallback)
     }
 
     /// Resolves the platform and loads its config file. A missing file yields
@@ -185,10 +188,11 @@ struct PlatformOptions: ParsableArguments {
     func loadConfig(
         directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true),
         environment: [String: String] = ProcessInfo.processInfo.environment,
-        includeMaestroDirectory: Bool = true
+        includeMaestroDirectory: Bool = true,
+        fallback: Platform = .ios
     ) throws -> (Platform, GrantivaConfig?) {
         let resolver = PlatformResolver(directory: directory, environment: environment)
-        let resolved = try resolve(directory: directory, environment: environment)
+        let resolved = try resolve(directory: directory, environment: environment, fallback: fallback)
         let envValue = environment[PlatformResolver.environmentKey] ?? ""
         let source: String? = platform != nil
             ? "--platform \(resolved.rawValue)"

@@ -32,7 +32,7 @@ struct BuildOnlyCommand: AsyncParsableCommand {
     var devicePlatform = InjectedDevicePlatform()
 
     func run() async throws {
-        let (platform, config) = try platformOptions.loadConfig()
+        let (platform, config) = try platformOptions.loadConfig(fallback: target.fallbackPlatform)
         try target.checkFlags(for: platform, derivedDataPath: derivedDataPath)
         let device = try devicePlatform.make(platform, android: target.androidOptions)
 
@@ -116,7 +116,7 @@ struct InstallCommand: AsyncParsableCommand {
     var containerLookup = ContainerLookup()
 
     func run() async throws {
-        let (platform, config) = try platformOptions.loadConfig()
+        let (platform, config) = try platformOptions.loadConfig(fallback: target.fallbackPlatform)
         try target.checkFlags(for: platform, derivedDataPath: buildOptions.derivedDataPath)
         let device = try devicePlatform.make(platform, android: target.androidOptions)
 
