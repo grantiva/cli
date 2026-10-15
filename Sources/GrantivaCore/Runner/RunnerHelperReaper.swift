@@ -114,7 +114,8 @@ public struct RunnerHelperReaper: Sendable {
     public var deadline: Date?
     /// When true (a teardown, L63), the lineage reap SIGKILLs the stopped
     /// run's `xcodebuild test-without-building` at once instead of SIGINT,
-    /// which would make it start a diagnose. `runner stop` leaves it false.
+    /// which would make it start a diagnose. `sweep` (the runner already
+    /// exited) always does; `runner stop` of a live runner leaves it false.
     public var killsXcodebuildAtOnce = false
 
     public init(
@@ -141,8 +142,21 @@ public struct RunnerHelperReaper: Sendable {
             snapshot: { try await HostProcess.snapshot() },
             signal: { _ = kill($0, $1) },
             isAlive: KeepAliveSessionStore.processIsAlive,
-            runnerBases: Array(Set([runnerBase, resolved, standardized]))
+            runnerBases: Array(Set([runnerBase, resolved, standardized].flatMap(privateSpellings)))
         )
+    }
+
+    /// `path` and its other spelling across macOS's `/private` symlinks:
+    /// xcodebuild writes a `/private/tmp/...` result bundle path as
+    /// `/tmp/...` in the `simctl diagnose` it starts.
+    static func privateSpellings(_ path: String) -> [String] {
+        for root in ["/tmp", "/var", "/etc"] {
+            if path == "/private" + root || path.hasPrefix("/private" + root + "/") {
+                return [path, String(path.dropFirst("/private".count))]
+            }
+            if path == root || path.hasPrefix(root + "/") { return [path, "/private" + path] }
+        }
+        return [path]
     }
 
     /// Does nothing: no snapshot, no signal. The default where a caller has
@@ -180,8 +194,25 @@ public struct RunnerHelperReaper: Sendable {
 
     /// For a runner that had already exited: ends only helpers that write
     /// into its run directory.
-    public func sweep(exitedRunnerPid: Int32, udid: String) async -> [ReapedProcess] {
-        await reap(udid: udid, lineage: RunnerLineage(runnerPid: exitedRunnerPid), followLineage: false)
+    ///
+    /// With the runner gone (a `kill -9`), its WebDriverAgent `xcodebuild
+    /// test-without-building` is an orphan, and SIGINT is what makes an
+    /// xcodebuild start a 600 s `simctl diagnose`: it takes SIGKILL at once.
+    /// A diagnose already running gets SIGINT, then SIGKILL; the table is
+    /// read again, up to `rounds` times, for a diagnose started meanwhile.
+    public func sweep(exitedRunnerPid: Int32, udid: String, rounds: Int = 2) async -> [ReapedProcess] {
+        var reaper = self
+        reaper.killsXcodebuildAtOnce = true
+        var reaped: [ReapedProcess] = []
+        for _ in 0..<max(rounds, 1) {
+            let round = await reaper.reap(
+                udid: udid, lineage: RunnerLineage(runnerPid: exitedRunnerPid), followLineage: false, excluding: reaped
+            )
+            reaped += round
+            if round.isEmpty { break }
+            if let deadline, Date() >= deadline { break }
+        }
+        return reaped.sorted { $0.pid < $1.pid }
     }
 
     /// After an interrupt stopped runner `runnerPid` (B4-L72.3): ends the
@@ -199,25 +230,15 @@ public struct RunnerHelperReaper: Sendable {
     public func reapAfterInterrupt(runnerPid: Int32, udid: String, timeout: TimeInterval = 8) -> [ReapedProcess] {
         guard runnerPid > 1, !udid.isEmpty else { return [] }
         var reaper = self
-        reaper.killsXcodebuildAtOnce = true
         reaper.deadline = Date().addingTimeInterval(timeout)
         let result = ReapResult()
         let done = DispatchSemaphore(value: 0)
         Task.detached {
-            var reaped: [ReapedProcess] = []
-            for _ in 0..<2 {
-                let round = await reaper.sweep(exitedRunnerPid: runnerPid, udid: udid).filter { found in
-                    !reaped.contains { $0.pid == found.pid && $0.command == found.command }
-                }
-                reaped += round
-                if round.isEmpty { break }
-                if let deadline = reaper.deadline, Date() >= deadline { break }
-            }
-            result.set(reaped)
+            result.set(await reaper.sweep(exitedRunnerPid: runnerPid, udid: udid))
             done.signal()
         }
         _ = done.wait(timeout: .now() + timeout + 1)
-        return result.value.sorted { $0.pid < $1.pid }
+        return result.value
     }
 
     /// Has an interrupt that stops the iOS runner leading `group` also end
@@ -293,7 +314,9 @@ public struct RunnerHelperReaper: Sendable {
         }
     }
 
-    private func reap(udid: String, lineage: RunnerLineage, followLineage: Bool = true) async -> [ReapedProcess] {
+    private func reap(
+        udid: String, lineage: RunnerLineage, followLineage: Bool = true, excluding done: [ReapedProcess] = []
+    ) async -> [ReapedProcess] {
         guard !udid.isEmpty, let table = try? await snapshot() else { return [] }
         var lineage = lineage
         let processes = HostProcess.parse(table)
@@ -302,6 +325,7 @@ public struct RunnerHelperReaper: Sendable {
         let byPid = RunnerLineage.byPid(processes)
         var targets = processes.compactMap { process -> ReapedProcess? in
             guard process.pid > 1, process.pid != me,
+                  !done.contains(where: { $0.pid == process.pid && $0.command == process.command }),
                   let kind = SimulatorReaper.kind(of: process.command, owning: udid), kind != .grantiva,
                   (followLineage && lineage.owns(process, in: byPid))
                     || writesIntoRunDirectory(process.command, runnerPid: lineage.runnerPid, udid: udid)
