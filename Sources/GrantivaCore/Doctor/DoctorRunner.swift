@@ -243,14 +243,15 @@ public struct DoctorRunner: Sendable {
         let name = platform.configFileName
         let path = "\(directory)/\(name)"
         if FileManager.default.fileExists(atPath: path) {
-            // The same parse `run` does, so a file `run` refuses is not "Found".
-            // `parse` rather than `load`: load also logs the unknown-key
-            // warnings, which doctor reports itself below.
+            // Share command loading, including relative Maestro references.
+            // Doctor presents warnings itself rather than logging them twice.
             let config: GrantivaConfig
             do {
-                config = try GrantivaConfig.parse(
-                    String(contentsOfFile: path, encoding: .utf8), platform: platform, fileName: name
-                )
+                guard let loaded = try GrantivaConfig.loadIfPresent(
+                    platform: platform, from: URL(fileURLWithPath: directory),
+                    includeMaestroDirectory: false, emitWarnings: false
+                ) else { throw GrantivaError.configNotFound }
+                config = loaded
             } catch {
                 var message = (error as? GrantivaError).flatMap { error -> String? in
                     if case .invalidArgument(let message) = error { return message }

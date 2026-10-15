@@ -318,7 +318,8 @@ public struct GrantivaConfig: Sendable, Codable {
     public static func loadIfPresent(
         platform: Platform,
         from directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath),
-        includeMaestroDirectory: Bool = true
+        includeMaestroDirectory: Bool = true,
+        emitWarnings: Bool = true
     ) throws -> GrantivaConfig? {
         let fm = FileManager.default
         let configURL = directory.appendingPathComponent(platform.configFileName)
@@ -326,8 +327,10 @@ public struct GrantivaConfig: Sendable, Codable {
         if fm.fileExists(atPath: configURL.path) {
             let contents = try String(contentsOf: configURL, encoding: .utf8)
             let config = try parse(contents, platform: platform, fileName: platform.configFileName, directory: directory)
-            for warning in config.warnings {
-                GrantivaLog.logger.warning("\(warning)")
+            if emitWarnings {
+                for warning in config.warnings {
+                    GrantivaLog.logger.warning("\(warning)")
+                }
             }
             return config
         }
