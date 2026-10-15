@@ -343,7 +343,7 @@ public final class ChildProcess: @unchecked Sendable {
       signal=$1
       ps -ww -axo pid=,ucomm=,command= | while read -r pid executable command; do
         case "$executable:$command" in
-          xcodebuild:*|xcrun:*"simctl diagnose"*)
+          xcodebuild:*|xcrun:*"simctl diagnose"*|simctl:*" diagnose "*)
             case "$command" in *"$owned_run_needle"*) ;; *) continue ;; esac
             case "$command" in *"$owned_base/"*|*"$canonical_owned_base/"*) ;; *) continue ;; esac
             [ "$pid" = "$$" ] || kill -"$signal" "$pid" 2>/dev/null

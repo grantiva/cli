@@ -224,8 +224,18 @@ final class ChildProcessTests: XCTestCase {
             stdout: output, stderr: output
         )
         XCTAssertEqual(compiler.wait(), 0)
+        let fakeSimctl = suppliedDirectory.appendingPathComponent("simctl")
+        try FileManager.default.copyItem(at: fakeXcodebuild, to: fakeSimctl)
         let owned = try ChildProcess.spawn(
             executable: fakeXcodebuild.path, arguments: [ownedDirectory.path],
+            stdout: output, stderr: output
+        )
+        let ownedDiagnose = try ChildProcess.spawn(
+            executable: fakeSimctl.path, arguments: ["diagnose", "--output", ownedDirectory.path],
+            stdout: output, stderr: output
+        )
+        let ownedNonDiagnose = try ChildProcess.spawn(
+            executable: fakeSimctl.path, arguments: ["list", ownedDirectory.path],
             stdout: output, stderr: output
         )
         let foreign = try ChildProcess.spawn(
@@ -238,14 +248,22 @@ final class ChildProcessTests: XCTestCase {
         defer {
             child.terminateGroup(gracePeriod: 1)
             owned.terminateGroup(gracePeriod: 1)
+            ownedDiagnose.terminateGroup(gracePeriod: 1)
+            ownedNonDiagnose.terminateGroup(gracePeriod: 1)
             foreign.terminateGroup(gracePeriod: 1)
-            _ = child.wait(); _ = owned.wait(); _ = foreign.wait()
+            _ = child.wait(); _ = owned.wait(); _ = ownedDiagnose.wait()
+            _ = ownedNonDiagnose.wait(); _ = foreign.wait()
         }
 
         let ownedReaped = expectation(description: "owned helper reaped")
         DispatchQueue.global(qos: .userInitiated).async {
             _ = owned.wait()
             ownedReaped.fulfill()
+        }
+        let diagnoseReaped = expectation(description: "owned diagnose reaped")
+        DispatchQueue.global(qos: .userInitiated).async {
+            _ = ownedDiagnose.wait()
+            diagnoseReaped.fulfill()
         }
         // The run was supplied through /tmp while the helper exposes the
         // resolved /private/tmp spelling in its argv.
@@ -254,8 +272,13 @@ final class ChildProcessTests: XCTestCase {
         ))
         Darwin.close(lifeline)
         XCTAssertEqual(child.wait(), SIGINT)
-        wait(for: [ownedReaped], timeout: 5)
+        wait(for: [ownedReaped, diagnoseReaped], timeout: 5)
         XCTAssertFalse(owned.isRunning)
+        XCTAssertFalse(ownedDiagnose.isRunning)
+        XCTAssertEqual(kill(ownedNonDiagnose.pid, 0), 0)
+        var nonDiagnoseStatus: Int32 = 0
+        XCTAssertEqual(waitpid(ownedNonDiagnose.pid, &nonDiagnoseStatus, WNOHANG), 0,
+                       "a non-diagnose simctl in the owned directory must remain live")
         XCTAssertEqual(kill(foreign.pid, 0), 0)
         var foreignStatus: Int32 = 0
         XCTAssertEqual(waitpid(foreign.pid, &foreignStatus, WNOHANG), 0, "the foreign helper must be live, not a zombie")
