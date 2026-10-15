@@ -108,6 +108,9 @@ public protocol DevicePlatform: Sendable {
     func build(_ request: PlatformBuildRequest) async throws -> BuildResult
     func install(appID: String, productPath: String, deviceID: String) async throws
     func launch(appID: String, deviceID: String) async throws
+    /// `launch` with launch values for the app: process environment on iOS,
+    /// intent string extras on Android (as the runner's `launchApp` passes them).
+    func launch(appID: String, deviceID: String, environment: [String: String]) async throws
     func terminate(appID: String, deviceID: String) async throws
     func uninstall(appID: String, deviceID: String) async throws
 
@@ -191,4 +194,15 @@ public enum DevicePlatformFactory {
 
 public extension DevicePlatform {
     func runnerFinished(runnerHome: String, deviceID: String) {}
+}
+
+extension DevicePlatform {
+    /// For a platform with no channel for launch values: a launch without
+    /// any is a plain launch, and one with values is refused, not dropped.
+    public func launch(appID: String, deviceID: String, environment: [String: String]) async throws {
+        guard environment.isEmpty else {
+            throw GrantivaError.invalidArgument("This device cannot pass launch environment to \(appID).")
+        }
+        try await launch(appID: appID, deviceID: deviceID)
+    }
 }

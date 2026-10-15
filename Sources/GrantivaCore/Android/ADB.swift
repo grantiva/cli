@@ -95,6 +95,32 @@ public struct ADB: Sendable {
         }
     }
 
+    /// `launch` with string extras on the launch intent, the channel the
+    /// runner's `launchApp: arguments:` uses. monkey cannot carry extras, so
+    /// the launcher activity is resolved and started with `am start`.
+    public func launch(serial: String, applicationId: String, extras: [String: String]) async throws {
+        guard !extras.isEmpty else { return try await launch(serial: serial, applicationId: applicationId) }
+        let resolved = try await shell(
+            serial: serial,
+            "cmd package resolve-activity --brief -c android.intent.category.LAUNCHER \(shellQuoted(applicationId))"
+        )
+        guard let component = resolved.components(separatedBy: .newlines)
+            .map({ $0.trimmingCharacters(in: .whitespaces) })
+            .last(where: { $0.hasPrefix("\(applicationId)/") })
+        else {
+            throw Self.launchFailure(output: Self.monkeyNoActivities, applicationId: applicationId, serial: serial)
+        }
+        let extraArguments = extras.keys.sorted().map { "--es \($0) \(shellQuoted(extras[$0] ?? ""))" }
+        let output = try await shell(
+            serial: serial,
+            "am start -W -n \(shellQuoted(component)) -a android.intent.action.MAIN -c android.intent.category.LAUNCHER "
+                + extraArguments.joined(separator: " ")
+        )
+        if let error = output.components(separatedBy: .newlines).first(where: { $0.hasPrefix("Error") }) {
+            throw GrantivaError.commandFailed("Could not launch \(applicationId) on \(serial): \(error)", 1)
+        }
+    }
+
     static let monkeyNoActivities = "No activities found to run"
 
     /// monkey says "No activities found" for a package that is not installed

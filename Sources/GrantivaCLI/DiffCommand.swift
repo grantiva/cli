@@ -177,6 +177,7 @@ struct DiffCommand: AsyncParsableCommand {
                         screens: resolved.screens, appID: bid, udid: booted.udid, platform: platform,
                         driver: attachment.client, device: device, outputDir: outputDir,
                         expectedPixels: captureTarget.pixelDimensions,
+                        environment: resolved.environment,
                         timeoutSeconds: SessionScreenCapture.defaultTimeoutSeconds
                     )
                 } catch {

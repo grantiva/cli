@@ -92,6 +92,18 @@ final class XcodeBuildRunnerTests: XCTestCase {
             "xcrun simctl uninstall 'A B' 'com.example'",
         ])
     }
+
+    /// Header `env:` through a runner session on iOS: simctl hands
+    /// `SIMCTL_CHILD_`-prefixed variables to the launched app.
+    func testLaunchWithEnvironmentPassesSimctlChildVariables() async throws {
+        let shell = ScriptedShell()
+        try await XcodeBuildRunner(execute: shell.execute).launch(
+            bundleId: "com.example", udid: "UDID-1", environment: ["NOTE": "it's here", "A.b": "1"]
+        )
+        XCTAssertEqual(shell.commands, [
+            "env 'SIMCTL_CHILD_A.b=1' 'SIMCTL_CHILD_NOTE=it'\\''s here' xcrun simctl launch 'UDID-1' 'com.example'",
+        ])
+    }
 }
 
 private final class ScriptedExecutor: @unchecked Sendable {
@@ -106,4 +118,5 @@ private final class ScriptedExecutor: @unchecked Sendable {
         }
     }
     var commands: [String] { lock.withLock { recorded } }
+
 }

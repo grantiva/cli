@@ -245,6 +245,54 @@ final class ADBTests: XCTestCase {
         XCTAssertEqual(warnings.lines.count, 1)
         XCTAssertTrue(warnings.lines[0].contains("/nonexistent/perl is not executable"), warnings.lines[0])
     }
+
+    /// Header `env:` through a runner session on Android: the launcher
+    /// activity is started with each value as a string extra, as the runner's
+    /// `launchApp: arguments:` does (monkey cannot carry extras).
+    func testLaunchWithExtrasStartsTheLauncherActivityWithStringExtras() async throws {
+        let shell = ScriptedShell([
+            .success("priority=0 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=true\ncom.example.app/.MainActivity\n"),
+            .success("Starting: Intent { cmp=com.example.app/.MainActivity (has extras) }"),
+        ])
+        try await ADB(path: adbPath, execute: shell.execute).launch(
+            serial: "emulator-5554", applicationId: "com.example.app", extras: ["NOTE": "it's here", "A": "1"]
+        )
+        XCTAssertEqual(shell.commands.count, 2, "\(shell.commands)")
+        XCTAssertTrue(shell.commands[0].contains("resolve-activity --brief -c android.intent.category.LAUNCHER"), shell.commands[0])
+        let start = shell.commands[1]
+        XCTAssertTrue(start.contains("am start -W -n "), start)
+        XCTAssertTrue(start.contains("com.example.app/.MainActivity"), start)
+        XCTAssertTrue(start.contains("--es A "), start)
+        XCTAssertTrue(start.contains("--es NOTE "), start)
+        XCTAssertLessThan(start.range(of: "--es A ")!.lowerBound, start.range(of: "--es NOTE ")!.lowerBound)
+    }
+
+    func testLaunchWithExtrasOfAPackageWithNoLauncherActivitySaysItIsNotInstalled() async throws {
+        let shell = ScriptedShell([.success("No activity found\n")])
+        do {
+            try await ADB(path: adbPath, execute: shell.execute).launch(
+                serial: "emulator-5554", applicationId: "com.example.app", extras: ["A": "1"]
+            )
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("is not installed"), error.localizedDescription)
+        }
+    }
+
+    func testLaunchWithAnErrorFromAmStartFails() async throws {
+        let shell = ScriptedShell([
+            .success("com.example.app/.MainActivity\n"),
+            .success("Starting: Intent { }\nError: Activity class {com.example.app/.MainActivity} does not exist."),
+        ])
+        do {
+            try await ADB(path: adbPath, execute: shell.execute).launch(
+                serial: "emulator-5554", applicationId: "com.example.app", extras: ["A": "1"]
+            )
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("does not exist"), error.localizedDescription)
+        }
+    }
 }
 
 private final class WarningLog: @unchecked Sendable {
@@ -252,4 +300,5 @@ private final class WarningLog: @unchecked Sendable {
     private var stored: [String] = []
     var lines: [String] { lock.withLock { stored } }
     func append(_ line: String) { lock.withLock { stored.append(line) } }
+
 }

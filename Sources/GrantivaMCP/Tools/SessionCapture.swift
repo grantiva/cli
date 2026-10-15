@@ -110,7 +110,7 @@ extension VRTTools {
             do {
                 captures = try await captureScreens(
                     config.screens, appID: appID, udid: udid, platform: platform, driver: driver, device: device,
-                    outputDir: outputDir, pause: pause
+                    outputDir: outputDir, environment: config.environment, pause: pause
                 )
             } catch {
                 await device.restoreAfterCapture(deviceID: udid)
@@ -141,14 +141,16 @@ extension VRTTools {
     /// once, then each screen's steps followed by its screenshot.
     static func captureScreens(
         _ screens: [GrantivaConfig.Screen], appID: String, udid: String, platform: Platform, driver: DriverClient,
-        device: any DevicePlatform, outputDir: String, pause: @escaping @Sendable (Double) async -> Void
+        device: any DevicePlatform, outputDir: String, environment: [String: String] = [:],
+        pause: @escaping @Sendable (Double) async -> Void
     ) async throws -> [ScreenCapture] {
         // The one launch is timed (terminate, launch, settle): the first
         // launch-only screen reports it; a later one reports null, since the
         // app was not launched again for it. Never 0 (L23).
         let launchStart = Date()
         try? await device.terminate(appID: appID, deviceID: udid)
-        try await device.launch(appID: appID, deviceID: udid)
+        // The config header's `env:`, as the runner's `launchApp` passes it.
+        try await device.launch(appID: appID, deviceID: udid, environment: environment)
         await waitForLaunch(driver: driver, timeout: launchTimeout, pause: pause)
         await settle(driver: driver, timeout: settleTimeout, pause: pause)
         var launchDuration: Double? = Date().timeIntervalSince(launchStart)

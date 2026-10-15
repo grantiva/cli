@@ -149,6 +149,10 @@ public struct AndroidPlatform: DevicePlatform {
         try await adb.launch(serial: deviceID, applicationId: appID)
     }
 
+    public func launch(appID: String, deviceID: String, environment: [String: String]) async throws {
+        try await adb.launch(serial: deviceID, applicationId: appID, extras: environment)
+    }
+
     public func terminate(appID: String, deviceID: String) async throws {
         try await adb.forceStop(serial: deviceID, applicationId: appID)
     }

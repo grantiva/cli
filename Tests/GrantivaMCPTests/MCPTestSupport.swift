@@ -156,6 +156,12 @@ final class MCPFakeDevicePlatform: DevicePlatform, @unchecked Sendable {
         record("launch(\(appID))")
         if launchDelay > 0 { try await Task.sleep(nanoseconds: launchDelay) }
     }
+    func launch(appID: String, deviceID: String, environment: [String: String]) async throws {
+        guard !environment.isEmpty else { return try await launch(appID: appID, deviceID: deviceID) }
+        let values = environment.keys.sorted().map { "\($0)=\(environment[$0] ?? "")" }.joined(separator: ",")
+        record("launch(\(appID),\(values))")
+        if launchDelay > 0 { try await Task.sleep(nanoseconds: launchDelay) }
+    }
     func terminate(appID: String, deviceID: String) async throws { record("terminate(\(appID))") }
     func uninstall(appID: String, deviceID: String) async throws { record("uninstall(\(appID))") }
     func prepareForCapture(deviceID: String) async { record("prepare") }
