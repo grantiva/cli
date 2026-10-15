@@ -97,7 +97,13 @@ enum RunnerExecution {
         request.lease.recordRunner(pid: child.pid, keepAlive: request.keepAlive)
         // If grantiva dies without running its cleanups (`kill -9`), the
         // runner's group is interrupted rather than left holding the device.
-        let lifeline = child.bindLifetimeToParent(sessionDirectory: request.keepAlive ? request.sessions.directory : nil)
+        let lifeline = child.bindLifetimeToParent(
+            sessionDirectory: request.keepAlive ? request.sessions.directory : nil,
+            // Native WDA nests build-config caches between this trusted base
+            // and `devices/<udid>/run-<runner pid>-<nanos>`.
+            ownedRunnerBase: request.workingDirectory,
+            ownedDeviceID: request.lease.udid
+        )
 
         // The runner's own session file (/tmp/grantiva-sessions/<pid>-<ts>.grantiva)
         // carries no simulator UDID. Record udid -> runner pid now, before the

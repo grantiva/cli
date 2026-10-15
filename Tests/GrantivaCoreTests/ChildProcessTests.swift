@@ -191,6 +191,76 @@ final class ChildProcessTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: sessions.appendingPathComponent(other).path))
     }
 
+    /// K79/D2-30: WDA's xcodebuild can leave the runner's process group.
+    /// Parent death reclaims a helper whose argv names this exact run home,
+    /// including one that needs escalation, but leaves a foreign helper.
+    func testTheWatchdogReclaimsOnlyTheOwnedHelperOutsideTheRunnerGroup() throws {
+        let output = try devNullOutput()
+        defer { Darwin.close(output) }
+        let name = "grantiva-watchdog-\(UUID().uuidString)"
+        let suppliedDirectory = URL(fileURLWithPath: "/tmp").appendingPathComponent(name)
+        let child = try ChildProcess.spawn(
+            executable: "/bin/sh", arguments: ["-c", "sleep 30"], stdout: output, stderr: output
+        )
+        let ownedDirectory = URL(fileURLWithPath: "/private/tmp").appendingPathComponent(
+            "\(name)/cache/wda-builds/sim-ios/devices/SIM-A/run-\(child.pid)-123"
+        )
+        let foreignDirectory = URL(fileURLWithPath: "/private/tmp").appendingPathComponent(
+            "\(name)/cache/wda-builds/sim-ios/devices/SIM-B/run-702-123"
+        )
+        try FileManager.default.createDirectory(at: ownedDirectory, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: foreignDirectory, withIntermediateDirectories: true)
+        defer {
+            try? FileManager.default.removeItem(at: suppliedDirectory)
+            try? FileManager.default.removeItem(at: foreignDirectory)
+        }
+        let fakeXcodebuild = suppliedDirectory.appendingPathComponent("xcodebuild")
+        let source = suppliedDirectory.appendingPathComponent("helper.c")
+        try "#include <signal.h>\n#include <unistd.h>\nint main(void){signal(SIGTERM,SIG_IGN);for(;;)pause();}\n".write(
+            to: source, atomically: true, encoding: .utf8
+        )
+        let compiler = try ChildProcess.spawn(
+            executable: "/usr/bin/clang", arguments: [source.path, "-o", fakeXcodebuild.path],
+            stdout: output, stderr: output
+        )
+        XCTAssertEqual(compiler.wait(), 0)
+        let owned = try ChildProcess.spawn(
+            executable: fakeXcodebuild.path, arguments: [ownedDirectory.path],
+            stdout: output, stderr: output
+        )
+        let foreign = try ChildProcess.spawn(
+            executable: fakeXcodebuild.path, arguments: [foreignDirectory.path],
+            stdout: output, stderr: output
+        )
+        usleep(200_000)
+        var initialForeignStatus: Int32 = 0
+        XCTAssertEqual(waitpid(foreign.pid, &initialForeignStatus, WNOHANG), 0, "foreign helper fixture must be live")
+        defer {
+            child.terminateGroup(gracePeriod: 1)
+            owned.terminateGroup(gracePeriod: 1)
+            foreign.terminateGroup(gracePeriod: 1)
+            _ = child.wait(); _ = owned.wait(); _ = foreign.wait()
+        }
+
+        let ownedReaped = expectation(description: "owned helper reaped")
+        DispatchQueue.global(qos: .userInitiated).async {
+            _ = owned.wait()
+            ownedReaped.fulfill()
+        }
+        // The run was supplied through /tmp while the helper exposes the
+        // resolved /private/tmp spelling in its argv.
+        let lifeline = try XCTUnwrap(child.bindLifetimeToParent(
+            ownedRunnerBase: suppliedDirectory.path, ownedDeviceID: "SIM-A"
+        ))
+        Darwin.close(lifeline)
+        XCTAssertEqual(child.wait(), SIGINT)
+        wait(for: [ownedReaped], timeout: 5)
+        XCTAssertFalse(owned.isRunning)
+        XCTAssertEqual(kill(foreign.pid, 0), 0)
+        var foreignStatus: Int32 = 0
+        XCTAssertEqual(waitpid(foreign.pid, &foreignStatus, WNOHANG), 0, "the foreign helper must be live, not a zombie")
+    }
+
     /// A runner that ignores SIGINT and SIGTERM is SIGKILLed, and its files
     /// are removed anyway.
     func testTheWatchdogEscalatesToSIGKILLAndStillRemovesTheFiles() throws {
