@@ -144,69 +144,65 @@ final class UIAutomator2ClientTests: XCTestCase {
         ])
     }
 
-    func testUnicodeInputPreservesExistingTextWithoutKeyActions() async throws {
+    func testUnicodeInputPastesWholeGraphemeAndRestoresClipboard() async throws {
+        let original = Data("private clipboard".utf8).base64EncodedString()
+        let family = "👨‍👩‍👧‍👦"
+        let encoded = Data(family.utf8).base64EncodedString()
         let transport = ScriptedTransport([
             (#"{"value":{"element-6066-11e4-a52e-4f735466cecf":"f1"}}"#, 200),
-            (#"{"value":"Golden Gate Bridge"}"#, 200),
-            (#"{"value":"Name"}"#, 200),
+            ("{\"value\":\"\(original)\"}", 200),
+            (#"{"value":null}"#, 200), (#"{"value":null}"#, 200), (#"{"value":null}"#, 200),
+        ])
+        try await client(transport).typeText(family)
+        XCTAssertEqual(transport.calls.map(\.path), [
+            "/wd/hub/session/abc-123/element/active",
+            "/wd/hub/session/abc-123/appium/device/get_clipboard",
+            "/wd/hub/session/abc-123/appium/device/set_clipboard",
+            "/wd/hub/session/abc-123/appium/device/press_keycode",
+            "/wd/hub/session/abc-123/appium/device/set_clipboard",
+        ])
+        let staged = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(transport.calls[2].body.utf8)) as? [String: Any])
+        XCTAssertEqual(staged["content"] as? String, encoded)
+        XCTAssertEqual(staged["contentType"] as? String, "plaintext")
+        let key = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(transport.calls[3].body.utf8)) as? [String: Any])
+        XCTAssertEqual(key["keycode"] as? Int, 279)
+        let restored = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(transport.calls[4].body.utf8)) as? [String: Any])
+        XCTAssertEqual(restored["content"] as? String, original)
+        XCTAssertFalse(transport.calls.contains { $0.path.contains("/element/f1/value") })
+    }
+
+    func testUnicodePasteFailureStillRestoresClipboard() async {
+        let original = Data("private clipboard".utf8).base64EncodedString()
+        let transport = ScriptedTransport([
+            (#"{"value":{"ELEMENT":"f1"}}"#, 200),
+            ("{\"value\":\"\(original)\"}", 200),
+            (#"{"value":null}"#, 200),
+            (#"{"value":{"error":"unknown error"}}"#, 500),
             (#"{"value":null}"#, 200),
         ])
-        try await client(transport).typeText(" · Üñïcødé 👩🏽‍💻")
-        XCTAssertEqual(transport.calls.map(\.path), [
-            "/wd/hub/session/abc-123/element/active", "/wd/hub/session/abc-123/element/f1/text",
-            "/wd/hub/session/abc-123/element/f1/attribute/hint", "/wd/hub/session/abc-123/element/f1/value",
-        ])
-        let body = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(transport.calls[3].body.utf8)) as? [String: Any])
-        XCTAssertEqual(body["text"] as? String, "Golden Gate Bridge · Üñïcødé 👩🏽‍💻")
-        XCTAssertEqual(body["replace"] as? Bool, true)
-    }
-
-    func testUnicodeInputDoesNotWriteHintOrMaskedTextIntoTheField() async throws {
-        for (before, hint, replace) in [("Name", "Name", true), ("••••", "Password", false), ("Existing", "", false)] {
-            let beforeJSON = String(decoding: try JSONSerialization.data(withJSONObject: ["value": before]), as: UTF8.self)
-            let hintJSON = String(decoding: try JSONSerialization.data(withJSONObject: ["value": hint]), as: UTF8.self)
-            let transport = ScriptedTransport([
-                (#"{"value":{"ELEMENT":"f1"}}"#, 200), (beforeJSON, 200), (hintJSON, 200), (#"{"value":null}"#, 200),
-            ])
-            try await client(transport).typeText("ü")
-            let body = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(transport.calls[3].body.utf8)) as? [String: Any])
-            XCTAssertEqual(body["text"] as? String, "ü", before)
-            XCTAssertEqual(body["replace"] as? Bool, replace, before)
+        do {
+            try await client(transport).typeText("👨‍👩‍👧‍👦")
+            XCTFail("expected paste failure")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("Failed to paste Unicode text"), error.localizedDescription)
         }
+        XCTAssertEqual(transport.calls.last?.path, "/wd/hub/session/abc-123/appium/device/set_clipboard")
+        let restored = try? JSONSerialization.jsonObject(with: Data((transport.calls.last?.body ?? "").utf8)) as? [String: Any]
+        XCTAssertEqual(restored?["content"] as? String, original)
     }
 
-    func testUnicodeInputNeverMutatesAnUnreadableOrUnfocusedField() async {
-        let scripts: [[(String, Int)]] = [
-            [(#"{"value":{"error":"no such element"}}"#, 404)],
-            [(#"{"value":null}"#, 200)],
-            [(#"{"value":{}}"#, 500)],
-            [(#"{"value":{"ELEMENT":"f1"}}"#, 200), (#"{"value":{"error":"stale element"}}"#, 500)],
-            [(#"{"value":{"ELEMENT":"f1"}}"#, 200), (#"{"value":null}"#, 200)],
-        ]
-        for script in scripts {
-            let transport = ScriptedTransport(script)
-            do {
-                try await client(transport).typeText("ü")
-                XCTFail("expected a focused-field error")
-            } catch {
-                XCTAssertFalse(transport.calls.contains { $0.method == "POST" })
-            }
-        }
-    }
-
-    func testUnicodeWriteFailureIsNotRetriedAsKeyActions() async {
+    func testUnicodeClipboardReadFailureDoesNotMutateClipboardOrType() async {
         let transport = ScriptedTransport([
-            (#"{"value":{"ELEMENT":"f1"}}"#, 200), (#"{"value":""}"#, 200),
-            (#"{"value":"Name"}"#, 200), (#"{"value":{"error":"unknown error"}}"#, 500),
+            (#"{"value":{"ELEMENT":"f1"}}"#, 200),
+            (#"{"value":{"error":"unknown error"}}"#, 500),
         ])
         do {
             try await client(transport).typeText("ü")
-            XCTFail("expected write failure")
+            XCTFail("expected clipboard failure")
         } catch {
-            XCTAssertTrue(error.localizedDescription.contains("HTTP 500"))
-            XCTAssertEqual(transport.calls.filter { $0.method == "POST" }.count, 1)
-            XCTAssertFalse(transport.calls.contains { $0.path.hasSuffix("/actions") })
+            XCTAssertTrue(error.localizedDescription.contains("Failed to read the Android clipboard"), error.localizedDescription)
         }
+        XCTAssertEqual(transport.calls.count, 2)
     }
 
     func testSwipeReadsTheWindowSizeInPixels() async throws {

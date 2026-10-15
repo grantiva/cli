@@ -181,35 +181,53 @@ extension DriverClient {
                 // succeed, so ask for the focused element first.
                 var active = URLRequest(url: URL(string: "\(session)/element/active")!, timeoutInterval: 60)
                 active.httpMethod = "GET"
-                let (activeData, activeStatus) = try await transport.send(active)
+                let (_, activeStatus) = try await transport.send(active)
                 if activeStatus == 404 { throw DriverClient.noFocusedField(text) }
                 guard activeStatus == 200 else {
                     throw GrantivaError.commandFailed("Failed to read the focused element (HTTP \(activeStatus))", 1)
                 }
                 if text.unicodeScalars.contains(where: { !$0.isASCII }) {
-                    let response = try JSONSerialization.jsonObject(with: activeData) as? [String: Any]
-                    let value = response?["value"] as? [String: Any]
-                    guard let id = (value?["element-6066-11e4-a52e-4f735466cecf"] ?? value?["ELEMENT"]) as? String,
-                          !id.isEmpty else {
-                        throw DriverClient.noFocusedField(text)
+                    // UIAutomator2 key actions split extended grapheme clusters and
+                    // its element value endpoint rejects some valid Unicode strings.
+                    // Paste the complete UTF-8 string through the server clipboard API.
+                    let clipboardURL = "\(session)/appium/device/get_clipboard"
+                    let previous = try await R.send(
+                        transport, "POST", clipboardURL,
+                        ["contentType": "plaintext"], failure: "Failed to read the Android clipboard"
+                    )
+                    guard let previousBase64 = previous["value"] as? String else {
+                        throw GrantivaError.commandFailed("Failed to decode the Android clipboard response", 1)
                     }
-                    let element = "\(session)/element/\(id)"
-                    let before = try await R.send(transport, "GET", "\(element)/text",
-                                                  failure: "Failed to read focused field before Unicode input")
-                    guard let currentText = before["value"] as? String else {
-                        throw GrantivaError.commandFailed("Cannot read focused field before Unicode input", 1)
+                    let encoded = Data(text.utf8).base64EncodedString()
+                    _ = try await R.send(
+                        transport, "POST", "\(session)/appium/device/set_clipboard",
+                        ["content": encoded, "contentType": "plaintext"],
+                        failure: "Failed to stage Unicode text on the Android clipboard"
+                    )
+                    var pasteError: Error?
+                    do {
+                        _ = try await R.send(
+                            transport, "POST", "\(session)/appium/device/press_keycode",
+                            ["keycode": 279], failure: "Failed to paste Unicode text"
+                        )
+                    } catch {
+                        pasteError = error
                     }
-                    let hintResponse = try? await R.send(transport, "GET", "\(element)/attribute/hint",
-                                                        failure: "Failed to read focused field hint")
-                    let hint = hintResponse?["value"] as? String
-                    let masked = !currentText.isEmpty && currentText.allSatisfy { "•●*".contains($0) }
-                    // Match the native driver's whole-value path when the prefix
-                    // is known. If it could be hint/masked text, let the server
-                    // append instead of writing the displayed placeholder back.
-                    let replace = !masked && (currentText.isEmpty || !(hint ?? "").isEmpty)
-                    let valueToSend = replace && currentText != hint ? currentText + text : text
-                    _ = try await R.send(transport, "POST", "\(element)/value",
-                                         ["text": valueToSend, "replace": replace], failure: "Failed to type text")
+                    do {
+                        _ = try await R.send(
+                            transport, "POST", "\(session)/appium/device/set_clipboard",
+                            ["content": previousBase64, "contentType": "plaintext"],
+                            failure: "Failed to restore the Android clipboard"
+                        )
+                    } catch {
+                        if let pasteError {
+                            throw GrantivaError.commandFailed(
+                                "\(pasteError.localizedDescription); also failed to restore the Android clipboard: \(error.localizedDescription)", 1
+                            )
+                        }
+                        throw error
+                    }
+                    if let pasteError { throw pasteError }
                     return
                 }
                 var steps: [[String: String]] = []
