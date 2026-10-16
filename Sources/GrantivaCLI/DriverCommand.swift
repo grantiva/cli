@@ -243,8 +243,10 @@ struct RunnerStartCommand: AsyncParsableCommand {
                 options.note(ending)
                 return 0
             }
-            releaseLease = SignalRelay.shared.onTermination { simulatorLease.release() }
         }
+        // A detached start interrupted before it reported ready gives the
+        // device back too (a hand-off makes this a no-op).
+        releaseLease = SignalRelay.shared.onTermination { simulatorLease.release() }
 
         let deviceNoun = platform == .ios ? "Simulator" : "Device"
         options.note("Starting runner...")
@@ -285,13 +287,12 @@ struct RunnerStartCommand: AsyncParsableCommand {
         // this command starts (a `kill -9`'d keep-alive run leaves one): its
         // id is recorded so the readiness wait never accepts it (L38-b).
         launch.staleSessionID = await Self.currentDriverSession(platformDevice, deviceID: booted.udid)
+        let removeTempDir = Self.removeOnInterrupt(tempDir)
+        defer { SignalRelay.shared.removeCleanup(removeTempDir) }
         if detach {
-            let runnerPid = try await startDetached(launch)
-            simulatorLease.handOff(to: runnerPid)
+            try await startDetached(launch, lease: simulatorLease)
             handedOff = true
         } else {
-            let removeTempDir = Self.removeOnInterrupt(tempDir)
-            defer { SignalRelay.shared.removeCleanup(removeTempDir) }
             // Held by this process until the runner ends; the `defer` above
             // (or the interrupt cleanup) releases it.
             try await startForeground(launch, lease: simulatorLease)
@@ -735,7 +736,13 @@ struct RunnerStartCommand: AsyncParsableCommand {
         )
     }
 
-    private func startDetached(_ launch: Launch) async throws -> Int32 {
+    /// Starts the runner in a session of its own and returns once it is
+    /// ready, the lease handed to it. Until then the start owns the runner:
+    /// an interrupt stops it (WDA's xcodebuild included) and removes what it
+    /// published, instead of leaving it running unreported (C16).
+    private func startDetached(_ launch: Launch, lease: SimulatorLease) async throws {
+        // Interrupted while setting up: spawn nothing.
+        try SignalRelay.shared.checkNotInterrupted()
         let detachedLog = try Self.createDetachedLogFile()
         let logPath = detachedLog.path
         let log = detachedLog.handle
@@ -756,8 +763,12 @@ struct RunnerStartCommand: AsyncParsableCommand {
         }
         let runnerPid = child.pid
         let runnerStartTime = RunnerStopMarker.processStartTime(runnerPid)
-        Self.recordKeepAliveOwner(launch, runnerPid: runnerPid, detached: true)
-        try Self.recordStarting(launch, runnerPid: runnerPid)
+        let abort = Self.abortOnInterrupt(
+            runnerGroup: child.processGroup, runnerPid: runnerPid,
+            platform: launch.platformDevice, deviceID: launch.device.udid
+        )
+        var armed = true
+        defer { if armed { Self.disarm(abort) } }
         func abandon() async {
             child.terminateGroup(gracePeriod: 1)
             _ = child.wait()
@@ -766,6 +777,18 @@ struct RunnerStartCommand: AsyncParsableCommand {
             // A runner that exited before it was ready may have left its
             // uia2 forward (B4-L68.3).
             await Self.releaseRunnerForward(platform: launch.platformDevice, serial: launch.device.udid, runnerPid: runnerPid)
+        }
+        // An interrupt that landed before the relay knew the runner's group.
+        if SignalRelay.shared.isTerminating {
+            await abandon()
+            throw ExitCode(130)
+        }
+        Self.recordKeepAliveOwner(launch, runnerPid: runnerPid, detached: true)
+        do {
+            try Self.recordStarting(launch, runnerPid: runnerPid)
+        } catch {
+            await abandon()
+            throw error
         }
 
         let port: UInt16
@@ -822,7 +845,20 @@ struct RunnerStartCommand: AsyncParsableCommand {
         // A `runner stop` (or a teardown) that came during the start removed
         // the starting file; the runner is on its way out, so do not bring it back.
         if Self.liveStopRequest(runnerPid: runnerPid, runnerStartTime: runnerStartTime) == nil {
-            try Self.record(session: session)
+            do {
+                try Self.record(session: session)
+            } catch {
+                await abandon()
+                throw error
+            }
+        }
+        // Ready: the session is the runner's from here on.
+        lease.handOff(to: runnerPid)
+        Self.disarm(abort)
+        armed = false
+        if SignalRelay.shared.isTerminating {
+            await abandon()
+            throw ExitCode(130)
         }
 
         if options.json {
@@ -840,7 +876,39 @@ struct RunnerStartCommand: AsyncParsableCommand {
             Output.line("Tail the log with: tail -f \(logPath)")
             Output.line("Use 'grantiva runner stop' to stop the session.")
         }
-        return runnerPid
+    }
+
+    /// What an interrupt does to a detached start's runner before it is
+    /// ready: the relay stops its group, then (iOS) the WDA `xcodebuild`
+    /// it left outside the group, then removes its keep-alive owner, its
+    /// `<pid>-*.grantiva` and `.grantiva/session.json`, and (Android) its
+    /// uia2 forward. `disarm` once the start has reported ready.
+    struct DetachedAbort {
+        let group: pid_t
+        let cleanup: UInt64
+        let relay: SignalRelay
+    }
+
+    static func abortOnInterrupt(
+        runnerGroup: pid_t, runnerPid: Int32, platform: any DevicePlatform, deviceID: String,
+        store: KeepAliveSessionStore = KeepAliveSessionStore(), relay: SignalRelay = .shared
+    ) -> DetachedAbort {
+        relay.track(group: runnerGroup, deviceNoun: SignalRelay.deviceNoun(for: platform.platform))
+        if platform.platform == .ios {
+            RunnerHelperReaper.reapOnInterrupt(group: runnerGroup, udid: deviceID, relay: relay)
+        }
+        let cleanup = relay.onTermination {
+            discardStartedSession(runnerPid: runnerPid, store: store)
+            if platform.platform == .android {
+                afterInterrupt(platform: platform, serial: deviceID, runnerPid: runnerPid)
+            }
+        }
+        return DetachedAbort(group: runnerGroup, cleanup: cleanup, relay: relay)
+    }
+
+    static func disarm(_ abort: DetachedAbort) {
+        abort.relay.untrack(group: abort.group)
+        abort.relay.removeCleanup(abort.cleanup)
     }
 
     // MARK: - Foreground start

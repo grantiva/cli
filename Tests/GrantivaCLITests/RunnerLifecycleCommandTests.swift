@@ -446,6 +446,65 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         XCTAssertEqual(waited.value, 0)
     }
 
+    /// C16: `runner start --detach` interrupted after its runner was spawned
+    /// left that runner (ppid 1) and its WDA running, its session files
+    /// published and `.grantiva/session.json` `starting` forever. Until the
+    /// start reports ready, an interrupt stops the runner's group and
+    /// removes what it published.
+    func testAnInterruptBeforeADetachedStartIsReadyStopsItsRunnerAndRemovesItsFiles() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("c16-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: directory) }
+        let runner = try ChildProcess.spawn(
+            executable: "/bin/sleep", arguments: ["60"], stdout: FileHandle.nullDevice.fileDescriptor,
+            stderr: FileHandle.nullDevice.fileDescriptor
+        )
+        defer { if runner.poll() == nil { runner.signalGroup(SIGKILL); _ = runner.wait() } }
+        let udid = UUID().uuidString
+        let store = KeepAliveSessionStore(directory: directory, isProcessAlive: { _ in true })
+        store.recordOwner(udid: udid, runnerPid: runner.pid, platform: .ios, detached: true)
+        FileManager.default.createFile(atPath: "\(directory)/\(runner.pid)-1792089048161055000.grantiva", contents: Data("{}".utf8))
+        XCTAssertFalse(try FileManager.default.contentsOfDirectory(atPath: directory).isEmpty)
+
+        let abort = RunnerStartCommand.abortOnInterrupt(
+            runnerGroup: runner.processGroup, runnerPid: runner.pid,
+            platform: FakeDevicePlatform(platform: .ios), deviceID: udid, store: store
+        )
+        defer {
+            RunnerStartCommand.disarm(abort)
+            SignalRelay.shared.resetTerminationForTesting()
+        }
+        SignalRelay.shared.simulateTerminationForTesting()
+
+        XCTAssertNotNil(runner.poll(), "the detached runner outlived the interrupt")
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: directory), [])
+    }
+
+    /// Once the detached start has reported ready the session is the
+    /// runner's: a later interrupt of anything else leaves it alone.
+    func testADisarmedDetachedStartLeavesItsReadyRunnerToItsSession() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("c16-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: directory) }
+        let runner = try ChildProcess.spawn(
+            executable: "/bin/sleep", arguments: ["60"], stdout: FileHandle.nullDevice.fileDescriptor,
+            stderr: FileHandle.nullDevice.fileDescriptor
+        )
+        defer { if runner.poll() == nil { runner.signalGroup(SIGKILL); _ = runner.wait() } }
+        let udid = UUID().uuidString
+        let store = KeepAliveSessionStore(directory: directory, isProcessAlive: { _ in true })
+        store.recordOwner(udid: udid, runnerPid: runner.pid, platform: .ios, detached: true)
+
+        let abort = RunnerStartCommand.abortOnInterrupt(
+            runnerGroup: runner.processGroup, runnerPid: runner.pid,
+            platform: FakeDevicePlatform(platform: .ios), deviceID: udid, store: store
+        )
+        RunnerStartCommand.disarm(abort)
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        SignalRelay.shared.simulateTerminationForTesting()
+
+        XCTAssertNil(runner.poll())
+        XCTAssertFalse(try FileManager.default.contentsOfDirectory(atPath: directory).isEmpty)
+    }
+
     /// B3-L54.1: a teardown that marked this `runner start` (itself, before
     /// it had a runner) ends it with the teardown line, and the marker goes.
     func testATeardownMarkOnTheStartItselfEndsItInOrder() throws {
