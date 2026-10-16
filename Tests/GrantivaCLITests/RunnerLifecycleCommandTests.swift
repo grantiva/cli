@@ -439,6 +439,44 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: parent.path))
     }
 
+    /// C15 (B4-PC.4): after one WDA xcodebuild death the runner resets the
+    /// simulator and retries (up to 4 attempts, each allowed a 60 s stall),
+    /// but `runner start` gave the whole start 60 s, so a slow retry was
+    /// killed by grantiva's own cap (the runner's "Received interrupt" was
+    /// that kill). Each retry the runner announces gets a fresh window.
+    func testEachRunnerRetryExtendsTheWDAStartupDeadline() {
+        let start = Date(timeIntervalSince1970: 1_000)
+        XCTAssertEqual(RunnerStartCommand.startupDeadline(started: start, building: false, lastRetry: nil), start.addingTimeInterval(60))
+        XCTAssertEqual(
+            RunnerStartCommand.startupDeadline(started: start, building: false, lastRetry: start.addingTimeInterval(20)),
+            start.addingTimeInterval(20 + RunnerStartCommand.wdaRetryWindow)
+        )
+        XCTAssertEqual(
+            RunnerStartCommand.startupDeadline(started: start, building: true, lastRetry: start.addingTimeInterval(20)),
+            start.addingTimeInterval(RunnerStartCommand.wdaBuildTimeout)
+        )
+        XCTAssertEqual(RunnerStartCommand.retryCount(in: "  ↻ Retrying (attempt 2/4)...\nx\n  ↻ Retrying (attempt 3/4)...\n"), 2)
+        XCTAssertEqual(RunnerStartCommand.retryCount(in: "Starting GrantivaAgent..."), 0)
+    }
+
+    /// The foreground wait goes on past 60 s while retries keep coming.
+    func testTheForegroundWaitOutlastsTheFirstWindowWhileTheRunnerRetries() async {
+        let (stream, continuation) = AsyncStream<Data>.makeStream()
+        let clock = RunnerStartCommand.StartupProgress(started: Date().addingTimeInterval(-0.5))
+        continuation.yield(Data("  ↻ Retrying (attempt 2/4)...\n".utf8))
+        let task = Task {
+            await RunnerStartCommand.waitForForegroundWDAPort(
+                chunks: stream, timeout: { progress in await RunnerStartCommand.waitOutStartup(progress, window: 0.8) },
+                probe: { nil }, progress: clock
+            )
+        }
+        try? await Task.sleep(for: .milliseconds(600))
+        continuation.yield(Data("Starting WDA on localhost:8430\n".utf8))
+        let result = await task.value
+        continuation.finish()
+        XCTAssertEqual(result, .port(8430))
+    }
+
     func testForegroundPortDiscoveryHandlesPortSplitAcrossOutputChunks() async {
         let (stream, continuation) = AsyncStream<Data>.makeStream()
         let probed = LockedValue(false)
@@ -543,11 +581,11 @@ final class RunnerLifecycleCommandTests: XCTestCase {
 
         let startup = await RunnerStartCommand.waitForForegroundWDAPort(
             chunks: stream,
-            timeout: { isBuilding in
+            timeout: { progress in
                 // Give the reader a moment to consume the chunk, as the real
                 // 60 s sleep would.
                 try? await Task.sleep(for: .milliseconds(200))
-                sawBuild.set(isBuilding())
+                sawBuild.set(progress.isBuilding)
             },
             probe: { nil }
         )
