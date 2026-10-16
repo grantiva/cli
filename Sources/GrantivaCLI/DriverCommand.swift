@@ -1584,7 +1584,9 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
             guard let session = try? RunnerSessionInfo.load(), session.isAlive else { return nil }
             return session
         }()
-        let keepAlive = try? KeepAliveSessionStore().locateIncludingStarting(udid: udid)
+        let keepAlive = try? KeepAliveSessionStore().locateIncludingStarting(
+            udid: udid, projectDirectory: FileManager.default.currentDirectoryPath
+        )
         let target = try Self.resolveTarget(port: port, runnerSession: runnerSession, keepAlive: keepAlive)
         try await dump(target: target)
     }

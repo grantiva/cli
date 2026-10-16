@@ -250,6 +250,28 @@ final class KeepAliveSessionStoreTests: XCTestCase {
         try encoder.encode(owner).write(to: directory.appendingPathComponent("\(owner.runnerPid).owner.json"))
     }
 
+    /// C14 (B2-K88): with this project's own runner still starting, a lookup
+    /// without --udid answered from another project's published iOS session.
+    /// This project's session, starting or not, comes first; another
+    /// project's is used only when this one has none.
+    func testThisProjectsSessionIsPreferredEvenWhileItIsStarting() throws {
+        let other = directory.appendingPathComponent("other-project").path
+        try writeRunnerSession(pid: 400, nanos: 1, port: 8240, sessionId: "theirs")
+        try write(KeepAliveOwner(udid: "A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF", runnerPid: 400, projectDirectory: other, platform: .ios))
+        try write(KeepAliveOwner(udid: "emulator-5562", runnerPid: 401, projectDirectory: directory.path, platform: .android))
+        let store = store(live: [400, 401, getpid()])
+
+        let mine = try store.locateIncludingStarting(udid: nil, projectDirectory: directory.path)
+        XCTAssertEqual(mine.pid, 401)
+        XCTAssertFalse(mine.isPublished)
+        XCTAssertThrowsError(try store.locate(udid: nil, projectDirectory: directory.path)) { error in
+            XCTAssertTrue("\(error)".contains("starting"), "\(error)")
+        }
+        // A project with no session of its own still falls back to the newest.
+        let elsewhere = directory.appendingPathComponent("third-project").path
+        XCTAssertEqual(try store.locateIncludingStarting(udid: nil, projectDirectory: elsewhere).pid, 400)
+    }
+
     func testASessionWithPortZeroIsListedBecauseAndroidRunnersPublishNoPort() throws {
         try writeRunnerSession(pid: 100, nanos: 1, port: 0, sessionId: "android")
 
