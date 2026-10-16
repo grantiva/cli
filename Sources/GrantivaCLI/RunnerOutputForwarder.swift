@@ -98,7 +98,10 @@ final class ForegroundDriverAttachment: @unchecked Sendable {
 /// `RunnerSession.narrate` (so `--json` and `--quiet` silence them), whole
 /// lines at a time; stdout is also fed to the startup parser until
 /// `endStartup()`. Reading continues after startup, so the runner never
-/// writes into a pipe nobody drains.
+/// writes into a pipe nobody drains. Once an interrupt is under way nothing
+/// more reaches the terminal: the relay's notice is the last line, and the
+/// runner's own shutdown chatter (`Received interrupt, cleaning up...`, or a
+/// startup error the interrupt provoked) stays out of it, as for `run`.
 final class RunnerOutputForwarder: @unchecked Sendable {
     let chunks: AsyncStream<Data>
     private let continuation: AsyncStream<Data>.Continuation
@@ -117,9 +120,12 @@ final class RunnerOutputForwarder: @unchecked Sendable {
         }
     }
 
-    init(narrate: @escaping @Sendable (String) -> Void = { RunnerSession.narrate($0) }) {
+    init(
+        narrate: @escaping @Sendable (String) -> Void = { RunnerSession.narrate($0) },
+        interrupted: @escaping @Sendable () -> Bool = { SignalRelay.shared.isTerminating }
+    ) {
         (chunks, continuation) = AsyncStream<Data>.makeStream()
-        self.narrate = narrate
+        self.narrate = { text in if !interrupted() { narrate(text) } }
     }
 
     /// The runner's stdout: narrated and parsed.

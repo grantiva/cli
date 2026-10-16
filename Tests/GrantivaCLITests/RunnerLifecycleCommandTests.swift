@@ -401,6 +401,51 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: directory.path))
     }
 
+    /// C16: Ctrl-C at 0.2 s of `runner start` cut off its `simctl list`
+    /// child, and the start reported `Error: xcrun simctl list devices
+    /// --json exited with code 15` and exited 1. Once an interrupt is under
+    /// way, whatever the start's step threw (or a start that returns) waits
+    /// for the relay's exit and is 130, never the step's error.
+    func testAnInterruptedStartEndsThroughTheRelayWhateverItsStepThrew() async throws {
+        SignalRelay.shared.simulateTerminationForTesting()
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let waited = LockedValue(0)
+        let cutOff = GrantivaError.commandFailed("xcrun simctl list devices --json exited with code 15", 15)
+        do {
+            try await RunnerStartCommand.endingThroughTheRelay(awaitRelayExit: { waited.set(waited.value + 1) }) {
+                throw cutOff
+            }
+            XCTFail("expected exit 130")
+        } catch let exit as ExitCode {
+            XCTAssertEqual(exit, ExitCode(130))
+        }
+        XCTAssertEqual(waited.value, 1)
+
+        // A start that unwinds without an error (a stop it read as asked
+        // for) does not return first either.
+        do {
+            try await RunnerStartCommand.endingThroughTheRelay(awaitRelayExit: { waited.set(waited.value + 1) }) {}
+            XCTFail("expected exit 130")
+        } catch let exit as ExitCode {
+            XCTAssertEqual(exit, ExitCode(130))
+        }
+        XCTAssertEqual(waited.value, 2)
+    }
+
+    func testWithoutAnInterruptAStartsErrorIsItsOwn() async throws {
+        let waited = LockedValue(0)
+        do {
+            try await RunnerStartCommand.endingThroughTheRelay(awaitRelayExit: { waited.set(waited.value + 1) }) {
+                throw GrantivaError.commandFailed("xcrun simctl list devices --json exited with code 1", 1)
+            }
+            XCTFail("expected the step's error")
+        } catch let error as GrantivaError {
+            XCTAssertEqual(error.localizedDescription, GrantivaError.commandFailed("xcrun simctl list devices --json exited with code 1", 1).localizedDescription)
+        }
+        try await RunnerStartCommand.endingThroughTheRelay(awaitRelayExit: { waited.set(waited.value + 1) }) {}
+        XCTAssertEqual(waited.value, 0)
+    }
+
     /// B3-L54.1: a teardown that marked this `runner start` (itself, before
     /// it had a runner) ends it with the teardown line, and the marker goes.
     func testATeardownMarkOnTheStartItselfEndsItInOrder() throws {
@@ -1603,6 +1648,25 @@ final class RunnerOutputForwarderTests: XCTestCase {
         try await Task.sleep(for: .milliseconds(100))
         XCTAssertEqual(narrated.value.joined(), "WDA started successfully on port 8430 🙂\nnext\n")
         XCTAssertEqual(String(decoding: received, as: UTF8.self), "WDA started successfully on port 8430 🙂\nnext")
+    }
+
+    /// C16: after the relay's notice the foreground runner's shutdown lines
+    /// (`Received interrupt, cleaning up...`, a misleading `--team-id`
+    /// error) still reached the terminal. Nothing does once an interrupt is
+    /// under way.
+    func testNothingIsNarratedOnceAnInterruptIsUnderWay() async throws {
+        let narrated = LockedValue<[String]>([])
+        let interrupted = LockedValue(false)
+        let forwarder = RunnerOutputForwarder(narrate: { narrated.append($0) }, interrupted: { interrupted.value })
+        let pipe = Pipe()
+        forwarder.attachErrors(pipe.fileHandleForReading)
+        pipe.fileHandleForWriting.write(Data("  ✓ Found 1 test flow(s)\n".utf8))
+        try await Task.sleep(for: .milliseconds(200))
+        interrupted.set(true)
+        pipe.fileHandleForWriting.write(Data("Received interrupt, cleaning up...\nError: iOS on a real device requires --team-id\n".utf8))
+        try pipe.fileHandleForWriting.close()
+        try await Task.sleep(for: .milliseconds(200))
+        XCTAssertEqual(narrated.value, ["  ✓ Found 1 test flow(s)\n"])
     }
 
     func testSilencedNarrationPrintsNothing() {

@@ -157,6 +157,34 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
     func run() async throws {
         options.prepareRunnerCommand()
+        try await Self.endingThroughTheRelay { try await start() }
+    }
+
+    /// Once an interrupt is under way the relay ends the process (130, or 0
+    /// for a teardown) after its cleanups, whichever way the start unwinds:
+    /// a `simctl` child the relay's SIGTERM cut off is not a device-listing
+    /// failure, and a step that went on to fail because its runner was
+    /// stopped is not the start's error. Nothing is printed and nothing
+    /// returns first; `awaitRelayExit` is capped like `run`'s wait (C16).
+    static func endingThroughTheRelay(
+        relay: SignalRelay = .shared,
+        awaitRelayExit: () async -> Void = { await RunCommand.awaitSignalRelayExit() },
+        _ body: () async throws -> Void
+    ) async throws {
+        do {
+            try await body()
+        } catch {
+            guard relay.isTerminating else { throw error }
+            await awaitRelayExit()
+            throw ExitCode(130)
+        }
+        if relay.isTerminating {
+            await awaitRelayExit()
+            throw ExitCode(130)
+        }
+    }
+
+    private func start() async throws {
         // Check for existing session
         if let existing = try? RunnerSessionInfo.load(), existing.isAlive,
            let snapshot = try? await SimulatorReaper.processSnapshot(),
