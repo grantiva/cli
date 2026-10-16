@@ -378,6 +378,11 @@ struct RunCommand: AsyncParsableCommand {
             platform: platform, config: config, skipBuild: buildOptions.shouldSkipBuild, appID: appBundleId
         )
 
+        // The project's app as configured or detected, before a --flow
+        // header can stand in for it: a flow header spelled any of these ways
+        // takes the resolved ID; one naming another app is kept (C13-4).
+        let projectBundleID = resolved.bundleId
+
         // --flow overrides configured flows and skips screens
         if let flow {
             resolved = ResolvedProject(
@@ -582,7 +587,11 @@ struct RunCommand: AsyncParsableCommand {
                         readyFile: readyFile,
                         expectedPixels: expectedPixels,
                         failureReport: failureReport,
-                        readyLeadingFlows: session.readyLeadingFlows
+                        readyLeadingFlows: session.readyLeadingFlows,
+                        projectAppIDs: Self.projectAppIDs([
+                            bid, projectBundleID, target.bundleId, target.applicationId,
+                            config?.bundleId, config?.android?.applicationId, appBundleId, builtAppID,
+                        ])
                     )
                 }
             )
@@ -623,6 +632,13 @@ struct RunCommand: AsyncParsableCommand {
         let header = (try? String(contentsOfFile: flowPath, encoding: .utf8)).flatMap(MaestroFlowParser.appId(in:))
         guard let header, !header.contains("${") else { return resolved }
         return header
+    }
+
+    /// The IDs that name the project's own app: a flow header spelled as one
+    /// of them is replaced by the resolved ID, any other header is the flow's
+    /// own app and is kept (C13-4). Placeholders name no app.
+    static func projectAppIDs(_ ids: [String?]) -> Set<String> {
+        Set(ids.compactMap { $0 }.filter { !$0.isEmpty && !$0.contains("${") })
     }
 
     static func buildFailureMessage(_ result: BuildResult) -> String {

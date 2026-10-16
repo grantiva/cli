@@ -428,7 +428,8 @@ public enum RunnerSession {
     ///
     /// Each flow file has its `appId` rewritten to the resolved bundleId in a
     /// temp copy so flows living outside the project or missing headers still
-    /// launch the right app. Trace artifacts from every flow are exported
+    /// launch the right app; a header naming another app is kept (see
+    /// `injectAppId`; `projectAppIDs` are the project's other spellings). Trace artifacts from every flow are exported
     /// under a per-flow prefix in `<outputDir>/trace/`.
     public static func runFlowFiles(
         at flowPaths: [String],
@@ -447,7 +448,8 @@ public enum RunnerSession {
         readyFile: String? = nil,
         expectedPixels: SimulatorProvisionResult.Dimensions? = nil,
         failureReport: RunnerFailureReport? = nil,
-        readyLeadingFlows: [RunReadyState.Flow] = []
+        readyLeadingFlows: [RunReadyState.Flow] = [],
+        projectAppIDs: Set<String> = []
     ) async throws -> [ScreenCapture] {
         guard !flowPaths.isEmpty else { return [] }
 
@@ -488,7 +490,7 @@ public enum RunnerSession {
         var subFlowPathMap: [String: String] = [:]
         for (index, absoluteFlowPath) in absoluteFlowPaths.enumerated() {
             let originalContent = try String(contentsOfFile: absoluteFlowPath, encoding: .utf8)
-            var injectedContent = injectAppId(originalContent, bundleId: bundleId)
+            var injectedContent = injectAppId(originalContent, bundleId: bundleId, projectAppIDs: projectAppIDs)
             injectedContent = try FlowReferenceResolver.resolve(
                 in: injectedContent,
                 relativeTo: (absoluteFlowPath as NSString).deletingLastPathComponent,
@@ -937,9 +939,19 @@ public enum RunnerSession {
     }
 
     /// Injects or replaces the `appId` line in a Maestro flow YAML header.
-    /// Flow files in subdirectories may omit appId or have it set to the wrong value;
-    /// this ensures the runner always has the correct bundle ID for launchApp.
-    static func injectAppId(_ content: String, bundleId: String) -> String {
+    /// Flow files in subdirectories may omit appId or spell the project's app
+    /// another way (a `${APP_ID}` placeholder, the configured ID while the
+    /// `.paid` variant is installed); this gives the runner the resolved ID.
+    ///
+    /// A header that names another app (`appId: com.apple.Maps`) is that
+    /// flow's own choice and is kept (C13-4): only a header that is the
+    /// project's app — `bundleId`, one of `projectAppIDs`, or a dot-separated
+    /// variant of one (`.paid`, `.debug`), compared without case — is replaced.
+    static func injectAppId(_ content: String, bundleId: String, projectAppIDs: Set<String> = []) -> String {
+        if let written = MaestroFlowParser.appId(in: content), !written.contains("${"),
+           !isProjectApp(written, projectAppIDs: projectAppIDs.union([bundleId])) {
+            return content
+        }
         let lines = content.components(separatedBy: "\n")
 
         // Find the document separator, including an empty header (`---` on line 0).
@@ -966,6 +978,17 @@ public enum RunnerSession {
         } else {
             // No separator: prepend header and separator before the command list
             return "appId: \(bundleId)\n---\n\(content)"
+        }
+    }
+
+    /// True when `appId` is one of `projectAppIDs` or a dot-separated
+    /// variant of one (either way round), ignoring case.
+    static func isProjectApp(_ appId: String, projectAppIDs: Set<String>) -> Bool {
+        let written = appId.trimmingCharacters(in: .whitespaces).lowercased()
+        return projectAppIDs.contains { id in
+            let project = id.lowercased()
+            guard !project.isEmpty else { return false }
+            return written == project || written.hasPrefix(project + ".") || project.hasPrefix(written + ".")
         }
     }
 
