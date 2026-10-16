@@ -155,6 +155,42 @@ final class SignalRelayTests: XCTestCase {
         XCTAssertNotEqual(kill(ordinaryPid, 0), 0, "the ordinary child outlived the interrupt")
     }
 
+    /// C15 (B2-K10, AND-075): a Ctrl-C mid-`run` printed only the relay's
+    /// line: the relay ran its cleanups and exited before the run, woken by
+    /// its runner's exit, printed the flow summary ("grantiva was
+    /// interrupted"). A run holds the exit; the cleanups (and the exit) wait,
+    /// bounded, until it has reported.
+    func testTheCleanupsWaitForAHeldExitToBeReleased() async throws {
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let order = Locked<[String]>([])
+        let hold = SignalRelay.shared.holdExit()
+        let token = SignalRelay.shared.onTermination { order.append("cleanup") }
+        defer { SignalRelay.shared.removeCleanup(token); SignalRelay.shared.releaseExit(hold) }
+        let done = DispatchSemaphore(value: 0)
+        DispatchQueue.global().async {
+            SignalRelay.shared.simulateTerminationForTesting()
+            done.signal()
+        }
+        try await Task.sleep(nanoseconds: 300_000_000)
+        order.append("summary")
+        SignalRelay.shared.releaseExit(hold)
+        XCTAssertEqual(done.wait(timeout: .now() + 5), .success)
+        XCTAssertEqual(order.value, ["summary", "cleanup"])
+    }
+
+    /// A hold nobody releases delays the exit by its bound only.
+    func testAHeldExitThatIsNeverReleasedTimesOut() {
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let hold = SignalRelay.shared.holdExit()
+        defer { SignalRelay.shared.releaseExit(hold) }
+        let previous = SignalRelay.shared.exitHoldTimeout
+        SignalRelay.shared.exitHoldTimeout = 0.3
+        defer { SignalRelay.shared.exitHoldTimeout = previous }
+        let start = Date()
+        SignalRelay.shared.simulateTerminationForTesting()
+        XCTAssertLessThan(Date().timeIntervalSince(start), 3)
+    }
+
     /// B3-L54.1: a teardown that lands before the runner exists ends the
     /// start in order: the exit status is the provider's, not 128 + signal.
     func testAnExitStatusProviderDecidesTheInterruptsStatus() {

@@ -46,6 +46,16 @@ public final class SignalRelay: @unchecked Sendable {
     private var releasedGroups: Set<pid_t> = []
     private var releasing = false
     private var exitStatusProvider: (@Sendable () -> Int32?)?
+    /// Runs still to report their outcome before the cleanups and the exit
+    /// (`holdExit`).
+    private var exitHolds: Set<UInt64> = []
+    private let exitHoldsChanged = NSCondition()
+    /// How long an interrupt waits for held exits before it goes on.
+    public var exitHoldTimeout: TimeInterval {
+        get { lock.withLock { holdTimeout } }
+        set { lock.withLock { holdTimeout = newValue } }
+    }
+    private var holdTimeout: TimeInterval = 10
 
     private init() {}
 
@@ -149,6 +159,35 @@ public final class SignalRelay: @unchecked Sendable {
         nextID += 1
         beforeTerminationCleanups.append((id: id, body: body))
         return id
+    }
+
+    /// Holds an interrupt's cleanups and exit until `releaseExit` (bounded
+    /// by `exitHoldTimeout`): a `run` whose runner the interrupt stops then
+    /// prints its flow summary ("grantiva was interrupted") before the
+    /// process exits, rather than racing the exit (C15).
+    public func holdExit() -> UInt64 {
+        lock.lock()
+        let id = nextID
+        nextID += 1
+        lock.unlock()
+        exitHoldsChanged.lock()
+        exitHolds.insert(id)
+        exitHoldsChanged.unlock()
+        return id
+    }
+
+    public func releaseExit(_ id: UInt64) {
+        exitHoldsChanged.lock()
+        exitHolds.remove(id)
+        exitHoldsChanged.broadcast()
+        exitHoldsChanged.unlock()
+    }
+
+    private func waitForExitHolds() {
+        let deadline = Date().addingTimeInterval(exitHoldTimeout)
+        exitHoldsChanged.lock()
+        while !exitHolds.isEmpty, exitHoldsChanged.wait(until: deadline) {}
+        exitHoldsChanged.unlock()
     }
 
     public func removeCleanup(_ id: UInt64) {
@@ -330,6 +369,9 @@ public final class SignalRelay: @unchecked Sendable {
             ChildProcess.terminateGroup(pgid, gracePeriod: 5)
         }
         for reap in helperReaps { reap() }
+        // The runner is gone: a run reports its outcome before the cleanups
+        // take the device and its files (C15).
+        waitForExitHolds()
         for cleanup in pendingCleanups { cleanup() }
         // Every shell child still running goes before grantiva exits (C13-3),
         // a cleanup's own that outran its bound (a hung `status_bar clear`)

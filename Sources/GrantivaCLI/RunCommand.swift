@@ -280,6 +280,10 @@ struct RunCommand: AsyncParsableCommand {
         if let readyFile {
             try ReadyFile.prepare(at: readyFile)
         }
+        // On Ctrl-C the relay waits (bounded) for this run to report what its
+        // flows did before it cleans up and exits (C15).
+        let exitHold = SignalRelay.shared.holdExit()
+        defer { SignalRelay.shared.releaseExit(exitHold) }
         do {
             try await execute()
         } catch {
@@ -314,6 +318,7 @@ struct RunCommand: AsyncParsableCommand {
                 )
             }
             if Self.exitsThroughSignalRelay() {
+                SignalRelay.shared.releaseExit(exitHold)
                 await Self.awaitSignalRelayExit()
             }
             if Self.isInterruptedRelease(error) { throw ExitCode(130) }
