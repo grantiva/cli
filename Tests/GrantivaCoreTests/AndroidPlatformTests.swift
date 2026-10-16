@@ -207,7 +207,46 @@ final class AndroidPlatformTests: XCTestCase {
         XCTAssertEqual(shell.commands, [
             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'io.appium.uiautomator2.server'",
             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'io.appium.uiautomator2.server.test'",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --list",
         ])
+    }
+
+    /// C14 (N2-05): a `kill -9`'d runner never removed its UIAutomator2
+    /// socket forward; the cleanup after it removes that serial's runner
+    /// socket forward when no live process owns it, and nothing else.
+    func testOrphanCleanupRemovesTheDeadRunnersSocketForward() async throws {
+        let sockets = scratch.appendingPathComponent("sockets").path
+        try FileManager.default.createDirectory(atPath: sockets, withIntermediateDirectories: true)
+        let socket = "\(sockets)/uia2-emulator-5554.sock"
+        try "999999".write(toFile: "\(sockets)/uia2-emulator-5554.pid", atomically: true, encoding: .utf8)
+        let shell = ScriptedShell([
+            .success(""), .success(""),
+            .success("emulator-5554 localfilesystem:\(socket) tcp:6790\nemulator-5556 localfilesystem:\(sockets)/uia2-emulator-5556.sock tcp:6790\nemulator-5554 tcp:61211 tcp:16791"),
+            .success(""),
+        ])
+        var android = platform(shell)
+        android.runnerSocketDirectory = sockets
+        await android.cleanupOrphans(deviceID: "emulator-5554")
+        XCTAssertEqual(shell.commands.suffix(2), [
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --list",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove 'localfilesystem:\(socket)'",
+        ])
+        XCTAssertFalse(FileManager.default.fileExists(atPath: "\(sockets)/uia2-emulator-5554.pid"))
+    }
+
+    /// A runner that is alive (its pid file names a live process) keeps its forward.
+    func testOrphanCleanupKeepsALiveRunnersSocketForward() async throws {
+        let sockets = scratch.appendingPathComponent("sockets").path
+        try FileManager.default.createDirectory(atPath: sockets, withIntermediateDirectories: true)
+        let socket = "\(sockets)/uia2-emulator-5554.sock"
+        try "\(getpid())".write(toFile: "\(sockets)/uia2-emulator-5554.pid", atomically: true, encoding: .utf8)
+        let shell = ScriptedShell([
+            .success(""), .success(""), .success("emulator-5554 localfilesystem:\(socket) tcp:6790"),
+        ])
+        var android = platform(shell)
+        android.runnerSocketDirectory = sockets
+        await android.cleanupOrphans(deviceID: "emulator-5554")
+        XCTAssertFalse(shell.commands.contains { $0.contains("--remove") }, "\(shell.commands)")
     }
 
     func testOrphanCleanupRemovesOnlyTheRecordedOwnedForward() async {

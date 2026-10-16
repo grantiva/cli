@@ -254,6 +254,23 @@ public struct ADB: Sendable {
         _ = try await execute(line(serial, "forward --remove tcp:\(localPort)"))
     }
 
+    /// `adb forward --list` as printed.
+    public func forwardListing(serial: String) async throws -> String {
+        try await execute(line(serial, "forward --list"))
+    }
+
+    /// True when `listing` has `serial`'s forward from `localfilesystem:<socket>`.
+    public static func listsSocketForward(_ listing: String, serial: String, socket: String) -> Bool {
+        listing.components(separatedBy: "\n").contains { raw in
+            let fields = raw.split(whereSeparator: { $0 == " " || $0 == "\t" }).map(String.init)
+            return fields.count >= 2 && fields[0] == serial && fields[1] == "localfilesystem:\(socket)"
+        }
+    }
+
+    public func removeSocketForward(serial: String, socket: String) async throws {
+        _ = try await execute(line(serial, "forward --remove \(shellQuoted("localfilesystem:\(socket)"))"))
+    }
+
     /// Local tcp ports forwarded for `serial`, from `adb forward --list`.
     public func forwards(serial: String) async throws -> [Int] {
         Self.parseForwards(try await execute(line(serial, "forward --list")), serial: serial)
