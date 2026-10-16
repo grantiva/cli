@@ -35,6 +35,8 @@ final class SimulatorLeaseTests: XCTestCase {
 
         XCTAssertFalse(FileManager.default.fileExists(atPath: flows))
         XCTAssertFalse(FileManager.default.fileExists(atPath: report))
+        // C15: the device's tmpdirs ledger drops this run's entry with them.
+        XCTAssertEqual(SimulatorLease.temporaryDirectoryRecords(udid: "SIM-TMP", directory: leaseDirectory), [])
         lease.release()
 
         // A released lease's directories are its run's business no longer.

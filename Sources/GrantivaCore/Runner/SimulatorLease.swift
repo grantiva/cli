@@ -342,7 +342,14 @@ public final class SimulatorLease: @unchecked Sendable {
         stateLock.lock()
         let paths = released ? [] : (claim.temporaryDirectories ?? [])
         stateLock.unlock()
+        guard !paths.isEmpty else { return }
         for path in paths { try? FileManager.default.removeItem(atPath: path) }
+        // The device's ledger forgets this run with its directories (C15):
+        // a record whose directories are all gone is pruned.
+        let ledger = Self.ledgerPath(forLeasePath: path)
+        if FileManager.default.fileExists(atPath: ledger) {
+            Self.saveLedger(Self.pruned(Self.loadLedger(ledger)), to: ledger)
+        }
     }
 
     /// Transfers ownership to a process that outlives this one. `runner start`
