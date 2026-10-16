@@ -76,6 +76,41 @@ final class RunSessionContractTests: XCTestCase {
         XCTAssertEqual(lines, ["Booting simulator: qa-ios-1", "Simulator booted: qa-ios-1 (UDID-1)"])
     }
 
+    /// candidate19: SIGINT while the simulator was being booted for `run`
+    /// (its `simctl` child cut off) still printed `Simulator booted: …`
+    /// after the interrupt notice, 2 of 4. The boot step checks for the
+    /// interrupt before it narrates, and nothing follows the notice.
+    func testAnInterruptDuringTheBootEndsTheStepBeforeItNarrates() async throws {
+        let relay = SignalRelay.shared
+        defer { relay.resetTerminationForTesting() }
+        let fake = FakeDevicePlatform(platform: .ios)
+        fake.bootedName = "cov9-ios-b26"
+        fake.onBoot = { relay.simulateTerminationForTesting() }
+        var lines: [String] = []
+        do {
+            _ = try await RunCommand.targetDevice(platform: .ios, device: fake, target: "cov9-ios-b26", serialFlag: nil, log: { lines.append($0) })
+            XCTFail("the boot step went on after the interrupt")
+        } catch GrantivaError.commandFailed(_, let code) {
+            XCTAssertEqual(code, 130)
+        }
+        XCTAssertEqual(lines, ["Booting simulator: cov9-ios-b26"])
+    }
+
+    /// An interrupt already under way: the step neither narrates nor boots.
+    func testAnInterruptBeforeTheBootStartsNoBoot() async throws {
+        let relay = SignalRelay.shared
+        relay.simulateTerminationForTesting()
+        defer { relay.resetTerminationForTesting() }
+        let fake = FakeDevicePlatform(platform: .ios)
+        var lines: [String] = []
+        do {
+            _ = try await RunCommand.targetDevice(platform: .ios, device: fake, target: "qa-ios-1", serialFlag: nil, log: { lines.append($0) })
+            XCTFail("the boot step ran after the interrupt")
+        } catch {}
+        XCTAssertEqual(lines, [])
+        XCTAssertEqual(fake.calls.filter { $0.hasPrefix("bootDevice") }, [])
+    }
+
     // MARK: - K13: screens and flows counted once each
 
     func testSuiteNarrationCountsScreensAndFlowsSeparately() {

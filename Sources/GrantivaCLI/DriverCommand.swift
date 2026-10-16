@@ -240,7 +240,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
             let options = options
             SignalRelay.shared.setExitStatus {
                 guard let ending = Self.teardownEnding(grantivaPid: getpid(), runnerPid: foregroundRunner.value) else { return nil }
-                options.note(ending)
+                options.noteOutcome(ending)
                 return 0
             }
         }
@@ -249,6 +249,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
         releaseLease = SignalRelay.shared.onTermination { simulatorLease.release() }
 
         let deviceNoun = platform == .ios ? "Simulator" : "Device"
+        // An interrupt that landed while the device was being resolved ends
+        // the start here, before it narrates or starts anything.
+        try SignalRelay.shared.checkNotInterrupted()
         options.note("Starting runner...")
         options.note("  \(platform == .ios ? "Bundle ID" : "Application ID"): \(resolvedAppID)")
         options.note("  \(deviceNoun): \(booted.name) (\(booted.udid))")

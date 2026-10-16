@@ -123,6 +123,51 @@ final class CLILogHandlerTests: XCTestCase {
         XCTAssertEqual(captured.lines.last, "Warning: could not restore the status bar")
     }
 
+    /// candidate19: `runner start` interrupted at 1.0 s printed `Starting
+    /// runner...`, `Bundle ID:` and `Simulator:` after the interrupt notice,
+    /// and `run` printed `Simulator booted: …`. Progress narration goes
+    /// through this handler, which drops it once an interrupt is under way,
+    /// as it does the verbose lines. Warnings, errors and a line marked as
+    /// the interrupt's own outcome still print.
+    func testProgressLinesAreDroppedOnceAnInterruptIsUnderWay() {
+        let captured = Captured()
+        let interrupted = Flag()
+        let logger = Logger(label: "com.grantiva.cli") { label in
+            CLILogHandler(label: label, sink: { captured.append($0) }, interrupted: { interrupted.value })
+        }
+        let original = GrantivaLogLevel.current
+        defer { GrantivaLogLevel.current = original }
+        GrantivaLogLevel.current = .info
+
+        logger.info("Booting simulator: cov9-ios-b26")
+        interrupted.value = true
+        logger.info("Starting runner...")
+        logger.info("  Bundle ID: com.kylebrowning.Landmarks")
+        logger.notice("Simulator booted: cov9-ios-b26 (1144739D)")
+        logger.warning("could not restore the status bar")
+        logger.error("Interrupted.")
+        logger.info("Runner stopped by teardown (pid 7); the session has ended.", metadata: CLILogHandler.afterInterrupt)
+        XCTAssertEqual(captured.lines, [
+            "Booting simulator: cov9-ios-b26",
+            "Warning: could not restore the status bar",
+            "Error: Interrupted.",
+            "Runner stopped by teardown (pid 7); the session has ended.",
+        ])
+    }
+
+    /// The outcome marker is not rendered as metadata under `--verbose`.
+    func testTheOutcomeMarkerIsNotPrinted() {
+        let captured = Captured()
+        let logger = Logger(label: "com.grantiva.cli") { label in
+            CLILogHandler(label: label, sink: { captured.append($0) }, interrupted: { false })
+        }
+        let original = GrantivaLogLevel.current
+        defer { GrantivaLogLevel.current = original }
+        GrantivaLogLevel.current = .debug
+        logger.debug("ending", metadata: CLILogHandler.afterInterrupt)
+        XCTAssertFalse(captured.lines.joined().contains(CLILogHandler.afterInterruptKey), "\(captured.lines)")
+    }
+
     /// The live wiring: the default reads `SignalRelay.isTerminating`, and a
     /// child the relay ends logs no `stopped by SIGTERM` line through it.
     func testTheRelaysInterruptSilencesAChildsVerboseEndLine() throws {

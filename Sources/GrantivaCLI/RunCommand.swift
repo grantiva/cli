@@ -133,7 +133,7 @@ struct RunCommand: AsyncParsableCommand {
     /// itself is narrated where it happens.
     static func targetDevice(
         platform: Platform, device: any DevicePlatform, target: String, serialFlag: String?,
-        targetIsDefault: Bool = false, log: (String) -> Void
+        targetIsDefault: Bool = false, relay: SignalRelay = .shared, log: (String) -> Void
     ) async throws -> BootedDevice {
         if platform == .android, let serial = serialFlag {
             let attached: BootedDevice
@@ -150,10 +150,14 @@ struct RunCommand: AsyncParsableCommand {
             log(bootNarration(platform: platform, target: "\(booted.name) (\(booted.udid))", running: true))
             return booted
         }
+        try relay.checkNotInterrupted()
         log(bootNarration(platform: platform, target: target))
         let booted = targetIsDefault
             ? try await device.bootDefaultDevice(named: target, override: "--simulator")
             : try await device.bootDevice(named: target)
+        // An interrupt during the boot (its `simctl` child cut off) ends the
+        // run here, before it narrates the device or goes on (candidate19).
+        try relay.checkNotInterrupted()
         log("\(platform == .ios ? "Simulator" : "Emulator") booted: \(booted.name) (\(booted.udid))")
         return booted
     }

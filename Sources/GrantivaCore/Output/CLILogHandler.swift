@@ -73,11 +73,16 @@ public struct CLILogHandler: LogHandler {
         function: String,
         line: UInt
     ) {
-        // Nothing follows the interrupt notice: the `--verbose` lines for the
-        // children the relay ends (`stopped by SIGTERM: … bootstatus …`) and
-        // whatever unwinds after it are dropped once an interrupt is under way.
-        if Self.isVerboseOnly(level), interrupted() { return }
-        let merged = self.metadata.merging(explicit ?? [:]) { _, new in new }
+        // Nothing follows the interrupt notice. Every progress line and every
+        // `--verbose` line goes through here, so once an interrupt is under
+        // way this one gate drops them all: the `stopped by SIGTERM: …
+        // bootstatus …` of a child the relay ends, and the `Starting
+        // runner...` / `Simulator booted: …` of a step that was already past
+        // its interrupt check. Warnings and errors still print, and so does a
+        // line marked as the command's outcome (`afterInterrupt`).
+        if Self.isDroppedAfterInterrupt(level, metadata: explicit), interrupted() { return }
+        var merged = self.metadata.merging(explicit ?? [:]) { _, new in new }
+        merged[Self.afterInterruptKey] = nil
         sink(Self.format(
             level: level,
             message: "\(message)",
@@ -121,9 +126,18 @@ public struct CLILogHandler: LogHandler {
         }
     }
 
-    /// The levels only `--verbose` shows.
-    static func isVerboseOnly(_ level: Logger.Level) -> Bool {
-        level == .debug || level == .trace
+    /// The metadata key that lets a progress-level line through after the
+    /// interrupt notice: the outcome the interrupt itself produced (a
+    /// teardown's `Runner stopped by teardown …`), never narration.
+    public static let afterInterruptKey = "grantiva.afterInterrupt"
+
+    /// Metadata for `afterInterruptKey`.
+    public static let afterInterrupt: Logger.Metadata = [afterInterruptKey: "true"]
+
+    /// The lines an interrupt silences: progress narration (`.info`,
+    /// `.notice`) and the `--verbose` levels, unless marked as the outcome.
+    static func isDroppedAfterInterrupt(_ level: Logger.Level, metadata: Logger.Metadata? = nil) -> Bool {
+        level < .warning && metadata?[afterInterruptKey] == nil
     }
 
     private static let stderrLock = NSLock()

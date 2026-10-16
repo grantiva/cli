@@ -169,6 +169,17 @@ final class RunnerSessionOutputTests: XCTestCase {
         }
     }
 
+    /// The runner's relayed output follows the same rule as grantiva's own
+    /// narration: nothing after the interrupt notice.
+    func testNarrateDropsRunnerOutputOnceAnInterruptIsUnderWay() {
+        var collected: [String] = []
+        var interrupted = false
+        RunnerSession.narrate("  ✓ Found 1 test flow(s)\n", silenced: false, sink: { collected.append($0) }, interrupted: { interrupted })
+        interrupted = true
+        RunnerSession.narrate("Received interrupt, cleaning up...\n", silenced: false, sink: { collected.append($0) }, interrupted: { interrupted })
+        XCTAssertEqual(collected, ["  ✓ Found 1 test flow(s)\n"])
+    }
+
     func testNarrateHonoursTheProcessWideSwitch() {
         let collected = Collected()
         RunnerNarration.sink = { collected.append($0) }

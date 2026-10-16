@@ -29,9 +29,20 @@ struct GlobalOptions: ParsableArguments {
     /// caller asking for a machine-readable result has not asked for a running
     /// commentary. Warnings and errors are not routed through here and are
     /// never suppressed.
+    ///
+    /// Once an interrupt is under way nothing narrated here prints: the log
+    /// handler drops it (the interrupt notice is the last line).
     func note(_ message: @autoclosure () -> String) {
         guard !json else { return }
         GrantivaLog.logger.info("\(message())")
+    }
+
+    /// The command's outcome when the interrupt itself produced it (a
+    /// teardown's stop of a foreground `runner start`): unlike `note`, it
+    /// prints after the interrupt notice.
+    func noteOutcome(_ message: String) {
+        guard !json else { return }
+        GrantivaLog.logger.info("\(message)", metadata: CLILogHandler.afterInterrupt)
     }
 
     /// Applies `--quiet`/`--json`/`--verbose` to the runner's relayed output
