@@ -19,7 +19,7 @@ extension RunnerSession {
     static func screenFailureLine(_ failure: RunnerReportSteps.Failure?, screen: String?) -> String? {
         guard let failure else { return nil }
         guard let screen else { return failure.line.isEmpty ? nil : failure.line }
-        let detail = [failure.action, failure.message].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: ": ")
+        let detail = failure.detail
         return detail.isEmpty ? "Screen \"\(screen)\" failed" : "Screen \"\(screen)\" failed at \(detail)"
     }
 

@@ -237,6 +237,21 @@ final class RunnerSessionOutputTests: XCTestCase {
         }
     }
 
+    /// C14 (N-14): the runner's launch failure already names the step
+    /// (`launchApp: 'com…' crashed on launch`); the line does not say it twice.
+    func testAFailureMessageThatNamesItsStepIsNotPrefixedTwice() {
+        let crash = RunnerReportSteps.Failure(
+            flowName: "99-crash", commandIndex: 0, action: "launchApp",
+            message: "launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: X",
+            errorType: "app_crash", unfinished: false
+        )
+        XCTAssertEqual(crash.line, "99-crash: launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: X")
+        let tap = RunnerReportSteps.Failure(
+            flowName: "f", commandIndex: 1, action: "tapOn: text=\"Go\"", message: "Element not found", errorType: nil, unfinished: false
+        )
+        XCTAssertEqual(tap.line, "f: tapOn: text=\"Go\": Element not found")
+    }
+
     func testTheFailedStepIsReadFromTheRunnersReport() throws {
         let reportDir = scratch.appendingPathComponent("report")
         try FileManager.default.createDirectory(at: reportDir.appendingPathComponent("flows"), withIntermediateDirectories: true)
