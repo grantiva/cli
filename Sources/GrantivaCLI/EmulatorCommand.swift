@@ -143,7 +143,8 @@ struct EmulatorCommand: AsyncParsableCommand {
             markStops: (@Sendable (String) -> [Int32])? = nil,
             unmarkStops: (@Sendable ([Int32]) -> Void)? = nil,
             sweepStops: (@Sendable () -> Void)? = nil,
-            waitForExit: @escaping @Sendable (Int32) async -> Bool = { await DeviceRunnerSessions.waitForExit($0) }
+            waitForExit: @escaping @Sendable (Int32) async -> Bool = { await DeviceRunnerSessions.waitForExit($0) },
+            reportStopped: (@Sendable (RunnerSessionStopper.Outcome) -> Void)? = nil
         ) async throws -> [EmulatorTeardownOutcome] {
             // However the teardown ends, markers nobody will read go.
             defer { sweepStops?() }
@@ -191,7 +192,11 @@ struct EmulatorCommand: AsyncParsableCommand {
                     let stopped = await stopRunners(serial)
                     var markedGone = false
                     for pid in marked[serial] ?? [] where !stopped.contains(where: { $0.runnerPid == pid }) {
-                        if await waitForExit(pid) { markedGone = true }
+                        if await waitForExit(pid) {
+                            markedGone = true
+                            // Said as for a session the stop found (C14).
+                            reportStopped?(.terminated(runnerPid: pid, udid: serial, killed: false))
+                        }
                     }
                     outcomes[index].runnerSessionStopped = !stopped.isEmpty || markedGone
                 }
@@ -256,7 +261,8 @@ struct EmulatorCommand: AsyncParsableCommand {
                 removeDeadSessions: { KeepAliveSessionStore().removeSessions(udid: $0) },
                 markStops: { DeviceRunnerSessions.markLive(udid: $0) },
                 unmarkStops: { pids in pids.forEach { RunnerStopMarker().remove(runnerPid: $0) } },
-                sweepStops: { RunnerStopMarker().sweep() }
+                sweepStops: { RunnerStopMarker().sweep() },
+                reportStopped: { if !json { Output.line(DeviceRunnerSessions.render($0)) } }
             )
             if options.json {
                 Output.line(try JSONOutput.string(outcomes))
