@@ -240,7 +240,9 @@ final class SimulatorBootWaitTests: XCTestCase {
             simctl, bootWait: SimulatorBootWait(timeout: 5, bootStatusGrace: 0, pollInterval: 0.01, environment: [:]),
             startBootStatus: { _ in FakeBootStatus(exitStatus: 0) }
         )
-        let owner = SimulatorCapacity.sessionlessOwner(udid: "PRE-1")
+        // The dead ensure ran in the same session as this one, so the record
+        // belongs to whatever GRANTIVA_SESSION_ID the tests run under.
+        let owner = capacity.sessionId ?? SimulatorCapacity.sessionlessOwner(udid: "PRE-1")
         let record = ManagedSimulatorSession(
             udid: "PRE-1", name: "cov-a", sessionId: owner, ownerPID: deadPID,
             acquiredAt: Date(), state: .pending, bootedByGrantiva: true, ephemeral: false
