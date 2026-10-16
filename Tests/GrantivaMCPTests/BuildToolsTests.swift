@@ -211,7 +211,7 @@ final class BuildToolsTests: XCTestCase {
             projectDirectory: URL(fileURLWithPath: "/x")
         )
         XCTAssertNil(result.isError)
-        XCTAssertEqual(Array(device.calls.suffix(2)), ["install(com.example.App,\(product))", "launch(com.example.App)"])
+        XCTAssertEqual(Array(device.calls.suffix(2)), ["install(com.example.App,\(AppBinaryResolver.canonicalPath(product)))", "launch(com.example.App)"])
         let text = try textContent(of: result)
         XCTAssertTrue(text.hasPrefix("App built and launched.\nScheme: Demo (UI Testing)\nBundle ID: com.example.App\nSimulator: Fake"), text)
     }

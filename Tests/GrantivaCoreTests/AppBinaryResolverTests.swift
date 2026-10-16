@@ -39,6 +39,39 @@ final class AppBinaryResolverTests: XCTestCase {
         XCTAssertEqual(try AppBinaryResolver.resolve(app.path + "/").appPath, expected)
     }
 
+    /// C13-2 (IOS-024): a built product (`--derived-data-path /tmp/...`, a
+    /// scheme's build products, a Gradle APK) reports the same realpath
+    /// spelling as `--app-file` does.
+    func testABuiltProductPathIsReportedInItsRealpathSpelling() throws {
+        let dir = URL(fileURLWithPath: "/tmp/grantiva-product-tests-\(UUID().uuidString)", isDirectory: true)
+        let products = dir.appendingPathComponent("Build/Products/Debug-iphonesimulator", isDirectory: true)
+        try FileManager.default.createDirectory(at: products, withIntermediateDirectories: true)
+        addTeardownBlock { try? FileManager.default.removeItem(at: dir) }
+        for name in ["Fixture.app", "app-debug.apk"] {
+            let built = products.appendingPathComponent(name).path
+            let result = BuildResult(success: true, duration: 0, warnings: [], errors: [], productPath: built)
+            XCTAssertEqual(result.productPath, "/private" + built)
+        }
+        XCTAssertNil(BuildResult(success: false, duration: 0, warnings: [], errors: [], productPath: nil).productPath)
+    }
+
+    func testAnExtractedIPAReportsItsRealpathSpelling() throws {
+        let app = try makeApp(platforms: ["iPhoneSimulator"], bundleId: "com.example.ipa")
+        let staging = app.deletingLastPathComponent().appendingPathComponent("ipa-staging")
+        try FileManager.default.createDirectory(at: staging.appendingPathComponent("Payload"), withIntermediateDirectories: true)
+        try FileManager.default.copyItem(at: app, to: staging.appendingPathComponent("Payload/\(app.lastPathComponent)"))
+        let ipa = app.deletingLastPathComponent().appendingPathComponent("Fixture.ipa")
+        let zip = Process()
+        zip.executableURL = URL(fileURLWithPath: "/usr/bin/zip")
+        zip.currentDirectoryURL = staging
+        zip.arguments = ["-qr", ipa.path, "Payload"]
+        try zip.run(); zip.waitUntilExit()
+        let resolved = try AppBinaryResolver.resolve(ipa.path)
+        defer { resolved.cleanup() }
+        XCTAssertEqual(resolved.appPath, AppBinaryResolver.canonicalPath(resolved.appPath))
+        XCTAssertFalse(resolved.appPath.hasPrefix("/var/"), resolved.appPath)
+    }
+
     func testCanonicalPathKeepsTheLastComponentAndFallsBackForAMissingParent() {
         XCTAssertEqual(AppBinaryResolver.canonicalPath("/private/tmp/x/../y.app"), "/private/tmp/y.app")
         XCTAssertEqual(AppBinaryResolver.canonicalPath("/definitely/missing/Test.app"), "/definitely/missing/Test.app")

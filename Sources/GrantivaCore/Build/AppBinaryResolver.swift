@@ -112,7 +112,7 @@ public struct AppBinaryResolver: Sendable {
             )
         }
 
-        let appPath = payloadDir.appendingPathComponent(appName).path
+        let appPath = canonicalPath(payloadDir.appendingPathComponent(appName).path)
         try validateSimulatorBuild(appPath)
 
         return ResolvedBinary(appPath: appPath, tempDir: tempDir)

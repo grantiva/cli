@@ -56,7 +56,7 @@ final class GradleBuildRunnerTests: XCTestCase {
         XCTAssertTrue(result.success)
         XCTAssertNil(result.scheme)
         XCTAssertNil(result.destination)
-        XCTAssertEqual(result.productPath, metadataDir.appendingPathComponent("app-debug.apk").path)
+        XCTAssertEqual(result.productPath, AppBinaryResolver.canonicalPath(metadataDir.appendingPathComponent("app-debug.apk").path))
         XCTAssertEqual(result.applicationId, "com.example.app")
         XCTAssertEqual(result.warnings, ["w: some warning"])
     }

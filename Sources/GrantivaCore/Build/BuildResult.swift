@@ -26,7 +26,10 @@ public struct BuildResult: Sendable, Codable {
         self.duration = duration
         self.warnings = warnings
         self.errors = errors
-        self.productPath = productPath
+        // Reported (`appPath`, the build table) in the same realpath
+        // spelling as an `--app-file` path: a `--derived-data-path /tmp/...`
+        // product is `/private/tmp/...` too (C13-2).
+        self.productPath = productPath.map(AppBinaryResolver.canonicalPath)
         self.applicationId = applicationId
     }
 }
