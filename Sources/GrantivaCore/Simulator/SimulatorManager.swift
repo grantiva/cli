@@ -10,22 +10,35 @@ public struct SimulatorManager: Sendable, Decodable {
     /// The runner base (`GRANTIVA_RUNNER_HOME`); per-simulator runner homes
     /// live at `<runnerHome>/versions/<runner version>/devices/<udid>`.
     private let runnerHome: String
+    /// Spawns `simctl bootstatus <udid> -b`.
+    private let startBootStatus: @Sendable (String) throws -> BootStatusChild
+    /// The bound on a boot's bootstatus wait (IOS-015).
+    private let bootWait: SimulatorBootWait
 
     public init() {
-        self.init(execute: { try await shell($0) })
+        self.init(
+            execute: { try await shell($0) },
+            startBootStatus: { try LiveBootStatusChild.start(udid: $0) },
+            bootWait: SimulatorBootWait()
+        )
     }
 
     /// Test seam: a scripted `simctl` and private capacity/provenance stores.
+    /// Without `startBootStatus`, bootstatus goes through `execute` too.
     init(
         execute: @escaping @Sendable (String) async throws -> String,
         capacity: SimulatorCapacity = .live,
         provenance: SimulatorProvenance = .live,
-        runnerHome: String = RunnerManager.baseDir
+        runnerHome: String = RunnerManager.baseDir,
+        startBootStatus: (@Sendable (String) throws -> BootStatusChild)? = nil,
+        bootWait: SimulatorBootWait = SimulatorBootWait(pollInterval: 0.01, environment: [:])
     ) {
         self.execute = execute
         self.capacity = capacity
         self.provenance = provenance
         self.runnerHome = runnerHome
+        self.startBootStatus = startBootStatus ?? { ExecutorBootStatusChild(udid: $0, execute: execute) }
+        self.bootWait = bootWait
     }
 
     public init(from decoder: Decoder) throws {
@@ -121,24 +134,46 @@ public struct SimulatorManager: Sendable, Decodable {
             let line = Self.waitMessage(wait, maximum: capacity.maximum)
             GrantivaLog.logger.log(level: line.level, "\(line.message)")
         }
+        // Set once `simctl boot` has succeeded: from then on the device is
+        // this record's to shut down, whatever happens to this process.
+        var bootIssued = false
         do {
             // Look again: the wait may have been for another process that
             // was booting this very device (two `ensure`s of one name), and
             // booting a Booted device fails (CoreSimulator code 405).
             let current = try await exactDevice(nameOrUDID: device.udid)
             if !current.isBooted {
+                // Recorded before the boot is issued (IOS-015): an ensure
+                // that hangs, fails or is interrupted from here on still
+                // leaves a record `teardown --session-id` shuts the device
+                // down by (`SimulatorCapacity.prune` keeps it).
+                try capacity.markBootIssued(udid: device.udid)
                 _ = try await execute("xcrun simctl boot \(device.udid)")
-                _ = try await execute("xcrun simctl bootstatus \(device.udid) -b")
+                bootIssued = true
+                _ = try await waitForBoot(udid: device.udid)
             }
             // The boot this record belongs to: a later boot by anyone else
             // (`simctl shutdown` then `boot`) makes the record stale.
             let bootedAt = try await exactDevice(nameOrUDID: device.udid).lastUsedAt
             try capacity.activate(udid: device.udid, bootedByGrantiva: !current.isBooted, bootedAt: bootedAt)
         } catch {
-            try? capacity.releaseReservation(udid: device.udid)
+            // A device this call booted keeps its record; anything else
+            // gives the reservation back.
+            if !bootIssued { try? capacity.releaseReservation(udid: device.udid) }
             throw error
         }
         return try await exactDevice(nameOrUDID: device.udid)
+    }
+
+    /// Waits for a booted device to finish booting, bounded by `bootWait`:
+    /// `simctl bootstatus -b`, or `simctl list` showing it Booted once
+    /// bootstatus has had its grace period (IOS-015).
+    func waitForBoot(udid: String) async throws -> SimulatorBootWait.Outcome {
+        try await bootWait.wait(
+            udid: udid,
+            start: { try startBootStatus(udid) },
+            isBooted: { try await exactDevice(nameOrUDID: udid).isBooted }
+        )
     }
 
     /// Boots the default simulator `name`, which nothing named: only one

@@ -696,6 +696,9 @@ final class FakeSimctl: @unchecked Sendable {
     /// Called (outside the lock) with each `simctl delete` command before it runs.
     var onDelete: (@Sendable (String) -> Void)?
 
+    /// The state `simctl boot` leaves a device in.
+    var bootState = "Booted"
+
     init(devices: [Device]) { self.devices = devices }
 
     var commands: [String] { lock.withLock { recorded } }
@@ -723,7 +726,7 @@ final class FakeSimctl: @unchecked Sendable {
                 created.append(udid)
                 return udid
             case command.hasPrefix("xcrun simctl boot "):
-                setState(words[3], "Booted")
+                setState(words[3], bootState)
                 return ""
             case command.hasPrefix("xcrun simctl shutdown "):
                 setState(words[3], "Shutdown")

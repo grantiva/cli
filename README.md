@@ -193,6 +193,7 @@ A flow header `env:` block (in a `run --flow` file or a Maestro-format `grantiva
 | `GRANTIVA_PLATFORM` | `ios` or `android`, like `--platform`. |
 | `GRANTIVA_SESSION_ID` | Durable owner for simulator capacity slots (see below). |
 | `GRANTIVA_MAX_SIMULATORS`, `GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS` | Simulator capacity policy. |
+| `GRANTIVA_SIMULATOR_BOOT_TIMEOUT_SECONDS`, `GRANTIVA_SIMULATOR_BOOTSTATUS_GRACE_SECONDS` | Bound on waiting for a booting simulator (defaults 300 and 60). After the grace period, `simctl list` showing the simulator Booted ends a `simctl bootstatus -b` that has not returned; past the timeout the boot fails. |
 | `GRANTIVA_RUNNER_HOME` | Runner directory, default `~/.grantiva/runner`. It holds simulator `locks/`, the WebDriverAgent build `cache/`, and one runner install per version under `versions/<stamp>/`; a home other than the default also holds its own `simulator-capacity/` (see Simulators Grantiva created). When an install is needed (no install of this version yet), grantiva first checks the `grantiva_GrantivaCore.bundle` beside the binary: a bundle from another release fails the install, names the bundle and either both runner versions or the tarball it lacks, leaves any existing install untouched, and leaves no empty `versions/<stamp>/` directory. An existing install of the current version is used as it is, without reading the bundle; `grantiva runner install` then warns when the bundle does not carry that runner, and every command that uses the runner warns (once) when no bundle is beside the binary at all, since the next fresh install would fail. A relative path is resolved against the current directory, and the home is always printed in its resolved form (`/private/tmp/…`, not `/tmp/…`), whether or not it exists yet. |
 | `GRANTIVA_DRIVER_START_TIMEOUT` | Seconds the runner waits for the UIAutomator2 server to start on Android (the runner's default is 30). Raise it on a slow or busy host; `runner start` then waits for the session for twice this plus 30 seconds (at least 90). A start that fails says so at once, with the runner's reason. |
 
@@ -702,7 +703,9 @@ Grantiva teardown. A run against an already-booted simulator that no Grantiva
 session owns takes no slot, and teardown shuts down only simulators Grantiva
 itself booted. Without `GRANTIVA_SESSION_ID`, a slot taken by a run lasts only
 while that run's process is alive; one taken by `simulator ensure` lasts until
-the simulator is shut down.
+the simulator is shut down. A slot is recorded as Grantiva's boot before `simctl boot` is
+issued, so an `ensure` that fails, times out or is interrupted after booting a
+simulator still leaves it to `teardown --session-id`.
 
 A simulator booted under a named `GRANTIVA_SESSION_ID` is reserved for that
 session until it ends: a run with another session ID, or with none, is refused

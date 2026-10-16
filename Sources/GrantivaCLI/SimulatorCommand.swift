@@ -28,6 +28,12 @@ struct SimulatorCommand: AsyncParsableCommand {
         var boot = true
 
         func run() async throws {
+            // An interrupt ends the `simctl` children (a `bootstatus -b`
+            // runs in a process group of its own, which a terminal's Ctrl-C
+            // never reaches) instead of leaving them behind. The capacity
+            // record of a device whose boot was issued survives the exit, so
+            // `teardown --session-id` still shuts it down (IOS-015).
+            SignalRelay.shared.install()
             let result = try await SimulatorManager.live.ensure(
                 name: name, deviceType: deviceType, runtime: runtime, boot: boot
             )
