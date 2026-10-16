@@ -98,6 +98,52 @@ final class CLILogHandlerTests: XCTestCase {
         XCTAssertEqual(captured.lines[2], "Warning: failed to start log stream")
     }
 
+    /// B4-PC.4 follow-up: an interrupted `simulator ensure --verbose` printed
+    /// `[debug] … stopped by SIGTERM: /usr/bin/xcrun simctl bootstatus <udid> -b`
+    /// after the interrupt notice. Nothing at the verbose-only levels follows
+    /// the notice; warnings and errors still do.
+    func testVerboseLinesAreDroppedOnceAnInterruptIsUnderWay() {
+        let captured = Captured()
+        let interrupted = Flag()
+        let logger = Logger(label: "com.grantiva.cli") { label in
+            CLILogHandler(label: label, sink: { captured.append($0) }, interrupted: { interrupted.value })
+        }
+        let original = GrantivaLogLevel.current
+        defer { GrantivaLogLevel.current = original }
+        GrantivaLogLevel.current = .trace
+
+        logger.debug("$ /usr/bin/xcrun simctl bootstatus U -b")
+        XCTAssertEqual(captured.lines.count, 1)
+
+        interrupted.value = true
+        logger.debug("stopped by SIGTERM: /usr/bin/xcrun simctl bootstatus U -b")
+        logger.trace("trace after the notice")
+        logger.warning("could not restore the status bar")
+        XCTAssertEqual(captured.lines.count, 2, "\(captured.lines)")
+        XCTAssertEqual(captured.lines.last, "Warning: could not restore the status bar")
+    }
+
+    /// The live wiring: the default reads `SignalRelay.isTerminating`, and a
+    /// child the relay ends logs no `stopped by SIGTERM` line through it.
+    func testTheRelaysInterruptSilencesAChildsVerboseEndLine() throws {
+        let captured = Captured()
+        let logger = Logger(label: "com.grantiva.cli") { label in
+            CLILogHandler(label: label, sink: { captured.append($0) })
+        }
+        let original = GrantivaLogLevel.current
+        defer { GrantivaLogLevel.current = original }
+        GrantivaLogLevel.current = .debug
+
+        let relay = SignalRelay.shared
+        relay.simulateTerminationForTesting()
+        defer { relay.resetTerminationForTesting() }
+        logger.debug("stopped by SIGTERM: /usr/bin/xcrun simctl bootstatus U -b")
+        XCTAssertTrue(captured.lines.isEmpty, "\(captured.lines)")
+        relay.resetTerminationForTesting()
+        logger.debug("after the reset")
+        XCTAssertEqual(captured.lines.count, 1)
+    }
+
     // MARK: - Verbosity flags
 
     func testVerbosityDefaultsToInfo() {
@@ -114,6 +160,15 @@ final class CLILogHandlerTests: XCTestCase {
 
     func testVerboseWinsOverQuiet() {
         XCTAssertEqual(LogVerbosity.level(for: ["grantiva", "run", "--quiet", "--verbose"]), .debug)
+    }
+
+    private final class Flag: @unchecked Sendable {
+        private let lock = NSLock()
+        private var stored = false
+        var value: Bool {
+            get { lock.lock(); defer { lock.unlock() }; return stored }
+            set { lock.lock(); stored = newValue; lock.unlock() }
+        }
     }
 
     private final class Captured: @unchecked Sendable {

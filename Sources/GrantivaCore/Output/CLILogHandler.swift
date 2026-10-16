@@ -46,10 +46,17 @@ public struct CLILogHandler: LogHandler {
 
     private let label: String
     private let sink: Sink
+    /// True once an interrupt is under way (`SignalRelay.isTerminating`).
+    private let interrupted: @Sendable () -> Bool
 
-    public init(label: String, sink: @escaping Sink = CLILogHandler.standardError) {
+    public init(
+        label: String,
+        sink: @escaping Sink = CLILogHandler.standardError,
+        interrupted: @escaping @Sendable () -> Bool = { SignalRelay.shared.isTerminating }
+    ) {
         self.label = label
         self.sink = sink
+        self.interrupted = interrupted
     }
 
     public subscript(metadataKey key: String) -> Logger.Metadata.Value? {
@@ -66,6 +73,10 @@ public struct CLILogHandler: LogHandler {
         function: String,
         line: UInt
     ) {
+        // Nothing follows the interrupt notice: the `--verbose` lines for the
+        // children the relay ends (`stopped by SIGTERM: … bootstatus …`) and
+        // whatever unwinds after it are dropped once an interrupt is under way.
+        if Self.isVerboseOnly(level), interrupted() { return }
         let merged = self.metadata.merging(explicit ?? [:]) { _, new in new }
         sink(Self.format(
             level: level,
@@ -108,6 +119,11 @@ public struct CLILogHandler: LogHandler {
                     .joined(separator: " ")
             return "[\(level)] \(timestamp) \(label): \(message)\(rendered)"
         }
+    }
+
+    /// The levels only `--verbose` shows.
+    static func isVerboseOnly(_ level: Logger.Level) -> Bool {
+        level == .debug || level == .trace
     }
 
     private static let stderrLock = NSLock()
