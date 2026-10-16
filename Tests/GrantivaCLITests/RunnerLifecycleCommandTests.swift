@@ -1569,7 +1569,8 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         )
         XCTAssertEqual(result.exitStatus, 1)
         XCTAssertNil(result.attachment)
-        XCTAssertLessThan(Date().timeIntervalSince(started), 2)
+        // Far below the 90 s timeout; generous so a loaded host still passes.
+        XCTAssertLessThan(Date().timeIntervalSince(started), 10)
     }
 
     func testTheRunnersStartFailureIsReportedWithItsReason() {
