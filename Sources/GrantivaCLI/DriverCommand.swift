@@ -1563,6 +1563,20 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
         let port: UInt16?
     }
 
+    /// The keep-alive session to fall back to: this project's first (C14).
+    /// No session at all is nil (`resolveTarget` names `--port` then); a
+    /// `--udid` no live session holds is the error `grantiva hierarchy`
+    /// prints, naming the live sessions.
+    static func keepAliveSession(
+        udid: String?, store: KeepAliveSessionStore, projectDirectory: String = FileManager.default.currentDirectoryPath
+    ) throws -> KeepAliveSession? {
+        do {
+            return try store.locateIncludingStarting(udid: udid, projectDirectory: projectDirectory)
+        } catch GrantivaError.notFound {
+            return nil
+        }
+    }
+
     /// Flag port, then a `runner start` session, then a keep-alive session.
     /// A keep-alive port of 0 (Android) becomes nil: the platform forwards one.
     static func resolveTarget(port: UInt16?, runnerSession: RunnerSessionInfo?, keepAlive: KeepAliveSession?) throws -> Target {
@@ -1584,9 +1598,9 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
             guard let session = try? RunnerSessionInfo.load(), session.isAlive else { return nil }
             return session
         }()
-        let keepAlive = try? KeepAliveSessionStore().locateIncludingStarting(
-            udid: udid, projectDirectory: FileManager.default.currentDirectoryPath
-        )
+        let keepAlive = (port == nil && runnerSession == nil)
+            ? try Self.keepAliveSession(udid: udid, store: KeepAliveSessionStore())
+            : nil
         let target = try Self.resolveTarget(port: port, runnerSession: runnerSession, keepAlive: keepAlive)
         try await dump(target: target)
     }

@@ -7,6 +7,25 @@ import XCTest
 final class DumpHierarchyCommandTests: XCTestCase {
     private let simulator = "921A0945-7157-4533-BA1F-21E8132D3E40"
 
+    /// C14: `dump-hierarchy --udid <absent>` with live sessions names them, as
+    /// `grantiva hierarchy` does, instead of the no-session text; with no
+    /// session at all the fallback is nil (the no-session text, with --port).
+    func testAnAbsentUdidNamesTheLiveSessionsAsHierarchyDoes() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("dump-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let empty = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { _ in true })
+        XCTAssertNil(try DumpHierarchyCommand.keepAliveSession(udid: "emulator-5554", store: empty))
+
+        let json: [String: Any] = ["sessionId": "s", "pid": 500, "port": 8250]
+        try JSONSerialization.data(withJSONObject: json).write(to: directory.appendingPathComponent("500-1.grantiva"))
+        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { $0 == 500 })
+        store.recordOwner(udid: "A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF", runnerPid: 500, projectDirectory: directory.path, platform: .ios)
+        XCTAssertThrowsError(try DumpHierarchyCommand.keepAliveSession(udid: "emulator-5554", store: store)) { error in
+            XCTAssertTrue("\(error)".contains("No keep-alive session for udid emulator-5554. Live sessions: A1C8EC2A"), "\(error)")
+        }
+    }
+
     func testAnExplicitPortWins() throws {
         let target = try DumpHierarchyCommand.resolveTarget(port: 8100, runnerSession: nil, keepAlive: nil)
         XCTAssertEqual(target.udid, "")
