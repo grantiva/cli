@@ -867,7 +867,16 @@ struct RunnerStartCommand: AsyncParsableCommand {
         if launch.platform == .ios {
             RunnerHelperReaper.reapOnInterrupt(group: child.processGroup, udid: launch.device.udid)
         }
-        let startupInterrupt = SignalRelay.shared.onTermination { cleanup.run() }
+        let platformDevice = launch.platformDevice
+        let serial = launch.device.udid
+        let startupInterrupt = SignalRelay.shared.onTermination {
+            cleanup.run()
+            // The runner's group is stopped by now. One cut off mid-start
+            // may not have removed its UIAutomator2 forward (C15).
+            if platformDevice.platform == .android {
+                Self.afterInterrupt(platform: platformDevice, serial: serial)
+            }
+        }
         defer {
             SignalRelay.shared.untrack(group: child.processGroup)
             SignalRelay.shared.removeCleanup(startupInterrupt)
@@ -1052,6 +1061,20 @@ struct RunnerStartCommand: AsyncParsableCommand {
     /// Ctrl-C: the relay is reaping (WDA's xcodebuild included, B4-L72.3)
     /// and exits 130 once its cleanups finish; returning first would end the
     /// process mid-reap. Capped like `run`'s wait.
+    /// After an interrupt stopped a starting Android runner: its forward
+    /// to the UIAutomator2 server, if it died before removing it, goes
+    /// (`cleanupOrphans` removes it only when no live runner owns it), and
+    /// the server is stopped. Blocks at most `timeout`: it runs in the
+    /// relay's synchronous cleanup.
+    static func afterInterrupt(platform: any DevicePlatform, serial: String, timeout: TimeInterval = 10) {
+        let done = DispatchSemaphore(value: 0)
+        Task.detached {
+            await platform.cleanupOrphans(deviceID: serial)
+            done.signal()
+        }
+        _ = done.wait(timeout: .now() + timeout)
+    }
+
     static func awaitSignalRelayExit() async {
         try? await Task.sleep(for: .seconds(30))
     }

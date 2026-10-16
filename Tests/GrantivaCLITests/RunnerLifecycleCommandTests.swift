@@ -319,6 +319,15 @@ final class RunnerLifecycleCommandTests: XCTestCase {
 
     /// B4-PC.8: Ctrl-C exits through the signal relay, so the `defer` that
     /// removes `$TMPDIR/grantiva-session-<uuid>` never runs; the relay must.
+    /// C15 (B4-L68.3): an interrupt of a starting Android runner ends with
+    /// the device's orphan cleanup, which removes a dead runner's
+    /// UIAutomator2 forward.
+    func testAnInterruptOfAStartingAndroidRunnerCleansItsOrphans() {
+        let device = FakeDevicePlatform(platform: .android)
+        RunnerStartCommand.afterInterrupt(platform: device, serial: "emulator-5562", timeout: 5)
+        XCTAssertEqual(device.calls, ["cleanupOrphans"])
+    }
+
     func testAnInterruptRemovesTheStartsTemporaryDirectory() throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-session-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: directory.appendingPathComponent("report"), withIntermediateDirectories: true)
