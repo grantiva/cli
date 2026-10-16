@@ -321,16 +321,19 @@ public final class SignalRelay: @unchecked Sendable {
         }
 
         for cleanup in pendingBeforeTermination { cleanup() }
-        // A `simctl status_bar` (or any other shell child) still running
-        // would otherwise be left to launchd (C13-3).
-        ShellChildren.shared.terminateAll()
+        // A `simctl status_bar` override still running would race the
+        // restore below (C13-3). Other shell children finish: an `adb
+        // forward` cut off mid-call leaves a forward nobody knows the port of
+        // (C15); the cleanups own what they make.
+        ShellChildren.shared.terminateAll(where: ShellChildren.endsFirstOnInterrupt)
         for pgid in trackedGroups {
             ChildProcess.terminateGroup(pgid, gracePeriod: 5)
         }
         for reap in helperReaps { reap() }
         for cleanup in pendingCleanups { cleanup() }
-        // A cleanup's own child that outran its bound (a hung
-        // `status_bar clear`) goes too, before grantiva exits.
+        // Every shell child still running goes before grantiva exits (C13-3),
+        // a cleanup's own that outran its bound (a hung `status_bar clear`)
+        // included.
         ShellChildren.shared.terminateAll()
         return true
     }

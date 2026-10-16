@@ -30,7 +30,7 @@ public func shell(_ command: String, environment: [String: String]? = nil, termi
 
     let stopOnCancel = terminateOnCancel && !Task.isCancelled
     try process.run()
-    let tracked = ShellChildren.shared.register(process.processIdentifier)
+    let tracked = ShellChildren.shared.register(process.processIdentifier, command: command)
     defer { ShellChildren.shared.unregister(tracked) }
 
     // Drain both pipes concurrently. Reading either stream to EOF first can
@@ -67,16 +67,29 @@ public final class ShellChildren: @unchecked Sendable {
     public static let shared = ShellChildren()
 
     private let lock = NSLock()
-    private var children: [UInt64: pid_t] = [:]
+    private var children: [UInt64: (pid: pid_t, command: String)] = [:]
     private var nextID: UInt64 = 1
 
-    func register(_ pid: pid_t) -> UInt64 {
+    func register(_ pid: pid_t, command: String = "") -> UInt64 {
         lock.withLock {
             let id = nextID
             nextID += 1
-            if pid > 1 { children[id] = pid }
+            if pid > 1 { children[id] = (pid, command) }
             return id
         }
+    }
+
+    /// The running children's command lines, by pid.
+    public var runningCommands: [pid_t: String] {
+        lock.withLock { Dictionary(children.values.map { ($0.pid, $0.command) }, uniquingKeysWith: { first, _ in first }) }
+    }
+
+    /// A child an interrupt ends before anything else: a `simctl status_bar`
+    /// override would otherwise race the restore the cleanups run. Every
+    /// other child (an `adb forward` in flight) is left to finish while the
+    /// runner stops and the cleanups take what it made (C15).
+    public static func endsFirstOnInterrupt(_ command: String) -> Bool {
+        command.contains("status_bar")
     }
 
     func unregister(_ id: UInt64) {
@@ -85,14 +98,14 @@ public final class ShellChildren: @unchecked Sendable {
 
     /// The pids of the children running now.
     public var running: [pid_t] {
-        lock.withLock { Array(children.values).sorted() }
+        lock.withLock { children.values.map(\.pid).sorted() }
     }
 
     /// SIGTERM each running child (and the group it leads), then SIGKILL
     /// whatever is still alive after `gracePeriod`. Blocks at most about
     /// `gracePeriod` plus a moment.
-    public func terminateAll(gracePeriod: TimeInterval = 2) {
-        let pids = running
+    public func terminateAll(gracePeriod: TimeInterval = 2, where include: (String) -> Bool = { _ in true }) {
+        let pids = lock.withLock { children.values.filter { include($0.command) }.map(\.pid).sorted() }
         guard !pids.isEmpty else { return }
         let ownGroup = getpgrp()
         func send(_ sig: Int32, _ pid: pid_t) {
@@ -170,7 +183,7 @@ public func runProcess(_ argv: [String], environment: [String: String]? = nil) a
         }
     }
     try process.run()
-    let tracked = ShellChildren.shared.register(process.processIdentifier)
+    let tracked = ShellChildren.shared.register(process.processIdentifier, command: command)
     defer { ShellChildren.shared.unregister(tracked) }
     // Drain both pipes concurrently so neither fills and blocks the child.
     async let out = readToEndOfFile(stdout.fileHandleForReading)

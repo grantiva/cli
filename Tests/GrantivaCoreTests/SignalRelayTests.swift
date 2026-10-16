@@ -120,6 +120,41 @@ final class SignalRelayTests: XCTestCase {
         XCTAssertTrue(ShellChildren.shared.running.isEmpty)
     }
 
+    /// C15 (B4-L68.3): the relay killed every shell child first, so an
+    /// `adb forward tcp:0` in flight was cut off after adb had made the
+    /// forward but before grantiva learned its port: the forward leaked. An
+    /// ordinary child now finishes while the groups stop and the cleanups
+    /// run (they own what it makes); only a status-bar override, which would
+    /// race the restore, is ended first. Whatever is left goes at the end.
+    func testAnInterruptLetsAnOrdinaryShellChildFinishBeforeTheCleanups() async throws {
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let ordinary = Task { try? await shell("trap '' INT; sleep 30 # adb forward stand-in") }
+        let override = Task { try? await shell("trap '' INT; sleep 30 # simctl status_bar stand-in") }
+        defer { ordinary.cancel(); override.cancel() }
+        var pids: [Int32] = []
+        for _ in 0..<50 where pids.count < 2 {
+            try await Task.sleep(nanoseconds: 50_000_000)
+            pids = ShellChildren.shared.running
+        }
+        XCTAssertEqual(pids.count, 2)
+        let commands = ShellChildren.shared.runningCommands
+        let ordinaryPid = try XCTUnwrap(commands.first { $0.value.contains("adb forward") }?.key)
+        let overridePid = try XCTUnwrap(commands.first { $0.value.contains("status_bar") }?.key)
+        let seen = LockedFlags()
+        let token = SignalRelay.shared.onTermination {
+            seen.set("ordinary", kill(ordinaryPid, 0) == 0)
+            seen.set("override", kill(overridePid, 0) == 0)
+        }
+        defer { SignalRelay.shared.removeCleanup(token) }
+
+        SignalRelay.shared.simulateTerminationForTesting()
+
+        XCTAssertEqual(seen.value("ordinary"), true, "the in-flight child was killed before the cleanups")
+        XCTAssertEqual(seen.value("override"), false, "the status-bar override outlived the start of the cleanups")
+        _ = await ordinary.value
+        XCTAssertNotEqual(kill(ordinaryPid, 0), 0, "the ordinary child outlived the interrupt")
+    }
+
     /// B3-L54.1: a teardown that lands before the runner exists ends the
     /// start in order: the exit status is the provider's, not 128 + signal.
     func testAnExitStatusProviderDecidesTheInterruptsStatus() {
@@ -130,4 +165,11 @@ final class SignalRelayTests: XCTestCase {
         SignalRelay.shared.setExitStatus { nil }
         XCTAssertEqual(SignalRelay.shared.exitStatus(for: SIGTERM), 143)
     }
+}
+
+private final class LockedFlags: @unchecked Sendable {
+    private let lock = NSLock()
+    private var flags: [String: Bool] = [:]
+    func set(_ key: String, _ value: Bool) { lock.withLock { flags[key] = value } }
+    func value(_ key: String) -> Bool? { lock.withLock { flags[key] } }
 }
