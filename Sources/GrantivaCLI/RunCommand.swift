@@ -326,6 +326,24 @@ struct RunCommand: AsyncParsableCommand {
         }
     }
 
+    /// Runs a runner command's `body` with the interrupt relay's exit held
+    /// until it has unwound, so the relay's cleanups come after whatever
+    /// `body` created before it saw the interrupt; after an interrupt it
+    /// then waits for the relay to exit 130 instead of exiting first (C15).
+    static func runningToTheRelay(_ body: () async throws -> Void) async throws {
+        let hold = SignalRelay.shared.holdExit()
+        defer { SignalRelay.shared.releaseExit(hold) }
+        do {
+            try await body()
+        } catch {
+            if exitsThroughSignalRelay() {
+                SignalRelay.shared.releaseExit(hold)
+                await awaitSignalRelayExit()
+            }
+            throw error
+        }
+    }
+
     /// True after an interrupt: the relay exits 130 once its cleanups run.
     /// False after a signal released an armed keep-alive hold (L56): the
     /// run's flows had finished, so it ends here with the status they
@@ -479,6 +497,7 @@ struct RunCommand: AsyncParsableCommand {
         var productPath: String?
         var builtAppID: String?
 
+        try SignalRelay.shared.checkNotInterrupted()
         if buildOptions.shouldSkipInstall {
             log("Skipping build and install (--no-build)")
         } else if let resolvedBinary {
@@ -519,6 +538,7 @@ struct RunCommand: AsyncParsableCommand {
             throw GrantivaError.invalidArgument(TargetOptions.appIDMessage(for: platform, noBuild: buildOptions.shouldSkipBuild))
         }
 
+        try SignalRelay.shared.checkNotInterrupted()
         if !buildOptions.shouldSkipInstall, let productPath {
             let installID = TargetOptions.installAppID(platform: platform, testID: bid, binaryID: builtAppID ?? appBundleId)
             log("Installing \(installID)...")
@@ -536,6 +556,7 @@ struct RunCommand: AsyncParsableCommand {
             log(suite)
         }
 
+        try SignalRelay.shared.checkNotInterrupted()
         var captures: [ScreenCapture] = []
         let failureReport = RunnerFailureReport()
         do {

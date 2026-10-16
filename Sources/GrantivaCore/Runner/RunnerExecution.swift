@@ -81,6 +81,11 @@ enum RunnerExecution {
     }
 
     static func run(_ request: Request) async -> Outcome {
+        // An interrupt that landed while the session was being prepared: the
+        // runner is never spawned (C15).
+        if SignalRelay.shared.isTerminating {
+            return Outcome(terminationStatus: 130, stderr: "", timedOut: false, interrupted: true)
+        }
         let stdoutPipe = Pipe()
         let stderrPipe = Pipe()
 

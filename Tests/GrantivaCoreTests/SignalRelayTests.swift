@@ -178,6 +178,26 @@ final class SignalRelayTests: XCTestCase {
         XCTAssertEqual(order.value, ["summary", "cleanup"])
     }
 
+    /// C15 (sigint-early): what a held run registers after the interrupt
+    /// began (a temp directory it created first) is cleaned up too.
+    func testACleanupRegisteredDuringAHeldExitStillRuns() async throws {
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let ran = Locked<[String]>([])
+        let hold = SignalRelay.shared.holdExit()
+        defer { SignalRelay.shared.releaseExit(hold) }
+        let done = DispatchSemaphore(value: 0)
+        DispatchQueue.global().async {
+            SignalRelay.shared.simulateTerminationForTesting()
+            done.signal()
+        }
+        try await Task.sleep(nanoseconds: 200_000_000)
+        let token = SignalRelay.shared.onTermination { ran.append("late") }
+        defer { SignalRelay.shared.removeCleanup(token) }
+        SignalRelay.shared.releaseExit(hold)
+        XCTAssertEqual(done.wait(timeout: .now() + 5), .success)
+        XCTAssertEqual(ran.value, ["late"])
+    }
+
     /// A hold nobody releases delays the exit by its bound only.
     func testAHeldExitThatIsNeverReleasedTimesOut() {
         defer { SignalRelay.shared.resetTerminationForTesting() }

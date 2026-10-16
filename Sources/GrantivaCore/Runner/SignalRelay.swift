@@ -183,11 +183,15 @@ public final class SignalRelay: @unchecked Sendable {
         exitHoldsChanged.unlock()
     }
 
-    private func waitForExitHolds() {
+    /// Waits for held exits; true when there were any to wait for.
+    @discardableResult
+    private func waitForExitHolds() -> Bool {
         let deadline = Date().addingTimeInterval(exitHoldTimeout)
         exitHoldsChanged.lock()
+        let held = !exitHolds.isEmpty
         while !exitHolds.isEmpty, exitHoldsChanged.wait(until: deadline) {}
         exitHoldsChanged.unlock()
+        return held
     }
 
     public func removeCleanup(_ id: UInt64) {
@@ -204,6 +208,14 @@ public final class SignalRelay: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         return terminating
+    }
+
+    /// Throws once an interrupt is under way: a command checks this before
+    /// each new piece of work (a build, an install, a runner session), so
+    /// an interrupt that lands while it is between steps ends it there
+    /// instead of starting more that nothing cleans up (C15).
+    public func checkNotInterrupted() throws {
+        if isTerminating { throw GrantivaError.commandFailed("Interrupted.", 130) }
     }
 
     /// Test seam: runs the registered cleanups without exiting the process.
@@ -370,9 +382,17 @@ public final class SignalRelay: @unchecked Sendable {
         }
         for reap in helperReaps { reap() }
         // The runner is gone: a run reports its outcome before the cleanups
-        // take the device and its files (C15).
-        waitForExitHolds()
-        for cleanup in pendingCleanups { cleanup() }
+        // take the device and its files (C15). The cleanups are read again
+        // after the wait: what the run registered meanwhile (a temp directory
+        // it created before it saw the interrupt) is cleaned up too, and what
+        // it removed while unwinding it has already done itself.
+        let cleanupsNow: [@Sendable () -> Void]
+        if waitForExitHolds() {
+            cleanupsNow = lock.withLock { cleanups.map(\.body) }
+        } else {
+            cleanupsNow = pendingCleanups
+        }
+        for cleanup in cleanupsNow { cleanup() }
         // Every shell child still running goes before grantiva exits (C13-3),
         // a cleanup's own that outran its bound (a hung `status_bar clear`)
         // included.

@@ -50,6 +50,10 @@ struct DiffCommand: AsyncParsableCommand {
 
         func run() async throws {
             options.prepareRunnerCommand()
+            try await RunCommand.runningToTheRelay { try await execute() }
+        }
+
+        private func execute() async throws {
             let (platform, config) = try platformOptions.loadConfig(fallback: target.fallbackPlatform)
             try target.checkFlags(for: platform, derivedDataPath: buildOptions.derivedDataPath)
             // No config means no screens: say so before scheme resolution,

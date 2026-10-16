@@ -148,6 +148,8 @@ public enum RunnerSession {
         // subprocess exits. Refuse overlapping ownership on the same UDID so a
         // concurrent invocation cannot replace or tear down this session.
         let readySignal = ReadyFileSignal(path: readyFile)
+        // Interrupted before the session began: start nothing (C15).
+        try SignalRelay.shared.checkNotInterrupted()
         let simulatorLease = try SimulatorLease.acquire(udid: udid, platform: platform.platform, directory: runner.leaseDirectory)
         defer { simulatorLease.release() }
 
@@ -456,6 +458,8 @@ public enum RunnerSession {
         // An earlier session of the same suite (the screens session) is
         // listed first in the ready file, and its failure fails the verdict.
         let readySignal = ReadyFileSignal(path: readyFile, leadingFlows: readyLeadingFlows)
+        // Interrupted before the session began: start nothing (C15).
+        try SignalRelay.shared.checkNotInterrupted()
         let simulatorLease = try SimulatorLease.acquire(udid: udid, platform: platform.platform, directory: runner.leaseDirectory)
         defer { simulatorLease.release() }
 
