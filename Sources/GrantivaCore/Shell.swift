@@ -84,12 +84,13 @@ public final class ShellChildren: @unchecked Sendable {
         lock.withLock { Dictionary(children.values.map { ($0.pid, $0.command) }, uniquingKeysWith: { first, _ in first }) }
     }
 
-    /// A child an interrupt ends before anything else: a `simctl status_bar`
-    /// override would otherwise race the restore the cleanups run. Every
-    /// other child (an `adb forward` in flight) is left to finish while the
-    /// runner stops and the cleanups take what it made (C15).
+    /// The children an interrupt ends before anything else (a `simctl
+    /// status_bar` override would race the restore; a build should stop at
+    /// once): all but an `adb forward` call, which is left to finish. Cut off
+    /// mid-call, adb has made the forward but grantiva never learns its port,
+    /// so it leaks; finished, the cleanups remove what it made (C15).
     public static func endsFirstOnInterrupt(_ command: String) -> Bool {
-        command.contains("status_bar")
+        !(command.contains("adb") && command.contains(" forward"))
     }
 
     func unregister(_ id: UInt64) {

@@ -123,10 +123,10 @@ final class SignalRelayTests: XCTestCase {
     /// C15 (B4-L68.3): the relay killed every shell child first, so an
     /// `adb forward tcp:0` in flight was cut off after adb had made the
     /// forward but before grantiva learned its port: the forward leaked. An
-    /// ordinary child now finishes while the groups stop and the cleanups
-    /// run (they own what it makes); only a status-bar override, which would
-    /// race the restore, is ended first. Whatever is left goes at the end.
-    func testAnInterruptLetsAnOrdinaryShellChildFinishBeforeTheCleanups() async throws {
+    /// `adb forward` call now finishes while the groups stop and the
+    /// cleanups run (they own what it makes); other children, a status-bar
+    /// override among them, still end first. Whatever is left goes at the end.
+    func testAnInterruptLetsAnAdbForwardFinishBeforeTheCleanups() async throws {
         defer { SignalRelay.shared.resetTerminationForTesting() }
         let ordinary = Task { try? await shell("trap '' INT; sleep 30 # adb forward stand-in") }
         let override = Task { try? await shell("trap '' INT; sleep 30 # simctl status_bar stand-in") }

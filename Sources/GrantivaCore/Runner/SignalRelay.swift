@@ -321,10 +321,10 @@ public final class SignalRelay: @unchecked Sendable {
         }
 
         for cleanup in pendingBeforeTermination { cleanup() }
-        // A `simctl status_bar` override still running would race the
-        // restore below (C13-3). Other shell children finish: an `adb
-        // forward` cut off mid-call leaves a forward nobody knows the port of
-        // (C15); the cleanups own what they make.
+        // Shell children end now (a `simctl status_bar` override would race
+        // the restore below, C13-3), except an `adb forward` call: cut off
+        // mid-call it leaves a forward nobody knows the port of (C15); it
+        // finishes, and the cleanups own what it made.
         ShellChildren.shared.terminateAll(where: ShellChildren.endsFirstOnInterrupt)
         for pgid in trackedGroups {
             ChildProcess.terminateGroup(pgid, gracePeriod: 5)
