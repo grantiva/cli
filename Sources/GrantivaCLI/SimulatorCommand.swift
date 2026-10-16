@@ -33,10 +33,16 @@ struct SimulatorCommand: AsyncParsableCommand {
             // never reaches) instead of leaving them behind. The capacity
             // record of a device whose boot was issued survives the exit, so
             // `teardown --session-id` still shuts it down (IOS-015).
+            // A child the relay cut off is not ensure's error: the command
+            // ends through the relay (exit 130), printing nothing of its own.
             SignalRelay.shared.install()
-            let result = try await SimulatorManager.live.ensure(
-                name: name, deviceType: deviceType, runtime: runtime, boot: boot
-            )
+            var provisioned: SimulatorProvisionResult?
+            try await RunnerStartCommand.endingThroughTheRelay {
+                provisioned = try await SimulatorManager.live.ensure(
+                    name: name, deviceType: deviceType, runtime: runtime, boot: boot
+                )
+            }
+            guard let result = provisioned else { return }
             if options.json {
                 Output.line(try JSONOutput.string(result))
                 return
