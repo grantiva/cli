@@ -282,6 +282,60 @@ final class EmulatorManagerTests: XCTestCase {
         XCTAssertEqual(spawn.calls.first?.1.prefix(4), ["-avd", "Pixel_8_API_35", "-port", "5556"])
     }
 
+    /// C13 (android-b 21:37): another process had just spawned an emulator on
+    /// emulator-5554 and recorded it, but adb did not list it yet and its
+    /// console was not bound. This boot chose 5554 too, replaced that record
+    /// with its own, then lost the port and removed "its" record, leaving the
+    /// other emulator unrecorded. A live record's serial is not free.
+    func testBootSkipsASerialALiveLedgerRecordHolds() async throws {
+        let other = Process()
+        other.executableURL = URL(fileURLWithPath: "/bin/sleep")
+        other.arguments = ["30"]
+        try other.run()
+        defer { other.terminate(); other.waitUntilExit() }
+        let provenance = AndroidProvenance(directory: scratch.path)
+        let theirs = StartedEmulatorRecord(
+            serial: "emulator-5554", avd: "cov13-b-2", pid: other.processIdentifier,
+            processStartTime: EmulatorManager.processStartTime(other.processIdentifier)
+        )
+        try provenance.register(theirs)
+
+        let spawn = SpawnRecorder()
+        let shell = ScriptedShell([
+            .success("List of devices attached"),
+            .success("1"), .success("package:x"), .success(""),
+        ])
+        let device = try await manager(shell, spawn: spawn).boot(avd: "Pixel_8_API_35")
+        XCTAssertEqual(device.udid, "emulator-5556")
+        XCTAssertEqual(spawn.calls.first?.1.prefix(4), ["-avd", "Pixel_8_API_35", "-port", "5556"])
+        XCTAssertTrue(try provenance.all().contains(theirs))
+    }
+
+    /// A boot that fails removes its own record only: a record another
+    /// process holds for the same serial stays.
+    func testAFailedBootRemovesOnlyItsOwnRecord() async throws {
+        let provenance = AndroidProvenance(directory: scratch.path)
+        let theirs = StartedEmulatorRecord(serial: "emulator-5554", avd: "cov13-b-2", pid: getpid())
+        try provenance.register(theirs)
+        try provenance.remove(serial: "emulator-5554", pid: 999_999)
+        XCTAssertEqual(try provenance.all(), [theirs])
+
+        let dead = Process()
+        dead.executableURL = URL(fileURLWithPath: "/usr/bin/true")
+        try dead.run()
+        dead.waitUntilExit()
+        let shell = ScriptedShell([])
+        do {
+            try await manager(shell).waitForBoot(serial: "emulator-5554", pid: dead.processIdentifier)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("exited"), "\(error)")
+        }
+        XCTAssertEqual(try provenance.all(), [theirs])
+        try provenance.remove(serial: "emulator-5554", pid: getpid())
+        XCTAssertEqual(try provenance.all(), [])
+    }
+
     func testBootArgumentsMatchTheSpec() {
         XCTAssertEqual(
             EmulatorManager.bootArguments(avd: "Pixel_8_API_35", port: 5556, headless: false),
