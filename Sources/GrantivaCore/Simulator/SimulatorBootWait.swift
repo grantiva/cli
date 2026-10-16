@@ -112,21 +112,25 @@ public struct SimulatorBootWait: Sendable {
     }
 }
 
-/// `simctl bootstatus -b` spawned into a process group of its own, its exit
-/// observed with a non-blocking `waitpid`, and its output kept in a temporary
-/// file. It is registered with `ShellChildren`, so an interrupt ends it.
-final class LiveBootStatusChild: BootStatusChild, @unchecked Sendable {
+/// A `simctl` child (`bootstatus -b`, `list`) spawned into a process group of
+/// its own, its exit observed with a non-blocking `waitpid`, and its output
+/// kept in temporary files. It is registered with `ShellChildren`, so an
+/// interrupt ends it.
+final class LiveBootStatusChild: SimctlListChild, @unchecked Sendable {
     private let child: ChildProcess
     private let outputPath: String
+    /// stderr's file when it is kept apart from stdout; nil when combined.
+    private let errorPath: String?
     private let tracked: UInt64
     private let lock = NSLock()
     private var unregistered = false
 
     var pid: pid_t { child.pid }
 
-    private init(child: ChildProcess, outputPath: String, tracked: UInt64) {
+    private init(child: ChildProcess, outputPath: String, errorPath: String?, tracked: UInt64) {
         self.child = child
         self.outputPath = outputPath
+        self.errorPath = errorPath
         self.tracked = tracked
     }
 
@@ -134,20 +138,40 @@ final class LiveBootStatusChild: BootStatusChild, @unchecked Sendable {
         try start(executable: "/usr/bin/xcrun", arguments: ["simctl", "bootstatus", udid, "-b"])
     }
 
-    static func start(executable: String, arguments: [String]) throws -> LiveBootStatusChild {
-        let outputPath = FileManager.default.temporaryDirectory
-            .appendingPathComponent("grantiva-bootstatus-\(getpid())-\(UUID().uuidString).log").path
-        let descriptor = Darwin.open(outputPath, O_CREAT | O_WRONLY | O_TRUNC | O_CLOEXEC, S_IRUSR | S_IWUSR)
-        guard descriptor >= 0 else {
-            throw GrantivaError.commandFailed("Could not create \(outputPath): \(String(cString: strerror(errno)))", 1)
+    /// `xcrun simctl <arguments>` with stdout kept apart from stderr, so
+    /// `standardOutput()` is the command's JSON alone.
+    static func startSimctl(_ arguments: [String]) throws -> LiveBootStatusChild {
+        try start(executable: "/usr/bin/xcrun", arguments: ["simctl"] + arguments, separateStandardError: true)
+    }
+
+    static func start(executable: String, arguments: [String], separateStandardError: Bool = false) throws -> LiveBootStatusChild {
+        func create(_ suffix: String) throws -> (path: String, descriptor: Int32) {
+            let path = FileManager.default.temporaryDirectory
+                .appendingPathComponent("grantiva-simctl-\(getpid())-\(UUID().uuidString).\(suffix)").path
+            let descriptor = Darwin.open(path, O_CREAT | O_WRONLY | O_TRUNC | O_CLOEXEC, S_IRUSR | S_IWUSR)
+            guard descriptor >= 0 else {
+                throw GrantivaError.commandFailed("Could not create \(path): \(String(cString: strerror(errno)))", 1)
+            }
+            return (path, descriptor)
         }
-        defer { Darwin.close(descriptor) }
-        let child = try ChildProcess.spawn(
-            executable: executable, arguments: arguments, stdout: descriptor, stderr: descriptor
-        )
+        let output = try create("log")
+        defer { Darwin.close(output.descriptor) }
+        let errorFile = separateStandardError ? try create("err") : nil
+        defer { if let errorFile { Darwin.close(errorFile.descriptor) } }
+        let child: ChildProcess
+        do {
+            child = try ChildProcess.spawn(
+                executable: executable, arguments: arguments,
+                stdout: output.descriptor, stderr: errorFile?.descriptor ?? output.descriptor
+            )
+        } catch {
+            try? FileManager.default.removeItem(atPath: output.path)
+            if let errorFile { try? FileManager.default.removeItem(atPath: errorFile.path) }
+            throw error
+        }
         let command = ([executable == "/usr/bin/xcrun" ? "xcrun" : executable] + arguments).joined(separator: " ")
         let tracked = ShellChildren.shared.register(child.pid, command: command)
-        return LiveBootStatusChild(child: child, outputPath: outputPath, tracked: tracked)
+        return LiveBootStatusChild(child: child, outputPath: output.path, errorPath: errorFile?.path, tracked: tracked)
     }
 
     func poll() -> Int32? {
@@ -156,11 +180,25 @@ final class LiveBootStatusChild: BootStatusChild, @unchecked Sendable {
         return status
     }
 
+    /// The last lines the child printed (its stderr when that is kept apart
+    /// and not empty), for a failure message.
     func output() -> String {
+        func tail(_ path: String) -> String {
+            let data = FileManager.default.contents(atPath: path) ?? Data()
+            return String(decoding: data, as: UTF8.self)
+                .split(separator: "\n").suffix(20).joined(separator: "\n")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        if let errorPath {
+            let errors = tail(errorPath)
+            if !errors.isEmpty { return errors }
+        }
+        return tail(outputPath)
+    }
+
+    func standardOutput() -> String {
         let data = FileManager.default.contents(atPath: outputPath) ?? Data()
-        let lines = String(decoding: data, as: UTF8.self)
-            .split(separator: "\n").suffix(20).joined(separator: "\n")
-        return lines.trimmingCharacters(in: .whitespacesAndNewlines)
+        return String(decoding: data, as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     /// SIGTERM to the recorded pid and the group it leads, SIGKILL after two
@@ -192,6 +230,7 @@ final class LiveBootStatusChild: BootStatusChild, @unchecked Sendable {
 
     deinit {
         try? FileManager.default.removeItem(atPath: outputPath)
+        if let errorPath { try? FileManager.default.removeItem(atPath: errorPath) }
     }
 }
 

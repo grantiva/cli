@@ -14,12 +14,19 @@ public struct SimulatorManager: Sendable, Decodable {
     private let startBootStatus: @Sendable (String) throws -> BootStatusChild
     /// The bound on a boot's bootstatus wait (IOS-015).
     private let bootWait: SimulatorBootWait
+    /// Spawns `xcrun simctl <arguments>` for a bounded `simctl list`; nil runs
+    /// list calls through `execute` (the test seam's scripted `simctl`).
+    private let startList: (@Sendable ([String]) throws -> SimctlListChild)?
+    /// The bound on each `simctl list` call.
+    private let listBound: SimctlListBound
 
     public init() {
         self.init(
             execute: { try await shell($0) },
             startBootStatus: { try LiveBootStatusChild.start(udid: $0) },
-            bootWait: SimulatorBootWait()
+            bootWait: SimulatorBootWait(),
+            startList: { try LiveBootStatusChild.startSimctl($0) },
+            listBound: SimctlListBound()
         )
     }
 
@@ -31,9 +38,13 @@ public struct SimulatorManager: Sendable, Decodable {
         provenance: SimulatorProvenance = .live,
         runnerHome: String = RunnerManager.baseDir,
         startBootStatus: (@Sendable (String) throws -> BootStatusChild)? = nil,
-        bootWait: SimulatorBootWait = SimulatorBootWait(pollInterval: 0.01, environment: [:])
+        bootWait: SimulatorBootWait = SimulatorBootWait(pollInterval: 0.01, environment: [:]),
+        startList: (@Sendable ([String]) throws -> SimctlListChild)? = nil,
+        listBound: SimctlListBound = SimctlListBound(pollInterval: 0.01, environment: [:])
     ) {
         self.execute = execute
+        self.startList = startList
+        self.listBound = listBound
         self.capacity = capacity
         self.provenance = provenance
         self.runnerHome = runnerHome
@@ -45,8 +56,16 @@ public struct SimulatorManager: Sendable, Decodable {
         self.init()
     }
 
+    /// `xcrun simctl list <arguments>`, bounded by `listBound` (a stalled call
+    /// is ended by its pid and run once more, then fails).
+    func simctlList(_ arguments: [String]) async throws -> String {
+        let command = (["xcrun", "simctl", "list"] + arguments).joined(separator: " ")
+        guard let startList else { return try await execute(command) }
+        return try await listBound.run(command: command, start: { try startList(["list"] + arguments) })
+    }
+
     public func listDevices() async throws -> [SimulatorDevice] {
-        let output = try await execute("xcrun simctl list devices --json")
+        let output = try await simctlList(["devices", "--json"])
         guard let data = output.data(using: .utf8) else { return [] }
         let parsed = try JSONDecoder().decode(SimctlDeviceList.self, from: data)
         return parsed.allDevices
@@ -496,7 +515,7 @@ public struct SimulatorManager: Sendable, Decodable {
     /// suggestions such as doctor's fix line and `init`'s default; nil when
     /// simctl is unavailable or no iOS runtime is installed.
     public func newestIPhone() async -> String? {
-        guard let output = try? await execute("xcrun simctl list devicetypes runtimes --json") else { return nil }
+        guard let output = try? await simctlList(["devicetypes", "runtimes", "--json"]) else { return nil }
         return Self.newestIPhone(catalogJSON: Data(output.utf8))
     }
 
@@ -520,7 +539,7 @@ public struct SimulatorManager: Sendable, Decodable {
     }
 
     private func simulatorCatalog() async throws -> SimctlCatalog {
-        let data = try await execute("xcrun simctl list devicetypes runtimes --json").data(using: .utf8) ?? Data()
+        let data = try await simctlList(["devicetypes", "runtimes", "--json"]).data(using: .utf8) ?? Data()
         return try JSONDecoder().decode(SimctlCatalog.self, from: data)
     }
 
