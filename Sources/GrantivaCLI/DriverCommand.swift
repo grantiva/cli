@@ -815,7 +815,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
             port = UInt16(clamping: attachment.port)
         } else {
             // Poll the log file for WDA's port or a failed build.
-            let startup = try await waitForWDAPort(logFile: logPath, timeout: 60, runnerExited: { child.poll() != nil })
+            let startup = try await waitForWDAPort(logFile: logPath, timeout: Self.wdaAttemptWindow, runnerExited: { child.poll() != nil })
             guard case .port(let found)? = startup else {
                 await abandon()
                 if startup == .runnerExited {
@@ -988,8 +988,11 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
         // Through the narration choke point: --json and --quiet silence it.
         let output = RunnerOutputForwarder()
+        // The detached start reads one log holding both streams; the
+        // foreground start must see stderr's retry announcements too.
+        let startupProgress = StartupProgress()
         output.attachOutput(stdoutPipe.fileHandleForReading)
-        output.attachErrors(stderrPipe.fileHandleForReading)
+        output.attachErrors(stderrPipe.fileHandleForReading, observe: { startupProgress.observeErrors($0) })
         do {
             try Self.recordStarting(launch, runnerPid: runnerPid)
         } catch {
@@ -1042,7 +1045,8 @@ struct RunnerStartCommand: AsyncParsableCommand {
                 chunks: output.chunks,
                 timeout: Self.foregroundWDATimeout,
                 probe: Self.probeKnownWDAPorts,
-                runnerExited: { child.poll() != nil }
+                runnerExited: { child.poll() != nil },
+                progress: startupProgress
             )
             output.endStartup()
             guard case .port(let found)? = startup else {
@@ -1262,12 +1266,15 @@ struct RunnerStartCommand: AsyncParsableCommand {
         text.contains("Building WDA") || text.contains("Building GrantivaAgent")
     }
 
-    /// How long `runner start` gives each WDA retry the runner announces
-    /// (`↻ Retrying (attempt n/4)`): the runner resets the simulator and
-    /// allows the new xcodebuild a 60 s stall before it tries again, so one
-    /// 60 s window for the whole start killed a retry that would have come
-    /// up (C15, B4-PC.4).
-    static let wdaRetryWindow: TimeInterval = 90
+    /// The runner's own budget for one WDA startup attempt from a cached
+    /// build: up to 60 s of xcodebuild silence (its stall window), then up
+    /// to 60 s for WDA to answer /status (its ready timeout), plus the
+    /// simulator reset before a retry. `runner start` waits this long from
+    /// the start and from each retry the runner announces
+    /// (`↻ Retrying (attempt n/4)`), so the runner's retry loop, not the
+    /// CLI, decides when an attempt has failed. A 60 s window for the whole
+    /// start killed a retry that would have come up (C15, B4-PC.4).
+    static let wdaAttemptWindow: TimeInterval = 150
 
     /// What the WDA wait has seen of the runner's startup: when it began,
     /// whether it is building WDA, and when it last announced a retry.
@@ -1290,7 +1297,22 @@ struct RunnerStartCommand: AsyncParsableCommand {
             }
         }
 
-        func deadline(window: TimeInterval = 60) -> Date {
+        private var announcedOnErrors = 0
+
+        /// Reads the runner's stderr, where it announces its retries: the
+        /// foreground start parsed only stdout, never saw a retry, and gave
+        /// up at its first window while the runner's next attempt was still
+        /// coming up (B4-PC.4).
+        func observeErrors(_ text: String, at now: Date = Date()) {
+            let count = RunnerStartCommand.retryCount(in: text)
+            guard count > 0 else { return }
+            lock.withLock {
+                announcedOnErrors += count
+                if announcedOnErrors > retries { retries = announcedOnErrors; lastRetryAt = now }
+            }
+        }
+
+        func deadline(window: TimeInterval = RunnerStartCommand.wdaAttemptWindow) -> Date {
             lock.withLock {
                 RunnerStartCommand.startupDeadline(started: started, building: building, lastRetry: lastRetryAt, firstWindow: window)
             }
@@ -1298,11 +1320,11 @@ struct RunnerStartCommand: AsyncParsableCommand {
     }
 
     /// When the WDA wait gives up: `firstWindow` after the start (the WDA
-    /// build's limit once one runs), or `wdaRetryWindow` after the runner's
-    /// latest retry, whichever is later.
-    static func startupDeadline(started: Date, building: Bool, lastRetry: Date?, firstWindow: TimeInterval = 60) -> Date {
+    /// build's limit once one runs), or `wdaAttemptWindow` after the
+    /// runner's latest retry, whichever is later.
+    static func startupDeadline(started: Date, building: Bool, lastRetry: Date?, firstWindow: TimeInterval = wdaAttemptWindow) -> Date {
         var deadline = started.addingTimeInterval(building ? wdaBuildTimeout : firstWindow)
-        if let lastRetry { deadline = max(deadline, lastRetry.addingTimeInterval(wdaRetryWindow)) }
+        if let lastRetry { deadline = max(deadline, lastRetry.addingTimeInterval(wdaAttemptWindow)) }
         return deadline
     }
 
@@ -1313,7 +1335,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
     /// Returns once `progress`'s deadline has passed, re-reading it as the
     /// runner reports a build or a retry.
-    static func waitOutStartup(_ progress: StartupProgress, window: TimeInterval = 60) async {
+    static func waitOutStartup(_ progress: StartupProgress, window: TimeInterval = wdaAttemptWindow) async {
         while !Task.isCancelled {
             let remaining = progress.deadline(window: window).timeIntervalSinceNow
             if remaining <= 0 { return }
@@ -1321,9 +1343,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
         }
     }
 
-    /// The production `timeout` for `waitForForegroundWDAPort`: 60 s, or
-    /// `wdaBuildTimeout` once the runner has started a WDA build, extended
-    /// for each retry the runner announces.
+    /// The production `timeout` for `waitForForegroundWDAPort`:
+    /// `wdaAttemptWindow`, or `wdaBuildTimeout` once the runner has started
+    /// a WDA build, extended for each retry the runner announces.
     static func foregroundWDATimeout(progress: StartupProgress) async {
         await waitOutStartup(progress)
     }

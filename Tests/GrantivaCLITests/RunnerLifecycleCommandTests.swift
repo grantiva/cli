@@ -608,10 +608,13 @@ final class RunnerLifecycleCommandTests: XCTestCase {
     /// that kill). Each retry the runner announces gets a fresh window.
     func testEachRunnerRetryExtendsTheWDAStartupDeadline() {
         let start = Date(timeIntervalSince1970: 1_000)
-        XCTAssertEqual(RunnerStartCommand.startupDeadline(started: start, building: false, lastRetry: nil), start.addingTimeInterval(60))
+        XCTAssertEqual(
+            RunnerStartCommand.startupDeadline(started: start, building: false, lastRetry: nil),
+            start.addingTimeInterval(RunnerStartCommand.wdaAttemptWindow)
+        )
         XCTAssertEqual(
             RunnerStartCommand.startupDeadline(started: start, building: false, lastRetry: start.addingTimeInterval(20)),
-            start.addingTimeInterval(20 + RunnerStartCommand.wdaRetryWindow)
+            start.addingTimeInterval(20 + RunnerStartCommand.wdaAttemptWindow)
         )
         XCTAssertEqual(
             RunnerStartCommand.startupDeadline(started: start, building: true, lastRetry: start.addingTimeInterval(20)),
@@ -619,6 +622,48 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         )
         XCTAssertEqual(RunnerStartCommand.retryCount(in: "  ↻ Retrying (attempt 2/4)...\nx\n  ↻ Retrying (attempt 3/4)...\n"), 2)
         XCTAssertEqual(RunnerStartCommand.retryCount(in: "Starting GrantivaAgent..."), 0)
+    }
+
+    /// candidate19 B4-PC.4: the CLI's window must outlast the runner's own
+    /// budget for one attempt (a 60 s stall window, then a 60 s /status
+    /// wait), so the runner's retry loop decides when an attempt failed. A
+    /// 60 s first window ended a start whose second attempt was still
+    /// within the runner's budget.
+    func testTheWDAWindowOutlastsTheRunnersPerAttemptBudget() {
+        let runnerStallWindow: TimeInterval = 60
+        let runnerReadyTimeout: TimeInterval = 60
+        XCTAssertGreaterThan(RunnerStartCommand.wdaAttemptWindow, runnerStallWindow + runnerReadyTimeout)
+        let start = Date(timeIntervalSince1970: 1_000)
+        XCTAssertGreaterThan(
+            RunnerStartCommand.startupDeadline(started: start, building: false, lastRetry: nil),
+            start.addingTimeInterval(runnerStallWindow + runnerReadyTimeout)
+        )
+        let progress = RunnerStartCommand.StartupProgress(started: start)
+        XCTAssertEqual(progress.deadline(), start.addingTimeInterval(RunnerStartCommand.wdaAttemptWindow))
+    }
+
+    /// candidate19 B4-PC.4: the runner announces its retries on stderr, and
+    /// the foreground start parsed only stdout, so no retry ever extended
+    /// its deadline (the detached start reads a log that holds both). The
+    /// stderr lines now reach the startup progress.
+    func testRetriesAnnouncedOnStderrExtendTheForegroundDeadline() async throws {
+        let started = Date().addingTimeInterval(-100)
+        let progress = RunnerStartCommand.StartupProgress(started: started)
+        XCTAssertLessThan(progress.deadline(), Date().addingTimeInterval(60))
+        let forwarder = RunnerOutputForwarder(narrate: { _ in }, interrupted: { false })
+        let pipe = Pipe()
+        forwarder.attachErrors(pipe.fileHandleForReading, observe: { progress.observeErrors($0) })
+        pipe.fileHandleForWriting.write(Data("  ⚠ WDA startup failed on attempt 1/4: xcodebuild exited\n  ↻ Retrying (attempt 2/4)...\n".utf8))
+        try await Task.sleep(for: .milliseconds(300))
+        XCTAssertGreaterThan(progress.deadline(), Date().addingTimeInterval(RunnerStartCommand.wdaAttemptWindow - 5))
+        // A later retry restarts the window again; repeated reads of the same
+        // line count once each, as the runner prints each retry once.
+        let first = progress.deadline()
+        try await Task.sleep(for: .milliseconds(100))
+        pipe.fileHandleForWriting.write(Data("  ↻ Retrying (attempt 3/4)...\n".utf8))
+        try await Task.sleep(for: .milliseconds(300))
+        XCTAssertGreaterThan(progress.deadline(), first)
+        try pipe.fileHandleForWriting.close()
     }
 
     /// The foreground wait goes on past 60 s while retries keep coming.

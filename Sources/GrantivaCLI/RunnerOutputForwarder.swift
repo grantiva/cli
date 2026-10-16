@@ -134,12 +134,16 @@ final class RunnerOutputForwarder: @unchecked Sendable {
         attach(handle, onData: { continuation.yield($0) }, onEnd: { continuation.finish() })
     }
 
-    /// The runner's stderr: narrated only.
-    func attachErrors(_ handle: FileHandle) {
-        attach(handle, onData: { _ in }, onEnd: {})
+    /// The runner's stderr: narrated, and its whole lines handed to
+    /// `observe` (the runner announces WDA retries there).
+    func attachErrors(_ handle: FileHandle, observe: @escaping @Sendable (String) -> Void = { _ in }) {
+        attach(handle, onData: { _ in }, onEnd: {}, onLines: observe)
     }
 
-    private func attach(_ handle: FileHandle, onData: @escaping @Sendable (Data) -> Void, onEnd: @escaping @Sendable () -> Void) {
+    private func attach(
+        _ handle: FileHandle, onData: @escaping @Sendable (Data) -> Void, onEnd: @escaping @Sendable () -> Void,
+        onLines: @escaping @Sendable (String) -> Void = { _ in }
+    ) {
         let lines = LineBuffer()
         let narrate = narrate
         handle.readabilityHandler = { [weak self] readable in
@@ -148,6 +152,7 @@ final class RunnerOutputForwarder: @unchecked Sendable {
                 readable.readabilityHandler = nil
                 if let rest = lines.finish() {
                     self?.remember(rest)
+                    onLines(rest)
                     narrate(rest)
                 }
                 onEnd()
@@ -155,6 +160,7 @@ final class RunnerOutputForwarder: @unchecked Sendable {
             }
             if let complete = lines.consume(data) {
                 self?.remember(complete)
+                onLines(complete)
                 narrate(complete)
             }
             onData(data)
