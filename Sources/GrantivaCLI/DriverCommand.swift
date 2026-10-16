@@ -735,6 +735,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
             _ = child.wait()
             await Self.reapRunnerHelpers(launch, runnerPid: runnerPid)
             Self.discardStartedSession(runnerPid: runnerPid)
+            // A runner that exited before it was ready may have left its
+            // uia2 forward (B4-L68.3).
+            await Self.releaseRunnerForward(platform: launch.platformDevice, serial: launch.device.udid, runnerPid: runnerPid)
         }
 
         let port: UInt16
@@ -874,7 +877,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
             // The runner's group is stopped by now. One cut off mid-start
             // may not have removed its UIAutomator2 forward (C15).
             if platformDevice.platform == .android {
-                Self.afterInterrupt(platform: platformDevice, serial: serial)
+                Self.afterInterrupt(platform: platformDevice, serial: serial, runnerPid: runnerPid)
             }
         }
         defer {
@@ -909,6 +912,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
             if SignalRelay.shared.isTerminating || wait.launchFailed {
                 child.terminateGroup(gracePeriod: 1)
                 cleanup.run()
+                await Self.releaseRunnerForward(platform: platformDevice, serial: serial, runnerPid: runnerPid)
                 if SignalRelay.shared.isTerminating { throw ExitCode(130) }
                 throw GrantivaError.commandFailed("The app launch flow failed on \(launch.device.udid).", 1)
             }
@@ -917,6 +921,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
                 // marked the runner, before stopping it.
                 let requested = requestedStop()
                 cleanup.run()
+                await Self.releaseRunnerForward(platform: platformDevice, serial: serial, runnerPid: runnerPid)
                 if let requested {
                     let ending = try Self.foregroundEnding(status: status, pid: runnerPid, stop: requested)
                     options.note(ending)
@@ -930,6 +935,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
             guard let found else {
                 child.terminateGroup(gracePeriod: 1)
                 cleanup.run()
+                await Self.releaseRunnerForward(platform: platformDevice, serial: serial, runnerPid: runnerPid)
                 throw GrantivaError.commandFailed("Timed out waiting for the UIAutomator2 session to start", 1)
             }
             port = found
@@ -1054,6 +1060,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
             await Self.awaitSignalRelayExit()
             throw ExitCode(130)
         }
+        // A runner that died under the hold (`kill -9`) never removed its
+        // uia2 forward.
+        await Self.releaseRunnerForward(platform: platformDevice, serial: serial, runnerPid: runnerPid)
         let ending = try Self.foregroundEnding(status: status, pid: child.pid, stop: stopRequested.value)
         options.note(ending)
     }
@@ -1066,13 +1075,45 @@ struct RunnerStartCommand: AsyncParsableCommand {
     /// (`cleanupOrphans` removes it only when no live runner owns it), and
     /// the server is stopped. Blocks at most `timeout`: it runs in the
     /// relay's synchronous cleanup.
-    static func afterInterrupt(platform: any DevicePlatform, serial: String, timeout: TimeInterval = 10) {
+    static func afterInterrupt(
+        platform: any DevicePlatform, serial: String, runnerPid: Int32, timeout: TimeInterval = 10,
+        anotherOwner: @escaping @Sendable (String, Int32) -> Bool = { anotherLiveRunnerOwns(serial: $0, besides: $1) }
+    ) {
         let done = DispatchSemaphore(value: 0)
         Task.detached {
-            await platform.cleanupOrphans(deviceID: serial)
+            _ = await releaseRunnerForward(platform: platform, serial: serial, runnerPid: runnerPid, anotherOwner: anotherOwner)
             done.signal()
         }
         _ = done.wait(timeout: .now() + timeout)
+    }
+
+    /// An Android start whose runner did not get up (interrupted, exited
+    /// before ready, timed out, or died under a foreground hold) sweeps the
+    /// runner's `localfilesystem:/tmp/uia2-<serial>.sock` forward and stops
+    /// the server it started (`cleanupOrphans`). A runner cut off mid-start
+    /// can exit before removing it, and the start's own unwinding removes the
+    /// relay's interrupt cleanup before the relay gets to it (B4-L68.3).
+    /// Nothing is touched while another live session holds the serial: the
+    /// forward and the server are its. Returns whether it swept.
+    @discardableResult
+    static func releaseRunnerForward(
+        platform: any DevicePlatform, serial: String, runnerPid: Int32,
+        anotherOwner: @Sendable (String, Int32) -> Bool = { anotherLiveRunnerOwns(serial: $0, besides: $1) }
+    ) async -> Bool {
+        guard platform.platform == .android, !anotherOwner(serial, runnerPid) else { return false }
+        await platform.cleanupOrphans(deviceID: serial)
+        return true
+    }
+
+    /// True when the shared session store records a live runner on `serial`
+    /// other than `runnerPid` (`run --keep-alive`, `runner start`, detached
+    /// or not, published or still starting).
+    static func anotherLiveRunnerOwns(
+        serial: String, besides runnerPid: Int32, store: KeepAliveSessionStore = KeepAliveSessionStore()
+    ) -> Bool {
+        store.sessions(includingOrphans: true).contains {
+            $0.pid != runnerPid && $0.udid?.caseInsensitiveCompare(serial) == .orderedSame
+        }
     }
 
     static func awaitSignalRelayExit() async {

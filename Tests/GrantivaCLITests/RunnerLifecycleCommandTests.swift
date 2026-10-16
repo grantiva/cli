@@ -324,8 +324,66 @@ final class RunnerLifecycleCommandTests: XCTestCase {
     /// UIAutomator2 forward.
     func testAnInterruptOfAStartingAndroidRunnerCleansItsOrphans() {
         let device = FakeDevicePlatform(platform: .android)
-        RunnerStartCommand.afterInterrupt(platform: device, serial: "emulator-5562", timeout: 5)
+        RunnerStartCommand.afterInterrupt(
+            platform: device, serial: "emulator-5562", runnerPid: 4242, timeout: 5, anotherOwner: { _, _ in false }
+        )
         XCTAssertEqual(device.calls, ["cleanupOrphans"])
+    }
+
+    /// B4-L68.3: the start's own unwinding (interrupted, runner exited before
+    /// ready, timed out) removed the relay's cleanup before the relay ran it,
+    /// so a runner that died before removing its uia2 forward left it behind.
+    /// The start sweeps the forward itself.
+    func testAFailedAndroidStartSweepsTheRunnersForward() async {
+        let device = FakeDevicePlatform(platform: .android)
+        let swept = await RunnerStartCommand.releaseRunnerForward(
+            platform: device, serial: "emulator-5562", runnerPid: 4242, anotherOwner: { _, _ in false }
+        )
+        XCTAssertTrue(swept)
+        XCTAssertEqual(device.calls, ["cleanupOrphans"])
+    }
+
+    func testAFailedAndroidStartLeavesAForwardAnotherLiveSessionOwns() async {
+        let device = FakeDevicePlatform(platform: .android)
+        let asked = AskedOwners()
+        let swept = await RunnerStartCommand.releaseRunnerForward(
+            platform: device, serial: "emulator-5562", runnerPid: 4242,
+            anotherOwner: { serial, pid in asked.append("\(serial)/\(pid)"); return true }
+        )
+        XCTAssertFalse(swept)
+        XCTAssertEqual(device.calls, [])
+        XCTAssertEqual(asked.values, ["emulator-5562/4242"])
+        // The relay's interrupt cleanup is gated the same way.
+        RunnerStartCommand.afterInterrupt(
+            platform: device, serial: "emulator-5562", runnerPid: 4242, timeout: 5, anotherOwner: { _, _ in true }
+        )
+        XCTAssertEqual(device.calls, [])
+    }
+
+    func testAFailedIOSStartSweepsNoAndroidForward() async {
+        let device = FakeDevicePlatform(platform: .ios)
+        let swept = await RunnerStartCommand.releaseRunnerForward(
+            platform: device, serial: "F5449E9B-C620-4BB8-838E-A398E1134D57", runnerPid: 4242, anotherOwner: { _, _ in false }
+        )
+        XCTAssertFalse(swept)
+        XCTAssertEqual(device.calls, [])
+    }
+
+    /// Another session owns the serial when the shared store has a live
+    /// runner for it other than the one that failed.
+    func testAnotherLiveRunnerOwnsTheSerialOnlyWhenItIsADifferentLiveRunnerOnIt() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("l683-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let other: Int32 = 5151
+        let dead: Int32 = 6161
+        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { $0 == other })
+        store.recordOwner(udid: "emulator-5562", runnerPid: other, platform: .android, detached: true)
+        store.recordOwner(udid: "emulator-5562", runnerPid: dead, platform: .android, detached: true)
+
+        XCTAssertTrue(RunnerStartCommand.anotherLiveRunnerOwns(serial: "emulator-5562", besides: 4242, store: store))
+        XCTAssertFalse(RunnerStartCommand.anotherLiveRunnerOwns(serial: "emulator-5562", besides: other, store: store))
+        XCTAssertFalse(RunnerStartCommand.anotherLiveRunnerOwns(serial: "emulator-5554", besides: 4242, store: store))
     }
 
     func testAnInterruptRemovesTheStartsTemporaryDirectory() throws {
@@ -1551,4 +1609,11 @@ final class RunnerOutputForwarderTests: XCTestCase {
         XCTAssertTrue(RunnerNarration.shouldSilence(json: true, quiet: false, verbose: false))
         XCTAssertTrue(RunnerNarration.shouldSilence(json: false, quiet: true, verbose: false))
     }
+}
+
+private final class AskedOwners: @unchecked Sendable {
+    private let lock = NSLock()
+    private var recorded: [String] = []
+    var values: [String] { lock.withLock { recorded } }
+    func append(_ value: String) { lock.withLock { recorded.append(value) } }
 }
