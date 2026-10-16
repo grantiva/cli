@@ -267,6 +267,10 @@ struct RunnerStartCommand: AsyncParsableCommand {
         """
         let tempDir = FileManager.default.temporaryDirectory
             .appendingPathComponent("grantiva-session-\(UUID().uuidString)")
+        // Registered before the directory exists: an interrupt that lands
+        // while it is being filled exits through the relay, past the `defer`.
+        let removeTempDir = Self.removeOnInterrupt(tempDir)
+        defer { SignalRelay.shared.removeCleanup(removeTempDir) }
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: tempDir) }
         let reportDir = tempDir.appendingPathComponent("report").path
@@ -287,8 +291,6 @@ struct RunnerStartCommand: AsyncParsableCommand {
         // this command starts (a `kill -9`'d keep-alive run leaves one): its
         // id is recorded so the readiness wait never accepts it (L38-b).
         launch.staleSessionID = await Self.currentDriverSession(platformDevice, deviceID: booted.udid)
-        let removeTempDir = Self.removeOnInterrupt(tempDir)
-        defer { SignalRelay.shared.removeCleanup(removeTempDir) }
         if detach {
             try await startDetached(launch, lease: simulatorLease)
             handedOff = true
