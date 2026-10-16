@@ -234,9 +234,12 @@ public enum RunnerSession {
         }
 
         // Freeze status bar for deterministic screenshots
-        await platform.prepareForCapture(deviceID: udid)
+        // Registered (which installs the relay) before the override runs: an
+        // interrupt during a slow `simctl status_bar` then ends it and
+        // restores the bar instead of leaving it to launchd (C13-3).
         let restoreOnSignal = SignalRelay.shared.onTermination(Self.terminationCleanup(platform: platform, deviceID: udid))
         defer { SignalRelay.shared.removeCleanup(restoreOnSignal) }
+        await platform.prepareForCapture(deviceID: udid)
         // Run the runner
         let args = runnerArguments(
             runnerBin: runnerBin,
@@ -589,9 +592,12 @@ public enum RunnerSession {
             }
         }
 
-        await platform.prepareForCapture(deviceID: udid)
+        // Registered (which installs the relay) before the override runs: an
+        // interrupt during a slow `simctl status_bar` then ends it and
+        // restores the bar instead of leaving it to launchd (C13-3).
         let restoreOnSignal = SignalRelay.shared.onTermination(Self.terminationCleanup(platform: platform, deviceID: udid))
         defer { SignalRelay.shared.removeCleanup(restoreOnSignal) }
+        await platform.prepareForCapture(deviceID: udid)
         let args = runnerArguments(
             runnerBin: runnerBin,
             platform: platform,

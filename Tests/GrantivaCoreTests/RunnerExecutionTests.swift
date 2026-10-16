@@ -183,6 +183,34 @@ final class RunnerExecutionTests: XCTestCase {
         XCTAssertNotEqual(outcome.terminationStatus, 0)
     }
 
+    /// C13-3: a runner grantiva killed at the --timeout cap leaves
+    /// WebDriverAgent's xcodebuild (a group of its own) to launchd; the
+    /// helpers it left writing into its run directory are swept.
+    func testATimeoutKillSweepsTheHelpersTheRunnerLeft() async throws {
+        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+        defer { lease.release() }
+        let swept = SweptRunners()
+        var timedOut = request(script: "trap '' INT; sleep 30", lease: lease, timeoutSeconds: 1)
+        timedOut.sweepHelpers = { pid, udid in swept.append(pid, udid) }
+        let outcome = await RunnerExecution.run(timedOut)
+        XCTAssertTrue(outcome.timedOut)
+        XCTAssertEqual(swept.calls.map(\.udid), ["SIM-1"])
+        XCTAssertGreaterThan(swept.calls.first?.pid ?? 0, 1)
+
+        // A runner that exits on its own cleaned up after itself.
+        var clean = request(script: "exit 1", lease: lease)
+        clean.sweepHelpers = { pid, udid in swept.append(pid, udid) }
+        _ = await RunnerExecution.run(clean)
+        XCTAssertEqual(swept.calls.count, 1)
+
+        // Android has no WebDriverAgent to leave behind.
+        var android = request(script: "trap '' INT; sleep 30", lease: lease, timeoutSeconds: 1)
+        android.platform = .android
+        android.sweepHelpers = { pid, udid in swept.append(pid, udid) }
+        _ = await RunnerExecution.run(android)
+        XCTAssertEqual(swept.calls.count, 1)
+    }
+
     func testTheReadyFileIsWrittenWhenTheReportGoesTerminal() async throws {
         let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
         defer { lease.release() }
@@ -546,4 +574,11 @@ final class RunnerExecutionTests: XCTestCase {
         XCTAssertTrue(SignalRelay.shared.simulateSignalForTesting(SIGINT, release: { released.append($0) }))
         XCTAssertEqual(released.value, [424_242])
     }
+}
+
+private final class SweptRunners: @unchecked Sendable {
+    private let lock = NSLock()
+    private var stored: [(pid: Int32, udid: String)] = []
+    var calls: [(pid: Int32, udid: String)] { lock.withLock { stored } }
+    func append(_ pid: Int32, _ udid: String) { lock.withLock { stored.append((pid, udid)) } }
 }

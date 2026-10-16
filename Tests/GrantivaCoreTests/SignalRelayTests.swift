@@ -99,6 +99,27 @@ final class SignalRelayTests: XCTestCase {
         XCTAssertEqual(order.value, ["helpers", "cleanup", "cleanup"])
     }
 
+    /// C13-3: a `simctl status_bar` (any `shell` child) still running when
+    /// grantiva is interrupted is ended, not left to launchd: Foundation
+    /// starts it in a process group of its own, so no terminal signal or
+    /// runner-group kill reaches it.
+    func testAnInterruptEndsTheShellChildrenStillRunning() async throws {
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let started = Date()
+        let child = Task { try? await shell("trap '' INT; sleep 30") }
+        var pids: [Int32] = []
+        for _ in 0..<50 where pids.isEmpty {
+            try await Task.sleep(nanoseconds: 50_000_000)
+            pids = ShellChildren.shared.running
+        }
+        let pid = try XCTUnwrap(pids.first)
+        SignalRelay.shared.simulateTerminationForTesting()
+        _ = await child.value
+        XCTAssertLessThan(Date().timeIntervalSince(started), 15)
+        XCTAssertNotEqual(kill(pid, 0), 0, "the shell child outlived the interrupt")
+        XCTAssertTrue(ShellChildren.shared.running.isEmpty)
+    }
+
     /// B3-L54.1: a teardown that lands before the runner exists ends the
     /// start in order: the exit status is the provider's, not 128 + signal.
     func testAnExitStatusProviderDecidesTheInterruptsStatus() {

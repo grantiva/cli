@@ -73,6 +73,11 @@ enum RunnerExecution {
         var silenced: Bool = RunnerNarration.isSilenced
         /// Where relayed output goes. Overridable for tests.
         var narrationSink: @Sendable (String) -> Void = RunnerNarration.sink
+        /// Ends the helpers a runner grantiva killed at the `--timeout` cap
+        /// left outside its group (runner pid, device). Overridable for tests.
+        var sweepHelpers: @Sendable (Int32, String) async -> Void = { pid, udid in
+            _ = await RunnerHelperReaper.live().sweep(exitedRunnerPid: pid, udid: udid)
+        }
     }
 
     static func run(_ request: Request) async -> Outcome {
@@ -295,6 +300,13 @@ enum RunnerExecution {
         // simulator (this also ends the watchdog). Harmless when the group is
         // already empty.
         child.signalGroup(SIGTERM)
+        // Killed at the --timeout cap, the runner never stopped WebDriverAgent:
+        // its `xcodebuild test-without-building` (a group of its own) is left to
+        // launchd, where it later starts a `simctl diagnose` (C13-3). An
+        // interrupt has its own reap (`reapOnInterrupt`).
+        if killed.isSet, !interrupted, request.platform != .android {
+            await request.sweepHelpers(child.pid, request.lease.udid)
+        }
         if let lifeline { close(lifeline) }
 
         let streamed = await relayFinished

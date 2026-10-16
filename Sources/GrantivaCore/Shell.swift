@@ -30,6 +30,8 @@ public func shell(_ command: String, environment: [String: String]? = nil, termi
 
     let stopOnCancel = terminateOnCancel && !Task.isCancelled
     try process.run()
+    let tracked = ShellChildren.shared.register(process.processIdentifier)
+    defer { ShellChildren.shared.unregister(tracked) }
 
     // Drain both pipes concurrently. Reading either stream to EOF first can
     // deadlock when the child fills the other stream's kernel pipe buffer.
@@ -54,6 +56,56 @@ public func shell(_ command: String, environment: [String: String]? = nil, termi
         )
     }
     return output
+}
+
+/// The `shell`/`runProcess` children running now, so an interrupt can end
+/// them (C13-3). Foundation starts each in a process group of its own, so a
+/// terminal's Ctrl-C does not reach one and nothing else would: a
+/// `simctl status_bar ... override` that was running when grantiva exited
+/// was left to launchd.
+public final class ShellChildren: @unchecked Sendable {
+    public static let shared = ShellChildren()
+
+    private let lock = NSLock()
+    private var children: [UInt64: pid_t] = [:]
+    private var nextID: UInt64 = 1
+
+    func register(_ pid: pid_t) -> UInt64 {
+        lock.withLock {
+            let id = nextID
+            nextID += 1
+            if pid > 1 { children[id] = pid }
+            return id
+        }
+    }
+
+    func unregister(_ id: UInt64) {
+        lock.withLock { _ = children.removeValue(forKey: id) }
+    }
+
+    /// The pids of the children running now.
+    public var running: [pid_t] {
+        lock.withLock { Array(children.values).sorted() }
+    }
+
+    /// SIGTERM each running child (and the group it leads), then SIGKILL
+    /// whatever is still alive after `gracePeriod`. Blocks at most about
+    /// `gracePeriod` plus a moment.
+    public func terminateAll(gracePeriod: TimeInterval = 2) {
+        let pids = running
+        guard !pids.isEmpty else { return }
+        let ownGroup = getpgrp()
+        func send(_ sig: Int32, _ pid: pid_t) {
+            if getpgid(pid) == pid, pid != ownGroup { kill(-pid, sig) }
+            kill(pid, sig)
+        }
+        pids.forEach { send(SIGTERM, $0) }
+        let deadline = Date().addingTimeInterval(gracePeriod)
+        // A child is reaped by its waiter, which unregisters it.
+        func alive() -> [pid_t] { Set(running).intersection(pids).filter { kill($0, 0) == 0 } }
+        while Date() < deadline, !alive().isEmpty { usleep(50_000) }
+        alive().forEach { send(SIGKILL, $0) }
+    }
 }
 
 private func readToEndOfFile(_ handle: FileHandle) async -> Data {
@@ -118,6 +170,8 @@ public func runProcess(_ argv: [String], environment: [String: String]? = nil) a
         }
     }
     try process.run()
+    let tracked = ShellChildren.shared.register(process.processIdentifier)
+    defer { ShellChildren.shared.unregister(tracked) }
     // Drain both pipes concurrently so neither fills and blocks the child.
     async let out = readToEndOfFile(stdout.fileHandleForReading)
     async let err = readToEndOfFile(stderr.fileHandleForReading)

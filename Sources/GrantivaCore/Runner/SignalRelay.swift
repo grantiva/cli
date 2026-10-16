@@ -318,11 +318,17 @@ public final class SignalRelay: @unchecked Sendable {
         }
 
         for cleanup in pendingBeforeTermination { cleanup() }
+        // A `simctl status_bar` (or any other shell child) still running
+        // would otherwise be left to launchd (C13-3).
+        ShellChildren.shared.terminateAll()
         for pgid in trackedGroups {
             ChildProcess.terminateGroup(pgid, gracePeriod: 5)
         }
         for reap in helperReaps { reap() }
         for cleanup in pendingCleanups { cleanup() }
+        // A cleanup's own child that outran its bound (a hung
+        // `status_bar clear`) goes too, before grantiva exits.
+        ShellChildren.shared.terminateAll()
         return true
     }
 }
