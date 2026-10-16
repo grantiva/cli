@@ -98,6 +98,8 @@ public final class SimulatorLease: @unchecked Sendable {
     public let udid: String
     public let path: String
     private var released = false
+    /// The interrupt cleanup that removes this run's temp directories (C14).
+    private var temporaryDirectoryCleanup: UInt64?
     private var claim: SimulatorLeaseClaim
     private let stateLock = NSLock()
 
@@ -317,11 +319,30 @@ public final class SimulatorLease: @unchecked Sendable {
 
     /// Records a temp directory this run created, so a reclaim after the run
     /// was killed can remove it (see `SimulatorLeaseClaim.temporaryDirectories`).
+    ///
+    /// An interrupt (SIGINT/SIGTERM through `SignalRelay`) removes them too,
+    /// as the run's own `defer`s would have: the process exits from the
+    /// relay, so those never run (C14).
     public func recordTemporaryDirectory(_ path: String) {
         stateLock.lock()
         claim.temporaryDirectories = (claim.temporaryDirectories ?? []) + [path]
+        let needsCleanup = temporaryDirectoryCleanup == nil && !released
         stateLock.unlock()
+        if needsCleanup {
+            let token = SignalRelay.shared.onTermination { [weak self] in self?.removeTemporaryDirectories() }
+            stateLock.lock()
+            temporaryDirectoryCleanup = token
+            stateLock.unlock()
+        }
         persistClaim()
+    }
+
+    /// Removes the temp directories this run recorded.
+    func removeTemporaryDirectories() {
+        stateLock.lock()
+        let paths = released ? [] : (claim.temporaryDirectories ?? [])
+        stateLock.unlock()
+        for path in paths { try? FileManager.default.removeItem(atPath: path) }
     }
 
     /// Transfers ownership to a process that outlives this one. `runner start`
@@ -502,7 +523,10 @@ public final class SimulatorLease: @unchecked Sendable {
             return
         }
         released = true
+        let cleanup = temporaryDirectoryCleanup
+        temporaryDirectoryCleanup = nil
         stateLock.unlock()
+        if let cleanup { SignalRelay.shared.removeCleanup(cleanup) }
         // Clear the claim and unlink the file before unlocking, so nobody
         // reads a claim for a lease that is already free and no lock file
         // outlives its run. A process that opened the file before the unlink

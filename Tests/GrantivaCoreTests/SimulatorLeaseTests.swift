@@ -17,6 +17,33 @@ final class SimulatorLeaseTests: XCTestCase {
         }
     }
 
+    /// C14: SIGINT while the status bar override ran left the run's
+    /// `grantiva-flows-*`/`grantiva-report-*` temp directories behind (only a
+    /// later teardown --force removed them). The interrupt removes the
+    /// temp directories this run recorded, and nothing once it has released.
+    func testAnInterruptRemovesTheRunsOwnTemporaryDirectories() throws {
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let base = URL(fileURLWithPath: leaseDirectory).appendingPathComponent("tmp-\(UUID().uuidString)")
+        let flows = base.appendingPathComponent("grantiva-flows-x").path
+        let report = base.appendingPathComponent("grantiva-report-x").path
+        for path in [flows, report] { try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: true) }
+        let lease = try SimulatorLease.acquire(udid: "SIM-TMP", directory: leaseDirectory)
+        lease.recordTemporaryDirectory(flows)
+        lease.recordTemporaryDirectory(report)
+
+        SignalRelay.shared.simulateTerminationForTesting()
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: flows))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: report))
+        lease.release()
+
+        // A released lease's directories are its run's business no longer.
+        SignalRelay.shared.resetTerminationForTesting()
+        try FileManager.default.createDirectory(atPath: flows, withIntermediateDirectories: true)
+        SignalRelay.shared.simulateTerminationForTesting()
+        XCTAssertTrue(FileManager.default.fileExists(atPath: flows))
+    }
+
     func testRejectsConcurrentOwnershipOfSameSimulator() throws {
         let first = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
         defer { first.release() }
