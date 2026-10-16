@@ -57,6 +57,82 @@ final class RunnerSessionOutputTests: XCTestCase {
         XCTAssertEqual(multi, "Runner failed (exit 1):\nwarning: slow\nboom")
     }
 
+    /// C13-1: a long stderr is cut on a line boundary, with a marker, not
+    /// mid-path (`che/wda-builds/.../runner.log`).
+    func testALongRunnerStderrIsCutOnALineBoundaryWithAMarker() {
+        let longLine = "Full log: /private/tmp/home/versions/1.1.28/devices/X/cache/wda-builds/sim/devices/X/runner.log"
+        let lines = (1...60).map { "  ⚠ attempt \($0): \(longLine)" } + ["Error: failed to create driver: WDA start failed"]
+        let message = RunnerSession.failureMessage(
+            reason: "Runner failed (exit 1)", stderr: lines.joined(separator: "\n") + "\n"
+        )
+        let detail = message.components(separatedBy: "\n").dropFirst()
+        XCTAssertEqual(detail.first, RunnerSession.elidedDetailMarker, message)
+        for line in detail.dropFirst() {
+            XCTAssertTrue(line.hasPrefix("  ⚠ attempt ") || line.hasPrefix("failed to create driver"), "mid-line cut: \(line)")
+        }
+        XCTAssertTrue(message.hasSuffix("failed to create driver: WDA start failed"), message)
+        // A short stderr carries no marker.
+        let short = RunnerSession.failureMessage(reason: "Runner failed (exit 1)", stderr: "warning: slow\nError: boom\n")
+        XCTAssertFalse(short.contains(RunnerSession.elidedDetailMarker), short)
+    }
+
+    /// C13-1: lines the user already saw streamed, and lines the runner
+    /// repeated, are not printed again under the error.
+    func testTheDetailDropsLinesAlreadyStreamedAndRepeatedLines() {
+        let stderr = """
+          ⏳ Starting GrantivaAgent...
+          ⚠ WDA startup failed on attempt 1/4: xcodebuild exited
+        Full log: /tmp/x/runner.log
+        === attempt 2/4 ===
+          ⚠ WDA startup failed on attempt 1/4: xcodebuild exited
+
+
+        Full log: /tmp/x/runner.log
+        Error: failed to create driver
+        """
+        let message = RunnerSession.failureMessage(
+            reason: "Runner failed (exit 1)", stderr: stderr,
+            streamed: "  ✓ GrantivaAgent installed\n  ⏳ Starting GrantivaAgent...\n", runnerOutputShown: true
+        )
+        XCTAssertEqual(message, """
+        Runner failed (exit 1):
+        ⚠ WDA startup failed on attempt 1/4: xcodebuild exited
+        Full log: /tmp/x/runner.log
+        === attempt 2/4 ===
+        failed to create driver
+        """)
+        // With the runner's output hidden, nothing was streamed to the user.
+        let hidden = RunnerSession.failureMessage(
+            reason: "Runner failed (exit 1)", stderr: "  ⏳ Starting GrantivaAgent...\nError: boom\n",
+            streamed: "  ⏳ Starting GrantivaAgent...\n", runnerOutputShown: false
+        )
+        XCTAssertEqual(hidden, "Runner failed (exit 1):\n⏳ Starting GrantivaAgent...\nboom")
+    }
+
+    func testTheOutcomeCarriesWhatWasStreamedOnlyWhenItWasShown() async throws {
+        let lease = try SimulatorLease.acquire(udid: "STREAM-\(UUID().uuidString)", directory: scratch.appendingPathComponent("locks").path)
+        defer { lease.release() }
+        for silenced in [true, false] {
+            var request = RunnerExecution.Request(
+                executable: "/bin/sh",
+                arguments: ["-c", "printf 'shown line\\n'; printf 'Error: boom\\n' >&2; exit 1"],
+                workingDirectory: scratch.path,
+                lease: lease,
+                keepAlive: false,
+                timeoutSeconds: 30,
+                pathMap: [:],
+                reportDir: scratch.path,
+                expectedFlows: 1,
+                readyFile: ReadyFileSignal(path: nil)
+            )
+            request.silenced = silenced
+            request.narrationSink = { _ in }
+            let outcome = await RunnerExecution.run(request)
+            XCTAssertEqual(outcome.streamed, silenced ? "" : "shown line\n")
+            XCTAssertEqual(outcome.stderr, "Error: boom\n")
+        }
+    }
+
     func testAGenuineInterruptStillSaysInterrupted() {
         let message = RunnerSession.failureMessage(reason: "Runner interrupted", stderr: "")
         XCTAssertTrue(message.hasPrefix("Runner interrupted"), message)

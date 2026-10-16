@@ -26,9 +26,12 @@ public enum RunnerSession {
         failure: RunnerReportSteps.Failure? = nil,
         failedStep: String? = nil,
         timedOut: Bool = false,
+        streamed: String = "",
         runnerOutputShown: Bool = !RunnerNarration.isSilenced
     ) -> String {
-        var detail = String(stderr.suffix(2000))
+        var detail = boundedDetail(
+            stderr, alreadyShown: runnerOutputShown ? streamed : ""
+        )
         if timedOut {
             detail = detail.components(separatedBy: "\n")
                 .filter { !isSignalAcknowledgement($0) }
@@ -59,6 +62,46 @@ public enum RunnerSession {
             message += "\n\(RunnerReportSteps.hierarchyHint)"
         }
         return message
+    }
+
+    /// How many characters of runner stderr a failure message carries.
+    static let detailLimit = 2000
+
+    /// The first line of a detail whose earlier lines were cut.
+    static let elidedDetailMarker = "… (earlier runner output omitted)"
+
+    /// The runner stderr worth printing under the reason: lines the user
+    /// already saw streamed, and lines the runner repeated, are dropped
+    /// (C13-1); runs of blank lines collapse to one; and when the rest is
+    /// still over `detailLimit`, its tail is kept from a line boundary under
+    /// `elidedDetailMarker` instead of starting mid-path.
+    static func boundedDetail(_ stderr: String, alreadyShown streamed: String) -> String {
+        var seen = Set(
+            streamed.components(separatedBy: "\n")
+                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                .filter { !$0.isEmpty }
+        )
+        var kept: [String] = []
+        var blankPending = false
+        for line in stderr.components(separatedBy: "\n") {
+            let key = line.trimmingCharacters(in: .whitespacesAndNewlines)
+            if key.isEmpty {
+                blankPending = !kept.isEmpty
+                continue
+            }
+            // A dropped line takes the blank lines around it with it.
+            guard seen.insert(key).inserted else { blankPending = false; continue }
+            if blankPending { kept.append("") }
+            blankPending = false
+            kept.append(line)
+        }
+        let joined = kept.joined(separator: "\n")
+        guard joined.count > detailLimit else { return joined }
+        var tail = Substring(joined.suffix(detailLimit))
+        if let newline = tail.firstIndex(of: "\n") {
+            tail = tail[tail.index(after: newline)...]
+        }
+        return elidedDetailMarker + "\n" + tail
     }
 
     /// `line` without the runner's leading `Error:` prefix.
@@ -283,7 +326,8 @@ public enum RunnerSession {
                     reason: reason, stderr: stderr,
                     failure: outcome.timedOut || outcome.interrupted ? nil : failure,
                     failedStep: outcome.timedOut || outcome.interrupted ? nil : Self.screenFailureLine(failure, screen: screen),
-                    timedOut: outcome.timedOut
+                    timedOut: outcome.timedOut,
+                    streamed: outcome.streamed
                 ),
                 // An interrupt is exit 130 however the runner ended (L56).
                 outcome.interrupted ? 130 : outcome.terminationStatus
@@ -648,7 +692,7 @@ public enum RunnerSession {
             throw GrantivaError.commandFailed(
                 Self.failureMessage(
                     reason: reason, stderr: stderr, failure: outcome.interrupted ? nil : failure,
-                    timedOut: outcome.timedOut
+                    timedOut: outcome.timedOut, streamed: outcome.streamed
                 ),
                 // An interrupt is exit 130 however the runner ended (L56).
                 outcome.interrupted ? 130 : outcome.terminationStatus

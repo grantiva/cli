@@ -15,7 +15,14 @@ enum RunnerExecution {
         var interrupted: Bool = false
         /// The signal that killed the runner, when one did.
         var terminatingSignal: Int32? = nil
+        /// The runner output relayed to the user (its tail, bounded by
+        /// `streamedLimit`); empty when the output was silenced. A failure
+        /// message does not repeat these lines (C13-1).
+        var streamed: String = ""
     }
+
+    /// How much relayed output an Outcome keeps for de-duplication.
+    static let streamedLimit = 256 * 1024
 
     /// How the runner ended, for a failure reason: `exit 3`, or
     /// `killed by SIGHUP` when a signal ended it (L11).
@@ -170,20 +177,27 @@ enum RunnerExecution {
 
         // Every chunk goes through RunnerSession.narrate, the one place that
         // honours --quiet/--json for runner output.
-        async let relayFinished: Void = withCheckedContinuation { continuation in
+        async let relayFinished: String = withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async {
                 var rewriter = OutputRewriter(replacements: pathMap, cycleReplacements: cyclePathMap)
                 var filter = initialFilter
+                var shown = ""
+                func relay(_ text: String) {
+                    RunnerSession.narrate(text, silenced: silenced, sink: sink)
+                    guard !silenced, !text.isEmpty else { return }
+                    shown += text
+                    if shown.utf8.count > Self.streamedLimit * 2 {
+                        shown = String(shown.suffix(Self.streamedLimit))
+                    }
+                }
                 Self.drain(stdoutFD, after: runnerExited) { chunk in
                     let text = String(decoding: chunk, as: UTF8.self)
                     let rewritten = rewriter.isEmpty ? text : rewriter.consume(text)
-                    let emit = filter.isEmpty ? rewritten : filter.consume(rewritten)
-                    RunnerSession.narrate(emit, silenced: silenced, sink: sink)
+                    relay(filter.isEmpty ? rewritten : filter.consume(rewritten))
                 }
                 let remainder = rewriter.flush()
-                let tail = filter.isEmpty ? remainder : filter.consume(remainder) + filter.flush()
-                RunnerSession.narrate(tail, silenced: silenced, sink: sink)
-                continuation.resume()
+                relay(filter.isEmpty ? remainder : filter.consume(remainder) + filter.flush())
+                continuation.resume(returning: shown)
             }
         }
 
@@ -283,7 +297,7 @@ enum RunnerExecution {
         child.signalGroup(SIGTERM)
         if let lifeline { close(lifeline) }
 
-        await relayFinished
+        let streamed = await relayFinished
         let stderr = await stderrText
         try? stdoutPipe.fileHandleForReading.close()
         try? stderrPipe.fileHandleForReading.close()
@@ -293,7 +307,8 @@ enum RunnerExecution {
             stderr: stderr,
             timedOut: killed.isSet,
             interrupted: interrupted,
-            terminatingSignal: child.terminatingSignal
+            terminatingSignal: child.terminatingSignal,
+            streamed: streamed
         )
     }
 
