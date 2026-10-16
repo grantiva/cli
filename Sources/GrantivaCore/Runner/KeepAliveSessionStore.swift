@@ -173,9 +173,15 @@ public struct KeepAliveSessionStore: Sendable {
 
     /// `kill(pid, 0)` succeeds for a live process we may signal; EPERM means
     /// it is alive but owned by someone else. Anything else means it is gone.
+    ///
+    /// A zombie (exited, not yet reaped by its parent) also answers
+    /// `kill(pid, 0)` but is gone: a keep-alive holder started by a harness
+    /// that waits on it only after `runner stop` returns made the stop wait
+    /// its full 30 s and fail although the holder had exited 0 (N-01).
     public static func processIsAlive(_ pid: Int32) -> Bool {
         guard pid > 0 else { return false }
-        return kill(pid, 0) == 0 || errno == EPERM
+        guard kill(pid, 0) == 0 || errno == EPERM else { return false }
+        return !ProcessLookup.isZombie(pid)
     }
 
     // MARK: - Writing (grantiva run --keep-alive)

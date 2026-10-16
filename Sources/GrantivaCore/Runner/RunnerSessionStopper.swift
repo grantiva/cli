@@ -308,6 +308,12 @@ public enum ProcessLookup {
         return Date(timeIntervalSince1970: TimeInterval(start.tv_sec) + TimeInterval(start.tv_usec) / 1_000_000)
     }
 
+    /// True when `pid` has exited and waits only to be reaped by its parent.
+    public static func isZombie(_ pid: Int32) -> Bool {
+        // SZOMB in <sys/proc.h>.
+        info(pid).map { $0.kp_proc.p_stat == 5 } ?? false
+    }
+
     public static func parentPid(of pid: Int32) -> Int32? {
         info(pid).map { $0.kp_eproc.e_ppid }
     }

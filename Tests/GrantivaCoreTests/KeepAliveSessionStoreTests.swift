@@ -33,6 +33,30 @@ final class KeepAliveSessionStoreTests: XCTestCase {
         return path
     }
 
+
+    /// N-01: a holder that has exited but whose parent has not reaped it yet
+    /// (a harness that waits on it only after `runner stop` returns) is a
+    /// zombie. `kill(pid, 0)` still succeeds on it, so `runner stop` waited
+    /// its full 30 s and failed although the holder had exited 0.
+    func testAnExitedButUnreapedProcessIsNotAlive() throws {
+        var pid: pid_t = 0
+        let argv: [UnsafeMutablePointer<CChar>?] = [strdup("/usr/bin/true"), nil]
+        defer { argv.forEach { free($0) } }
+        XCTAssertEqual(posix_spawn(&pid, "/usr/bin/true", nil, nil, argv, nil), 0)
+        var reaped = false
+        defer { if !reaped { var status: Int32 = 0; waitpid(pid, &status, 0) } }
+        // Wait for it to exit without reaping it.
+        var info = siginfo_t()
+        XCTAssertEqual(waitid(P_PID, id_t(pid), &info, WEXITED | WNOWAIT), 0)
+        XCTAssertEqual(kill(pid, 0), 0, "a zombie still answers kill(pid, 0)")
+        XCTAssertFalse(KeepAliveSessionStore.processIsAlive(pid))
+        var status: Int32 = 0
+        waitpid(pid, &status, 0)
+        reaped = true
+        XCTAssertFalse(KeepAliveSessionStore.processIsAlive(pid))
+        XCTAssertTrue(KeepAliveSessionStore.processIsAlive(getpid()))
+    }
+
     func testNewestLiveSessionIsSelectedWhenNoUDIDIsGiven() throws {
         try writeRunnerSession(pid: 100, nanos: 1_791_340_000_000_000_000, port: 8100, sessionId: "older")
         try writeRunnerSession(pid: 200, nanos: 1_791_340_478_890_825_000, port: 8577, sessionId: "newer")
