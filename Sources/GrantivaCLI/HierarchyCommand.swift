@@ -195,7 +195,10 @@ struct HierarchyCommand: AsyncParsableCommand {
 
     /// Resolves the keep-alive session to query. `store` is injectable for tests.
     func locateSession(store: KeepAliveSessionStore = KeepAliveSessionStore()) throws -> KeepAliveSession {
-        try store.locate(udid: udid.map { try DeviceID.validate($0) }, projectDirectory: FileManager.default.currentDirectoryPath)
+        try store.locate(
+            udid: udid.map { try DeviceID.validate($0) }, projectDirectory: FileManager.default.currentDirectoryPath,
+            platform: DumpHierarchyCommand.projectPlatform()
+        )
     }
 
 }

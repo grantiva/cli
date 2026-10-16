@@ -272,6 +272,25 @@ final class KeepAliveSessionStoreTests: XCTestCase {
         XCTAssertEqual(try store.locateIncludingStarting(udid: nil, projectDirectory: elsewhere).pid, 400)
     }
 
+    /// C15 (project-preference): a bare lookup in an iOS project with no
+    /// session of its own answered with another project's Android session
+    /// ("UIAutomator2 has no session yet"). Without a session of its own, a
+    /// project falls back only to one of its platform.
+    func testWithoutItsOwnSessionAProjectFallsBackOnlyToItsPlatform() throws {
+        let other = directory.appendingPathComponent("android-project").path
+        try write(KeepAliveOwner(udid: "emulator-5562", runnerPid: 410, projectDirectory: other, platform: .android))
+        let store = store(live: [410, getpid()])
+        let mine = directory.appendingPathComponent("ios-project").path
+
+        XCTAssertThrowsError(try store.locateIncludingStarting(udid: nil, projectDirectory: mine, platform: .ios)) { error in
+            XCTAssertTrue("\(error)".contains("No active runner session"), "\(error)")
+        }
+        XCTAssertEqual(try store.locateIncludingStarting(udid: nil, projectDirectory: mine, platform: .android).pid, 410)
+        XCTAssertEqual(try store.locateIncludingStarting(udid: nil, projectDirectory: mine, platform: nil).pid, 410)
+        // An explicit --udid still names any live session.
+        XCTAssertEqual(try store.locateIncludingStarting(udid: "emulator-5562", projectDirectory: mine, platform: .ios).pid, 410)
+    }
+
     func testASessionWithPortZeroIsListedBecauseAndroidRunnersPublishNoPort() throws {
         try writeRunnerSession(pid: 100, nanos: 1, port: 0, sessionId: "android")
 

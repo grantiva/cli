@@ -433,8 +433,8 @@ public struct KeepAliveSessionStore: Sendable {
     /// The newest live session, or the live session for `udid` when given.
     /// A matching session that has not published yet is "starting, retry"
     /// (L52), as the MCP server says.
-    public func locate(udid: String? = nil, projectDirectory: String? = nil) throws -> KeepAliveSession {
-        let session = try locateIncludingStarting(udid: udid, projectDirectory: projectDirectory)
+    public func locate(udid: String? = nil, projectDirectory: String? = nil, platform: Platform? = nil) throws -> KeepAliveSession {
+        let session = try locateIncludingStarting(udid: udid, projectDirectory: projectDirectory, platform: platform)
         guard session.isPublished else { throw RunnerSessionInfo.startingError(platform: session.resolvedPlatform) }
         return session
     }
@@ -445,7 +445,14 @@ public struct KeepAliveSessionStore: Sendable {
     /// With `projectDirectory`, a session started from that directory comes
     /// first, even one still starting: another project's session answers
     /// only when this one has none (C14).
-    public func locateIncludingStarting(udid: String? = nil, projectDirectory: String? = nil) throws -> KeepAliveSession {
+    ///
+    /// Without `udid`, and when the project has no session of its own, a
+    /// `platform` (the project's) limits the fallback to sessions of that
+    /// platform: another project's emulator is no answer for an iOS project
+    /// (C15). A `udid` names any live session.
+    public func locateIncludingStarting(
+        udid: String? = nil, projectDirectory: String? = nil, platform: Platform? = nil
+    ) throws -> KeepAliveSession {
         var all = sessions()
         guard !all.isEmpty else {
             throw GrantivaError.noRunnerSession()
@@ -453,7 +460,12 @@ public struct KeepAliveSessionStore: Sendable {
         if let projectDirectory {
             let project = KeepAliveOwner.canonicalDirectory(projectDirectory)
             let mine = all.filter { $0.projectDirectory == project }
-            all = mine + all.filter { $0.projectDirectory != project }
+            if udid == nil, mine.isEmpty, let platform {
+                all = all.filter { $0.resolvedPlatform == platform }
+                guard !all.isEmpty else { throw GrantivaError.noRunnerSession() }
+            } else {
+                all = mine + all.filter { $0.projectDirectory != project }
+            }
         }
         guard let udid else { return all[0] }
 
