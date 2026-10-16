@@ -186,7 +186,7 @@ Date-valued JSON fields use ISO 8601 UTC strings, such as
 numeric Unix and Apple-reference timestamps are not output alternatives. The
 fields are `timestamp` on screen captures, `detectedAt` on detected projects,
 `startedAt` on runner sessions, simulator or emulator leases and provenance,
-`acquiredAt` on simulator capacity records, `createdAt` on created-simulator
+`acquiredAt` and `bootedAt` on simulator capacity records, `createdAt` on created-simulator
 and keep-alive ownership records, and `finishedAt` in ready files. These are the
 fields of `--json` output, MCP tool results, `--ready-file` files and the
 project's `.grantiva/session.json`. Bookkeeping files under the runner home and
