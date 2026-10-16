@@ -101,3 +101,14 @@ final class PlatformOptionTests: XCTestCase {
         XCTAssertTrue(androidSim?.contains("(resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory)") == true)
     }
 }
+
+/// C14: a Ctrl-C about a second into `diff capture` (still resolving or
+/// booting the device) killed grantiva by the default action, before the
+/// interrupt handler existed. Commands that start the runner install it first.
+final class RunnerCommandInterruptTests: XCTestCase {
+    func testARunnerCommandInstallsTheInterruptHandlerFirst() throws {
+        let options = try GlobalOptions.parse([])
+        options.prepareRunnerCommand()
+        XCTAssertTrue(SignalRelay.shared.isInstalled)
+    }
+}

@@ -42,6 +42,16 @@ struct GlobalOptions: ParsableArguments {
             json: json, quiet: verbosity.quiet, verbose: verbosity.verbose
         )
     }
+
+    /// What a command that starts the runner does first: the narration
+    /// switch, and the interrupt handler. Installed here, before the device
+    /// is resolved or booted, a Ctrl-C in the first second ends the run
+    /// through `SignalRelay` (its children and cleanups) instead of killing
+    /// it silently by the default action (C14).
+    func prepareRunnerCommand(relay: SignalRelay = .shared) {
+        applyRunnerNarration()
+        relay.install()
+    }
 }
 
 struct BuildOptions: ParsableArguments {

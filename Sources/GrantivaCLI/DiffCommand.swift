@@ -49,7 +49,7 @@ struct DiffCommand: AsyncParsableCommand {
         var sessionLookup = RunnerSessionLookup()
 
         func run() async throws {
-            options.applyRunnerNarration()
+            options.prepareRunnerCommand()
             let (platform, config) = try platformOptions.loadConfig(fallback: target.fallbackPlatform)
             try target.checkFlags(for: platform, derivedDataPath: buildOptions.derivedDataPath)
             // No config means no screens: say so before scheme resolution,

@@ -156,7 +156,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
     }
 
     func run() async throws {
-        options.applyRunnerNarration()
+        options.prepareRunnerCommand()
         // Check for existing session
         if let existing = try? RunnerSessionInfo.load(), existing.isAlive,
            let snapshot = try? await SimulatorReaper.processSnapshot(),

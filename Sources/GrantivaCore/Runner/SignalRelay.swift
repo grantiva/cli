@@ -66,6 +66,9 @@ public final class SignalRelay: @unchecked Sendable {
         "\n[grantiva] received \(signalName) — releasing \(deviceNoun) and reaping child processes\n"
     }
 
+    /// True once `install()` has run.
+    public var isInstalled: Bool { lock.withLock { installed } }
+
     /// Installs handlers for SIGINT and SIGTERM. Safe to call repeatedly.
     public func install() {
         lock.lock()

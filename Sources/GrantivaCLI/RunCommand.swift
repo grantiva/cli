@@ -276,7 +276,7 @@ struct RunCommand: AsyncParsableCommand {
     }
 
     func run() async throws {
-        options.applyRunnerNarration()
+        options.prepareRunnerCommand()
         if let readyFile {
             try ReadyFile.prepare(at: readyFile)
         }
