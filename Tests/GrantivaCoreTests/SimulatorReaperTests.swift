@@ -23,6 +23,28 @@ final class SimulatorReaperTests: XCTestCase {
         """
     }
 
+    /// B3-L54.1: before a foreground `runner start` has a runner, the
+    /// teardown finds only the grantiva holding the lease. It marks that
+    /// grantiva before signalling it, so the start ends in order.
+    func testForceTeardownMarksTheGrantivaHoldersBeforeSignallingThem() throws {
+        let directory = temporaryDirectory()
+        let marker = RunnerStopMarker(directory: directory)
+        let holder = try ChildProcess.spawn(
+            executable: "/bin/sleep", arguments: ["30"],
+            stdout: FileHandle.nullDevice.fileDescriptor, stderr: FileHandle.nullDevice.fileDescriptor, logged: false
+        )
+        defer { kill(holder.pid, SIGKILL); holder.wait() }
+        let targets = [
+            ReapedProcess(pid: holder.pid, processGroup: holder.pid, kind: .grantiva, command: "grantiva (lease holder for \(udid))"),
+            ReapedProcess(pid: 4243, processGroup: 4243, kind: .runner, command: "grantiva-runner"),
+        ]
+
+        SimulatorReaper.markHolders(targets, marker: marker)
+
+        XCTAssertTrue(marker.isMarked(runnerPid: holder.pid, runnerStartTime: RunnerStopMarker.processStartTime(holder.pid)))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: marker.path(4243)))
+    }
+
     func testArgumentLookalikesAreNotSimulatorOwners() {
         let udid = "921A0945-7157-4533-BA1F-21E8132D3E40"
         let snapshot = """
@@ -33,6 +55,62 @@ final class SimulatorReaperTests: XCTestCase {
         let owners = SimulatorReaper.processes(owning: udid, psOutput: snapshot)
         XCTAssertEqual(owners.map(\.pid), [102])
         XCTAssertEqual(owners.map(\.kind), [.grantiva])
+    }
+
+    /// B4-L76.4: exercise the complete force result, not only the matcher.
+    /// Positional strings that resemble Grantiva paths/arguments must cause no
+    /// signal target and no claim that the device was reclaimed.
+    func testForceTeardownWithOnlyPositionalLookalikesSignalsAndReportsNothing() async throws {
+        let directory = temporaryDirectory()
+        let snapshot = """
+        100 100 /usr/bin/python3 helper.py /path/to/grantiva \(udid)
+        101 101 /usr/bin/python3 helper.py /path/to/grantiva-runner --device \(udid)
+        """
+        let result = try await SimulatorReaper.forceTeardown(
+            udid: udid,
+            capacity: SimulatorCapacity(directory: directory),
+            leaseDirectory: directory,
+            runnerBase: "\(directory)/runner",
+            sessions: KeepAliveSessionStore(directory: "\(directory)/sessions"),
+            snapshot: { snapshot },
+            gracePeriod: 0
+        )
+
+        XCTAssertEqual(result.processes, [], "no process was selected for signalling")
+        XCTAssertFalse(result.runnerSessionStopped)
+        XCTAssertEqual(result.reapedProcesses, [])
+        XCTAssertEqual(result.sessionFilesRemoved, [])
+        XCTAssertFalse(result.reclaimed)
+    }
+
+    /// K79/D2-30: a dead parent can leave WDA's xcodebuild in a separate
+    /// process group. Reclaim the helper whose argv writes into this Grantiva
+    /// device home, while leaving a developer's same-UDID xcodebuild alone.
+    func testForceTeardownReclaimsOnlyOwnershipValidatedSameUDIDHelpers() async throws {
+        let directory = temporaryDirectory()
+        let runner = "\(directory)/runner"
+        let ownedHome = "\(runner)/versions/v1/devices/\(udid)/run-701-dead"
+        let snapshot = """
+        81001 81001 /usr/bin/xcodebuild test-without-building -destination id=\(udid) -xctestrun \(ownedHome)/wda.xctestrun
+        81002 81002 /usr/bin/xcodebuild test-without-building -destination id=\(udid) -xctestrun /private/tmp/developer/wda.xctestrun
+        81003 81003 /usr/bin/xcrun simctl diagnose --udid=\(udid) --output=\(ownedHome)/diagnose
+        81004 81004 /usr/bin/xcrun simctl diagnose --udid=\(udid) --output=/private/tmp/developer/diagnose
+        """
+        let result = try await SimulatorReaper.forceTeardown(
+            udid: udid,
+            capacity: SimulatorCapacity(directory: directory),
+            leaseDirectory: directory,
+            runnerBase: runner,
+            sessions: KeepAliveSessionStore(directory: "\(directory)/sessions"),
+            snapshot: { snapshot },
+            gracePeriod: 0
+        )
+
+        XCTAssertEqual(result.processes.map(\.pid), [81001, 81003])
+        XCTAssertEqual(result.processes.map(\.kind), [.webDriverAgent, .diagnose])
+        XCTAssertFalse(result.processes.map(\.pid).contains(81002))
+        XCTAssertFalse(result.processes.map(\.pid).contains(81004))
+        XCTAssertTrue(result.reclaimed)
     }
 
     func testFindsRunnerWebDriverAgentAndDiagnose() {
@@ -315,10 +393,12 @@ final class SimulatorReaperTests: XCTestCase {
         }
         let pid = late.processIdentifier
         let freshPID = fresh.processIdentifier
+        let runnerBase = "\(directory)/runner"
+        let diagnoseOutput = "\(runnerBase)/versions/v1/devices/\(udid)/run-\(runner.processIdentifier)-dead/diagnose"
         let snapshots = SnapshotSequence([
             runnerLine,
             runnerLine
-                + "\n  \(pid)  \(pid) /usr/bin/xcrun simctl diagnose --udid=\(udid) --no-archive"
+                + "\n  \(pid)  \(pid) /usr/bin/xcrun simctl diagnose --udid=\(udid) --no-archive --output=\(diagnoseOutput)"
                 + "\n  \(freshPID)  \(freshPID) /opt/homebrew/bin/grantiva run --simulator \(udid)",
         ])
 
@@ -326,6 +406,7 @@ final class SimulatorReaperTests: XCTestCase {
             udid: udid,
             capacity: SimulatorCapacity(directory: directory),
             leaseDirectory: directory,
+            runnerBase: runnerBase,
             sessions: KeepAliveSessionStore(directory: "\(directory)/sessions"),
             snapshot: { snapshots.next() },
             gracePeriod: 1
@@ -419,6 +500,28 @@ extension SimulatorReaperTests {
         for path in temps { XCTAssertFalse(FileManager.default.fileExists(atPath: path), path) }
         let object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(result)) as? [String: Any])
         XCTAssertEqual(object["temporaryDirectoriesRemoved"] as? [String], temps)
+    }
+
+    /// B3-L35: the claim names only the last killed run; the per-device
+    /// ledger names the earlier ones, which go too. A live run's are kept.
+    func testForceTeardownRemovesTheTempDirectoriesOfEveryKilledRun() async throws {
+        let directory = temporaryDirectory()
+        let first = try makeTempDirectories(under: "\(directory)/tmp")
+        let last = try makeTempDirectories(under: "\(directory)/tmp")
+        let live = try makeTempDirectories(under: "\(directory)/tmp")
+        SimulatorLease.recordTemporaryDirectories(first, pid: 999_997, runnerPID: 999_996, udid: udid, directory: directory)
+        SimulatorLease.recordTemporaryDirectories(last, pid: 999_999, runnerPID: nil, udid: udid, directory: directory)
+        SimulatorLease.recordTemporaryDirectories(live, pid: getpid(), runnerPID: nil, udid: udid, directory: directory)
+        var claim = SimulatorLeaseClaim(pid: 999_999, udid: udid, startedAt: Date())
+        claim.temporaryDirectories = last
+        try writeClaim(claim, directory: directory)
+
+        let result = try await forceTeardown(directory: directory)
+
+        XCTAssertEqual(Set(result.temporaryDirectoriesRemoved), Set(first + last))
+        XCTAssertEqual(result.temporaryDirectoriesRemoved.count, 4)
+        for path in first + last { XCTAssertFalse(FileManager.default.fileExists(atPath: path), path) }
+        for path in live { XCTAssertTrue(FileManager.default.fileExists(atPath: path), path) }
     }
 
     func testForceTeardownKeepsTempDirectoriesOfALiveOwner() async throws {

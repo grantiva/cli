@@ -44,13 +44,17 @@ public enum RunnerNarration {
 
 extension RunnerSession {
     /// The single choke point for runner output on its way to the terminal.
-    /// Silent while `RunnerNarration.isSilenced` is set.
+    /// Silent while `RunnerNarration.isSilenced` is set, and once an
+    /// interrupt is under way (the relay's notice is the last line).
     public static func narrate(_ text: String) {
         narrate(text, silenced: RunnerNarration.isSilenced, sink: RunnerNarration.sink)
     }
 
-    static func narrate(_ text: String, silenced: Bool, sink: (String) -> Void) {
-        guard !silenced, !text.isEmpty else { return }
+    static func narrate(
+        _ text: String, silenced: Bool, sink: (String) -> Void,
+        interrupted: () -> Bool = { SignalRelay.shared.isTerminating }
+    ) {
+        guard !silenced, !text.isEmpty, !interrupted() else { return }
         sink(text)
     }
 }

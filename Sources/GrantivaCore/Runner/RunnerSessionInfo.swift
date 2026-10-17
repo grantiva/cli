@@ -9,13 +9,16 @@ import Foundation
 /// the new keys for one release (`LegacyJSONKeys.sessionFileTwins`) and are
 /// still read. `state` is `starting` from the moment the runner is spawned
 /// until its driver answers, then `ready` (L38-a); a file without it is ready.
+/// `startedAt` is an ISO 8601 UTC string; files from earlier builds that wrote
+/// Apple-reference seconds still decode.
 public struct RunnerSessionInfo: Codable, Sendable {
     public enum State: String, Codable, Sendable {
         case starting, ready
     }
 
     public let pid: Int32
-    /// The driver port (`port` in the file); 0 while the session is starting.
+    /// The driver port (`port` in the file); 0 while a starting session's
+    /// runner has not reported it yet.
     public let wdaPort: UInt16
     /// The app the session launched: bundle ID on iOS, application ID on Android.
     public let bundleId: String
@@ -44,9 +47,13 @@ public struct RunnerSessionInfo: Codable, Sendable {
     }
 
     /// The file `runner start` writes the moment it spawns the runner, before
-    /// the driver answers: no port yet.
-    public static func starting(pid: Int32, bundleId: String, udid: String, startedAt: Date, platform: Platform) -> RunnerSessionInfo {
-        RunnerSessionInfo(pid: pid, wdaPort: 0, bundleId: bundleId, udid: udid, startedAt: startedAt, platform: platform, state: .starting)
+    /// the driver answers: no port yet. It is written again with `port` once
+    /// the runner reports WDA's port, still `starting` until WDA has its
+    /// session (side finding 12).
+    public static func starting(
+        pid: Int32, bundleId: String, udid: String, startedAt: Date, platform: Platform, port: UInt16 = 0
+    ) -> RunnerSessionInfo {
+        RunnerSessionInfo(pid: pid, wdaPort: port, bundleId: bundleId, udid: udid, startedAt: startedAt, platform: platform, state: .starting)
     }
 
     /// False while the runner has been spawned but its driver has not
@@ -54,10 +61,19 @@ public struct RunnerSessionInfo: Codable, Sendable {
     public var isReady: Bool { state != .starting }
 
     /// What session tools, `resources/read` and `dump-hierarchy` answer while
-    /// a session is starting.
-    public static func startingError(platform: Platform) -> GrantivaError {
+    /// a session is starting. It names the driver's port once the runner has
+    /// reported it (`port` > 0), and says the port is not known yet before.
+    public static func startingError(platform: Platform, port: UInt16? = nil) -> GrantivaError {
         let driver = platform == .android ? "UIAutomator2" : "WDA"
-        return .unavailable("The runner session is starting (\(driver) has no session yet). Retry in a few seconds.")
+        if let port, port > 0 {
+            return .unavailable("The runner session is starting (\(driver) on port \(port) has no session yet). Retry in a few seconds.")
+        }
+        return .unavailable("The runner session is starting (\(driver) has no session yet; its port is not known yet). Retry in a few seconds.")
+    }
+
+    /// `startingError` for this session, with the port it recorded.
+    public var startingError: GrantivaError {
+        Self.startingError(platform: resolvedPlatform, port: wdaPort)
     }
 
     private var resolvedPlatform: Platform {
@@ -68,7 +84,7 @@ public struct RunnerSessionInfo: Codable, Sendable {
         var container = encoder.container(keyedBy: LegacyJSONKeys.self)
         let android = resolvedPlatform == .android
         try container.encode(pid, forKey: "pid")
-        if isReady {
+        if isReady || wdaPort > 0 {
             try container.encode(wdaPort, forKey: "port")
             try container.encode(wdaPort, forKey: "wdaPort")
         }
@@ -77,7 +93,7 @@ public struct RunnerSessionInfo: Codable, Sendable {
         try container.encode(udid, forKey: "udid")
         if android { try container.encode(udid, forKey: "serial") }
         try container.encodeIfPresent(platform?.rawValue, forKey: "platform")
-        try container.encode(startedAt, forKey: "startedAt")
+        try container.encode(Self.isoString(startedAt), forKey: "startedAt")
         try container.encode((state ?? .ready).rawValue, forKey: "state")
     }
 
@@ -93,13 +109,36 @@ public struct RunnerSessionInfo: Codable, Sendable {
             throw DecodingError.keyNotFound(LegacyJSONKeys(stringValue: "udid"), .init(codingPath: [], debugDescription: "No udid or serial"))
         }
         udid = device
-        startedAt = try container.decodeIfPresent(Date.self, forKey: "startedAt") ?? Date(timeIntervalSinceReferenceDate: 0)
+        startedAt = Self.decodeStartedAt(from: container)
         platform = try container.decodeIfPresent(Platform.self, forKey: "platform")
         state = try container.decodeIfPresent(State.self, forKey: "state")
     }
 
-    /// The file's bytes: sorted keys, dates as 2.1.0 wrote them (so 2.1.0
-    /// can still read a file this version writes).
+    /// `startedAt` as an ISO 8601 UTC string (`2026-10-15T18:48:12Z`), the
+    /// representation README and docs/mcp.md promise for every date field.
+    static func isoString(_ date: Date) -> String {
+        let formatter = ISO8601DateFormatter()
+        formatter.timeZone = TimeZone(identifier: "UTC")
+        return formatter.string(from: date)
+    }
+
+    /// Reads the ISO 8601 string this version writes, and the numeric
+    /// Apple-reference seconds that earlier builds wrote.
+    private static func decodeStartedAt(from container: KeyedDecodingContainer<LegacyJSONKeys>) -> Date {
+        let key = LegacyJSONKeys(stringValue: "startedAt")
+        if let text = try? container.decodeIfPresent(String.self, forKey: key) {
+            let formatter = ISO8601DateFormatter()
+            if let date = formatter.date(from: text) { return date }
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            if let date = formatter.date(from: text) { return date }
+        }
+        if let seconds = try? container.decodeIfPresent(Double.self, forKey: key) {
+            return Date(timeIntervalSinceReferenceDate: seconds)
+        }
+        return Date(timeIntervalSinceReferenceDate: 0)
+    }
+
+    /// The file's bytes: sorted keys, `startedAt` as an ISO 8601 string.
     public func encoded() throws -> Data {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]
@@ -129,6 +168,22 @@ public struct RunnerSessionInfo: Codable, Sendable {
 
     public static func remove() {
         try? FileManager.default.removeItem(atPath: path)
+    }
+
+    /// Removes `<directory>/.grantiva/session.json` when it records the
+    /// runner `runnerPid` (on `udid`, when given): a teardown run from any
+    /// directory takes the stopped session's project file with it (L73).
+    /// A file naming another runner, or that cannot be read, is kept.
+    /// Returns the path removed.
+    @discardableResult
+    public static func removeProjectSession(in directory: String, runnerPid: Int32, udid: String? = nil) -> String? {
+        let file = (directory as NSString).appendingPathComponent(path)
+        guard let data = FileManager.default.contents(atPath: file),
+              let session = try? decode(data), session.pid == runnerPid,
+              udid.map({ session.udid.caseInsensitiveCompare($0) == .orderedSame }) ?? true,
+              (try? FileManager.default.removeItem(atPath: file)) != nil
+        else { return nil }
+        return file
     }
 
     /// Check if the session process is still alive.

@@ -41,6 +41,98 @@ final class RunnerSessionOutputTests: XCTestCase {
         XCTAssertFalse(message.contains("Received interrupt"), message)
     }
 
+    /// B3-L48.2: the runner's own `Error:` line is the detail of one error,
+    /// not a second `Error:` under a bare `Runner failed (exit 1):` line.
+    func testTheRunnersErrorLineIsFoldedIntoOneError() {
+        let message = RunnerSession.failureMessage(
+            reason: "Runner failed (exit 1)",
+            stderr: "Error: failed to create driver: start UIAutomator2: UIAutomator2 server not ready after 1s on each of 2 starts\n"
+        )
+        XCTAssertEqual(
+            message,
+            "Runner failed (exit 1): failed to create driver: start UIAutomator2: UIAutomator2 server not ready after 1s on each of 2 starts"
+        )
+        XCTAssertFalse(message.contains("Error:"), message)
+        let multi = RunnerSession.failureMessage(reason: "Runner failed (exit 1)", stderr: "warning: slow\nError: boom\n")
+        XCTAssertEqual(multi, "Runner failed (exit 1):\nwarning: slow\nboom")
+    }
+
+    /// C13-1: a long stderr is cut on a line boundary, with a marker, not
+    /// mid-path (`che/wda-builds/.../runner.log`).
+    func testALongRunnerStderrIsCutOnALineBoundaryWithAMarker() {
+        let longLine = "Full log: /private/tmp/home/versions/1.1.28/devices/X/cache/wda-builds/sim/devices/X/runner.log"
+        let lines = (1...60).map { "  ⚠ attempt \($0): \(longLine)" } + ["Error: failed to create driver: WDA start failed"]
+        let message = RunnerSession.failureMessage(
+            reason: "Runner failed (exit 1)", stderr: lines.joined(separator: "\n") + "\n"
+        )
+        let detail = message.components(separatedBy: "\n").dropFirst()
+        XCTAssertEqual(detail.first, RunnerSession.elidedDetailMarker, message)
+        for line in detail.dropFirst() {
+            XCTAssertTrue(line.hasPrefix("  ⚠ attempt ") || line.hasPrefix("failed to create driver"), "mid-line cut: \(line)")
+        }
+        XCTAssertTrue(message.hasSuffix("failed to create driver: WDA start failed"), message)
+        // A short stderr carries no marker.
+        let short = RunnerSession.failureMessage(reason: "Runner failed (exit 1)", stderr: "warning: slow\nError: boom\n")
+        XCTAssertFalse(short.contains(RunnerSession.elidedDetailMarker), short)
+    }
+
+    /// C13-1: lines the user already saw streamed, and lines the runner
+    /// repeated, are not printed again under the error.
+    func testTheDetailDropsLinesAlreadyStreamedAndRepeatedLines() {
+        let stderr = """
+          ⏳ Starting GrantivaAgent...
+          ⚠ WDA startup failed on attempt 1/4: xcodebuild exited
+        Full log: /tmp/x/runner.log
+        === attempt 2/4 ===
+          ⚠ WDA startup failed on attempt 1/4: xcodebuild exited
+
+
+        Full log: /tmp/x/runner.log
+        Error: failed to create driver
+        """
+        let message = RunnerSession.failureMessage(
+            reason: "Runner failed (exit 1)", stderr: stderr,
+            streamed: "  ✓ GrantivaAgent installed\n  ⏳ Starting GrantivaAgent...\n", runnerOutputShown: true
+        )
+        XCTAssertEqual(message, """
+        Runner failed (exit 1):
+        ⚠ WDA startup failed on attempt 1/4: xcodebuild exited
+        Full log: /tmp/x/runner.log
+        === attempt 2/4 ===
+        failed to create driver
+        """)
+        // With the runner's output hidden, nothing was streamed to the user.
+        let hidden = RunnerSession.failureMessage(
+            reason: "Runner failed (exit 1)", stderr: "  ⏳ Starting GrantivaAgent...\nError: boom\n",
+            streamed: "  ⏳ Starting GrantivaAgent...\n", runnerOutputShown: false
+        )
+        XCTAssertEqual(hidden, "Runner failed (exit 1):\n⏳ Starting GrantivaAgent...\nboom")
+    }
+
+    func testTheOutcomeCarriesWhatWasStreamedOnlyWhenItWasShown() async throws {
+        let lease = try SimulatorLease.acquire(udid: "STREAM-\(UUID().uuidString)", directory: scratch.appendingPathComponent("locks").path)
+        defer { lease.release() }
+        for silenced in [true, false] {
+            var request = RunnerExecution.Request(
+                executable: "/bin/sh",
+                arguments: ["-c", "printf 'shown line\\n'; printf 'Error: boom\\n' >&2; exit 1"],
+                workingDirectory: scratch.path,
+                lease: lease,
+                keepAlive: false,
+                timeoutSeconds: 30,
+                pathMap: [:],
+                reportDir: scratch.path,
+                expectedFlows: 1,
+                readyFile: ReadyFileSignal(path: nil)
+            )
+            request.silenced = silenced
+            request.narrationSink = { _ in }
+            let outcome = await RunnerExecution.run(request)
+            XCTAssertEqual(outcome.streamed, silenced ? "" : "shown line\n")
+            XCTAssertEqual(outcome.stderr, "Error: boom\n")
+        }
+    }
+
     func testAGenuineInterruptStillSaysInterrupted() {
         let message = RunnerSession.failureMessage(reason: "Runner interrupted", stderr: "")
         XCTAssertTrue(message.hasPrefix("Runner interrupted"), message)
@@ -75,6 +167,17 @@ final class RunnerSessionOutputTests: XCTestCase {
                 XCTAssertTrue(collected.text.contains("✓ launchApp"), collected.text)
             }
         }
+    }
+
+    /// The runner's relayed output follows the same rule as grantiva's own
+    /// narration: nothing after the interrupt notice.
+    func testNarrateDropsRunnerOutputOnceAnInterruptIsUnderWay() {
+        var collected: [String] = []
+        var interrupted = false
+        RunnerSession.narrate("  ✓ Found 1 test flow(s)\n", silenced: false, sink: { collected.append($0) }, interrupted: { interrupted })
+        interrupted = true
+        RunnerSession.narrate("Received interrupt, cleaning up...\n", silenced: false, sink: { collected.append($0) }, interrupted: { interrupted })
+        XCTAssertEqual(collected, ["  ✓ Found 1 test flow(s)\n"])
     }
 
     func testNarrateHonoursTheProcessWideSwitch() {
@@ -143,6 +246,21 @@ final class RunnerSessionOutputTests: XCTestCase {
             let message = RunnerSession.failureMessage(reason: "Runner failed (exit 1)", stderr: "", failure: failure)
             XCTAssertFalse(message.contains("grantiva hierarchy"), message)
         }
+    }
+
+    /// C14 (N-14): the runner's launch failure already names the step
+    /// (`launchApp: 'com…' crashed on launch`); the line does not say it twice.
+    func testAFailureMessageThatNamesItsStepIsNotPrefixedTwice() {
+        let crash = RunnerReportSteps.Failure(
+            flowName: "99-crash", commandIndex: 0, action: "launchApp",
+            message: "launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: X",
+            errorType: "app_crash", unfinished: false
+        )
+        XCTAssertEqual(crash.line, "99-crash: launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: X")
+        let tap = RunnerReportSteps.Failure(
+            flowName: "f", commandIndex: 1, action: "tapOn: text=\"Go\"", message: "Element not found", errorType: nil, unfinished: false
+        )
+        XCTAssertEqual(tap.line, "f: tapOn: text=\"Go\": Element not found")
     }
 
     func testTheFailedStepIsReadFromTheRunnersReport() throws {
@@ -360,8 +478,11 @@ final class RunnerSessionOutputTests: XCTestCase {
     }
 
     func testRunFlowStepLinesShowTheAsWrittenSubFlowPath() async throws {
-        let project = scratch.appendingPathComponent("project")
+        let project = scratch.appendingPathComponent("project/.maestro/coverage")
         try FileManager.default.createDirectory(at: project, withIntermediateDirectories: true)
+        let cwd = FileManager.default.currentDirectoryPath
+        XCTAssertTrue(FileManager.default.changeCurrentDirectoryPath(scratch.appendingPathComponent("project").path))
+        defer { FileManager.default.changeCurrentDirectoryPath(cwd) }
         try "appId: com.example\n---\n- launchApp\n- runFlow: sub.yaml\n"
             .write(to: project.appendingPathComponent("main.yaml"), atomically: true, encoding: .utf8)
         try "appId: com.example\n---\n- launchApp\n"
@@ -400,8 +521,11 @@ final class RunnerSessionOutputTests: XCTestCase {
     }
 
     func testRunAndFailureResultsNameTheSubFlowAsWritten() async throws {
-        let project = scratch.appendingPathComponent("project-l19")
+        let project = scratch.appendingPathComponent("project-l19/.maestro/coverage")
         try FileManager.default.createDirectory(at: project, withIntermediateDirectories: true)
+        let cwd = FileManager.default.currentDirectoryPath
+        XCTAssertTrue(FileManager.default.changeCurrentDirectoryPath(scratch.appendingPathComponent("project-l19").path))
+        defer { FileManager.default.changeCurrentDirectoryPath(cwd) }
         try "appId: com.example\n---\n- launchApp\n- runFlow: sub.yaml\n"
             .write(to: project.appendingPathComponent("main.yaml"), atomically: true, encoding: .utf8)
         try "appId: com.example\n---\n- launchApp\n"

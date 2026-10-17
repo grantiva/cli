@@ -44,19 +44,22 @@ so and to retry in a few seconds, never the "Start one with `grantiva runner sta
 is starting from the moment `grantiva runner start` (with or without `--detach`) or `grantiva run
 --keep-alive` in this project spawns its runner until the driver answers. Two texts cover that window:
 
-- `Error: The runner session is starting (WDA has no session yet). Retry in a few seconds.`
-  (`UIAutomator2` in place of `WDA` on Android) while there is no driver port to ask yet:
+- `Error: The runner session is starting (WDA has no session yet; its port is not known yet). Retry in a few seconds.`
+  (`UIAutomator2` in place of `WDA` on Android) while the runner has not reported its driver port:
   `runner start` writes `.grantiva/session.json` with `"state": "starting"` and no port the moment it
-  spawns the runner (rewritten with `"state": "ready"` and the port once the driver answers), and a
-  `run --keep-alive` runner (or a `runner start` runner, whose session flow runs first) is starting
-  until it publishes its keep-alive session, which it does once its flows have finished. The MCP tools
-  and resources, `grantiva runner dump-hierarchy` and `grantiva hierarchy` all print this one, for a
-  starting `session.json` and for a runner that has not published yet: they share one session
-  lookup with `runner stop` and both teardowns, which find such a runner too.
+  spawns the runner, and a `run --keep-alive` runner (or a `runner start` runner, whose session flow
+  runs first) is starting until it publishes its keep-alive session, which it does once its flows have
+  finished. The MCP tools and resources, `grantiva runner dump-hierarchy` and `grantiva hierarchy` all
+  print this one, for a starting `session.json` and for a runner that has not published yet: they share
+  one session lookup with `runner stop` and both teardowns, which find such a runner too.
 - `Error: The runner session is starting (WDA on port <port> has no session yet). Retry in a few seconds.`
-  on iOS once the port is known but WebDriverAgent has not opened its session, for example in the
-  seconds after `runner start --detach` returns. The MCP tools and resources print it; `grantiva runner
-  dump-hierarchy` and `grantiva hierarchy` read the page source without a WDA session and do not.
+  once the port is known but the driver has no session yet. On iOS, `runner start` rewrites
+  `.grantiva/session.json` with the port (still `"state": "starting"`) as soon as the runner reports
+  WDA's port, while its launch flow is still running, and with `"state": "ready"` once WDA answers; the
+  MCP tools and resources and `grantiva runner dump-hierarchy` print this text in that window
+  (`grantiva hierarchy` reads keep-alive sessions, not `session.json`, and prints the first text until
+  the runner publishes). The MCP tools and resources also print it once a session is ready but WebDriverAgent has
+  not opened its session.
 
 A call made once the driver is ready attaches as usual. `grantiva_screenshot` is the exception once
 `--detach` has returned and the session records its device: it takes the screenshot with `simctl` or `adb`, not WDA, so it
@@ -114,7 +117,7 @@ a config file its `[Config]` section names the file it looked for and where, for
 | `grantiva_type` | iOS, Android | yes | Type text into the currently focused field. Returns the updated accessibility tree. With no focused field nothing is typed and the result is an error: `No focused text field: tap a field before typing "x".` |
 | `grantiva_a11y_tree` | iOS, Android | yes | Get the current accessibility tree (view hierarchy) of the running app as a JSON tree. |
 | `grantiva_a11y_check` | iOS, Android | yes | Run an accessibility audit on the current screen: missing labels on interactive elements and tap targets smaller than 44pt (iOS) or 48dp (Android). |
-| `grantiva_script` | iOS, Android | yes | Execute a batch of UI actions sequentially (`tap`, `tap_xy`, `swipe`, `type`, `wait`; one action per step). Missing `steps` returns `Error: Invalid argument: 'steps' is required.` with `isError`; a wrong-type value is rejected as an array requirement, and an empty array returns the current hierarchy. Every step is validated first: if any is invalid, nothing runs and the result is an error naming each bad step. A step that fails while running (an element not found, nothing focused for `type`) stops the script; the error names the step (`Step 2 (type "x") failed: ...`) and lists the steps that ran. Returns the final accessibility tree. |
+| `grantiva_script` | iOS, Android | yes | Execute a batch of UI actions sequentially (`tap`, `tap_xy`, `swipe`, `type`, `wait`; one action per step). A `tap` step matches its label as `grantiva_tap` does, and its step line names a fallback match: `Step 1: tapped "heart" (matched by identifier)`. Missing `steps` returns `Error: Invalid argument: 'steps' is required.` with `isError`; a wrong-type value is rejected as an array requirement, and an empty array returns the current hierarchy. Every step is validated first: if any is invalid, nothing runs and the result is an error naming each bad step. A step that fails while running (an element not found, nothing focused for `type`) stops the script; the error names the step (`Step 2 (type "x") failed: ...`) and lists the steps that ran. Returns the final accessibility tree. |
 
 ### Build and run
 
@@ -183,8 +186,13 @@ Date-valued JSON fields use ISO 8601 UTC strings, such as
 numeric Unix and Apple-reference timestamps are not output alternatives. The
 fields are `timestamp` on screen captures, `detectedAt` on detected projects,
 `startedAt` on runner sessions, simulator or emulator leases and provenance,
-`acquiredAt` on simulator capacity records, `createdAt` on created-simulator
-and keep-alive ownership records, and `finishedAt` in ready files.
+`acquiredAt` and `bootedAt` on simulator capacity records, `createdAt` on created-simulator
+and keep-alive ownership records, and `finishedAt` in ready files. These are the
+fields of `--json` output, MCP tool results, `--ready-file` files and the
+project's `.grantiva/session.json`. Bookkeeping files under the runner home and
+the runner's own `/tmp/grantiva-sessions/*.grantiva` records are internal; their
+date encodings, and the numeric `runnerStartTime` process identity in ownership
+records, are not part of this contract.
 
 The iOS tap fallback order is **label → identifier → placeholder**. Runner
 lifecycle and teardown JSON use the current camelCase keys, including

@@ -15,7 +15,14 @@ enum RunnerExecution {
         var interrupted: Bool = false
         /// The signal that killed the runner, when one did.
         var terminatingSignal: Int32? = nil
+        /// The runner output relayed to the user (its tail, bounded by
+        /// `streamedLimit`); empty when the output was silenced. A failure
+        /// message does not repeat these lines (C13-1).
+        var streamed: String = ""
     }
+
+    /// How much relayed output an Outcome keeps for de-duplication.
+    static let streamedLimit = 256 * 1024
 
     /// How the runner ended, for a failure reason: `exit 3`, or
     /// `killed by SIGHUP` when a signal ended it (L11).
@@ -38,6 +45,9 @@ enum RunnerExecution {
         let timeoutSeconds: UInt64
         /// Temp-staging path → the path the user passed, for output rewriting.
         let pathMap: [String: String]
+        /// Cycle chains resolve relative hops against their preceding file;
+        /// ordinary runFlow narration retains the operand as written.
+        var cyclePathMap: [String: String]? = nil
         let reportDir: String
         /// The report dir to name in the ready file: the preserved
         /// `--report-dir`, or nil for an ephemeral one deleted on exit.
@@ -63,9 +73,19 @@ enum RunnerExecution {
         var silenced: Bool = RunnerNarration.isSilenced
         /// Where relayed output goes. Overridable for tests.
         var narrationSink: @Sendable (String) -> Void = RunnerNarration.sink
+        /// Ends the helpers a runner grantiva killed at the `--timeout` cap
+        /// left outside its group (runner pid, device). Overridable for tests.
+        var sweepHelpers: @Sendable (Int32, String) async -> Void = { pid, udid in
+            _ = await RunnerHelperReaper.live().sweep(exitedRunnerPid: pid, udid: udid)
+        }
     }
 
     static func run(_ request: Request) async -> Outcome {
+        // An interrupt that landed while the session was being prepared: the
+        // runner is never spawned (C15).
+        if SignalRelay.shared.isTerminating {
+            return Outcome(terminationStatus: 130, stderr: "", timedOut: false, interrupted: true)
+        }
         let stdoutPipe = Pipe()
         let stderrPipe = Pipe()
 
@@ -94,7 +114,13 @@ enum RunnerExecution {
         request.lease.recordRunner(pid: child.pid, keepAlive: request.keepAlive)
         // If grantiva dies without running its cleanups (`kill -9`), the
         // runner's group is interrupted rather than left holding the device.
-        let lifeline = child.bindLifetimeToParent(sessionDirectory: request.keepAlive ? request.sessions.directory : nil)
+        let lifeline = child.bindLifetimeToParent(
+            sessionDirectory: request.keepAlive ? request.sessions.directory : nil,
+            // Native WDA nests build-config caches between this trusted base
+            // and `devices/<udid>/run-<runner pid>-<nanos>`.
+            ownedRunnerBase: request.workingDirectory,
+            ownedDeviceID: request.lease.udid
+        )
 
         // The runner's own session file (/tmp/grantiva-sessions/<pid>-<ts>.grantiva)
         // carries no simulator UDID. Record udid -> runner pid now, before the
@@ -121,19 +147,27 @@ enum RunnerExecution {
         // it started — and then releases the lease so the next run is not
         // refused by a lock whose owner is gone.
         SignalRelay.shared.track(group: child.processGroup, deviceNoun: SignalRelay.deviceNoun(for: request.platform ?? .ios))
+        // WebDriverAgent's xcodebuild runs in a group of its own: interrupted
+        // before WDA is up, the runner leaves it behind (B4-L72.3).
+        if request.platform != .android {
+            RunnerHelperReaper.reapOnInterrupt(group: child.processGroup, udid: request.lease.udid)
+        }
         let lease = request.lease
         let readyFile = request.readyFile
-        let cleanupToken = SignalRelay.shared.onTermination {
+        let readyToken = SignalRelay.shared.beforeTermination {
             readyFile.write(RunReadyState(
                 status: "interrupted",
                 flows: RunnerReportIndex.finalFlows(reportDir: request.reportDir, unfinishedAs: "interrupted"),
                 reportDir: request.readyReportDir
             ))
+        }
+        let cleanupToken = SignalRelay.shared.onTermination {
             lease.release()
         }
         defer {
             SignalRelay.shared.disarmHold(group: child.processGroup)
             SignalRelay.shared.untrack(group: child.processGroup)
+            SignalRelay.shared.removeCleanup(readyToken)
             SignalRelay.shared.removeCleanup(cleanupToken)
         }
 
@@ -142,6 +176,7 @@ enum RunnerExecution {
         let stdoutFD = stdoutPipe.fileHandleForReading.fileDescriptor
         let stderrFD = stderrPipe.fileHandleForReading.fileDescriptor
         let pathMap = request.pathMap
+        let cyclePathMap = request.cyclePathMap
         let initialFilter = request.outputFilter
         let silenced = request.silenced
         let sink = request.narrationSink
@@ -152,20 +187,27 @@ enum RunnerExecution {
 
         // Every chunk goes through RunnerSession.narrate, the one place that
         // honours --quiet/--json for runner output.
-        async let relayFinished: Void = withCheckedContinuation { continuation in
+        async let relayFinished: String = withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async {
-                var rewriter = OutputRewriter(replacements: pathMap)
+                var rewriter = OutputRewriter(replacements: pathMap, cycleReplacements: cyclePathMap)
                 var filter = initialFilter
+                var shown = ""
+                func relay(_ text: String) {
+                    RunnerSession.narrate(text, silenced: silenced, sink: sink)
+                    guard !silenced, !text.isEmpty else { return }
+                    shown += text
+                    if shown.utf8.count > Self.streamedLimit * 2 {
+                        shown = String(shown.suffix(Self.streamedLimit))
+                    }
+                }
                 Self.drain(stdoutFD, after: runnerExited) { chunk in
                     let text = String(decoding: chunk, as: UTF8.self)
                     let rewritten = rewriter.isEmpty ? text : rewriter.consume(text)
-                    let emit = filter.isEmpty ? rewritten : filter.consume(rewritten)
-                    RunnerSession.narrate(emit, silenced: silenced, sink: sink)
+                    relay(filter.isEmpty ? rewritten : filter.consume(rewritten))
                 }
                 let remainder = rewriter.flush()
-                let tail = filter.isEmpty ? remainder : filter.consume(remainder) + filter.flush()
-                RunnerSession.narrate(tail, silenced: silenced, sink: sink)
-                continuation.resume()
+                relay(filter.isEmpty ? remainder : filter.consume(remainder) + filter.flush())
+                continuation.resume(returning: shown)
             }
         }
 
@@ -263,9 +305,16 @@ enum RunnerExecution {
         // simulator (this also ends the watchdog). Harmless when the group is
         // already empty.
         child.signalGroup(SIGTERM)
+        // Killed at the --timeout cap, the runner never stopped WebDriverAgent:
+        // its `xcodebuild test-without-building` (a group of its own) is left to
+        // launchd, where it later starts a `simctl diagnose` (C13-3). An
+        // interrupt has its own reap (`reapOnInterrupt`).
+        if killed.isSet, !interrupted, request.platform != .android {
+            await request.sweepHelpers(child.pid, request.lease.udid)
+        }
         if let lifeline { close(lifeline) }
 
-        await relayFinished
+        let streamed = await relayFinished
         let stderr = await stderrText
         try? stdoutPipe.fileHandleForReading.close()
         try? stderrPipe.fileHandleForReading.close()
@@ -275,7 +324,8 @@ enum RunnerExecution {
             stderr: stderr,
             timedOut: killed.isSet,
             interrupted: interrupted,
-            terminatingSignal: child.terminatingSignal
+            terminatingSignal: child.terminatingSignal,
+            streamed: streamed
         )
     }
 

@@ -33,6 +33,30 @@ final class KeepAliveSessionStoreTests: XCTestCase {
         return path
     }
 
+
+    /// N-01: a holder that has exited but whose parent has not reaped it yet
+    /// (a harness that waits on it only after `runner stop` returns) is a
+    /// zombie. `kill(pid, 0)` still succeeds on it, so `runner stop` waited
+    /// its full 30 s and failed although the holder had exited 0.
+    func testAnExitedButUnreapedProcessIsNotAlive() throws {
+        var pid: pid_t = 0
+        let argv: [UnsafeMutablePointer<CChar>?] = [strdup("/usr/bin/true"), nil]
+        defer { argv.forEach { free($0) } }
+        XCTAssertEqual(posix_spawn(&pid, "/usr/bin/true", nil, nil, argv, nil), 0)
+        var reaped = false
+        defer { if !reaped { var status: Int32 = 0; waitpid(pid, &status, 0) } }
+        // Wait for it to exit without reaping it.
+        var info = siginfo_t()
+        XCTAssertEqual(waitid(P_PID, id_t(pid), &info, WEXITED | WNOWAIT), 0)
+        XCTAssertEqual(kill(pid, 0), 0, "a zombie still answers kill(pid, 0)")
+        XCTAssertFalse(KeepAliveSessionStore.processIsAlive(pid))
+        var status: Int32 = 0
+        waitpid(pid, &status, 0)
+        reaped = true
+        XCTAssertFalse(KeepAliveSessionStore.processIsAlive(pid))
+        XCTAssertTrue(KeepAliveSessionStore.processIsAlive(getpid()))
+    }
+
     func testNewestLiveSessionIsSelectedWhenNoUDIDIsGiven() throws {
         try writeRunnerSession(pid: 100, nanos: 1_791_340_000_000_000_000, port: 8100, sessionId: "older")
         try writeRunnerSession(pid: 200, nanos: 1_791_340_478_890_825_000, port: 8577, sessionId: "newer")
@@ -224,6 +248,47 @@ final class KeepAliveSessionStoreTests: XCTestCase {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         try encoder.encode(owner).write(to: directory.appendingPathComponent("\(owner.runnerPid).owner.json"))
+    }
+
+    /// C14 (B2-K88): with this project's own runner still starting, a lookup
+    /// without --udid answered from another project's published iOS session.
+    /// This project's session, starting or not, comes first; another
+    /// project's is used only when this one has none.
+    func testThisProjectsSessionIsPreferredEvenWhileItIsStarting() throws {
+        let other = directory.appendingPathComponent("other-project").path
+        try writeRunnerSession(pid: 400, nanos: 1, port: 8240, sessionId: "theirs")
+        try write(KeepAliveOwner(udid: "A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF", runnerPid: 400, projectDirectory: other, platform: .ios))
+        try write(KeepAliveOwner(udid: "emulator-5562", runnerPid: 401, projectDirectory: directory.path, platform: .android))
+        let store = store(live: [400, 401, getpid()])
+
+        let mine = try store.locateIncludingStarting(udid: nil, projectDirectory: directory.path)
+        XCTAssertEqual(mine.pid, 401)
+        XCTAssertFalse(mine.isPublished)
+        XCTAssertThrowsError(try store.locate(udid: nil, projectDirectory: directory.path)) { error in
+            XCTAssertTrue("\(error)".contains("starting"), "\(error)")
+        }
+        // A project with no session of its own still falls back to the newest.
+        let elsewhere = directory.appendingPathComponent("third-project").path
+        XCTAssertEqual(try store.locateIncludingStarting(udid: nil, projectDirectory: elsewhere).pid, 400)
+    }
+
+    /// C15 (project-preference): a bare lookup in an iOS project with no
+    /// session of its own answered with another project's Android session
+    /// ("UIAutomator2 has no session yet"). Without a session of its own, a
+    /// project falls back only to one of its platform.
+    func testWithoutItsOwnSessionAProjectFallsBackOnlyToItsPlatform() throws {
+        let other = directory.appendingPathComponent("android-project").path
+        try write(KeepAliveOwner(udid: "emulator-5562", runnerPid: 410, projectDirectory: other, platform: .android))
+        let store = store(live: [410, getpid()])
+        let mine = directory.appendingPathComponent("ios-project").path
+
+        XCTAssertThrowsError(try store.locateIncludingStarting(udid: nil, projectDirectory: mine, platform: .ios)) { error in
+            XCTAssertTrue("\(error)".contains("No active runner session"), "\(error)")
+        }
+        XCTAssertEqual(try store.locateIncludingStarting(udid: nil, projectDirectory: mine, platform: .android).pid, 410)
+        XCTAssertEqual(try store.locateIncludingStarting(udid: nil, projectDirectory: mine, platform: nil).pid, 410)
+        // An explicit --udid still names any live session.
+        XCTAssertEqual(try store.locateIncludingStarting(udid: "emulator-5562", projectDirectory: mine, platform: .ios).pid, 410)
     }
 
     func testASessionWithPortZeroIsListedBecauseAndroidRunnersPublishNoPort() throws {

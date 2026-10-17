@@ -83,6 +83,19 @@ final class OutputRewriterTests: XCTestCase {
         XCTAssertEqual(rewriter.rewrite(absolute), absolute)
     }
 
+    func testAsWrittenNarrationAndCanonicalCyclesUseSeparateMaps() {
+        let ordinary = ["/project/shared/b.yaml": "../shared/b.yaml", "/stage/a.yaml": "flows/a.yaml"]
+        let cycles = ["/project/shared/b.yaml": "shared/b.yaml", "/stage/a.yaml": "flows/a.yaml", "/project/flows/a.yaml": "flows/a.yaml"]
+        let input = "runFlow: /project/shared/b.yaml\ncircular dependency detected: /stage/a.yaml -> /project/shared/b.yaml -> ../flows/a.yaml\n"
+        let expected = "runFlow: ../shared/b.yaml\ncircular dependency detected: flows/a.yaml -> shared/b.yaml -> flows/a.yaml\n"
+        for boundary in input.indices {
+            var rewriter = OutputRewriter(replacements: ordinary, cycleReplacements: cycles)
+            let head = rewriter.consume(String(input[..<boundary]))
+            let tail = rewriter.consume(String(input[boundary...])) + rewriter.flush()
+            XCTAssertEqual(head + tail, expected)
+        }
+    }
+
     func testAbsoluteDisplayPathIsNotRewrittenThroughItsTmpAlias() {
         let absolute = "/private/tmp/project/a.yaml"
         let input = "circular dependency detected: /var/folders/test/grantiva-staged/0/a.yaml -> b.yaml -> a.yaml -> b.yaml\n"

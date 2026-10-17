@@ -17,6 +17,35 @@ final class SimulatorLeaseTests: XCTestCase {
         }
     }
 
+    /// C14: SIGINT while the status bar override ran left the run's
+    /// `grantiva-flows-*`/`grantiva-report-*` temp directories behind (only a
+    /// later teardown --force removed them). The interrupt removes the
+    /// temp directories this run recorded, and nothing once it has released.
+    func testAnInterruptRemovesTheRunsOwnTemporaryDirectories() throws {
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let base = URL(fileURLWithPath: leaseDirectory).appendingPathComponent("tmp-\(UUID().uuidString)")
+        let flows = base.appendingPathComponent("grantiva-flows-x").path
+        let report = base.appendingPathComponent("grantiva-report-x").path
+        for path in [flows, report] { try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: true) }
+        let lease = try SimulatorLease.acquire(udid: "SIM-TMP", directory: leaseDirectory)
+        lease.recordTemporaryDirectory(flows)
+        lease.recordTemporaryDirectory(report)
+
+        SignalRelay.shared.simulateTerminationForTesting()
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: flows))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: report))
+        // C15: the device's tmpdirs ledger drops this run's entry with them.
+        XCTAssertEqual(SimulatorLease.temporaryDirectoryRecords(udid: "SIM-TMP", directory: leaseDirectory), [])
+        lease.release()
+
+        // A released lease's directories are its run's business no longer.
+        SignalRelay.shared.resetTerminationForTesting()
+        try FileManager.default.createDirectory(atPath: flows, withIntermediateDirectories: true)
+        SignalRelay.shared.simulateTerminationForTesting()
+        XCTAssertTrue(FileManager.default.fileExists(atPath: flows))
+    }
+
     func testRejectsConcurrentOwnershipOfSameSimulator() throws {
         let first = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
         defer { first.release() }
@@ -258,6 +287,27 @@ extension SimulatorLeaseTests {
         XCTAssertTrue(message.contains("`grantiva simulator teardown --udid SIM-1 --force`"), message)
     }
 
+    // Side finding 6: the holder took the lease moments ago, but its process
+    // started well before; "pid N, started Ns ago" is the process's age.
+    func testOwnershipMessageAgeIsTheHolderProcessAge() {
+        let claim = SimulatorLeaseClaim(pid: 100, udid: "SIM-1", startedAt: Date())
+        let message = SimulatorLease.ownershipMessage(
+            udid: "SIM-1", holder: claim, processStart: { $0 == 100 ? Date().addingTimeInterval(-42) : nil }
+        )
+        XCTAssertTrue(message.contains("(pid 100, started 42s ago)"), message)
+
+        // A process younger than the claim (a reused pid) never shortens it.
+        let old = SimulatorLeaseClaim(pid: 100, udid: "SIM-1", startedAt: Date().addingTimeInterval(-30))
+        let reused = SimulatorLease.ownershipMessage(udid: "SIM-1", holder: old, processStart: { _ in Date() })
+        XCTAssertTrue(reused.contains("(pid 100, started 30s ago)"), reused)
+    }
+
+    func testProcessStartOfThisProcessIsInThePast() throws {
+        let start = try XCTUnwrap(ProcessLookup.startTime(of: getpid()))
+        XCTAssertLessThanOrEqual(start, Date())
+        XCTAssertNil(ProcessLookup.startTime(of: -1))
+    }
+
     func testHandOffRecordsTheSessionKindAndProjectDirectory() throws {
         let lease = try SimulatorLease.acquire(udid: "SIM-KIND", directory: leaseDirectory)
         lease.handOff(to: getppid())
@@ -283,6 +333,24 @@ extension SimulatorLeaseTests {
         // A claim written before the field existed still reads.
         let legacy = #"{"keepAlive":false,"pid":1,"startedAt":"2026-10-10T00:00:00Z","udid":"SIM-TMP"}"#
         XCTAssertNil(try JSONDecoder.leaseDecoder.decode(SimulatorLeaseClaim.self, from: Data(legacy.utf8)).temporaryDirectories)
+    }
+
+    // B3-L35: every temp directory a run records also goes into the
+    // device's ledger, which outlives the claim the next run overwrites.
+    func testRecordedTemporaryDirectoriesReachTheDevicesLedger() throws {
+        let lease = try SimulatorLease.acquire(udid: "SIM-LEDGER", directory: leaseDirectory)
+        lease.recordRunner(pid: 4242, keepAlive: false)
+        lease.recordTemporaryDirectory("/tmp/grantiva-A")
+        lease.recordTemporaryDirectory("/tmp/grantiva-report-B")
+
+        let records = SimulatorLease.temporaryDirectoryRecords(udid: "SIM-LEDGER", directory: leaseDirectory)
+        XCTAssertEqual(records, [TemporaryDirectoryRecord(pid: getpid(), runnerPID: 4242, paths: ["/tmp/grantiva-A", "/tmp/grantiva-report-B"])])
+        lease.release()
+        // The ledger forgets a run once its directories are gone.
+        XCTAssertEqual(SimulatorLease.temporaryDirectoryRecords(udid: "SIM-LEDGER", directory: leaseDirectory), [])
+        XCTAssertFalse(FileManager.default.fileExists(
+            atPath: SimulatorLease.temporaryDirectoryLedgerPath(udid: "SIM-LEDGER", directory: leaseDirectory)
+        ))
     }
 
     // K107-a: a released lease leaves no file behind.

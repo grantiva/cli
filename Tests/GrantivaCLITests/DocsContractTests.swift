@@ -190,7 +190,7 @@ final class DocsContractTests: XCTestCase {
         XCTAssertTrue(readme.contains("migration on approval"), "README must say approval performs migration")
 
         XCTAssertTrue(mcpDocs.contains("ISO 8601"))
-        for key in ["timestamp", "detectedAt", "startedAt", "acquiredAt", "createdAt", "finishedAt"] {
+        for key in ["timestamp", "detectedAt", "startedAt", "acquiredAt", "bootedAt", "createdAt", "finishedAt"] {
             XCTAssertTrue(mcpDocs.contains("`\(key)`"), key)
         }
         XCTAssertTrue(mcpDocs.contains("1970-01-01T00:00:00Z"))

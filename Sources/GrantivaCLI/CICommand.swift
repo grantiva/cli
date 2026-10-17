@@ -210,8 +210,12 @@ struct CICommand: AsyncParsableCommand {
         }
 
         func run() async throws {
-            options.applyRunnerNarration()
-            let (platform, config) = try platformOptions.loadConfig()
+            options.prepareRunnerCommand()
+            try await RunCommand.runningToTheRelay { try await execute() }
+        }
+
+        private func execute() async throws {
+            let (platform, config) = try platformOptions.loadConfig(fallback: target.fallbackPlatform)
             guard platform == .ios else {
                 throw GrantivaError.invalidArgument(DiffCommand.androidLocalOnlyMessage)
             }
@@ -357,6 +361,7 @@ struct CICommand: AsyncParsableCommand {
                     platform: device,
                     runner: runnerManager,
                     outputDir: captureDir,
+                    flowEnvironment: resolved.environment,
                     expectedPixels: expectedPixels
                 )
                 rlog("Capture complete")

@@ -49,8 +49,12 @@ struct DiffCommand: AsyncParsableCommand {
         var sessionLookup = RunnerSessionLookup()
 
         func run() async throws {
-            options.applyRunnerNarration()
-            let (platform, config) = try platformOptions.loadConfig()
+            options.prepareRunnerCommand()
+            try await RunCommand.runningToTheRelay { try await execute() }
+        }
+
+        private func execute() async throws {
+            let (platform, config) = try platformOptions.loadConfig(fallback: target.fallbackPlatform)
             try target.checkFlags(for: platform, derivedDataPath: buildOptions.derivedDataPath)
             // No config means no screens: say so before scheme resolution,
             // with the same sentence `run` gives.
@@ -177,6 +181,7 @@ struct DiffCommand: AsyncParsableCommand {
                         screens: resolved.screens, appID: bid, udid: booted.udid, platform: platform,
                         driver: attachment.client, device: device, outputDir: outputDir,
                         expectedPixels: captureTarget.pixelDimensions,
+                        environment: resolved.environment,
                         timeoutSeconds: SessionScreenCapture.defaultTimeoutSeconds
                     )
                 } catch {
@@ -192,6 +197,7 @@ struct DiffCommand: AsyncParsableCommand {
                     platform: device,
                     runner: runnerManager,
                     outputDir: outputDir,
+                    flowEnvironment: resolved.environment,
                     expectedPixels: captureTarget.pixelDimensions
                 )
             }
@@ -318,9 +324,9 @@ struct DiffCommand: AsyncParsableCommand {
             let platform: Platform
             let config: GrantivaConfig?
             if capture {
-                (platform, config) = try platformOptions.loadConfig()
+                (platform, config) = try platformOptions.loadConfig(fallback: target.fallbackPlatform)
             } else {
-                platform = try platformOptions.resolve()
+                platform = try platformOptions.resolve(fallback: target.fallbackPlatform)
                 config = try GrantivaConfig.loadIfPresent(platform: platform)
             }
             let captureDir = DiffCommand.captureDirectory(for: platform)
@@ -413,6 +419,7 @@ struct DiffCommand: AsyncParsableCommand {
                     udid: booted.udid,
                     platform: device,
                     outputDir: captureDir,
+                    flowEnvironment: resolved.environment,
                     expectedPixels: expectedPixels
                 )
                 invocationCaptures = captures

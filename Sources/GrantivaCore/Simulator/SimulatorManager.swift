@@ -10,30 +10,62 @@ public struct SimulatorManager: Sendable, Decodable {
     /// The runner base (`GRANTIVA_RUNNER_HOME`); per-simulator runner homes
     /// live at `<runnerHome>/versions/<runner version>/devices/<udid>`.
     private let runnerHome: String
+    /// Spawns `simctl bootstatus <udid> -b`.
+    private let startBootStatus: @Sendable (String) throws -> BootStatusChild
+    /// The bound on a boot's bootstatus wait (IOS-015).
+    private let bootWait: SimulatorBootWait
+    /// Spawns `xcrun simctl <arguments>` for a bounded `simctl list`; nil runs
+    /// list calls through `execute` (the test seam's scripted `simctl`).
+    private let startList: (@Sendable ([String]) throws -> SimctlListChild)?
+    /// The bound on each `simctl list` call.
+    private let listBound: SimctlListBound
 
     public init() {
-        self.init(execute: { try await shell($0) })
+        self.init(
+            execute: { try await shell($0) },
+            startBootStatus: { try LiveBootStatusChild.start(udid: $0) },
+            bootWait: SimulatorBootWait(),
+            startList: { try LiveBootStatusChild.startSimctl($0) },
+            listBound: SimctlListBound()
+        )
     }
 
     /// Test seam: a scripted `simctl` and private capacity/provenance stores.
+    /// Without `startBootStatus`, bootstatus goes through `execute` too.
     init(
         execute: @escaping @Sendable (String) async throws -> String,
         capacity: SimulatorCapacity = .live,
         provenance: SimulatorProvenance = .live,
-        runnerHome: String = RunnerManager.baseDir
+        runnerHome: String = RunnerManager.baseDir,
+        startBootStatus: (@Sendable (String) throws -> BootStatusChild)? = nil,
+        bootWait: SimulatorBootWait = SimulatorBootWait(pollInterval: 0.01, environment: [:]),
+        startList: (@Sendable ([String]) throws -> SimctlListChild)? = nil,
+        listBound: SimctlListBound = SimctlListBound(pollInterval: 0.01, environment: [:])
     ) {
         self.execute = execute
+        self.startList = startList
+        self.listBound = listBound
         self.capacity = capacity
         self.provenance = provenance
         self.runnerHome = runnerHome
+        self.startBootStatus = startBootStatus ?? { ExecutorBootStatusChild(udid: $0, execute: execute) }
+        self.bootWait = bootWait
     }
 
     public init(from decoder: Decoder) throws {
         self.init()
     }
 
+    /// `xcrun simctl list <arguments>`, bounded by `listBound` (a stalled call
+    /// is ended by its pid and run once more, then fails).
+    func simctlList(_ arguments: [String]) async throws -> String {
+        let command = (["xcrun", "simctl", "list"] + arguments).joined(separator: " ")
+        guard let startList else { return try await execute(command) }
+        return try await listBound.run(command: command, start: { try startList(["list"] + arguments) })
+    }
+
     public func listDevices() async throws -> [SimulatorDevice] {
-        let output = try await execute("xcrun simctl list devices --json")
+        let output = try await simctlList(["devices", "--json"])
         guard let data = output.data(using: .utf8) else { return [] }
         let parsed = try JSONDecoder().decode(SimctlDeviceList.self, from: data)
         return parsed.allDevices
@@ -121,21 +153,46 @@ public struct SimulatorManager: Sendable, Decodable {
             let line = Self.waitMessage(wait, maximum: capacity.maximum)
             GrantivaLog.logger.log(level: line.level, "\(line.message)")
         }
+        // Set once `simctl boot` has succeeded: from then on the device is
+        // this record's to shut down, whatever happens to this process.
+        var bootIssued = false
         do {
             // Look again: the wait may have been for another process that
             // was booting this very device (two `ensure`s of one name), and
             // booting a Booted device fails (CoreSimulator code 405).
             let current = try await exactDevice(nameOrUDID: device.udid)
             if !current.isBooted {
+                // Recorded before the boot is issued (IOS-015): an ensure
+                // that hangs, fails or is interrupted from here on still
+                // leaves a record `teardown --session-id` shuts the device
+                // down by (`SimulatorCapacity.prune` keeps it).
+                try capacity.markBootIssued(udid: device.udid)
                 _ = try await execute("xcrun simctl boot \(device.udid)")
-                _ = try await execute("xcrun simctl bootstatus \(device.udid) -b")
+                bootIssued = true
+                _ = try await waitForBoot(udid: device.udid)
             }
-            try capacity.activate(udid: device.udid, bootedByGrantiva: !current.isBooted)
+            // The boot this record belongs to: a later boot by anyone else
+            // (`simctl shutdown` then `boot`) makes the record stale.
+            let bootedAt = try await exactDevice(nameOrUDID: device.udid).lastUsedAt
+            try capacity.activate(udid: device.udid, bootedByGrantiva: !current.isBooted, bootedAt: bootedAt)
         } catch {
-            try? capacity.releaseReservation(udid: device.udid)
+            // A device this call booted keeps its record; anything else
+            // gives the reservation back.
+            if !bootIssued { try? capacity.releaseReservation(udid: device.udid) }
             throw error
         }
         return try await exactDevice(nameOrUDID: device.udid)
+    }
+
+    /// Waits for a booted device to finish booting, bounded by `bootWait`:
+    /// `simctl bootstatus -b`, or `simctl list` showing it Booted once
+    /// bootstatus has had its grace period (IOS-015).
+    func waitForBoot(udid: String) async throws -> SimulatorBootWait.Outcome {
+        try await bootWait.wait(
+            udid: udid,
+            start: { try startBootStatus(udid) },
+            isBooted: { try await exactDevice(nameOrUDID: udid).isBooted }
+        )
     }
 
     /// Boots the default simulator `name`, which nothing named: only one
@@ -458,7 +515,7 @@ public struct SimulatorManager: Sendable, Decodable {
     /// suggestions such as doctor's fix line and `init`'s default; nil when
     /// simctl is unavailable or no iOS runtime is installed.
     public func newestIPhone() async -> String? {
-        guard let output = try? await execute("xcrun simctl list devicetypes runtimes --json") else { return nil }
+        guard let output = try? await simctlList(["devicetypes", "runtimes", "--json"]) else { return nil }
         return Self.newestIPhone(catalogJSON: Data(output.utf8))
     }
 
@@ -482,7 +539,7 @@ public struct SimulatorManager: Sendable, Decodable {
     }
 
     private func simulatorCatalog() async throws -> SimctlCatalog {
-        let data = try await execute("xcrun simctl list devicetypes runtimes --json").data(using: .utf8) ?? Data()
+        let data = try await simctlList(["devicetypes", "runtimes", "--json"]).data(using: .utf8) ?? Data()
         return try JSONDecoder().decode(SimctlCatalog.self, from: data)
     }
 
@@ -544,6 +601,7 @@ struct SimctlDeviceList: Decodable {
         let state: String
         let isAvailable: Bool
         let deviceTypeIdentifier: String?
+        let lastUsedAt: String?
     }
 
     var allDevices: [SimulatorDevice] {
@@ -555,7 +613,8 @@ struct SimctlDeviceList: Decodable {
                     state: dev.state,
                     runtime: runtime.replacingOccurrences(of: "com.apple.CoreSimulator.SimRuntime.", with: ""),
                     isAvailable: dev.isAvailable,
-                    deviceTypeIdentifier: dev.deviceTypeIdentifier
+                    deviceTypeIdentifier: dev.deviceTypeIdentifier,
+                    lastUsedAt: dev.lastUsedAt
                 )
             }
         }

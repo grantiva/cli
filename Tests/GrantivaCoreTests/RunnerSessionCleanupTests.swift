@@ -42,6 +42,31 @@ final class RunnerSessionCleanupTests: XCTestCase {
 
     // MARK: - Ready file (A06)
 
+    /// C15 (sigint-early): SIGINT about a second into `run` (the relay had
+    /// already handled it) and the run went on to stage its flows and create
+    /// `grantiva-<UUID>`/`grantiva-report-<UUID>`, which nothing removed.
+    /// Once interrupted, a session starts nothing and creates nothing.
+    func testAnInterruptedRunStartsNoSessionAndCreatesNoTempDirectories() async throws {
+        let scratch = try FakeRunnerScratch()
+        defer { scratch.remove(); SignalRelay.shared.resetTerminationForTesting() }
+        func tempEntries() -> Set<String> {
+            Set(((try? FileManager.default.contentsOfDirectory(atPath: FileManager.default.temporaryDirectory.path)) ?? [])
+                .filter { $0.hasPrefix("grantiva-") && !$0.hasPrefix("grantiva-fake-runner-") })
+        }
+        let before = tempEntries()
+        SignalRelay.shared.simulateTerminationForTesting()
+        do {
+            _ = try await scratch.runFlows(reportDir: nil)
+            XCTFail("an interrupted run went on")
+        } catch {}
+        do {
+            _ = try await scratch.runScreens(reportDir: nil)
+            XCTFail("an interrupted screens run went on")
+        } catch {}
+        XCTAssertEqual(tempEntries().subtracting(before), [])
+        XCTAssertFalse(FileManager.default.fileExists(atPath: scratch.readyFile), "the runner never ran, so nothing reported")
+    }
+
     /// Without --report-dir the report lives in a temp dir that is deleted as
     /// the run returns, so the ready file must not point a waiter at it.
     func testAnEphemeralReportDirIsNotWrittenToTheReadyFile() async throws {

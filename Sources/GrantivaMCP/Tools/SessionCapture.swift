@@ -22,10 +22,18 @@ extension VRTTools {
     /// How long a tap, `assert_visible` or `assert_not_visible` step waits
     /// for its element.
     static let lookupTimeout = 5.0
+    /// The longest wait for the relaunched app to show its first screen.
+    static let launchTimeout = 10.0
 
     /// Steps only the runner can run; nil when the session's driver can.
     static func runnerOnlyStep(_ step: GrantivaConfig.Screen.Step) -> String? {
         if step.runFlow != nil { return "runFlow" }
+        if let app = step.app { return app.rawValue }
+        switch step.tapGesture {
+        case .doubleTap: return "a double tap"
+        case .longPress: return "a long press"
+        case .tap: break
+        }
         if step.swipeFrom != nil { return "a swipe from an element" }
         if step.swipeStart != nil || step.swipeEnd != nil { return "a swipe between points" }
         if step.swipeDuration != nil { return "a swipe with a duration" }
@@ -102,7 +110,7 @@ extension VRTTools {
             do {
                 captures = try await captureScreens(
                     config.screens, appID: appID, udid: udid, platform: platform, driver: driver, device: device,
-                    outputDir: outputDir, pause: pause
+                    outputDir: outputDir, environment: config.environment, pause: pause
                 )
             } catch {
                 await device.restoreAfterCapture(deviceID: udid)
@@ -133,14 +141,17 @@ extension VRTTools {
     /// once, then each screen's steps followed by its screenshot.
     static func captureScreens(
         _ screens: [GrantivaConfig.Screen], appID: String, udid: String, platform: Platform, driver: DriverClient,
-        device: any DevicePlatform, outputDir: String, pause: @escaping @Sendable (Double) async -> Void
+        device: any DevicePlatform, outputDir: String, environment: [String: String] = [:],
+        pause: @escaping @Sendable (Double) async -> Void
     ) async throws -> [ScreenCapture] {
         // The one launch is timed (terminate, launch, settle): the first
         // launch-only screen reports it; a later one reports null, since the
         // app was not launched again for it. Never 0 (L23).
         let launchStart = Date()
         try? await device.terminate(appID: appID, deviceID: udid)
-        try await device.launch(appID: appID, deviceID: udid)
+        // The config header's `env:`, as the runner's `launchApp` passes it.
+        try await device.launch(appID: appID, deviceID: udid, environment: environment)
+        await waitForLaunch(driver: driver, timeout: launchTimeout, pause: pause)
         await settle(driver: driver, timeout: settleTimeout, pause: pause)
         var launchDuration: Double? = Date().timeIntervalSince(launchStart)
         let rules = try await SelectorRules.current(platform: platform, screens: screens, driver: driver)
@@ -153,7 +164,10 @@ extension VRTTools {
                     let action = RunnerSession.stepAction(for: step)
                     let stepStart = Date()
                     do {
-                        try await run(step, rules: rules, driver: driver, pause: pause)
+                        try await run(
+                            FlowEnvironment.substitutingVariables(in: step, variables: environment),
+                            rules: rules, driver: driver, pause: pause
+                        )
                     } catch {
                         throw StepFailure(screen: screen.name, step: index + 1, action: action, reason: describe(error))
                     }
@@ -359,6 +373,34 @@ extension VRTTools {
         case let string as String: return Double(string)
         default: return nil
         }
+    }
+
+    /// Waits until the relaunched app's hierarchy shows any labelled element,
+    /// for at most `timeout` seconds (and `timeout / 0.25` reads). The device
+    /// launch returns once the process starts, while its launch screen is
+    /// still up; a launch screen does not change, so `settle` alone took it
+    /// for the settled first screen (a blank Home on iOS 27). The runner
+    /// launches through the agent, which waits for the app itself. A read
+    /// that fails counts as not yet launched.
+    static func waitForLaunch(driver: DriverClient, timeout: Double, pause: @escaping @Sendable (Double) async -> Void) async {
+        let deadline = Date().addingTimeInterval(timeout)
+        var reads = 0
+        while true {
+            if let tree = try? await driver.hierarchy(), hasLabelledElement(tree) { return }
+            reads += 1
+            if Date() >= deadline || Double(reads) * 0.25 >= timeout { return }
+            await pause(0.25)
+        }
+    }
+
+    /// Whether any element other than the application one (whose label is
+    /// the app's name) carries a label, value or name.
+    static func hasLabelledElement(_ element: [String: Any]) -> Bool {
+        if element["type"] as? String != "XCUIElementTypeApplication",
+           ["label", "value", "name"].contains(where: { !((element[$0] as? String) ?? "").isEmpty }) {
+            return true
+        }
+        return (element["children"] as? [[String: Any]] ?? []).contains(where: hasLabelledElement)
     }
 
     /// Waits until two consecutive driver screenshots match, for at most

@@ -67,6 +67,28 @@ public enum FlowEnvironment {
         }
     }
 
+    /// `step` with each `${KEY}` in its labels and typed text replaced by
+    /// `variables[KEY]`, as the runner resolves the header `env:`. Used where
+    /// grantiva runs a screen's steps itself (through a runner session);
+    /// other `${...}` are left as written.
+    public static func substitutingVariables(
+        in step: GrantivaConfig.Screen.Step, variables: [String: String]
+    ) -> GrantivaConfig.Screen.Step {
+        guard !variables.isEmpty else { return step }
+        func resolve(_ text: String?) -> String? {
+            guard var text, text.contains("${") else { return text }
+            for (key, value) in variables { text = text.replacingOccurrences(of: "${\(key)}", with: value) }
+            return text
+        }
+        var step = step
+        step.tap = resolve(step.tap)
+        step.type = resolve(step.type)
+        step.assertVisible = resolve(step.assertVisible)
+        step.assertNotVisible = resolve(step.assertNotVisible)
+        step.swipeFrom = resolve(step.swipeFrom)
+        return step
+    }
+
     /// Launch keys are `[A-Za-z_][A-Za-z0-9_.]*`. On Android the runner can
     /// fall back to `am start` through a shell, interpolating the bare key, so
     /// anything else is refused rather than passed through.

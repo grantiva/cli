@@ -183,13 +183,26 @@ public struct RunnerSessionStopper: Sendable {
                         + "Release it with kill -INT \(owner), or reclaim the device with `grantiva \(DeviceID.isAndroidSerial(udid) ? "emulator teardown --serial" : "simulator teardown --udid") \(udid) --force`."
                 )
             }
-            if !isProcessAlive(session.pid) { removeSessionFiles(session.pid) }
+            if !isProcessAlive(session.pid) {
+                removeSessionFiles(session.pid)
+                removeProjectSession(of: session)
+            }
             return .released(grantivaPid: owner, runnerPid: session.pid, udid: udid, reaped: reaped)
         }
-        return await terminate(
+        let outcome = await terminate(
             runnerPid: session.pid, udid: udid, recordedStartTime: session.runnerStartTime,
             ownedForwardPort: session.port > 0 ? session.port : nil, deadline: deadline
         )
+        removeProjectSession(of: session)
+        return outcome
+    }
+
+    /// The stopped session's `.grantiva/session.json` in the directory it was
+    /// started from, when it still records this runner (L73): teardown may
+    /// run anywhere, and a file left behind reads as a ready session.
+    private func removeProjectSession(of session: KeepAliveSession) {
+        guard let directory = session.projectDirectory else { return }
+        RunnerSessionInfo.removeProjectSession(in: directory, runnerPid: session.pid, udid: session.udid)
     }
 
     /// `timeout`, or what is left before `deadline` when that is sooner.
@@ -285,6 +298,20 @@ public enum ProcessLookup {
         var mib: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_PID, pid]
         guard sysctl(&mib, u_int(mib.count), &info, &size, nil, 0) == 0, size > 0 else { return nil }
         return info
+    }
+
+    /// When the process started, from the kernel; nil when it is gone.
+    public static func startTime(of pid: Int32) -> Date? {
+        guard let info = info(pid) else { return nil }
+        let start = info.kp_proc.p_un.__p_starttime
+        guard start.tv_sec > 0 else { return nil }
+        return Date(timeIntervalSince1970: TimeInterval(start.tv_sec) + TimeInterval(start.tv_usec) / 1_000_000)
+    }
+
+    /// True when `pid` has exited and waits only to be reaped by its parent.
+    public static func isZombie(_ pid: Int32) -> Bool {
+        // SZOMB in <sys/proc.h>.
+        info(pid).map { $0.kp_proc.p_stat == 5 } ?? false
     }
 
     public static func parentPid(of pid: Int32) -> Int32? {

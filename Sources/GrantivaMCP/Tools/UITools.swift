@@ -141,12 +141,7 @@ enum UITools {
         if let label = arguments["label"]?.stringValue {
             let match: LabelMatch
             do {
-                if let tapByLabelMatch = driver.tapByLabelMatch {
-                    match = try await tapByLabelMatch(label)
-                } else {
-                    try await driver.tapByLabel(label)
-                    match = .label
-                }
+                match = try await tapLabel(label, driver: driver)
             } catch let error as GrantivaError {
                 guard case .elementNotFound = error else { throw error }
                 return CallTool.Result(
@@ -291,6 +286,17 @@ enum UITools {
     }
 
     // MARK: - Private Helpers
+
+    /// Taps `label` and says what it matched: the label, or on iOS the
+    /// identifier or placeholder fallback. Shared by grantiva_tap and
+    /// grantiva_script's tap step.
+    static func tapLabel(_ label: String, driver: DriverClient) async throws -> LabelMatch {
+        if let tapByLabelMatch = driver.tapByLabelMatch {
+            return try await tapByLabelMatch(label)
+        }
+        try await driver.tapByLabel(label)
+        return .label
+    }
 
     /// Nothing for a label match; otherwise which fallback matched.
     static func matchNote(_ match: LabelMatch) -> String {

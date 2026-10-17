@@ -320,9 +320,11 @@ public final class ChildProcess: @unchecked Sendable {
     /// to release WebDriverAgent, then SIGTERMs the group and waits as long
     /// again, then SIGKILLs the runner; it removes the runner's keep-alive
     /// session files (and any teardown stop marker) from `$2` whichever way the runner went (neither the dead
-    /// grantiva nor a killed runner removes them); and finally SIGTERMs
-    /// whatever is left in the group. Being a member of the group, it keeps
-    /// the group id from being reused while it works.
+    /// grantiva nor a killed runner removes them); reaps xcodebuild/diagnose
+    /// helpers outside the group only when their argv names this exact private
+    /// run directory; and finally SIGTERMs whatever is left in the group.
+    /// Being a member of the group, it keeps the group id from being reused
+    /// while it works.
     static let watchdogScript = """
     trap 'exit 0' INT TERM HUP
     read _ignored
@@ -334,6 +336,26 @@ public final class ChildProcess: @unchecked Sendable {
     if kill -0 "$1" 2>/dev/null; then kill -TERM -"$1" 2>/dev/null; wait_runner "$1"; fi
     if kill -0 "$1" 2>/dev/null; then kill -KILL "$1" 2>/dev/null; sleep 0.2; fi
     if [ -n "$2" ]; then rm -f "$2/$1".owner.json "$2/$1".stop.json "$2/$1"-*.grantiva; fi
+    owned_base=$4
+    canonical_owned_base=$5
+    owned_run_needle=$6
+    reap_owned_helpers() {
+      signal=$1
+      ps -ww -axo pid=,ucomm=,command= | while read -r pid executable command; do
+        case "$executable:$command" in
+          xcodebuild:*|xcrun:*"simctl diagnose"*|simctl:*" diagnose "*)
+            case "$command" in *"$owned_run_needle"*) ;; *) continue ;; esac
+            case "$command" in *"$owned_base/"*|*"$canonical_owned_base/"*) ;; *) continue ;; esac
+            [ "$pid" = "$$" ] || kill -"$signal" "$pid" 2>/dev/null
+            ;;
+        esac
+      done
+    }
+    if [ -n "$owned_base" ] && [ -n "$owned_run_needle" ]; then
+      reap_owned_helpers TERM
+      sleep 1
+      reap_owned_helpers KILL
+    fi
     kill -TERM -"$1" 2>/dev/null
     exit 0
     """
@@ -342,11 +364,18 @@ public final class ChildProcess: @unchecked Sendable {
     /// dies, however it dies, the group is interrupted (see `watchdogScript`).
     /// Returns the write end of the watchdog's pipe; close it once the child
     /// has been waited for (tests close it early to simulate this process
-    /// dying). Nil when the watchdog could not be started, in which case the
-    /// child simply is not bound. `graceTicks` (tenths of a second per stage)
-    /// is shortened by tests.
+    /// dying). `ownedRunnerBase` plus `ownedDeviceID` lets it reclaim only
+    /// helpers writing in this run's `run-<pid>-…` home, including helpers in
+    /// another process group.
+    /// Nil means the child simply is not bound. `graceTicks` (tenths of a
+    /// second per stage) is shortened by tests.
     @discardableResult
-    public func bindLifetimeToParent(sessionDirectory: String? = nil, graceTicks: Int = 100) -> Int32? {
+    public func bindLifetimeToParent(
+        sessionDirectory: String? = nil,
+        ownedRunnerBase: String? = nil,
+        ownedDeviceID: String? = nil,
+        graceTicks: Int = 100
+    ) -> Int32? {
         var fds: [Int32] = [-1, -1]
         guard pipe(&fds) == 0 else { return nil }
         _ = fcntl(fds[0], F_SETFD, FD_CLOEXEC)
@@ -357,10 +386,21 @@ public final class ChildProcess: @unchecked Sendable {
             if devNull >= 0 { Darwin.close(devNull) }
         }
         let output = devNull >= 0 ? devNull : fds[0]
+        let ownedBase = ownedRunnerBase ?? ""
+        let canonicalOwnedBase: String
+        if ownedBase.hasPrefix("/tmp/") {
+            canonicalOwnedBase = "/private" + ownedBase
+        } else {
+            canonicalOwnedBase = ownedRunnerBase.map(KeepAliveOwner.canonicalDirectory) ?? ""
+        }
+        let runNeedle = ownedDeviceID.map { "/devices/\($0)/run-\(pid)-" } ?? ""
         do {
             let watchdog = try Self.spawn(
                 executable: "/bin/sh",
-                arguments: ["-c", Self.watchdogScript, "grantiva-watchdog", String(processGroup), sessionDirectory ?? "", String(graceTicks)],
+                arguments: [
+                    "-c", Self.watchdogScript, "grantiva-watchdog", String(processGroup),
+                    sessionDirectory ?? "", String(graceTicks), ownedBase, canonicalOwnedBase, runNeedle,
+                ],
                 stdin: fds[0], stdout: output, stderr: output,
                 processGroup: processGroup, logged: false
             )

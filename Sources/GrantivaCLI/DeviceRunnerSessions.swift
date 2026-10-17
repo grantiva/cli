@@ -76,6 +76,16 @@ struct DeviceRunnerSessions: Sendable {
         return marked
     }
 
+    /// True only for a live, validated foreground `runner start` owner in
+    /// the shared session store. This lets a non-force teardown stop a
+    /// Grantiva-owned foreground runner even when the simulator was not
+    /// allocated through the boot-capacity ledger.
+    static func hasForegroundOwner(
+        udid: String, store: KeepAliveSessionStore = KeepAliveSessionStore()
+    ) -> Bool {
+        !store.foregroundRunnerStarts(udid: udid).isEmpty
+    }
+
     /// Before any runner is signalled: the stop markers are written (a
     /// foreground `runner start` in any directory reads them and ends in
     /// order), and the session file in this directory is removed, as

@@ -133,7 +133,7 @@ struct RunCommand: AsyncParsableCommand {
     /// itself is narrated where it happens.
     static func targetDevice(
         platform: Platform, device: any DevicePlatform, target: String, serialFlag: String?,
-        targetIsDefault: Bool = false, log: (String) -> Void
+        targetIsDefault: Bool = false, relay: SignalRelay = .shared, log: (String) -> Void
     ) async throws -> BootedDevice {
         if platform == .android, let serial = serialFlag {
             let attached: BootedDevice
@@ -150,10 +150,14 @@ struct RunCommand: AsyncParsableCommand {
             log(bootNarration(platform: platform, target: "\(booted.name) (\(booted.udid))", running: true))
             return booted
         }
+        try relay.checkNotInterrupted()
         log(bootNarration(platform: platform, target: target))
         let booted = targetIsDefault
             ? try await device.bootDefaultDevice(named: target, override: "--simulator")
             : try await device.bootDevice(named: target)
+        // An interrupt during the boot (its `simctl` child cut off) ends the
+        // run here, before it narrates the device or goes on (candidate19).
+        try relay.checkNotInterrupted()
         log("\(platform == .ios ? "Simulator" : "Emulator") booted: \(booted.name) (\(booted.udid))")
         return booted
     }
@@ -276,10 +280,14 @@ struct RunCommand: AsyncParsableCommand {
     }
 
     func run() async throws {
-        options.applyRunnerNarration()
+        options.prepareRunnerCommand()
         if let readyFile {
             try ReadyFile.prepare(at: readyFile)
         }
+        // On Ctrl-C the relay waits (bounded) for this run to report what its
+        // flows did before it cleans up and exits (C15).
+        let exitHold = SignalRelay.shared.holdExit()
+        defer { SignalRelay.shared.releaseExit(exitHold) }
         do {
             try await execute()
         } catch {
@@ -314,9 +322,28 @@ struct RunCommand: AsyncParsableCommand {
                 )
             }
             if Self.exitsThroughSignalRelay() {
+                SignalRelay.shared.releaseExit(exitHold)
                 await Self.awaitSignalRelayExit()
             }
             if Self.isInterruptedRelease(error) { throw ExitCode(130) }
+            throw error
+        }
+    }
+
+    /// Runs a runner command's `body` with the interrupt relay's exit held
+    /// until it has unwound, so the relay's cleanups come after whatever
+    /// `body` created before it saw the interrupt; after an interrupt it
+    /// then waits for the relay to exit 130 instead of exiting first (C15).
+    static func runningToTheRelay(_ body: () async throws -> Void) async throws {
+        let hold = SignalRelay.shared.holdExit()
+        defer { SignalRelay.shared.releaseExit(hold) }
+        do {
+            try await body()
+        } catch {
+            if exitsThroughSignalRelay() {
+                SignalRelay.shared.releaseExit(hold)
+                await awaitSignalRelayExit()
+            }
             throw error
         }
     }
@@ -347,7 +374,7 @@ struct RunCommand: AsyncParsableCommand {
     }
 
     private func execute() async throws {
-        let (platform, config) = try platformOptions.loadConfig(includeMaestroDirectory: flow == nil)
+        let (platform, config) = try platformOptions.loadConfig(includeMaestroDirectory: flow == nil, fallback: target.fallbackPlatform)
         try target.checkFlags(
             for: platform, derivedDataPath: buildOptions.derivedDataPath,
             logsPredicate: logsPredicate, logsTag: logsTag
@@ -378,6 +405,11 @@ struct RunCommand: AsyncParsableCommand {
             platform: platform, config: config, skipBuild: buildOptions.shouldSkipBuild, appID: appBundleId
         )
 
+        // The project's app as configured or detected, before a --flow
+        // header can stand in for it: a flow header spelled any of these ways
+        // takes the resolved ID; one naming another app is kept (C13-4).
+        let projectBundleID = resolved.bundleId
+
         // --flow overrides configured flows and skips screens
         if let flow {
             resolved = ResolvedProject(
@@ -407,7 +439,9 @@ struct RunCommand: AsyncParsableCommand {
 
         // Cycles are input errors. Reject them before runner installation,
         // simulator boot, WDA startup, or failure-screenshot collection.
-        try FlowCycleValidator.validate(flowPaths: resolved.flows, screens: resolved.screens)
+        try FlowCycleValidator.validate(
+            flowPaths: resolved.flows, screens: resolved.screens, configFileName: platform.configFileName
+        )
 
         // A default simulator the user created is refused before anything is said or prepared (L08).
         try await device.checkDefault(for: resolved)
@@ -467,6 +501,7 @@ struct RunCommand: AsyncParsableCommand {
         var productPath: String?
         var builtAppID: String?
 
+        try SignalRelay.shared.checkNotInterrupted()
         if buildOptions.shouldSkipInstall {
             log("Skipping build and install (--no-build)")
         } else if let resolvedBinary {
@@ -507,6 +542,7 @@ struct RunCommand: AsyncParsableCommand {
             throw GrantivaError.invalidArgument(TargetOptions.appIDMessage(for: platform, noBuild: buildOptions.shouldSkipBuild))
         }
 
+        try SignalRelay.shared.checkNotInterrupted()
         if !buildOptions.shouldSkipInstall, let productPath {
             let installID = TargetOptions.installAppID(platform: platform, testID: bid, binaryID: builtAppID ?? appBundleId)
             log("Installing \(installID)...")
@@ -524,6 +560,7 @@ struct RunCommand: AsyncParsableCommand {
             log(suite)
         }
 
+        try SignalRelay.shared.checkNotInterrupted()
         var captures: [ScreenCapture] = []
         let failureReport = RunnerFailureReport()
         do {
@@ -546,6 +583,7 @@ struct RunCommand: AsyncParsableCommand {
                         keepAlive: keepAlive,
                         snapshot: snapshot.rawValue,
                         environment: launchEnvironment,
+                        flowEnvironment: resolved.environment,
                         readyFile: readyFile,
                         expectedPixels: expectedPixels,
                         failFast: session.failFast,
@@ -579,7 +617,11 @@ struct RunCommand: AsyncParsableCommand {
                         readyFile: readyFile,
                         expectedPixels: expectedPixels,
                         failureReport: failureReport,
-                        readyLeadingFlows: session.readyLeadingFlows
+                        readyLeadingFlows: session.readyLeadingFlows,
+                        projectAppIDs: Self.projectAppIDs([
+                            bid, projectBundleID, target.bundleId, target.applicationId,
+                            config?.bundleId, config?.android?.applicationId, appBundleId, builtAppID,
+                        ])
                     )
                 }
             )
@@ -620,6 +662,13 @@ struct RunCommand: AsyncParsableCommand {
         let header = (try? String(contentsOfFile: flowPath, encoding: .utf8)).flatMap(MaestroFlowParser.appId(in:))
         guard let header, !header.contains("${") else { return resolved }
         return header
+    }
+
+    /// The IDs that name the project's own app: a flow header spelled as one
+    /// of them is replaced by the resolved ID, any other header is the flow's
+    /// own app and is kept (C13-4). Placeholders name no app.
+    static func projectAppIDs(_ ids: [String?]) -> Set<String> {
+        Set(ids.compactMap { $0 }.filter { !$0.isEmpty && !$0.contains("${") })
     }
 
     static func buildFailureMessage(_ result: BuildResult) -> String {

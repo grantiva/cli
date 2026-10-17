@@ -22,6 +22,38 @@ final class ADBTests: XCTestCase {
         XCTAssertFalse(ADBDevice(serial: "emulator-5556", state: "offline").isUsable)
     }
 
+    // MARK: - N-12: touch mode before captures
+
+    /// Key input leaves the display out of touch mode, and the focused row
+    /// stays highlighted in every capture after it. A touch DOWN then CANCEL
+    /// at the bottom-left corner pixel (the navigation bar, never a click
+    /// target, and cancelled so nothing is pressed) restores touch mode.
+    func testRestoreTouchModeCancelsATouchAtTheBottomLeftCornerOnlyWhenOutOfTouchMode() async throws {
+        let shell = ScriptedShell([.success("    init=1080x2400 420dpi cur=1080x2400 app=1080x2400\n    mInTouchMode=false\n")])
+        let restored = try await ADB(path: adbPath, execute: shell.execute).restoreTouchMode(serial: "emulator-5560")
+        XCTAssertTrue(restored)
+        XCTAssertEqual(shell.commands.count, 2)
+        XCTAssertTrue(shell.commands[0].contains("dumpsys window"), shell.commands[0])
+        XCTAssertEqual(
+            shell.commands[1],
+            "'/sdk/platform-tools/adb' -s 'emulator-5560' shell 'input motionevent DOWN 0 2399 && input motionevent CANCEL 0 2399'"
+        )
+
+        let inTouchMode = ScriptedShell([.success("cur=1080x2400 app=1080x2400\nmInTouchMode=true\n")])
+        let untouched = try await ADB(path: adbPath, execute: inTouchMode.execute).restoreTouchMode(serial: "emulator-5560")
+        XCTAssertFalse(untouched)
+        XCTAssertEqual(inTouchMode.commands.count, 1)
+    }
+
+    func testTouchModeStateParsesTheCurrentLogicalSize() {
+        // Landscape: the logical height is the short side.
+        let landscape = ADB.parseTouchModeState("init=1080x2400 420dpi cur=2400x1080 app=2400x1017\n  mInTouchMode=false")
+        XCTAssertEqual(landscape?.inTouchMode, false)
+        XCTAssertEqual(landscape?.height, 1080)
+        XCTAssertNil(ADB.parseTouchModeState("mInTouchMode=false"), "no size, no safe point to touch")
+        XCTAssertNil(ADB.parseTouchModeState("cur=1080x2400"), "no touch-mode line, nothing to restore")
+    }
+
     func testEveryCommandLineIsQuotedAndTargetsTheSerial() async throws {
         let shell = ScriptedShell()
         shell.fallback = ""
@@ -245,6 +277,54 @@ final class ADBTests: XCTestCase {
         XCTAssertEqual(warnings.lines.count, 1)
         XCTAssertTrue(warnings.lines[0].contains("/nonexistent/perl is not executable"), warnings.lines[0])
     }
+
+    /// Header `env:` through a runner session on Android: the launcher
+    /// activity is started with each value as a string extra, as the runner's
+    /// `launchApp: arguments:` does (monkey cannot carry extras).
+    func testLaunchWithExtrasStartsTheLauncherActivityWithStringExtras() async throws {
+        let shell = ScriptedShell([
+            .success("priority=0 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=true\ncom.example.app/.MainActivity\n"),
+            .success("Starting: Intent { cmp=com.example.app/.MainActivity (has extras) }"),
+        ])
+        try await ADB(path: adbPath, execute: shell.execute).launch(
+            serial: "emulator-5554", applicationId: "com.example.app", extras: ["NOTE": "it's here", "A": "1"]
+        )
+        XCTAssertEqual(shell.commands.count, 2, "\(shell.commands)")
+        XCTAssertTrue(shell.commands[0].contains("resolve-activity --brief -c android.intent.category.LAUNCHER"), shell.commands[0])
+        let start = shell.commands[1]
+        XCTAssertTrue(start.contains("am start -W -n "), start)
+        XCTAssertTrue(start.contains("com.example.app/.MainActivity"), start)
+        XCTAssertTrue(start.contains("--es A "), start)
+        XCTAssertTrue(start.contains("--es NOTE "), start)
+        XCTAssertLessThan(start.range(of: "--es A ")!.lowerBound, start.range(of: "--es NOTE ")!.lowerBound)
+    }
+
+    func testLaunchWithExtrasOfAPackageWithNoLauncherActivitySaysItIsNotInstalled() async throws {
+        let shell = ScriptedShell([.success("No activity found\n")])
+        do {
+            try await ADB(path: adbPath, execute: shell.execute).launch(
+                serial: "emulator-5554", applicationId: "com.example.app", extras: ["A": "1"]
+            )
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("is not installed"), error.localizedDescription)
+        }
+    }
+
+    func testLaunchWithAnErrorFromAmStartFails() async throws {
+        let shell = ScriptedShell([
+            .success("com.example.app/.MainActivity\n"),
+            .success("Starting: Intent { }\nError: Activity class {com.example.app/.MainActivity} does not exist."),
+        ])
+        do {
+            try await ADB(path: adbPath, execute: shell.execute).launch(
+                serial: "emulator-5554", applicationId: "com.example.app", extras: ["A": "1"]
+            )
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("does not exist"), error.localizedDescription)
+        }
+    }
 }
 
 private final class WarningLog: @unchecked Sendable {
@@ -252,4 +332,5 @@ private final class WarningLog: @unchecked Sendable {
     private var stored: [String] = []
     var lines: [String] { lock.withLock { stored } }
     func append(_ line: String) { lock.withLock { stored.append(line) } }
+
 }

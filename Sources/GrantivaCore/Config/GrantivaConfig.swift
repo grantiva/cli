@@ -18,6 +18,9 @@ public struct GrantivaConfig: Sendable, Codable {
     public var platform: Platform = .ios
     /// Gradle-side settings. Present only when `platform == .android`.
     public var android: AndroidProject?
+    /// A Maestro-format file's header `env:` block: `${VAR}` values for its
+    /// steps, also passed to the app at every launch. Empty otherwise.
+    public var environment: [String: String] = [:]
     /// Non-fatal problems found while loading the file, such as unknown keys.
     /// Each is a complete line naming the file and line number.
     public var warnings: [String] = []
@@ -62,6 +65,27 @@ public struct GrantivaConfig: Sendable, Codable {
             /// `scrollDirection` and `waitTimeout` when the source gave them.
             public var scrollUntilVisible: Bool = false
             public var scrollDirection: String? = nil
+            /// Maestro `doubleTapOn` / `longPressOn`: how `tap`'s element is
+            /// touched. Set only by the Maestro parser.
+            public var tapGesture: TapGesture = .tap
+            /// Maestro `stopApp`, `killApp`, or a `launchApp` after the first
+            /// command: an app lifecycle step. Set only by the Maestro parser.
+            public var app: AppCommand? = nil
+
+            public enum TapGesture: String, Sendable, Codable {
+                case tap = "tapOn"
+                case doubleTap = "doubleTapOn"
+                case longPress = "longPressOn"
+            }
+
+            public enum AppCommand: String, Sendable, Codable {
+                case launchApp, stopApp, killApp
+            }
+
+            public init(app: AppCommand) {
+                self.init()
+                self.app = app
+            }
 
             /// The directions a swipe step takes, lowercased.
             static let swipeDirectionNames = ["up", "down", "left", "right"]
@@ -318,7 +342,8 @@ public struct GrantivaConfig: Sendable, Codable {
     public static func loadIfPresent(
         platform: Platform,
         from directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath),
-        includeMaestroDirectory: Bool = true
+        includeMaestroDirectory: Bool = true,
+        emitWarnings: Bool = true
     ) throws -> GrantivaConfig? {
         let fm = FileManager.default
         let configURL = directory.appendingPathComponent(platform.configFileName)
@@ -326,8 +351,10 @@ public struct GrantivaConfig: Sendable, Codable {
         if fm.fileExists(atPath: configURL.path) {
             let contents = try String(contentsOf: configURL, encoding: .utf8)
             let config = try parse(contents, platform: platform, fileName: platform.configFileName, directory: directory)
-            for warning in config.warnings {
-                GrantivaLog.logger.warning("\(warning)")
+            if emitWarnings {
+                for warning in config.warnings {
+                    GrantivaLog.logger.warning("\(warning)")
+                }
             }
             return config
         }

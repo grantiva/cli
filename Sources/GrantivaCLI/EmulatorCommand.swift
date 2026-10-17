@@ -117,7 +117,7 @@ struct EmulatorCommand: AsyncParsableCommand {
     struct Teardown: AsyncParsableCommand {
         static let configuration = CommandConfiguration(
             abstract: "Kill emulators Grantiva started: one by serial, or all of them. Stops the UIAutomator2 server and removes the serial's adb forwards first.",
-            discussion: "A runner session on a torn-down serial (`grantiva runner start` or `grantiva run --keep-alive`) is stopped too, and its session files are removed; --json reports it as runnerSessionStopped. The guest's writes are flushed (`adb shell sync`) before the emulator is killed, so an app installed just before survives the next boot. Session files of a runner that had already died, and the temp directories of a killed run on the serial, are removed and listed (sessionFilesRemoved, temporaryDirectoriesRemoved)."
+            discussion: "A runner session on a torn-down serial (`grantiva runner start` or `grantiva run --keep-alive`) is stopped too, and its session files are removed; --json reports it as runnerSessionStopped. The guest's writes are flushed (`adb shell sync`) before the emulator is killed, so an app installed just before survives the next boot. Session files of a runner that had already died, and the temp directories of every killed run on the serial, are removed and listed (sessionFilesRemoved, temporaryDirectoriesRemoved)."
         )
         @OptionGroup var options: GlobalOptions
 
@@ -143,7 +143,8 @@ struct EmulatorCommand: AsyncParsableCommand {
             markStops: (@Sendable (String) -> [Int32])? = nil,
             unmarkStops: (@Sendable ([Int32]) -> Void)? = nil,
             sweepStops: (@Sendable () -> Void)? = nil,
-            waitForExit: @escaping @Sendable (Int32) async -> Bool = { await DeviceRunnerSessions.waitForExit($0) }
+            waitForExit: @escaping @Sendable (Int32) async -> Bool = { await DeviceRunnerSessions.waitForExit($0) },
+            reportStopped: (@Sendable (RunnerSessionStopper.Outcome) -> Void)? = nil
         ) async throws -> [EmulatorTeardownOutcome] {
             // However the teardown ends, markers nobody will read go.
             defer { sweepStops?() }
@@ -191,7 +192,11 @@ struct EmulatorCommand: AsyncParsableCommand {
                     let stopped = await stopRunners(serial)
                     var markedGone = false
                     for pid in marked[serial] ?? [] where !stopped.contains(where: { $0.runnerPid == pid }) {
-                        if await waitForExit(pid) { markedGone = true }
+                        if await waitForExit(pid) {
+                            markedGone = true
+                            // Said as for a session the stop found (C14).
+                            reportStopped?(.terminated(runnerPid: pid, udid: serial, killed: false))
+                        }
                     }
                     outcomes[index].runnerSessionStopped = !stopped.isEmpty || markedGone
                 }
@@ -256,7 +261,8 @@ struct EmulatorCommand: AsyncParsableCommand {
                 removeDeadSessions: { KeepAliveSessionStore().removeSessions(udid: $0) },
                 markStops: { DeviceRunnerSessions.markLive(udid: $0) },
                 unmarkStops: { pids in pids.forEach { RunnerStopMarker().remove(runnerPid: $0) } },
-                sweepStops: { RunnerStopMarker().sweep() }
+                sweepStops: { RunnerStopMarker().sweep() },
+                reportStopped: { if !json { Output.line(DeviceRunnerSessions.render($0)) } }
             )
             if options.json {
                 Output.line(try JSONOutput.string(outcomes))

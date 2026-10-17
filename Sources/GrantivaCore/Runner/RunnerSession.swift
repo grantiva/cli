@@ -26,15 +26,24 @@ public enum RunnerSession {
         failure: RunnerReportSteps.Failure? = nil,
         failedStep: String? = nil,
         timedOut: Bool = false,
+        streamed: String = "",
         runnerOutputShown: Bool = !RunnerNarration.isSilenced
     ) -> String {
-        var detail = String(stderr.suffix(2000))
+        var detail = boundedDetail(
+            stderr, alreadyShown: runnerOutputShown ? streamed : ""
+        )
         if timedOut {
             detail = detail.components(separatedBy: "\n")
                 .filter { !isSignalAcknowledgement($0) }
                 .joined(separator: "\n")
         }
-        detail = detail.trimmingCharacters(in: .whitespacesAndNewlines)
+        // The runner prefixes its own errors with `Error:`; under our reason
+        // that read as a second error after a bare `Runner failed (exit 1):`
+        // line (B3-L48.2), so the detail drops the prefix.
+        detail = detail.components(separatedBy: "\n")
+            .map(Self.droppingErrorPrefix)
+            .joined(separator: "\n")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
         let step = failedStep ?? failure.map(\.line).flatMap { $0.isEmpty ? nil : $0 }
 
         var message = reason
@@ -43,7 +52,9 @@ public enum RunnerSession {
             message += reason.hasSuffix(".") ? "\n\(step)" : ": \(step)"
         }
         if !detail.isEmpty {
-            message += (step == nil && !reason.hasSuffix(".")) ? ":\n\(detail)" : "\n\(detail)"
+            // A one-line detail completes the reason on the same line.
+            let joiner = detail.contains("\n") ? ":\n" : ": "
+            message += (step == nil && !reason.hasSuffix(".")) ? joiner + detail : "\n\(detail)"
         } else if step == nil, !reason.hasSuffix(".") {
             message += runnerOutputShown ? "; see the runner output above." : "."
         }
@@ -51,6 +62,53 @@ public enum RunnerSession {
             message += "\n\(RunnerReportSteps.hierarchyHint)"
         }
         return message
+    }
+
+    /// How many characters of runner stderr a failure message carries.
+    static let detailLimit = 2000
+
+    /// The first line of a detail whose earlier lines were cut.
+    static let elidedDetailMarker = "… (earlier runner output omitted)"
+
+    /// The runner stderr worth printing under the reason: lines the user
+    /// already saw streamed, and lines the runner repeated, are dropped
+    /// (C13-1); runs of blank lines collapse to one; and when the rest is
+    /// still over `detailLimit`, its tail is kept from a line boundary under
+    /// `elidedDetailMarker` instead of starting mid-path.
+    static func boundedDetail(_ stderr: String, alreadyShown streamed: String) -> String {
+        var seen = Set(
+            streamed.components(separatedBy: "\n")
+                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                .filter { !$0.isEmpty }
+        )
+        var kept: [String] = []
+        var blankPending = false
+        for line in stderr.components(separatedBy: "\n") {
+            let key = line.trimmingCharacters(in: .whitespacesAndNewlines)
+            if key.isEmpty {
+                blankPending = !kept.isEmpty
+                continue
+            }
+            // A dropped line takes the blank lines around it with it.
+            guard seen.insert(key).inserted else { blankPending = false; continue }
+            if blankPending { kept.append("") }
+            blankPending = false
+            kept.append(line)
+        }
+        let joined = kept.joined(separator: "\n")
+        guard joined.count > detailLimit else { return joined }
+        var tail = Substring(joined.suffix(detailLimit))
+        if let newline = tail.firstIndex(of: "\n") {
+            tail = tail[tail.index(after: newline)...]
+        }
+        return elidedDetailMarker + "\n" + tail
+    }
+
+    /// `line` without the runner's leading `Error:` prefix.
+    static func droppingErrorPrefix(_ line: String) -> String {
+        let trimmed = line.drop { $0 == " " }
+        guard trimmed.hasPrefix("Error:") else { return line }
+        return String(trimmed.dropFirst("Error:".count)).trimmingCharacters(in: .whitespaces)
     }
 
     /// The runner's line for a signal it received (`Received interrupt,
@@ -78,6 +136,7 @@ public enum RunnerSession {
         keepAlive: Bool = false,
         snapshot: String = "failure",
         environment: [String: String] = [:],
+        flowEnvironment: [String: String] = [:],
         readyFile: String? = nil,
         expectedPixels: SimulatorProvisionResult.Dimensions? = nil,
         failFast: Bool = false,
@@ -89,6 +148,8 @@ public enum RunnerSession {
         // subprocess exits. Refuse overlapping ownership on the same UDID so a
         // concurrent invocation cannot replace or tear down this session.
         let readySignal = ReadyFileSignal(path: readyFile)
+        // Interrupted before the session began: start nothing (C15).
+        try SignalRelay.shared.checkNotInterrupted()
         let simulatorLease = try SimulatorLease.acquire(udid: udid, platform: platform.platform, directory: runner.leaseDirectory)
         defer { simulatorLease.release() }
 
@@ -103,7 +164,8 @@ public enum RunnerSession {
         // the user wrote rather than a temp copy.
         let configFileName = platform.platform.configFileName
         let generated = try FlowGenerator.writeTempWithMap(
-            screens: screens, bundleId: bundleId, environment: environment, platform: platform.platform,
+            screens: screens, bundleId: bundleId, environment: environment,
+            flowEnvironment: flowEnvironment, platform: platform.platform,
             fileName: configFileName
         )
         let flowPath = generated.path
@@ -174,9 +236,12 @@ public enum RunnerSession {
         }
 
         // Freeze status bar for deterministic screenshots
-        await platform.prepareForCapture(deviceID: udid)
+        // Registered (which installs the relay) before the override runs: an
+        // interrupt during a slow `simctl status_bar` then ends it and
+        // restores the bar instead of leaving it to launchd (C13-3).
         let restoreOnSignal = SignalRelay.shared.onTermination(Self.terminationCleanup(platform: platform, deviceID: udid))
         defer { SignalRelay.shared.removeCleanup(restoreOnSignal) }
+        await platform.prepareForCapture(deviceID: udid)
         // Run the runner
         let args = runnerArguments(
             runnerBin: runnerBin,
@@ -223,7 +288,8 @@ public enum RunnerSession {
                     ephemeralReportDir: preserveReportDir ? nil : reportDir,
                     waitLabels: FlowGenerator.waitLabels(
                         inGenerated: FlowGenerator.generate(
-                            screens: screens, bundleId: bundleId, environment: environment, platform: platform.platform
+                            screens: screens, bundleId: bundleId, environment: environment,
+                            flowEnvironment: flowEnvironment, platform: platform.platform
                         )
                     )
                 )
@@ -265,7 +331,8 @@ public enum RunnerSession {
                     reason: reason, stderr: stderr,
                     failure: outcome.timedOut || outcome.interrupted ? nil : failure,
                     failedStep: outcome.timedOut || outcome.interrupted ? nil : Self.screenFailureLine(failure, screen: screen),
-                    timedOut: outcome.timedOut
+                    timedOut: outcome.timedOut,
+                    streamed: outcome.streamed
                 ),
                 // An interrupt is exit 130 however the runner ended (L56).
                 outcome.interrupted ? 130 : outcome.terminationStatus
@@ -363,7 +430,8 @@ public enum RunnerSession {
     ///
     /// Each flow file has its `appId` rewritten to the resolved bundleId in a
     /// temp copy so flows living outside the project or missing headers still
-    /// launch the right app. Trace artifacts from every flow are exported
+    /// launch the right app; a header naming another app is kept (see
+    /// `injectAppId`; `projectAppIDs` are the project's other spellings). Trace artifacts from every flow are exported
     /// under a per-flow prefix in `<outputDir>/trace/`.
     public static func runFlowFiles(
         at flowPaths: [String],
@@ -382,13 +450,16 @@ public enum RunnerSession {
         readyFile: String? = nil,
         expectedPixels: SimulatorProvisionResult.Dimensions? = nil,
         failureReport: RunnerFailureReport? = nil,
-        readyLeadingFlows: [RunReadyState.Flow] = []
+        readyLeadingFlows: [RunReadyState.Flow] = [],
+        projectAppIDs: Set<String> = []
     ) async throws -> [ScreenCapture] {
         guard !flowPaths.isEmpty else { return [] }
 
         // An earlier session of the same suite (the screens session) is
         // listed first in the ready file, and its failure fails the verdict.
         let readySignal = ReadyFileSignal(path: readyFile, leadingFlows: readyLeadingFlows)
+        // Interrupted before the session began: start nothing (C15).
+        try SignalRelay.shared.checkNotInterrupted()
         let simulatorLease = try SimulatorLease.acquire(udid: udid, platform: platform.platform, directory: runner.leaseDirectory)
         defer { simulatorLease.release() }
 
@@ -423,7 +494,7 @@ public enum RunnerSession {
         var subFlowPathMap: [String: String] = [:]
         for (index, absoluteFlowPath) in absoluteFlowPaths.enumerated() {
             let originalContent = try String(contentsOfFile: absoluteFlowPath, encoding: .utf8)
-            var injectedContent = injectAppId(originalContent, bundleId: bundleId)
+            var injectedContent = injectAppId(originalContent, bundleId: bundleId, projectAppIDs: projectAppIDs)
             injectedContent = try FlowReferenceResolver.resolve(
                 in: injectedContent,
                 relativeTo: (absoluteFlowPath as NSString).deletingLastPathComponent,
@@ -457,8 +528,8 @@ public enum RunnerSession {
 
         // Every flow reachable through runFlow, by its project-relative path
         // (the runner resolves a sub-flow's own runFlows itself). As-written
-        // operands only fill gaps; then the staged top-level paths ensure a
-        // staged path always wins (L20).
+        // operands override resolved display names; staged top-level paths
+        // still ensure a staged path always wins (L20).
         let reachablePathMap = FlowReferenceResolver.reachableFlowDisplayMap(
             roots: absoluteFlowPaths, cwd: FileManager.default.currentDirectoryPath
         ).merging(Dictionary(
@@ -467,13 +538,14 @@ public enum RunnerSession {
         )) { _, passed in passed }
         let reportPathMap = reachablePathMap
             .merging(subFlowPathMap) { canonical, written in
-                // Outside the project the resolver can only return an absolute
-                // identity, not a project-relative display name. Preserve the
-                // written operand there, unless the caller named that root absolutely.
-                (canonical as NSString).isAbsolutePath && !flowPaths.contains(canonical) ? written : canonical
+                // A resolved project-relative path is still not the operand
+                // the user wrote. Only an explicitly named root keeps its
+                // caller-provided spelling over a sub-flow reference.
+                flowPaths.contains(canonical) ? canonical : written
             }
             .merging(stagedPathMap) { _, staged in staged }
         let outputPathMap = expandedPathMap(reportPathMap)
+        let cyclePathMap = expandedPathMap(reachablePathMap.merging(stagedPathMap) { _, staged in staged })
 
         // If the caller passed --report-dir, write reports straight to it and
         // preserve on exit so CI can upload them. Otherwise fall back to an
@@ -526,9 +598,12 @@ public enum RunnerSession {
             }
         }
 
-        await platform.prepareForCapture(deviceID: udid)
+        // Registered (which installs the relay) before the override runs: an
+        // interrupt during a slow `simctl status_bar` then ends it and
+        // restores the bar instead of leaving it to launchd (C13-3).
         let restoreOnSignal = SignalRelay.shared.onTermination(Self.terminationCleanup(platform: platform, deviceID: udid))
         defer { SignalRelay.shared.removeCleanup(restoreOnSignal) }
+        await platform.prepareForCapture(deviceID: udid)
         let args = runnerArguments(
             runnerBin: runnerBin,
             platform: platform,
@@ -561,6 +636,7 @@ public enum RunnerSession {
                 keepAlive: keepAlive,
                 timeoutSeconds: effectiveTimeout,
                 pathMap: outputPathMap,
+                cyclePathMap: cyclePathMap,
                 reportDir: reportDir,
                 readyReportDir: readyReportDir,
                 expectedFlows: flowPaths.count,
@@ -572,7 +648,7 @@ public enum RunnerSession {
             ))
         }
 
-        let pathRewriter = OutputRewriter(replacements: outputPathMap)
+        let pathRewriter = OutputRewriter(replacements: outputPathMap, cycleReplacements: cyclePathMap)
         let stderr = pathRewriter.rewrite(outcome.stderr)
 
         // An interrupt is checked first: the runner may exit 0 on SIGTERM, and
@@ -628,7 +704,7 @@ public enum RunnerSession {
             throw GrantivaError.commandFailed(
                 Self.failureMessage(
                     reason: reason, stderr: stderr, failure: outcome.interrupted ? nil : failure,
-                    timedOut: outcome.timedOut
+                    timedOut: outcome.timedOut, streamed: outcome.streamed
                 ),
                 // An interrupt is exit 130 however the runner ended (L56).
                 outcome.interrupted ? 130 : outcome.terminationStatus
@@ -867,9 +943,19 @@ public enum RunnerSession {
     }
 
     /// Injects or replaces the `appId` line in a Maestro flow YAML header.
-    /// Flow files in subdirectories may omit appId or have it set to the wrong value;
-    /// this ensures the runner always has the correct bundle ID for launchApp.
-    static func injectAppId(_ content: String, bundleId: String) -> String {
+    /// Flow files in subdirectories may omit appId or spell the project's app
+    /// another way (a `${APP_ID}` placeholder, the configured ID while the
+    /// `.paid` variant is installed); this gives the runner the resolved ID.
+    ///
+    /// A header that names another app (`appId: com.apple.Maps`) is that
+    /// flow's own choice and is kept (C13-4): only a header that is the
+    /// project's app — `bundleId`, one of `projectAppIDs`, or a dot-separated
+    /// variant of one (`.paid`, `.debug`), compared without case — is replaced.
+    static func injectAppId(_ content: String, bundleId: String, projectAppIDs: Set<String> = []) -> String {
+        if let written = MaestroFlowParser.appId(in: content), !written.contains("${"),
+           !isProjectApp(written, projectAppIDs: projectAppIDs.union([bundleId])) {
+            return content
+        }
         let lines = content.components(separatedBy: "\n")
 
         // Find the document separator, including an empty header (`---` on line 0).
@@ -896,6 +982,17 @@ public enum RunnerSession {
         } else {
             // No separator: prepend header and separator before the command list
             return "appId: \(bundleId)\n---\n\(content)"
+        }
+    }
+
+    /// True when `appId` is one of `projectAppIDs` or a dot-separated
+    /// variant of one (either way round), ignoring case.
+    static func isProjectApp(_ appId: String, projectAppIDs: Set<String>) -> Bool {
+        let written = appId.trimmingCharacters(in: .whitespaces).lowercased()
+        return projectAppIDs.contains { id in
+            let project = id.lowercased()
+            guard !project.isEmpty else { return false }
+            return written == project || written.hasPrefix(project + ".") || project.hasPrefix(written + ".")
         }
     }
 
@@ -936,8 +1033,20 @@ public enum RunnerSession {
     /// the live line, and `(exact)` after a label that must match exactly (L18).
     public static func stepAction(for step: GrantivaConfig.Screen.Step) -> String {
         func exact(_ isExact: Bool) -> String { isExact ? " (exact)" : "" }
-        if let label = step.tap {
-            return (step.tapById ? "Tap on id \"\(label)\"" : "Tap on \"\(label)\"") + exact(step.tapExact)
+        if let app = step.app {
+            switch app {
+            case .launchApp: return "Launch app"
+            case .stopApp: return "Stop app"
+            case .killApp: return "Kill app"
+            }
+        } else if let label = step.tap {
+            let verb: String
+            switch step.tapGesture {
+            case .tap: verb = "Tap on"
+            case .doubleTap: verb = "Double tap on"
+            case .longPress: verb = "Long press on"
+            }
+            return (step.tapById ? "\(verb) id \"\(label)\"" : "\(verb) \"\(label)\"") + exact(step.tapExact)
         } else if let direction = step.swipe {
             return step.swipeFrom.map { "Swipe \(direction) from \"\($0)\"" } ?? "Swipe \(direction)"
         } else if let text = step.type {

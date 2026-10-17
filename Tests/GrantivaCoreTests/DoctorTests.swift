@@ -233,6 +233,33 @@ final class DoctorTests: XCTestCase {
         XCTAssertEqual(check.message, "Found")
     }
 
+    func testDoctorResolvesMaestroSubflowsRelativeToTheInspectedDirectory() throws {
+        let flows = scratch.appendingPathComponent("nested")
+        try FileManager.default.createDirectory(at: flows, withIntermediateDirectories: true)
+        try "appId: com.example\n---\n- runFlow: nested/child.yaml\n"
+            .write(to: scratch.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8)
+        try "appId: com.example\n---\n- tapOn: Child\n- takeScreenshot: Child\n"
+            .write(to: flows.appendingPathComponent("child.yaml"), atomically: true, encoding: .utf8)
+        XCTAssertEqual(try GrantivaConfig.load(platform: .ios, from: scratch).screens.map(\.name), ["Child"])
+        let check = DoctorRunner().checkConfig(for: .ios, directory: scratch.path)
+        XCTAssertEqual(check.status, .ok, check.message)
+        try "appId: com.example\n---\n- back\n- takeScreenshot: Child\n"
+            .write(to: flows.appendingPathComponent("child.yaml"), atomically: true, encoding: .utf8)
+        let invalidChild = DoctorRunner().checkConfig(for: .ios, directory: scratch.path)
+        XCTAssertEqual(invalidChild.status, .error)
+        XCTAssertTrue(invalidChild.message.contains("back"), invalidChild.message)
+    }
+
+    func testDoctorDoesNotTreatAMaestroFallbackAsAPresentConfigFile() throws {
+        let flows = scratch.appendingPathComponent(".maestro")
+        try FileManager.default.createDirectory(at: flows, withIntermediateDirectories: true)
+        try "appId: com.example\n---\n- launchApp\n"
+            .write(to: flows.appendingPathComponent("flow.yaml"), atomically: true, encoding: .utf8)
+        let check = DoctorRunner().checkConfig(for: .ios, directory: scratch.path)
+        XCTAssertEqual(check.status, .warning)
+        XCTAssertEqual(check.message, "Not found")
+    }
+
     func testNoBootedSimulatorFixNamesTheSharedDefaultSimulator() {
         XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck(name: "iPhone 18 Pro").fix, "Run: grantiva simulator ensure --name \"iPhone 18 Pro\"")
         XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck().fix, "Run: grantiva simulator ensure --name \"\(DefaultSimulator.name)\"")

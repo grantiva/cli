@@ -179,7 +179,7 @@ final class MCPServerTests: XCTestCase {
         let store = try startingStore(in: directory, runnerPid: 4300, alive: true, project: directory.path, platform: .android)
         XCTAssertThrowsError(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .android, keepAliveSessions: store)) { error in
             guard case GrantivaError.unavailable(let message) = error else { return XCTFail("\(error)") }
-            XCTAssertEqual(message, "The runner session is starting (UIAutomator2 has no session yet). Retry in a few seconds.")
+            XCTAssertEqual(message, "The runner session is starting (UIAutomator2 has no session yet; its port is not known yet). Retry in a few seconds.")
         }
     }
 
@@ -217,8 +217,24 @@ final class MCPServerTests: XCTestCase {
             try FileManager.default.createDirectory(at: sessionURL.deletingLastPathComponent(), withIntermediateDirectories: true)
             try starting.encoded().write(to: sessionURL)
             XCTAssertThrowsError(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: platform, keepAliveSessions: emptyKeepAliveStore())) { error in
-                XCTAssertEqual(error.localizedDescription, "The runner session is starting (\(driver) has no session yet). Retry in a few seconds.")
+                XCTAssertEqual(error.localizedDescription, "The runner session is starting (\(driver) has no session yet; its port is not known yet). Retry in a few seconds.")
             }
+        }
+    }
+
+    // Side finding 12 (B-R05.1, N-13): once the runner reported WDA's port,
+    // the starting session names it.
+    func testAStartingSessionFileWithItsPortNamesThePort() throws {
+        let directory = try makeProjectDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let starting = RunnerSessionInfo.starting(
+            pid: getpid(), bundleId: "a.b", udid: "921A0945-7157-4533-BA1F-21E8132D3E40", startedAt: Date(), platform: .ios, port: 8581
+        )
+        let sessionURL = directory.appendingPathComponent(RunnerSessionInfo.path)
+        try FileManager.default.createDirectory(at: sessionURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try starting.encoded().write(to: sessionURL)
+        XCTAssertThrowsError(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .ios, keepAliveSessions: emptyKeepAliveStore())) { error in
+            XCTAssertEqual(error.localizedDescription, "The runner session is starting (WDA on port 8581 has no session yet). Retry in a few seconds.")
         }
     }
 

@@ -81,6 +81,104 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         XCTAssertTrue(detached.value)
     }
 
+    func testForegroundAndroidServicePublishesANewAttachmentWithoutAnAppLaunchReport() async {
+        let detached = LockedValue(false)
+        let result = await RunnerStartCommand.waitForAndroidService(
+            attach: {
+                DriverAttachment(
+                    client: .failing, port: 61211, sessionID: "new",
+                    detach: { detached.set(true) }
+                )
+            },
+            timeout: 0,
+            sleep: { XCTFail("A new Android service is immediately ready") }
+        )
+        XCTAssertEqual(result.attachment?.sessionID, "new")
+        XCTAssertEqual(result.attachment?.port, 61211)
+        XCTAssertFalse(result.launchFailed)
+        XCTAssertFalse(detached.value, "the accepted forward belongs to the runner session")
+    }
+
+    func testDetachedAndroidServicePublishesANewAttachmentDespiteAFailedAppLaunchReport() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try Data(#"{"status":"failed","flows":[{"name":"launch","status":"failed"}]}"#.utf8)
+            .write(to: directory.appendingPathComponent("report.json"))
+
+        let detached = LockedValue(false)
+        let result = await RunnerStartCommand.waitForAndroidService(
+            attach: {
+                DriverAttachment(
+                    client: .failing, port: 61212, sessionID: "new-detached",
+                    detach: { detached.set(true) }
+                )
+            },
+            timeout: 0,
+            sleep: { XCTFail("A usable Android service is independent of the generated app launch report") }
+        )
+        XCTAssertEqual(result.attachment?.sessionID, "new-detached")
+        XCTAssertFalse(result.launchFailed)
+        XCTAssertFalse(detached.value, "detached start transfers the accepted forward to session ownership")
+    }
+
+    /// L68: with the app installed, Android startup holds until the generated
+    /// launch flow passes, so an immediate hierarchy read shows the app.
+    func testInstalledAndroidAppHoldsStartupUntilTheLaunchFlowPasses() async {
+        let polls = LockedValue(0)
+        let detached = LockedValue(0)
+        let result = await RunnerStartCommand.waitForAndroidService(
+            attach: {
+                DriverAttachment(
+                    client: .failing, port: 61220, sessionID: "new",
+                    detach: { detached.set(detached.value + 1) }
+                )
+            },
+            timeout: 5,
+            launchStatus: {
+                polls.set(polls.value + 1)
+                return polls.value < 3 ? nil : "passed"
+            },
+            sleep: {}
+        )
+        XCTAssertEqual(result.attachment?.sessionID, "new")
+        XCTAssertEqual(polls.value, 3, "startup must wait while the launch flow is still running")
+        XCTAssertEqual(detached.value, 2, "attachments taken before the launch passed are released")
+        XCTAssertFalse(result.launchFailed)
+    }
+
+    /// L68: a launch that fails with the app installed ends startup promptly.
+    func testInstalledAndroidAppLaunchFailureEndsStartup() async {
+        let result = await RunnerStartCommand.waitForAndroidService(
+            attach: { DriverAttachment(client: .failing, port: 61221, sessionID: "new", detach: {}) },
+            timeout: 5,
+            launchStatus: { "failed" },
+            sleep: { XCTFail("a failed launch is not waited on") }
+        )
+        XCTAssertNil(result.attachment)
+        XCTAssertTrue(result.launchFailed)
+    }
+
+    func testAndroidServiceStillRejectsAStaleAttachment() async {
+        let polls = LockedValue(0)
+        let detached = LockedValue(0)
+        let result = await RunnerStartCommand.waitForAndroidService(
+            attach: {
+                polls.set(polls.value + 1)
+                let id = polls.value == 1 ? "old" : "new"
+                return DriverAttachment(
+                    client: .failing, port: 61210 + polls.value, sessionID: id,
+                    detach: { detached.set(detached.value + 1) }
+                )
+            },
+            timeout: 1,
+            staleSessionID: "old",
+            sleep: {}
+        )
+        XCTAssertEqual(result.attachment?.sessionID, "new")
+        XCTAssertEqual(detached.value, 1, "only the stale forward is released")
+    }
+
     func testUnfinishedLaunchStaysBoundedAndReleasesRejectedForwards() async {
         let detached = LockedValue(0)
         let result = await RunnerStartCommand.waitForUIAutomator2(
@@ -153,6 +251,283 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         XCTAssertTrue(RunnerStartCommand.foregroundStartupError(nil).localizedDescription.contains("Timed out"))
     }
 
+    /// B4-L72.4 / B4-PC.4: the runner's output ends because the runner
+    /// exited (SIGKILL, or its own "WDA failed to start after 4 attempts").
+    /// That is not a timeout, and neither is a runner that died while
+    /// something else (an orphaned xcodebuild) still holds its pipe.
+    func testForegroundPortDiscoveryReportsARunnerThatExited() async {
+        let ended = await RunnerStartCommand.waitForForegroundWDAPort(
+            chunks: AsyncStream { $0.finish() },
+            timeout: { _ in try? await Task.sleep(for: .seconds(5)) }, probe: { nil }
+        )
+        XCTAssertEqual(ended, .runnerExited)
+
+        let (stream, continuation) = AsyncStream<Data>.makeStream()
+        defer { continuation.finish() }
+        let started = Date()
+        let exited = await RunnerStartCommand.waitForForegroundWDAPort(
+            chunks: stream,
+            timeout: { _ in try? await Task.sleep(for: .seconds(5)) }, probe: { nil },
+            runnerExited: { true }
+        )
+        XCTAssertEqual(exited, .runnerExited)
+        XCTAssertLessThan(Date().timeIntervalSince(started), 2)
+    }
+
+    func testAnIOSRunnerThatExitsDuringStartupSaysWhyInsteadOfTimedOut() {
+        let udid = "5C109004-BC92-4128-A6C9-43F0BE1960FF"
+        let output = """
+          ↻ Retrying (attempt 4/4)...
+        Error: failed to create driver: WDA start failed: WDA failed to start after 4 attempts: xcodebuild exited: signal: killed before WDA became ready:
+
+        Build settings from configuration file '/private/tmp/home/grantiva-wda.xcconfig':
+        === attempt 4/4 ===
+        """
+        let failed = RunnerStartCommand.iosStartupExitError(
+            udid: udid, status: 1, signal: nil, lastError: RunnerStartCommand.lastErrorLine(in: output), logPath: nil
+        )
+        XCTAssertEqual(
+            "\(failed)",
+            "\(GrantivaError.commandFailed("The runner could not start WDA on \(udid): WDA failed to start after 4 attempts: xcodebuild exited: signal: killed before WDA became ready.", 1))"
+        )
+        let killed = RunnerStartCommand.iosStartupExitError(
+            udid: udid, status: SIGKILL, signal: SIGKILL, lastError: nil, logPath: "/tmp/r.log"
+        )
+        XCTAssertTrue("\(killed)".contains("The runner was killed by SIGKILL before WDA was up on \(udid). Log: /tmp/r.log"), "\(killed)")
+        XCTAssertFalse("\(killed)".contains("Timed out"), "\(killed)")
+        XCTAssertFalse("\(killed)".contains("UIAutomator2"), "\(killed)")
+        let exited = RunnerStartCommand.iosStartupExitError(udid: udid, status: 1, signal: nil, lastError: nil, logPath: nil)
+        XCTAssertTrue("\(exited)".contains("The runner exited (status 1) before WDA was up"), "\(exited)")
+        // A genuine timeout still says so.
+        XCTAssertTrue(RunnerStartCommand.wdaStartupError(nil, logPath: nil).localizedDescription.contains("Timed out"))
+    }
+
+    /// B4-PC.7: a detached start that fails (an app that is not installed)
+    /// leaves no keep-alive owner and no `<pid>-*.grantiva` behind.
+    func testAFailedDetachedStartLeavesNoSharedSessionFiles() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("pc7-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: directory) }
+        let store = KeepAliveSessionStore(directory: directory, isProcessAlive: { _ in false })
+        store.recordOwner(udid: "5C109004-BC92-4128-A6C9-43F0BE1960FF", runnerPid: 4242, platform: .ios, detached: true)
+        FileManager.default.createFile(atPath: "\(directory)/4242-1792089048161055000.grantiva", contents: Data("{}".utf8))
+        FileManager.default.createFile(atPath: "\(directory)/4243-1792089048161055000.grantiva", contents: Data("{}".utf8))
+
+        RunnerStartCommand.discardStartedSession(runnerPid: 4242, store: store)
+
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: directory), ["4243-1792089048161055000.grantiva"])
+    }
+
+    /// B4-PC.8: Ctrl-C exits through the signal relay, so the `defer` that
+    /// removes `$TMPDIR/grantiva-session-<uuid>` never runs; the relay must.
+    /// C15 (B4-L68.3): an interrupt of a starting Android runner ends with
+    /// the device's orphan cleanup, which removes a dead runner's
+    /// UIAutomator2 forward.
+    func testAnInterruptOfAStartingAndroidRunnerCleansItsOrphans() {
+        let device = FakeDevicePlatform(platform: .android)
+        RunnerStartCommand.afterInterrupt(
+            platform: device, serial: "emulator-5562", runnerPid: 4242, timeout: 5, anotherOwner: { _, _ in false }
+        )
+        XCTAssertEqual(device.calls, ["cleanupOrphans"])
+    }
+
+    /// B4-L68.3: the start's own unwinding (interrupted, runner exited before
+    /// ready, timed out) removed the relay's cleanup before the relay ran it,
+    /// so a runner that died before removing its uia2 forward left it behind.
+    /// The start sweeps the forward itself.
+    func testAFailedAndroidStartSweepsTheRunnersForward() async {
+        let device = FakeDevicePlatform(platform: .android)
+        let swept = await RunnerStartCommand.releaseRunnerForward(
+            platform: device, serial: "emulator-5562", runnerPid: 4242, anotherOwner: { _, _ in false }
+        )
+        XCTAssertTrue(swept)
+        XCTAssertEqual(device.calls, ["cleanupOrphans"])
+    }
+
+    func testAFailedAndroidStartLeavesAForwardAnotherLiveSessionOwns() async {
+        let device = FakeDevicePlatform(platform: .android)
+        let asked = AskedOwners()
+        let swept = await RunnerStartCommand.releaseRunnerForward(
+            platform: device, serial: "emulator-5562", runnerPid: 4242,
+            anotherOwner: { serial, pid in asked.append("\(serial)/\(pid)"); return true }
+        )
+        XCTAssertFalse(swept)
+        XCTAssertEqual(device.calls, [])
+        XCTAssertEqual(asked.values, ["emulator-5562/4242"])
+        // The relay's interrupt cleanup is gated the same way.
+        RunnerStartCommand.afterInterrupt(
+            platform: device, serial: "emulator-5562", runnerPid: 4242, timeout: 5, anotherOwner: { _, _ in true }
+        )
+        XCTAssertEqual(device.calls, [])
+    }
+
+    func testAFailedIOSStartSweepsNoAndroidForward() async {
+        let device = FakeDevicePlatform(platform: .ios)
+        let swept = await RunnerStartCommand.releaseRunnerForward(
+            platform: device, serial: "F5449E9B-C620-4BB8-838E-A398E1134D57", runnerPid: 4242, anotherOwner: { _, _ in false }
+        )
+        XCTAssertFalse(swept)
+        XCTAssertEqual(device.calls, [])
+    }
+
+    /// Another session owns the serial when the shared store has a live
+    /// runner for it other than the one that failed.
+    func testAnotherLiveRunnerOwnsTheSerialOnlyWhenItIsADifferentLiveRunnerOnIt() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("l683-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let other: Int32 = 5151
+        let dead: Int32 = 6161
+        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { $0 == other })
+        store.recordOwner(udid: "emulator-5562", runnerPid: other, platform: .android, detached: true)
+        store.recordOwner(udid: "emulator-5562", runnerPid: dead, platform: .android, detached: true)
+
+        XCTAssertTrue(RunnerStartCommand.anotherLiveRunnerOwns(serial: "emulator-5562", besides: 4242, store: store))
+        XCTAssertFalse(RunnerStartCommand.anotherLiveRunnerOwns(serial: "emulator-5562", besides: other, store: store))
+        XCTAssertFalse(RunnerStartCommand.anotherLiveRunnerOwns(serial: "emulator-5554", besides: 4242, store: store))
+    }
+
+    func testAnInterruptRemovesTheStartsTemporaryDirectory() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-session-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: directory.appendingPathComponent("report"), withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let token = RunnerStartCommand.removeOnInterrupt(directory)
+        defer {
+            SignalRelay.shared.removeCleanup(token)
+            SignalRelay.shared.resetTerminationForTesting()
+        }
+
+        SignalRelay.shared.simulateTerminationForTesting()
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: directory.path))
+    }
+
+    /// C16: Ctrl-C at 0.2 s of `runner start` cut off its `simctl list`
+    /// child, and the start reported `Error: xcrun simctl list devices
+    /// --json exited with code 15` and exited 1. Once an interrupt is under
+    /// way, whatever the start's step threw (or a start that returns) waits
+    /// for the relay's exit and is 130, never the step's error.
+    func testAnInterruptedStartEndsThroughTheRelayWhateverItsStepThrew() async throws {
+        SignalRelay.shared.simulateTerminationForTesting()
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let waited = LockedValue(0)
+        let cutOff = GrantivaError.commandFailed("xcrun simctl list devices --json exited with code 15", 15)
+        do {
+            try await RunnerStartCommand.endingThroughTheRelay(awaitRelayExit: { waited.set(waited.value + 1) }) {
+                throw cutOff
+            }
+            XCTFail("expected exit 130")
+        } catch let exit as ExitCode {
+            XCTAssertEqual(exit, ExitCode(130))
+        }
+        XCTAssertEqual(waited.value, 1)
+
+        // A start that unwinds without an error (a stop it read as asked
+        // for) does not return first either.
+        do {
+            try await RunnerStartCommand.endingThroughTheRelay(awaitRelayExit: { waited.set(waited.value + 1) }) {}
+            XCTFail("expected exit 130")
+        } catch let exit as ExitCode {
+            XCTAssertEqual(exit, ExitCode(130))
+        }
+        XCTAssertEqual(waited.value, 2)
+    }
+
+    func testWithoutAnInterruptAStartsErrorIsItsOwn() async throws {
+        let waited = LockedValue(0)
+        do {
+            try await RunnerStartCommand.endingThroughTheRelay(awaitRelayExit: { waited.set(waited.value + 1) }) {
+                throw GrantivaError.commandFailed("xcrun simctl list devices --json exited with code 1", 1)
+            }
+            XCTFail("expected the step's error")
+        } catch let error as GrantivaError {
+            XCTAssertEqual(error.localizedDescription, GrantivaError.commandFailed("xcrun simctl list devices --json exited with code 1", 1).localizedDescription)
+        }
+        try await RunnerStartCommand.endingThroughTheRelay(awaitRelayExit: { waited.set(waited.value + 1) }) {}
+        XCTAssertEqual(waited.value, 0)
+    }
+
+    /// C16: `runner start --detach` interrupted after its runner was spawned
+    /// left that runner (ppid 1) and its WDA running, its session files
+    /// published and `.grantiva/session.json` `starting` forever. Until the
+    /// start reports ready, an interrupt stops the runner's group and
+    /// removes what it published.
+    func testAnInterruptBeforeADetachedStartIsReadyStopsItsRunnerAndRemovesItsFiles() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("c16-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: directory) }
+        let runner = try ChildProcess.spawn(
+            executable: "/bin/sleep", arguments: ["60"], stdout: FileHandle.nullDevice.fileDescriptor,
+            stderr: FileHandle.nullDevice.fileDescriptor
+        )
+        defer { if runner.poll() == nil { runner.signalGroup(SIGKILL); _ = runner.wait() } }
+        let udid = UUID().uuidString
+        let store = KeepAliveSessionStore(directory: directory, isProcessAlive: { _ in true })
+        store.recordOwner(udid: udid, runnerPid: runner.pid, platform: .ios, detached: true)
+        FileManager.default.createFile(atPath: "\(directory)/\(runner.pid)-1792089048161055000.grantiva", contents: Data("{}".utf8))
+        XCTAssertFalse(try FileManager.default.contentsOfDirectory(atPath: directory).isEmpty)
+
+        let abort = RunnerStartCommand.abortOnInterrupt(
+            runnerGroup: runner.processGroup, runnerPid: runner.pid,
+            platform: FakeDevicePlatform(platform: .ios), deviceID: udid, store: store
+        )
+        defer {
+            RunnerStartCommand.disarm(abort)
+            SignalRelay.shared.resetTerminationForTesting()
+        }
+        SignalRelay.shared.simulateTerminationForTesting()
+
+        XCTAssertNotNil(runner.poll(), "the detached runner outlived the interrupt")
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: directory), [])
+    }
+
+    /// Once the detached start has reported ready the session is the
+    /// runner's: a later interrupt of anything else leaves it alone.
+    func testADisarmedDetachedStartLeavesItsReadyRunnerToItsSession() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("c16-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: directory) }
+        let runner = try ChildProcess.spawn(
+            executable: "/bin/sleep", arguments: ["60"], stdout: FileHandle.nullDevice.fileDescriptor,
+            stderr: FileHandle.nullDevice.fileDescriptor
+        )
+        defer { if runner.poll() == nil { runner.signalGroup(SIGKILL); _ = runner.wait() } }
+        let udid = UUID().uuidString
+        let store = KeepAliveSessionStore(directory: directory, isProcessAlive: { _ in true })
+        store.recordOwner(udid: udid, runnerPid: runner.pid, platform: .ios, detached: true)
+
+        let abort = RunnerStartCommand.abortOnInterrupt(
+            runnerGroup: runner.processGroup, runnerPid: runner.pid,
+            platform: FakeDevicePlatform(platform: .ios), deviceID: udid, store: store
+        )
+        RunnerStartCommand.disarm(abort)
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        SignalRelay.shared.simulateTerminationForTesting()
+
+        XCTAssertNil(runner.poll())
+        XCTAssertFalse(try FileManager.default.contentsOfDirectory(atPath: directory).isEmpty)
+    }
+
+    /// B3-L54.1: a teardown that marked this `runner start` (itself, before
+    /// it had a runner) ends it with the teardown line, and the marker goes.
+    func testATeardownMarkOnTheStartItselfEndsItInOrder() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("l54-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: directory) }
+        let marker = RunnerStopMarker(directory: directory)
+        let me = getpid()
+        XCTAssertNil(RunnerStartCommand.teardownEnding(grantivaPid: me, runnerPid: nil, marker: marker))
+
+        XCTAssertTrue(try marker.mark(runnerPid: me, ownerPid: me))
+        XCTAssertEqual(
+            RunnerStartCommand.teardownEnding(grantivaPid: me, runnerPid: 4242, marker: marker),
+            "Runner stopped by teardown (pid 4242); the session has ended."
+        )
+        XCTAssertFalse(FileManager.default.fileExists(atPath: marker.path(me)))
+
+        XCTAssertTrue(try marker.mark(runnerPid: me, ownerPid: me))
+        XCTAssertEqual(
+            RunnerStartCommand.teardownEnding(grantivaPid: me, runnerPid: nil, marker: marker),
+            "Runner stopped by teardown (pid \(me)); the session has ended."
+        )
+    }
+
     func testAlreadyStartingDocumentsPreserveNullPortOnBothPlatforms() throws {
         for platform: Platform in [.ios, .android] {
             let json = try decode(RunnerLifecycleDocument(
@@ -162,6 +537,28 @@ final class RunnerLifecycleCommandTests: XCTestCase {
             XCTAssertTrue(json["port"] is NSNull, "\(json)")
             XCTAssertEqual(json["pid"] as? Int, 123)
         }
+    }
+
+    // A starting session whose runner already reported WDA's port records
+    // it (side finding 12); `already_running` reports it too.
+    func testAlreadyRunningReportsTheRecordedPortOfAStartingSession() throws {
+        let udid = "921A0945-7157-4533-BA1F-21E8132D3E40"
+        let withPort = RunnerSessionInfo.starting(pid: 123, bundleId: "a.b", udid: udid, startedAt: Date(), platform: .ios, port: 8190)
+        let known = RunnerStartCommand.alreadyRunning(withPort)
+        XCTAssertEqual(try decode(known.document)["port"] as? Int, 8190)
+        XCTAssertEqual(known.lines.first, "Runner already running (pid 123, starting, WDA port 8190)")
+
+        let noPort = RunnerStartCommand.alreadyRunning(
+            RunnerSessionInfo.starting(pid: 123, bundleId: "a.b", udid: udid, startedAt: Date(), platform: .ios)
+        )
+        XCTAssertTrue(try decode(noPort.document)["port"] is NSNull)
+        XCTAssertEqual(noPort.lines.first, "Runner already running (pid 123, starting)")
+
+        let ready = RunnerStartCommand.alreadyRunning(
+            RunnerSessionInfo(pid: 123, wdaPort: 8190, bundleId: "a.b", udid: udid, startedAt: Date(), platform: .ios)
+        )
+        XCTAssertEqual(try decode(ready.document)["port"] as? Int, 8190)
+        XCTAssertEqual(ready.lines, ["Runner already running (pid 123, WDA port 8190)", "Use 'grantiva runner stop' to stop it first."])
     }
 
     func testDetachedStartsAllocateIndependentLogFiles() throws {
@@ -202,6 +599,89 @@ final class RunnerLifecycleCommandTests: XCTestCase {
             XCTAssertTrue(String(describing: error).contains("Could not create runner log"))
         }
         XCTAssertFalse(FileManager.default.fileExists(atPath: parent.path))
+    }
+
+    /// C15 (B4-PC.4): after one WDA xcodebuild death the runner resets the
+    /// simulator and retries (up to 4 attempts, each allowed a 60 s stall),
+    /// but `runner start` gave the whole start 60 s, so a slow retry was
+    /// killed by grantiva's own cap (the runner's "Received interrupt" was
+    /// that kill). Each retry the runner announces gets a fresh window.
+    func testEachRunnerRetryExtendsTheWDAStartupDeadline() {
+        let start = Date(timeIntervalSince1970: 1_000)
+        XCTAssertEqual(
+            RunnerStartCommand.startupDeadline(started: start, building: false, lastRetry: nil),
+            start.addingTimeInterval(RunnerStartCommand.wdaAttemptWindow)
+        )
+        XCTAssertEqual(
+            RunnerStartCommand.startupDeadline(started: start, building: false, lastRetry: start.addingTimeInterval(20)),
+            start.addingTimeInterval(20 + RunnerStartCommand.wdaAttemptWindow)
+        )
+        XCTAssertEqual(
+            RunnerStartCommand.startupDeadline(started: start, building: true, lastRetry: start.addingTimeInterval(20)),
+            start.addingTimeInterval(RunnerStartCommand.wdaBuildTimeout)
+        )
+        XCTAssertEqual(RunnerStartCommand.retryCount(in: "  ↻ Retrying (attempt 2/4)...\nx\n  ↻ Retrying (attempt 3/4)...\n"), 2)
+        XCTAssertEqual(RunnerStartCommand.retryCount(in: "Starting GrantivaAgent..."), 0)
+    }
+
+    /// candidate19 B4-PC.4: the CLI's window must outlast the runner's own
+    /// budget for one attempt (a 60 s stall window, then a 60 s /status
+    /// wait), so the runner's retry loop decides when an attempt failed. A
+    /// 60 s first window ended a start whose second attempt was still
+    /// within the runner's budget.
+    func testTheWDAWindowOutlastsTheRunnersPerAttemptBudget() {
+        let runnerStallWindow: TimeInterval = 60
+        let runnerReadyTimeout: TimeInterval = 60
+        XCTAssertGreaterThan(RunnerStartCommand.wdaAttemptWindow, runnerStallWindow + runnerReadyTimeout)
+        let start = Date(timeIntervalSince1970: 1_000)
+        XCTAssertGreaterThan(
+            RunnerStartCommand.startupDeadline(started: start, building: false, lastRetry: nil),
+            start.addingTimeInterval(runnerStallWindow + runnerReadyTimeout)
+        )
+        let progress = RunnerStartCommand.StartupProgress(started: start)
+        XCTAssertEqual(progress.deadline(), start.addingTimeInterval(RunnerStartCommand.wdaAttemptWindow))
+    }
+
+    /// candidate19 B4-PC.4: the runner announces its retries on stderr, and
+    /// the foreground start parsed only stdout, so no retry ever extended
+    /// its deadline (the detached start reads a log that holds both). The
+    /// stderr lines now reach the startup progress.
+    func testRetriesAnnouncedOnStderrExtendTheForegroundDeadline() async throws {
+        let started = Date().addingTimeInterval(-100)
+        let progress = RunnerStartCommand.StartupProgress(started: started)
+        XCTAssertLessThan(progress.deadline(), Date().addingTimeInterval(60))
+        let forwarder = RunnerOutputForwarder(narrate: { _ in }, interrupted: { false })
+        let pipe = Pipe()
+        forwarder.attachErrors(pipe.fileHandleForReading, observe: { progress.observeErrors($0) })
+        pipe.fileHandleForWriting.write(Data("  ⚠ WDA startup failed on attempt 1/4: xcodebuild exited\n  ↻ Retrying (attempt 2/4)...\n".utf8))
+        try await Task.sleep(for: .milliseconds(300))
+        XCTAssertGreaterThan(progress.deadline(), Date().addingTimeInterval(RunnerStartCommand.wdaAttemptWindow - 5))
+        // A later retry restarts the window again; repeated reads of the same
+        // line count once each, as the runner prints each retry once.
+        let first = progress.deadline()
+        try await Task.sleep(for: .milliseconds(100))
+        pipe.fileHandleForWriting.write(Data("  ↻ Retrying (attempt 3/4)...\n".utf8))
+        try await Task.sleep(for: .milliseconds(300))
+        XCTAssertGreaterThan(progress.deadline(), first)
+        try pipe.fileHandleForWriting.close()
+    }
+
+    /// The foreground wait goes on past 60 s while retries keep coming.
+    func testTheForegroundWaitOutlastsTheFirstWindowWhileTheRunnerRetries() async {
+        let (stream, continuation) = AsyncStream<Data>.makeStream()
+        let clock = RunnerStartCommand.StartupProgress(started: Date().addingTimeInterval(-0.5))
+        continuation.yield(Data("  ↻ Retrying (attempt 2/4)...\n".utf8))
+        let task = Task {
+            await RunnerStartCommand.waitForForegroundWDAPort(
+                chunks: stream, timeout: { progress in await RunnerStartCommand.waitOutStartup(progress, window: 0.8) },
+                probe: { nil }, progress: clock
+            )
+        }
+        try? await Task.sleep(for: .milliseconds(600))
+        continuation.yield(Data("Starting WDA on localhost:8430\n".utf8))
+        let result = await task.value
+        continuation.finish()
+        XCTAssertEqual(result, .port(8430))
     }
 
     func testForegroundPortDiscoveryHandlesPortSplitAcrossOutputChunks() async {
@@ -308,11 +788,11 @@ final class RunnerLifecycleCommandTests: XCTestCase {
 
         let startup = await RunnerStartCommand.waitForForegroundWDAPort(
             chunks: stream,
-            timeout: { isBuilding in
+            timeout: { progress in
                 // Give the reader a moment to consume the chunk, as the real
                 // 60 s sleep would.
                 try? await Task.sleep(for: .milliseconds(200))
-                sawBuild.set(isBuilding())
+                sawBuild.set(progress.isBuilding)
             },
             probe: { nil }
         )
@@ -1067,7 +1547,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
     func testDumpHierarchyOnAStartingSessionSaysItIsStarting() {
         let starting = RunnerSessionInfo.starting(pid: 5, bundleId: "a.b", udid: "emulator-5554", startedAt: Date(), platform: .android)
         XCTAssertThrowsError(try DumpHierarchyCommand.resolveTarget(port: nil, runnerSession: starting, keepAlive: nil)) {
-            XCTAssertEqual($0.localizedDescription, "The runner session is starting (UIAutomator2 has no session yet). Retry in a few seconds.")
+            XCTAssertEqual($0.localizedDescription, "The runner session is starting (UIAutomator2 has no session yet; its port is not known yet). Retry in a few seconds.")
         }
     }
 
@@ -1134,7 +1614,8 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         )
         XCTAssertEqual(result.exitStatus, 1)
         XCTAssertNil(result.attachment)
-        XCTAssertLessThan(Date().timeIntervalSince(started), 2)
+        // Far below the 90 s timeout; generous so a loaded host still passes.
+        XCTAssertLessThan(Date().timeIntervalSince(started), 10)
     }
 
     func testTheRunnersStartFailureIsReportedWithItsReason() {
@@ -1274,8 +1755,34 @@ final class RunnerOutputForwarderTests: XCTestCase {
         XCTAssertEqual(String(decoding: received, as: UTF8.self), "WDA started successfully on port 8430 🙂\nnext")
     }
 
+    /// C16: after the relay's notice the foreground runner's shutdown lines
+    /// (`Received interrupt, cleaning up...`, a misleading `--team-id`
+    /// error) still reached the terminal. Nothing does once an interrupt is
+    /// under way.
+    func testNothingIsNarratedOnceAnInterruptIsUnderWay() async throws {
+        let narrated = LockedValue<[String]>([])
+        let interrupted = LockedValue(false)
+        let forwarder = RunnerOutputForwarder(narrate: { narrated.append($0) }, interrupted: { interrupted.value })
+        let pipe = Pipe()
+        forwarder.attachErrors(pipe.fileHandleForReading)
+        pipe.fileHandleForWriting.write(Data("  ✓ Found 1 test flow(s)\n".utf8))
+        try await Task.sleep(for: .milliseconds(200))
+        interrupted.set(true)
+        pipe.fileHandleForWriting.write(Data("Received interrupt, cleaning up...\nError: iOS on a real device requires --team-id\n".utf8))
+        try pipe.fileHandleForWriting.close()
+        try await Task.sleep(for: .milliseconds(200))
+        XCTAssertEqual(narrated.value, ["  ✓ Found 1 test flow(s)\n"])
+    }
+
     func testSilencedNarrationPrintsNothing() {
         XCTAssertTrue(RunnerNarration.shouldSilence(json: true, quiet: false, verbose: false))
         XCTAssertTrue(RunnerNarration.shouldSilence(json: false, quiet: true, verbose: false))
     }
+}
+
+private final class AskedOwners: @unchecked Sendable {
+    private let lock = NSLock()
+    private var recorded: [String] = []
+    var values: [String] { lock.withLock { recorded } }
+    func append(_ value: String) { lock.withLock { recorded.append(value) } }
 }

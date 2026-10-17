@@ -51,6 +51,34 @@ public struct AndroidProvenance: Sendable {
         try withLedgerLock { $0.removeAll { $0.serial == serial } }
     }
 
+    /// Removes the record for `serial` only when it is the one for `pid`: a
+    /// boot that failed drops its own record, never one another process holds
+    /// for the same serial.
+    public func remove(serial: String, pid: Int32) throws {
+        try withLedgerLock { $0.removeAll { $0.serial == serial && $0.pid == pid } }
+    }
+
+    /// Serialises choosing a serial, spawning the emulator and recording it
+    /// across processes, so two boots cannot pick the same port before either
+    /// is listed by adb or binds its console. The body may suspend; it must
+    /// not wait for the boot itself. Its own lock file, so the body can
+    /// `register`.
+    public func withBootLock<T>(_ body: () async throws -> T) async throws -> T {
+        try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
+        let descriptor = Darwin.open("\(directory)/boot.lock", O_CREAT | O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)
+        guard descriptor >= 0 else {
+            throw GrantivaError.commandFailed("Could not open the emulator boot lock: \(String(cString: strerror(errno)))", 1)
+        }
+        defer { Darwin.close(descriptor) }
+        while flock(descriptor, LOCK_EX) != 0 {
+            guard errno == EINTR else {
+                throw GrantivaError.commandFailed("Could not lock the emulator boot lock: \(String(cString: strerror(errno)))", 1)
+            }
+        }
+        defer { flock(descriptor, LOCK_UN) }
+        return try await body()
+    }
+
     public func all() throws -> [StartedEmulatorRecord] {
         try withLedgerLock { $0 }
     }

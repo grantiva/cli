@@ -32,6 +32,10 @@ public final class SignalRelay: @unchecked Sendable {
     private var installed = false
     private var sources: [DispatchSourceSignal] = []
     private var groups: [pid_t] = []
+    /// Per tracked group: what ends the helpers its runner started outside
+    /// the group (B4-L72.3).
+    private var groupHelperReaps: [pid_t: @Sendable () -> Void] = [:]
+    private var beforeTerminationCleanups: [(id: UInt64, body: @Sendable () -> Void)] = []
     private var cleanups: [(id: UInt64, body: @Sendable () -> Void)] = []
     private var nextID: UInt64 = 1
     private var terminating = false
@@ -41,6 +45,17 @@ public final class SignalRelay: @unchecked Sendable {
     private var armedGroups: Set<pid_t> = []
     private var releasedGroups: Set<pid_t> = []
     private var releasing = false
+    private var exitStatusProvider: (@Sendable () -> Int32?)?
+    /// Runs still to report their outcome before the cleanups and the exit
+    /// (`holdExit`).
+    private var exitHolds: Set<UInt64> = []
+    private let exitHoldsChanged = NSCondition()
+    /// How long an interrupt waits for held exits before it goes on.
+    public var exitHoldTimeout: TimeInterval {
+        get { lock.withLock { holdTimeout } }
+        set { lock.withLock { holdTimeout = newValue } }
+    }
+    private var holdTimeout: TimeInterval = 10
 
     private init() {}
 
@@ -60,6 +75,9 @@ public final class SignalRelay: @unchecked Sendable {
     static func announcement(signalName: String, deviceNoun: String) -> String {
         "\n[grantiva] received \(signalName) — releasing \(deviceNoun) and reaping child processes\n"
     }
+
+    /// True once `install()` has run.
+    public var isInstalled: Bool { lock.withLock { installed } }
 
     /// Installs handlers for SIGINT and SIGTERM. Safe to call repeatedly.
     public func install() {
@@ -101,6 +119,16 @@ public final class SignalRelay: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         groups.removeAll { $0 == pgid }
+        groupHelperReaps[pgid] = nil
+    }
+
+    /// Registers `body` to run once the tracked group `pgid` has been
+    /// stopped by an interrupt, before the cleanups release the device: it
+    /// ends what the runner started outside its own group, which signalling
+    /// the group never reaches (WebDriverAgent's `xcodebuild` and the
+    /// `simctl diagnose` it starts, B4-L72.3). Dropped by `untrack(group:)`.
+    public func afterGroupTermination(group pgid: pid_t, _ body: @escaping @Sendable () -> Void) {
+        lock.withLock { groupHelperReaps[pgid] = body }
     }
 
     /// Registers work to run when grantiva is interrupted — releasing a lease,
@@ -117,9 +145,59 @@ public final class SignalRelay: @unchecked Sendable {
         return id
     }
 
+    /// Registers bounded state publication that must happen before tracked
+    /// process groups are terminated. This is intentionally separate from
+    /// ordinary cleanup: a terminal ready file records the interruption before
+    /// observers can see the runner die, while leases and process metadata are
+    /// still released only after the process tree has been reaped.
+    @discardableResult
+    public func beforeTermination(_ body: @escaping @Sendable () -> Void) -> UInt64 {
+        install()
+        lock.lock()
+        defer { lock.unlock() }
+        let id = nextID
+        nextID += 1
+        beforeTerminationCleanups.append((id: id, body: body))
+        return id
+    }
+
+    /// Holds an interrupt's cleanups and exit until `releaseExit` (bounded
+    /// by `exitHoldTimeout`): a `run` whose runner the interrupt stops then
+    /// prints its flow summary ("grantiva was interrupted") before the
+    /// process exits, rather than racing the exit (C15).
+    public func holdExit() -> UInt64 {
+        lock.lock()
+        let id = nextID
+        nextID += 1
+        lock.unlock()
+        exitHoldsChanged.lock()
+        exitHolds.insert(id)
+        exitHoldsChanged.unlock()
+        return id
+    }
+
+    public func releaseExit(_ id: UInt64) {
+        exitHoldsChanged.lock()
+        exitHolds.remove(id)
+        exitHoldsChanged.broadcast()
+        exitHoldsChanged.unlock()
+    }
+
+    /// Waits for held exits; true when there were any to wait for.
+    @discardableResult
+    private func waitForExitHolds() -> Bool {
+        let deadline = Date().addingTimeInterval(exitHoldTimeout)
+        exitHoldsChanged.lock()
+        let held = !exitHolds.isEmpty
+        while !exitHolds.isEmpty, exitHoldsChanged.wait(until: deadline) {}
+        exitHoldsChanged.unlock()
+        return held
+    }
+
     public func removeCleanup(_ id: UInt64) {
         lock.lock()
         defer { lock.unlock() }
+        beforeTerminationCleanups.removeAll { $0.id == id }
         cleanups.removeAll { $0.id == id }
     }
 
@@ -132,15 +210,25 @@ public final class SignalRelay: @unchecked Sendable {
         return terminating
     }
 
-    /// Test seam: runs the registered cleanups without exiting the process.
-    public func runCleanupsForTesting() {
-        for cleanup in snapshotCleanups() { cleanup() }
+    /// Throws once an interrupt is under way: a command checks this before
+    /// each new piece of work (a build, an install, a runner session), so
+    /// an interrupt that lands while it is between steps ends it there
+    /// instead of starting more that nothing cleans up (C15).
+    public func checkNotInterrupted() throws {
+        if isTerminating { throw GrantivaError.commandFailed("Interrupted.", 130) }
     }
 
-    private func snapshotCleanups() -> [@Sendable () -> Void] {
+    /// Test seam: runs the registered cleanups without exiting the process.
+    public func runCleanupsForTesting() {
+        let snapshot = snapshotCleanups()
+        for cleanup in snapshot.before { cleanup() }
+        for cleanup in snapshot.after { cleanup() }
+    }
+
+    private func snapshotCleanups() -> (before: [@Sendable () -> Void], after: [@Sendable () -> Void]) {
         lock.lock()
         defer { lock.unlock() }
-        return cleanups.map(\.body)
+        return (beforeTerminationCleanups.map(\.body), cleanups.map(\.body))
     }
 
     /// Test seam: runs the whole interrupt sequence the signal handler runs —
@@ -236,6 +324,20 @@ public final class SignalRelay: @unchecked Sendable {
         respond(to: signalNumber, release: release)
     }
 
+    /// Sets what decides the status an interrupt exits with once its
+    /// cleanups have run: nil from the provider (or no provider) is
+    /// 128 + signal. A foreground `runner start` that a teardown marked
+    /// exits 0, as a teardown's stop is documented to (B3-L54.1).
+    public func setExitStatus(_ provider: (@Sendable () -> Int32?)?) {
+        lock.withLock { exitStatusProvider = provider }
+    }
+
+    /// The status the interrupt sequence for `signalNumber` exits with.
+    func exitStatus(for signalNumber: Int32) -> Int32 {
+        let provider = lock.withLock { exitStatusProvider }
+        return provider?() ?? 128 + signalNumber
+    }
+
     private func handle(_ signalNumber: Int32) {
         // A signal arriving while cleanups run exits at once. In practice only
         // a different signal gets here (SIGTERM after SIGINT): a repeat of the
@@ -244,7 +346,7 @@ public final class SignalRelay: @unchecked Sendable {
         // guarantee against a hung cleanup. A release of an armed hold
         // returns at once, so a second Ctrl-C during it interrupts.
         guard respond(to: signalNumber) else { return }
-        exit(128 + signalNumber)
+        exit(exitStatus(for: signalNumber))
     }
 
     /// Returns false when a termination is already under way.
@@ -260,6 +362,8 @@ public final class SignalRelay: @unchecked Sendable {
         // exit must already see that this was an interrupt.
         terminating = true
         let trackedGroups = groups
+        let helperReaps = groups.compactMap { groupHelperReaps[$0] }
+        let pendingBeforeTermination = beforeTerminationCleanups.map(\.body)
         let pendingCleanups = cleanups.map(\.body)
         lock.unlock()
 
@@ -267,10 +371,32 @@ public final class SignalRelay: @unchecked Sendable {
             FileHandle.standardError.write(Data(Self.announcement(signalName: signalName, deviceNoun: deviceNoun).utf8))
         }
 
+        for cleanup in pendingBeforeTermination { cleanup() }
+        // Shell children end now (a `simctl status_bar` override would race
+        // the restore below, C13-3), except an `adb forward` call: cut off
+        // mid-call it leaves a forward nobody knows the port of (C15); it
+        // finishes, and the cleanups own what it made.
+        ShellChildren.shared.terminateAll(where: ShellChildren.endsFirstOnInterrupt)
         for pgid in trackedGroups {
             ChildProcess.terminateGroup(pgid, gracePeriod: 5)
         }
-        for cleanup in pendingCleanups { cleanup() }
+        for reap in helperReaps { reap() }
+        // The runner is gone: a run reports its outcome before the cleanups
+        // take the device and its files (C15). The cleanups are read again
+        // after the wait: what the run registered meanwhile (a temp directory
+        // it created before it saw the interrupt) is cleaned up too, and what
+        // it removed while unwinding it has already done itself.
+        let cleanupsNow: [@Sendable () -> Void]
+        if waitForExitHolds() {
+            cleanupsNow = lock.withLock { cleanups.map(\.body) }
+        } else {
+            cleanupsNow = pendingCleanups
+        }
+        for cleanup in cleanupsNow { cleanup() }
+        // Every shell child still running goes before grantiva exits (C13-3),
+        // a cleanup's own that outran its bound (a hung `status_bar clear`)
+        // included.
+        ShellChildren.shared.terminateAll()
         return true
     }
 }

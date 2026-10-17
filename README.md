@@ -94,8 +94,8 @@ grantiva hierarchy > state.xml
 
   `status` is `interrupted` after Ctrl-C (or `kill -INT`/`-TERM`) and `failed` after a `--timeout` kill; either way a flow the run never finished is listed as `interrupted` or `failed`, never `running`. `reportDir` is present whenever `--report-dir` was given and the directory exists, pass or fail: the default report directory is deleted when the run exits. When a run has both `screens:` and `flows:`, `flows` lists the screens session as `screens` ahead of the flows.
 - **`--env KEY=VALUE`** — Sets an environment variable for the app under test (repeatable). Forwarded through the flow's `launchApp` (`environment:` on iOS, `arguments:` intent extras on Android), so an ephemeral port or test fixture can be passed in per run.
-- **`grantiva hierarchy`** — Reads the current UI accessibility tree of the running app via the held session. Pure read, no relaunch, no state loss. XML (default) or JSON. Finds the newest live `--keep-alive` session in `/tmp/grantiva-sessions/`, or a specific device's with `--udid <UDID or adb serial>`; sessions whose runner has exited are ignored. See [docs/dump-hierarchy.md](docs/dump-hierarchy.md).
-- **Concurrent runs** — Runs on different simulator UDIDs execute in parallel. Each simulator launches WebDriverAgent from its own runner home (`<runner home>/versions/<stamp>/devices/<udid>`, where the runner home is `GRANTIVA_RUNNER_HOME` or `~/.grantiva/runner` and `<stamp>` is the installed runner's stamp: the runner version plus the bundled Android driver tag, such as `1.1.28-grantiva.15+android-drivers-2`), which holds an APFS clone of the cached WDA build, so every run gets its own xctestrun, port, and DerivedData without rebuilding WDA. `simulator teardown` (with or without `--force`) and `simulator delete` remove the device's home under every installed `versions/<stamp>/`, and teardown exits non-zero naming any home it could not remove; homes of simulators that no longer exist are pruned on the next run. A second run targeting an already-owned simulator fails immediately with guidance to provision a unique simulator, protecting the active WDA session from cross-run teardown; when the owner is a `grantiva runner start` session the message says so and names `grantiva runner stop`. A run's lease file (`<runner home>/locks/<udid>.lock`) is removed when the run ends, and a deleted simulator's when it is deleted.
+- **`grantiva hierarchy`** — Reads the current UI accessibility tree of the running app via the held session. Pure read, no relaunch, no state loss. XML (default) or JSON. Finds this project's live `--keep-alive` session in `/tmp/grantiva-sessions/`, else the newest one for the project's platform, or a specific device's with `--udid <UDID or adb serial>`; sessions whose runner has exited are ignored. See [docs/dump-hierarchy.md](docs/dump-hierarchy.md).
+- **Concurrent runs** — Runs on different simulator UDIDs execute in parallel. Each simulator launches WebDriverAgent from its own runner home (`<runner home>/versions/<stamp>/devices/<udid>`, where the runner home is `GRANTIVA_RUNNER_HOME` or `~/.grantiva/runner` and `<stamp>` is the installed runner's stamp: the runner version plus the bundled Android driver tag, such as `1.1.28-grantiva.23+android-drivers-2`), which holds an APFS clone of the cached WDA build, so every run gets its own xctestrun, port, and DerivedData without rebuilding WDA. `simulator teardown` (with or without `--force`) and `simulator delete` remove the device's home under every installed `versions/<stamp>/`, and teardown exits non-zero naming any home it could not remove; homes of simulators that no longer exist are pruned on the next run. A second run targeting an already-owned simulator fails immediately with guidance to provision a unique simulator, protecting the active WDA session from cross-run teardown; when the owner is a `grantiva runner start` session the message says so and names `grantiva runner stop`. A run's lease file (`<runner home>/locks/<udid>.lock`) is removed when the run ends, and a deleted simulator's when it is deleted.
 - **`--logs`** — Streams app logs from the simulator or emulator, prefixed with `[log]` and interleaved with the flow output. On iOS (`xcrun simctl spawn log stream`) the predicate is scoped to your app: subsystems starting with its bundle ID, plus every line from its process (the installed app's `CFBundleExecutable`); override it with `--logs-predicate`. On Android `logcat` is filtered to the app's uid; `--logs-tag <tag>` keeps one tag and implies `--logs`. `--logs-level default|info|debug` sets the level on both (see [docs/android.md](docs/android.md#logs)).
 - **`--logs-predicate '<NSPredicate>'`** — Custom log filter (iOS) for narrowing to specific subsystems, categories, or processes. Implies `--logs`.
 - **`--snapshot failure|trailing|full`** — How many screenshots the runner keeps. `failure` (default) takes one shot after a failing step, `trailing` keeps the last good step plus the failing one, `full` captures every step. Applies to both `screens:` and flow-file runs. Without `--report-dir`, `run` writes its `takeScreenshot` shots and the failure screenshot (`failure-<timestamp>.png`) to `.grantiva/run-captures/` (`.grantiva/run-captures/android/` on Android), never to `.grantiva/captures/`, so `diff approve` and `diff compare` never take a run artefact for a screen. With `--report-dir`, `trailing` also trims the report directory's `assets/` and `allure-results/` to that set. Step shots go to `captures/trace/`; only `takeScreenshot` captures are listed as screenshots.
@@ -179,11 +179,11 @@ appId: com.example.myapp
 - takeScreenshot: "Welcome"
 ```
 
-Each `takeScreenshot` becomes a named screen capture point. Commands between screenshots become navigation steps. Supported Maestro commands: `tapOn`, `doubleTapOn`, `longPressOn`, `inputText`, `assertVisible`, `assertNotVisible`, `swipe` (`direction:`, optionally with `from:`, or `start:`/`end:` as `"x%, y%"`, plus `duration:`), `scroll`, `scrollUntilVisible` (kept as a scroll, with its `direction:` and `timeout:`), `runFlow` (a file, `{file: ...}`, or inline `{commands: [...]}`; a `takeScreenshot` inside a sub-flow is a screen like one in the parent), `extendedWaitUntil` (`visible:` or `notVisible:`, with its `timeout:` kept), `waitForAnimationToEnd`, `launchApp`, `stopApp`, `killApp`, and `takeScreenshot`. `grantiva-android.yml` may be written in the same Maestro format; its `appId:` is the application ID. Selectors accept a string or `{text: ...}` (matches text) or `{id: ...}` (matches the accessibility identifier). Any other command (`back`, scripting, permissions, etc.) is rejected before the run starts, with an error naming the file and line: `grantiva.yml:5: unsupported Maestro command 'back'`. Flows run with `grantiva run --flow` go to the runner as written and are not limited to this list.
+Each `takeScreenshot` becomes a named screen capture point. Commands between screenshots become navigation steps. Supported Maestro commands: `tapOn`, `doubleTapOn`, `longPressOn`, `inputText`, `assertVisible`, `assertNotVisible`, `swipe` (`direction:`, optionally with `from:`, or `start:`/`end:` as `"x%, y%"`, plus `duration:`), `scroll`, `scrollUntilVisible` (kept as a scroll, with its `direction:` and `timeout:`), `runFlow` (a file, `{file: ...}`, or inline `{commands: [...]}`; a `takeScreenshot` inside a sub-flow is a screen like one in the parent), `extendedWaitUntil` (`visible:` or `notVisible:`, with its `timeout:` kept), `waitForAnimationToEnd`, `launchApp`, `stopApp`, `killApp`, and `takeScreenshot`. Gestures and app lifecycle commands run as written: `doubleTapOn` double-taps, `longPressOn` long-presses, `stopApp` and `killApp` stop the app, and a `launchApp` after the flow's first command relaunches it (the first one is the launch every screens run starts with). `grantiva-android.yml` may be written in the same Maestro format; its `appId:` is the application ID. Selectors accept a string or `{text: ...}` (matches text) or `{id: ...}` (matches the accessibility identifier). Any other command (`back`, scripting, permissions, etc.) is rejected before the run starts, with an error naming the file and line: `grantiva.yml:5: unsupported Maestro command 'back'`. Flows run with `grantiva run --flow` go to the runner as written and are not limited to this list.
 
-The app a `run --flow` run launches is chosen in this order: `--bundle-id` / `--application-id`, then `bundle_id` / `application_id` in the config file, then the ID read from `--app-file`, then the flow's own `appId:` header (ignored when it is a `${VARIABLE}` reference), then project detection (iOS). Project detection runs only when building: with `--no-build` it is skipped, so pass `--bundle-id` or give the flow a literal `appId:`.
+The app a `run --flow` run launches is chosen in this order: `--bundle-id` / `--application-id`, then `bundle_id` / `application_id` in the config file, then the ID read from `--app-file`, then the flow's own `appId:` header (ignored when it is a `${VARIABLE}` reference), then project detection (iOS). Project detection runs only when building: with `--no-build` it is skipped, so pass `--bundle-id` or give the flow a literal `appId:`. A flow whose `appId:` names a different app (`appId: com.apple.Maps`) launches that app: the project's ID replaces a flow's header only when the header is missing, a `${VARIABLE}`, or the project's own app (any of the IDs above, or a variant of one such as `.paid`).
 
-A flow header `env:` block defines `${VAR}` values and is also passed to the app at launch, like `--env`: the runner gets it in every `launchApp` step's `environment:` (iOS) or `arguments:` (Android). `--env` wins over a value the step sets, which wins over the header.
+A flow header `env:` block (in a `run --flow` file or a Maestro-format `grantiva.yml` / `grantiva-android.yml`) defines `${VAR}` values and is also passed to the app at launch, like `--env`: the runner gets it in every `launchApp` step's `environment:` (iOS) or `arguments:` (Android). `--env` wins over a value the step sets, which wins over the header.
 
 ### Environment variables
 
@@ -193,6 +193,8 @@ A flow header `env:` block defines `${VAR}` values and is also passed to the app
 | `GRANTIVA_PLATFORM` | `ios` or `android`, like `--platform`. |
 | `GRANTIVA_SESSION_ID` | Durable owner for simulator capacity slots (see below). |
 | `GRANTIVA_MAX_SIMULATORS`, `GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS` | Simulator capacity policy. |
+| `GRANTIVA_SIMULATOR_BOOT_TIMEOUT_SECONDS`, `GRANTIVA_SIMULATOR_BOOTSTATUS_GRACE_SECONDS` | Bound on waiting for a booting simulator (defaults 300 and 60). After the grace period, `simctl list` showing the simulator Booted ends a `simctl bootstatus -b` that has not returned; past the timeout the boot fails. |
+| `GRANTIVA_SIMULATOR_LIST_TIMEOUT_SECONDS` | Bound on each `simctl list` call when ensuring or booting a simulator (default 120). A call that has not returned is ended and run once more; a second stall fails with an error naming this setting. |
 | `GRANTIVA_RUNNER_HOME` | Runner directory, default `~/.grantiva/runner`. It holds simulator `locks/`, the WebDriverAgent build `cache/`, and one runner install per version under `versions/<stamp>/`; a home other than the default also holds its own `simulator-capacity/` (see Simulators Grantiva created). When an install is needed (no install of this version yet), grantiva first checks the `grantiva_GrantivaCore.bundle` beside the binary: a bundle from another release fails the install, names the bundle and either both runner versions or the tarball it lacks, leaves any existing install untouched, and leaves no empty `versions/<stamp>/` directory. An existing install of the current version is used as it is, without reading the bundle; `grantiva runner install` then warns when the bundle does not carry that runner, and every command that uses the runner warns (once) when no bundle is beside the binary at all, since the next fresh install would fail. A relative path is resolved against the current directory, and the home is always printed in its resolved form (`/private/tmp/…`, not `/tmp/…`), whether or not it exists yet. |
 | `GRANTIVA_DRIVER_START_TIMEOUT` | Seconds the runner waits for the UIAutomator2 server to start on Android (the runner's default is 30). Raise it on a slow or busy host; `runner start` then waits for the session for twice this plus 30 seconds (at least 90). A start that fails says so at once, with the runner's reason. |
 
@@ -420,8 +422,10 @@ device: `bundleId` and `udid` on iOS, `applicationId` and `serial` on Android
 `port` and the app ID are `null` when the session did not record them. On top
 of them a stop document has `runnerPid`, `killed` and `reaped`, and
 `alreadyExited` and `sessions` when they apply. An `already_running` result for
-a session that is still starting has `"port": null`, and its text says
-`Runner already running (pid N, starting)`. `runnerPid` is the stable field: it
+a session that is still starting has `"port": null` until the runner reports
+WDA's port, and its text says `Runner already running (pid N, starting)`;
+once `session.json` records the port, both report it
+(`Runner already running (pid N, starting, WDA port P)`). `runnerPid` is the stable field: it
 is always the runner's pid, while `pid` is the grantiva process that was
 holding a released `run --keep-alive` session. `killed` is true when the runner
 ignored SIGINT and SIGTERM and took SIGKILL, false otherwise. A stop that found the runner
@@ -441,10 +445,11 @@ runner home. `bundle_id`, and
 --json`: `pid`, `port`, `platform`, `bundleId` and `udid` on iOS,
 `applicationId`, `serial` and `udid` on Android, plus `startedAt` and `state`.
 It is written the moment the runner is spawned with `"state": "starting"` and
-no port, and rewritten with `"state": "ready"` once the driver answers; what
+no port, rewritten with the port once the runner reports WDA's port (iOS, still
+`starting`), and rewritten with `"state": "ready"` once the driver answers; what
 commands say meanwhile is in [docs/mcp.md](docs/mcp.md#a-session-that-is-starting).
-grantiva 2.1.0 reads a `starting` file (no port yet) as no session at
-all. The 2.1 names stay beside the new ones for one release, and files
+grantiva 2.1.0 reads a `starting` file with no port yet as no session at
+all, and one with a port as a session whose WDA has no session yet. The 2.1 names stay beside the new ones for one release, and files
 written by 2.1 are still read:
 
 - `wdaPort` → `port` (.grantiva/session.json)
@@ -493,7 +498,7 @@ a `warning` (an advisory check such as no booted simulator) never does.
 
 Every `--json` document, and the `--ready-file` file, uses camelCase keys.
 
-Date-valued JSON fields use ISO 8601 UTC strings (for example,
+Date-valued fields in `--json` output, MCP results, ready files and `.grantiva/session.json` use ISO 8601 UTC strings (for example,
 `1970-01-01T00:00:00Z`). Scripts should parse this representation rather than
 numeric Unix or Apple-reference timestamps. The complete public date-field
 inventory is documented in [MCP and JSON compatibility](docs/mcp.md#json-date-compatibility).
@@ -619,7 +624,7 @@ grantiva simulator teardown --udid "$UDID" --force
 
 This kills whatever is holding that simulator (including a `simctl diagnose` the
 dying runner starts), releases the lease, removes the killed runner's keep-alive
-session files (`sessionFilesRemoved` in `--json`) and the killed run's temp directories (its staged flows and, without
+session files (`sessionFilesRemoved` in `--json`) and the temp directories of every killed run on it (staged flows and, without
 `--report-dir`, its report directory; `--json` lists them under
 `temporaryDirectoriesRemoved`, and a `--report-dir` is never touched), and clears
 any stale capacity record: a pending reservation, or a record with no session ID
@@ -699,7 +704,9 @@ Grantiva teardown. A run against an already-booted simulator that no Grantiva
 session owns takes no slot, and teardown shuts down only simulators Grantiva
 itself booted. Without `GRANTIVA_SESSION_ID`, a slot taken by a run lasts only
 while that run's process is alive; one taken by `simulator ensure` lasts until
-the simulator is shut down.
+the simulator is shut down. A slot is recorded as Grantiva's boot before `simctl boot` is
+issued, so an `ensure` that fails, times out or is interrupted after booting a
+simulator still leaves it to `teardown --session-id`.
 
 A simulator booted under a named `GRANTIVA_SESSION_ID` is reserved for that
 session until it ends: a run with another session ID, or with none, is refused

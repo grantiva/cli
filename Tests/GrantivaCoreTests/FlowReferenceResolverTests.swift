@@ -3,6 +3,17 @@ import Yams
 @testable import GrantivaCore
 
 final class FlowReferenceResolverTests: XCTestCase {
+    func testBareStopAppRoundTripsAsSemanticYAMLNull() throws {
+        let rewritten = try FlowReferenceResolver.resolve(
+            in: "appId: com.header.app\n---\n- stopApp:\n- stopApp: \"null\"\n",
+            relativeTo: "/project"
+        )
+        let commands = try XCTUnwrap(MaestroFlowParser.splitDocuments(rewritten).commands)
+        let loaded = try XCTUnwrap(try Yams.load(yaml: commands) as? [[String: Any]])
+        XCTAssertTrue(loaded[0]["stopApp"] is NSNull, rewritten)
+        XCTAssertEqual(loaded[1]["stopApp"] as? String, "null", rewritten)
+    }
+
     func testResolvesQuotedUnquotedAndSpacedScalarPaths() throws {
         let yaml = """
         appId: com.example
@@ -121,6 +132,24 @@ final class FlowReferenceResolverTests: XCTestCase {
         let screen = GrantivaConfig.Screen(name: "S", path: .steps([.init(runFlow: "a.yaml")]))
         XCTAssertThrowsError(try FlowCycleValidator.validate(flowPaths: [], screens: [screen], cwd: root.path)) {
             XCTAssertEqual($0.localizedDescription, "Invalid argument: circular dependency detected: grantiva.yml -> a.yaml -> b.yaml -> a.yaml")
+        }
+    }
+
+    func testScreensCycleNamesTheConfigFileItCameFrom() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("cycle-android-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+        try "appId: x\n---\n- runFlow: b.yaml\n".write(to: root.appendingPathComponent("a.yaml"), atomically: true, encoding: .utf8)
+        try "appId: x\n---\n- runFlow: a.yaml\n".write(to: root.appendingPathComponent("b.yaml"), atomically: true, encoding: .utf8)
+
+        let screen = GrantivaConfig.Screen(name: "S", path: .steps([.init(runFlow: "a.yaml")]))
+        XCTAssertThrowsError(try FlowCycleValidator.validate(
+            flowPaths: [], screens: [screen], configFileName: Platform.android.configFileName, cwd: root.path
+        )) {
+            XCTAssertEqual(
+                $0.localizedDescription,
+                "Invalid argument: circular dependency detected: grantiva-android.yml -> a.yaml -> b.yaml -> a.yaml"
+            )
         }
     }
 
@@ -330,8 +359,9 @@ final class FlowReferenceResolverTests: XCTestCase {
         }
     }
 
-    func testCyclePreflightAbsoluteRootClosesAtTheFirstRepeatedRoot() throws {
-        let root = FileManager.default.temporaryDirectory.appendingPathComponent("cycle-absolute-root-\(UUID().uuidString)")
+    func testCyclePreflightAbsoluteRootPreservesItsAliasAndFourWrittenHops() throws {
+        let name = "cycle-absolute-root-\(UUID().uuidString)"
+        let root = URL(fileURLWithPath: "/private/tmp").appendingPathComponent(name)
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: root) }
         try "appId: x\n---\n- runFlow: b.yaml\n".write(
@@ -340,13 +370,16 @@ final class FlowReferenceResolverTests: XCTestCase {
         try "appId: x\n---\n- runFlow: a.yaml\n".write(
             to: root.appendingPathComponent("b.yaml"), atomically: true, encoding: .utf8
         )
-        XCTAssertThrowsError(try FlowCycleValidator.validate(
-            flowPaths: [root.appendingPathComponent("a.yaml").path], screens: [], cwd: root.path
-        )) {
-            XCTAssertEqual(
-                $0.localizedDescription,
-                "Invalid argument: circular dependency detected: a.yaml -> b.yaml -> a.yaml"
-            )
+        for suppliedRoot in [root.path, "/tmp/\(name)"] {
+            let supplied = "\(suppliedRoot)/a.yaml"
+            XCTAssertThrowsError(try FlowCycleValidator.validate(
+                flowPaths: [supplied], screens: [], cwd: root.path
+            )) {
+                XCTAssertEqual(
+                    $0.localizedDescription,
+                    "Invalid argument: circular dependency detected: \(supplied) -> b.yaml -> a.yaml -> b.yaml"
+                )
+            }
         }
     }
 

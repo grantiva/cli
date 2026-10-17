@@ -1,7 +1,7 @@
 import ArgumentParser
 import XCTest
 @testable import GrantivaCLI
-import GrantivaCore
+@testable import GrantivaCore
 
 final class RunCommandTests: XCTestCase {
     func testCyclePreflightFailsBeforeAnyDeviceCall() async throws {
@@ -802,6 +802,25 @@ final class RunCommandTests: XCTestCase {
             "the flow names its app; a detected ID is only a guess"
         )
         XCTAssertEqual(RunCommand.flowBundleId(flowPath: path, resolved: "com.flag", explicit: "com.flag"), "com.flag")
+    }
+
+    /// C13-4 (IOS-239 vs brief A03): with config `bundle_id` set, a flow
+    /// naming Maps keeps Maps; a flow naming the configured app while the
+    /// `.paid` variant is under test (Android) runs `.paid`.
+    func testAFlowHeaderNamingAnotherAppWinsOverTheProjectApp() {
+        let ios = RunCommand.projectAppIDs(["com.kylebrowning.Landmarks", "com.kylebrowning.Landmarks", nil, nil, "com.kylebrowning.Landmarks", nil, nil, nil])
+        let maps = "appId: com.apple.Maps\n---\n- launchApp\n"
+        XCTAssertEqual(RunnerSession.injectAppId(maps, bundleId: "com.kylebrowning.Landmarks", projectAppIDs: ios), maps)
+
+        let android = RunCommand.projectAppIDs([
+            "com.kylebrowning.landmarks.paid", "com.kylebrowning.landmarks", nil, nil,
+            nil, "com.kylebrowning.landmarks", "com.kylebrowning.landmarks.paid", nil,
+        ])
+        XCTAssertEqual(
+            RunnerSession.injectAppId("appId: com.kylebrowning.landmarks\n---\n- launchApp\n", bundleId: "com.kylebrowning.landmarks.paid", projectAppIDs: android),
+            "appId: com.kylebrowning.landmarks.paid\n---\n- launchApp\n"
+        )
+        XCTAssertEqual(RunCommand.projectAppIDs(["${APP_ID}", "", nil, "com.a"]), ["com.a"])
     }
 
     func testFlowRunIgnoresVariableAppIdHeader() throws {

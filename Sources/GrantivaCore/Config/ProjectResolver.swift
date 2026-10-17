@@ -19,6 +19,8 @@ public struct ResolvedProject: Sendable {
     public let a11y: GrantivaConfig.A11yConfig
     /// The Gradle project to build when the platform is Android.
     public let android: AndroidProject?
+    /// The config's header `env:` (Maestro format), for the screens flow.
+    public let environment: [String: String]
 
     public init(
         scheme: String? = nil,
@@ -32,7 +34,8 @@ public struct ResolvedProject: Sendable {
         flows: [String] = [],
         diff: GrantivaConfig.DiffConfig = .init(),
         a11y: GrantivaConfig.A11yConfig = .init(),
-        android: AndroidProject? = nil
+        android: AndroidProject? = nil,
+        environment: [String: String] = [:]
     ) {
         self.scheme = scheme
         self.project = project
@@ -46,6 +49,7 @@ public struct ResolvedProject: Sendable {
         self.diff = diff
         self.a11y = a11y
         self.android = android
+        self.environment = environment
     }
 }
 
@@ -149,7 +153,8 @@ extension ResolvedProject {
             screens: config?.screens ?? [],
             flows: config?.flows ?? [],
             diff: config?.diff ?? .init(),
-            a11y: config?.a11y ?? .init()
+            a11y: config?.a11y ?? .init(),
+            environment: config?.environment ?? [:]
         )
     }
 }

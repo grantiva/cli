@@ -79,6 +79,10 @@ public struct IOSPlatform: DevicePlatform {
         try await xcodebuild.launch(bundleId: appID, udid: deviceID)
     }
 
+    public func launch(appID: String, deviceID: String, environment: [String: String]) async throws {
+        try await xcodebuild.launch(bundleId: appID, udid: deviceID, environment: environment)
+    }
+
     public func terminate(appID: String, deviceID: String) async throws {
         try await xcodebuild.terminate(bundleId: appID, udid: deviceID)
     }

@@ -183,6 +183,34 @@ final class RunnerExecutionTests: XCTestCase {
         XCTAssertNotEqual(outcome.terminationStatus, 0)
     }
 
+    /// C13-3: a runner grantiva killed at the --timeout cap leaves
+    /// WebDriverAgent's xcodebuild (a group of its own) to launchd; the
+    /// helpers it left writing into its run directory are swept.
+    func testATimeoutKillSweepsTheHelpersTheRunnerLeft() async throws {
+        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+        defer { lease.release() }
+        let swept = SweptRunners()
+        var timedOut = request(script: "trap '' INT; sleep 30", lease: lease, timeoutSeconds: 1)
+        timedOut.sweepHelpers = { pid, udid in swept.append(pid, udid) }
+        let outcome = await RunnerExecution.run(timedOut)
+        XCTAssertTrue(outcome.timedOut)
+        XCTAssertEqual(swept.calls.map(\.udid), ["SIM-1"])
+        XCTAssertGreaterThan(swept.calls.first?.pid ?? 0, 1)
+
+        // A runner that exits on its own cleaned up after itself.
+        var clean = request(script: "exit 1", lease: lease)
+        clean.sweepHelpers = { pid, udid in swept.append(pid, udid) }
+        _ = await RunnerExecution.run(clean)
+        XCTAssertEqual(swept.calls.count, 1)
+
+        // Android has no WebDriverAgent to leave behind.
+        var android = request(script: "trap '' INT; sleep 30", lease: lease, timeoutSeconds: 1)
+        android.platform = .android
+        android.sweepHelpers = { pid, udid in swept.append(pid, udid) }
+        _ = await RunnerExecution.run(android)
+        XCTAssertEqual(swept.calls.count, 1)
+    }
+
     func testTheReadyFileIsWrittenWhenTheReportGoesTerminal() async throws {
         let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
         defer { lease.release() }
@@ -256,7 +284,16 @@ final class RunnerExecutionTests: XCTestCase {
         try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
         let report = reportDir.appendingPathComponent("report.json").path
         let readyPath = scratch.appendingPathComponent("ready.json").path
-        let signal = ReadyFileSignal(path: readyPath)
+        let pidPath = scratch.appendingPathComponent("active-runner.pid").path
+        let runnerWasAliveWhenReadyWasWritten = Locked(false)
+        let signal = ReadyFileSignal(path: readyPath) { state, path in
+            if let rawPID = try? String(contentsOfFile: pidPath, encoding: .utf8)
+                    .trimmingCharacters(in: .whitespacesAndNewlines),
+               let pid = Int32(rawPID) {
+                runnerWasAliveWhenReadyWasWritten.mutate { $0 = kill(pid, 0) == 0 }
+            }
+            try ReadyFile.write(state, to: path)
+        }
 
         let interrupter = Task.detached {
             try await Task.sleep(nanoseconds: 1_000_000_000)
@@ -264,6 +301,7 @@ final class RunnerExecutionTests: XCTestCase {
         }
         let outcome = await RunnerExecution.run(request(
             script: """
+            echo $$ > \(pidPath)
             printf '{"status":"running","flows":[{"name":"qa-longwait","status":"running"}]}' > \(report)
             sleep 30
             """,
@@ -280,6 +318,10 @@ final class RunnerExecutionTests: XCTestCase {
         XCTAssertEqual(state.status, "interrupted")
         XCTAssertEqual(state.flows, [RunReadyState.Flow(name: "qa-longwait", status: "interrupted")])
         XCTAssertNil(state.reportDir, "an ephemeral report dir is deleted on exit and must not be advertised")
+        XCTAssertTrue(
+            runnerWasAliveWhenReadyWasWritten.value,
+            "the terminal ready file must be durable before the active runner group is terminated"
+        )
     }
 
     func testTheWatcherAdvertisesOnlyThePreservedReportDir() async throws {
@@ -369,10 +411,14 @@ final class RunnerExecutionTests: XCTestCase {
     /// file is written after arming); returns whether the relay would exit.
     private func signalOnceArmed(readyPath: String, release: @escaping @Sendable (pid_t) -> Void = SignalRelay.releaseGroup) -> Task<Bool, Never> {
         Task.detached {
-            // The hold is armed before the ready file is written.
-            for _ in 0..<400 where !FileManager.default.fileExists(atPath: readyPath) {
+            // The hold is armed before the ready file is written. Under heavy
+            // host load the scripted runner can take well over 10 s to get
+            // there; signalling before the hold is armed tests something
+            // else, so wait up to the request's 30 s timeout.
+            for _ in 0..<1_200 where !FileManager.default.fileExists(atPath: readyPath) {
                 try? await Task.sleep(nanoseconds: 25_000_000)
             }
+            XCTAssertTrue(FileManager.default.fileExists(atPath: readyPath), "the hold was never armed")
             return SignalRelay.shared.simulateSignalForTesting(SIGINT, release: release)
         }
     }
@@ -528,4 +574,11 @@ final class RunnerExecutionTests: XCTestCase {
         XCTAssertTrue(SignalRelay.shared.simulateSignalForTesting(SIGINT, release: { released.append($0) }))
         XCTAssertEqual(released.value, [424_242])
     }
+}
+
+private final class SweptRunners: @unchecked Sendable {
+    private let lock = NSLock()
+    private var stored: [(pid: Int32, udid: String)] = []
+    var calls: [(pid: Int32, udid: String)] { lock.withLock { stored } }
+    func append(_ pid: Int32, _ udid: String) { lock.withLock { stored.append((pid, udid)) } }
 }

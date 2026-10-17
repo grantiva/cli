@@ -242,6 +242,17 @@ final class EmulatorCommandTests: XCTestCase {
             waitForExit: { _ in true }
         )
         XCTAssertEqual(outcomes.first?.runnerSessionStopped, true)
+        // C14 (N3-09): it is reported with the same line as any stopped
+        // session, not left to "Killed …" alone.
+        let reported = LockedList()
+        _ = try await EmulatorCommand.Teardown.teardown(
+            manager, serial: "emulator-5598", force: true,
+            stopRunners: { _ in [] },
+            markStops: { _ in [77] },
+            waitForExit: { _ in true },
+            reportStopped: { reported.append(DeviceRunnerSessions.render($0)) }
+        )
+        XCTAssertEqual(reported.values, ["Stopped runner session (pid 77) for emulator-5598."])
         // A marked runner still alive after the bounded wait is not claimed.
         let alive = try await EmulatorCommand.Teardown.teardown(
             manager, serial: "emulator-5598", force: true,

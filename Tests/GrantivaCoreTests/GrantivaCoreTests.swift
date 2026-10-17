@@ -90,7 +90,11 @@ final class GrantivaCoreTests: XCTestCase {
         )
         XCTAssertEqual(
             RunnerSession.failureMessage(reason: "Runner failed (exit 1)", stderr: "boom\n"),
-            "Runner failed (exit 1):\nboom"
+            "Runner failed (exit 1): boom"
+        )
+        XCTAssertEqual(
+            RunnerSession.failureMessage(reason: "Runner failed (exit 1)", stderr: "boom\nbang\n"),
+            "Runner failed (exit 1):\nboom\nbang"
         )
         // A06: a reason that is already a sentence takes no colon.
         XCTAssertEqual(

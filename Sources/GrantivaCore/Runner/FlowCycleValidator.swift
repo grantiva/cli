@@ -8,8 +8,11 @@ public enum FlowCycleValidator {
         let written: String
     }
 
+    /// `configFileName` is the file the screens came from, named first in a
+    /// chain that starts at a screen's `run_flow`.
     public static func validate(
         flowPaths: [String], screens: [GrantivaConfig.Screen],
+        configFileName: String = Platform.ios.configFileName,
         cwd: String = FileManager.default.currentDirectoryPath
     ) throws {
         for flow in flowPaths {
@@ -26,7 +29,7 @@ public enum FlowCycleValidator {
                 let path = absolute(operand, relativeTo: cwd)
                 if let chain = cycle(startingAt: Target(nativePath: path, written: operand), cwd: cwd) {
                     throw GrantivaError.invalidArgument(
-                        "circular dependency detected: \((["grantiva.yml"] + chain).joined(separator: " -> "))"
+                        "circular dependency detected: \(([configFileName] + chain).joined(separator: " -> "))"
                     )
                 }
             }
@@ -50,8 +53,19 @@ public enum FlowCycleValidator {
             let resolvedParent = URL(fileURLWithPath: parent).resolvingSymlinksInPath().path
             let safetyIdentity = canonical + "\u{0}" + resolvedParent
 
-            if stack.contains(where: { $0.target.nativePath == target.nativePath }) {
-                return stack.map { display($0.target, cwd: cwd) } + [display(target, cwd: cwd)]
+            if let index = stack.firstIndex(where: { $0.target.nativePath == target.nativePath }) {
+                // Preserve the native validator's first spelling transition.
+                // A relative CLI root first becomes an absolute child target;
+                // an absolute CLI root first returns through the relative
+                // operand written in its child. Both close on the following
+                // hop, retaining the four-part diagnostic.
+                let absoluteRootTransition = index == 0
+                    && (stack[0].target.written as NSString).isAbsolutePath
+                    && !(target.written as NSString).isAbsolutePath
+                    && !stack.dropFirst().contains(where: { $0.target.nativePath == target.nativePath })
+                if !absoluteRootTransition {
+                    return stack.map { display($0.target, cwd: cwd) } + [display(target, cwd: cwd)]
+                }
             }
             if let index = stack.firstIndex(where: { $0.safetyIdentity == safetyIdentity }) {
                 // The native runner receives a relative top-level operand, then
@@ -61,7 +75,11 @@ public enum FlowCycleValidator {
                     && !(stack[0].target.nativePath as NSString).isAbsolutePath
                     && (target.nativePath as NSString).isAbsolutePath
                     && !stack.dropFirst().contains(where: { $0.safetyIdentity == safetyIdentity })
-                if !relativeRootTransition {
+                let absoluteRootTransition = index == 0
+                    && (stack[0].target.written as NSString).isAbsolutePath
+                    && !(target.written as NSString).isAbsolutePath
+                    && !stack.dropFirst().contains(where: { $0.safetyIdentity == safetyIdentity })
+                if !relativeRootTransition && !absoluteRootTransition {
                     return stack.map { display($0.target, cwd: cwd) } + [display(target, cwd: cwd)]
                 }
             }
@@ -136,6 +154,9 @@ public enum FlowCycleValidator {
     /// Native chainHop.display: project-contained paths are cwd-relative;
     /// outside paths retain the operand exactly as written.
     private static func display(_ target: Target, cwd: String) -> String {
+        // An absolute CLI operand is itself part of the public diagnostic.
+        // Its descendants retain the relative operands written in each file.
+        if (target.written as NSString).isAbsolutePath { return target.written }
         let path = absolute(target.nativePath, relativeTo: cwd)
         let candidates = [
             (URL(fileURLWithPath: cwd).standardizedFileURL.path, URL(fileURLWithPath: path).standardizedFileURL.path),

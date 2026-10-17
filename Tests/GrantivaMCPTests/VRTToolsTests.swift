@@ -130,4 +130,15 @@ final class VRTToolsTests: XCTestCase {
         ])
         XCTAssertTrue(results.allSatisfy { $0.isError == nil })
     }
+
+    func testGestureAndLifecycleStepsAreRunnerOnlyThroughASession() {
+        var double = GrantivaConfig.Screen.Step(tap: "Row")
+        double.tapGesture = .doubleTap
+        var long = GrantivaConfig.Screen.Step(tap: "Row")
+        long.tapGesture = .longPress
+        XCTAssertEqual(VRTTools.runnerOnlyStep(double), "a double tap")
+        XCTAssertEqual(VRTTools.runnerOnlyStep(long), "a long press")
+        XCTAssertEqual(VRTTools.runnerOnlyStep(.init(app: .stopApp)), "stopApp")
+        XCTAssertNil(VRTTools.runnerOnlyStep(.init(tap: "Row")))
+    }
 }

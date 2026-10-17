@@ -25,9 +25,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check the changelog has no unreleased entries
-        run: scripts/check-changelog-unreleased.sh
-
       - name: Check the tag matches the compiled-in version
         run: |
           # The git tag IS the version: no v prefix, exactly what

@@ -329,15 +329,23 @@ public struct EmulatorManager: Sendable {
 
     /// Boots `avd` on the first free even port and waits for it.
     public func boot(avd: String) async throws -> BootedDevice {
-        let used = try await adb.devices().map(\.serial)
-        guard let port = Self.choosePort(used: used, isBound: consolePortBound) else {
-            throw GrantivaError.invalidArgument("No free emulator port between 5554 and 5584; shut one down first.")
+        // Under the cross-process boot lock: a serial another Grantiva has
+        // just recorded is taken even before adb lists it or its console is
+        // bound, so two boots never share a port and the loser never drops
+        // the winner's record.
+        let (serial, pid) = try await provenance.withBootLock { () async throws -> (String, Int32) in
+            let recorded = ((try? provenance.all()) ?? []).filter(Self.isRecordedProcessAlive).map(\.serial)
+            let used = try await adb.devices().map(\.serial) + recorded
+            guard let port = Self.choosePort(used: used, isBound: consolePortBound) else {
+                throw GrantivaError.invalidArgument("No free emulator port between 5554 and 5584; shut one down first.")
+            }
+            let serial = "emulator-\(port)"
+            let arguments = Self.bootArguments(avd: avd, port: port, headless: Self.isHeadless(flag: headless, environment: environment))
+            GrantivaLog.logger.info("Booting AVD \(avd) as \(serial)")
+            let pid = try spawn(sdk.emulator, arguments)
+            try provenance.register(StartedEmulatorRecord(serial: serial, avd: avd, pid: pid, processStartTime: Self.processStartTime(pid)))
+            return (serial, pid)
         }
-        let serial = "emulator-\(port)"
-        let arguments = Self.bootArguments(avd: avd, port: port, headless: Self.isHeadless(flag: headless, environment: environment))
-        GrantivaLog.logger.info("Booting AVD \(avd) as \(serial)")
-        let pid = try spawn(sdk.emulator, arguments)
-        try provenance.register(StartedEmulatorRecord(serial: serial, avd: avd, pid: pid, processStartTime: Self.processStartTime(pid)))
         try await waitForBoot(serial: serial, pid: pid)
         return BootedDevice(udid: serial, name: avd)
     }
@@ -351,7 +359,7 @@ public struct EmulatorManager: Sendable {
         let port = serial.replacingOccurrences(of: "emulator-", with: "")
         let log = "\(provenance.directory)/emulator-\(port).log"
         let exited: (Int32) -> GrantivaError = { pid in
-            try? provenance.remove(serial: serial)
+            try? provenance.remove(serial: serial, pid: pid)
             return GrantivaError.commandFailed(
                 "The emulator process for \(serial) (pid \(pid)) exited before it finished booting. See \(log).",
                 1
@@ -376,7 +384,7 @@ public struct EmulatorManager: Sendable {
                             // The spawned process is our own child and is not
                             // the emulator on this serial: stop it, not leak it.
                             kill(pid, SIGTERM)
-                            try? provenance.remove(serial: serial)
+                            try? provenance.remove(serial: serial, pid: pid)
                             throw GrantivaError.commandFailed(
                                 "\(serial) is answered by another emulator (pid \(owners.map(String.init).joined(separator: ", "))), "
                                     + "not the one Grantiva started (pid \(pid)). See \(log).",
@@ -386,7 +394,7 @@ public struct EmulatorManager: Sendable {
                             // Unconfirmed and about to lose its record: kill our
                             // own child so no unrecorded emulator is left running.
                             kill(pid, SIGTERM)
-                            try? provenance.remove(serial: serial)
+                            try? provenance.remove(serial: serial, pid: pid)
                             throw GrantivaError.commandFailed(
                                 "\(serial)'s console port \(consolePort) is held by a process lsof cannot see, "
                                     + "so it cannot be confirmed as the emulator Grantiva started (pid \(pid)). See \(log).",
@@ -598,7 +606,9 @@ public struct EmulatorManager: Sendable {
             let state = devices.first { $0.serial == record.serial }?.state ?? "absent"
             let alive = await isOurs(record, listed: state != "absent")
             if !alive {
-                try provenance.remove(serial: record.serial)
+                // This record only: another process may have recorded a new
+                // emulator on the serial since the read.
+                try provenance.remove(serial: record.serial, pid: record.pid)
                 continue
             }
             records.append(EmulatorSessionRecord(
@@ -623,7 +633,7 @@ public struct EmulatorManager: Sendable {
         // Drop it.
         if let stale = record, !(await isOurs(stale, listed: true)),
            try await adb.devices().contains(where: { $0.serial == serial }) {
-            try provenance.remove(serial: serial)
+            try provenance.remove(serial: serial, pid: stale.pid)
             record = nil
         }
         guard record != nil || force else {
@@ -664,12 +674,16 @@ public struct EmulatorManager: Sendable {
                 try await Task.sleep(for: .seconds(pollInterval))
             }
         }
-        if record != nil {
-            try provenance.remove(serial: serial)
+        if let record {
+            try provenance.remove(serial: serial, pid: record.pid)
         }
-        var temporaryDirectoriesRemoved: [String] = []
-        if let claim = SimulatorLease.claim(udid: serial, directory: leaseDirectory), !claim.isLive {
-            temporaryDirectoriesRemoved = SimulatorReaper.removeTemporaryDirectories(of: claim)
+        // Every killed run's temp dirs on the serial, not only the last
+        // run's that the claim names (B3-L35); a live run's are kept.
+        let claim = SimulatorLease.claim(udid: serial, directory: leaseDirectory)
+        let temporaryDirectoriesRemoved = SimulatorReaper.removeTemporaryDirectories(
+            udid: serial, leaseDirectory: leaseDirectory, claim: claim
+        )
+        if let claim, !claim.isLive {
             SimulatorLease.removeLeaseFile(udid: serial, directory: leaseDirectory)
         }
         return EmulatorTeardownOutcome(

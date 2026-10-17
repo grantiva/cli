@@ -107,6 +107,23 @@ final class PlatformResolverTests: XCTestCase {
         XCTAssertEqual(try resolver.resolveOrDefault(flag: nil), .android)
     }
 
+    /// An Android-only target flag (`--device`, `--emulator`) with nothing
+    /// else pointing anywhere picks Android, not the iOS default (D2-12).
+    func testResolveOrDefaultUsesTheGivenFallbackOnlyWhenNothingPointsAnywhere() throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("resolver-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let resolver = PlatformResolver(directory: dir, environment: [:])
+        XCTAssertEqual(try resolver.resolveOrDefault(flag: nil, fallback: .android), .android)
+        XCTAssertEqual(try resolver.resolveOrDefault(flag: .ios, fallback: .android), .ios)
+        XCTAssertEqual(
+            try PlatformResolver(directory: dir, environment: ["GRANTIVA_PLATFORM": "ios"]).resolveOrDefault(flag: nil, fallback: .android),
+            .ios
+        )
+        try "scheme: Demo\n".write(to: dir.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8)
+        XCTAssertEqual(try resolver.resolveOrDefault(flag: nil, fallback: .android), .ios)
+    }
+
     func testEnvironmentPlatform() throws {
         XCTAssertNil(try PlatformResolver(environment: [:]).environmentPlatform())
         XCTAssertNil(try PlatformResolver(environment: ["GRANTIVA_PLATFORM": ""]).environmentPlatform())

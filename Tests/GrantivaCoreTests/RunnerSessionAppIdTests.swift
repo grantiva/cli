@@ -10,7 +10,7 @@ final class RunnerSessionAppIdTests: XCTestCase {
         - launchApp
         """
 
-        let result = RunnerSession.injectAppId(input, bundleId: "com.example.new")
+        let result = RunnerSession.injectAppId(input, bundleId: "com.example.new", projectAppIDs: ["com.example.old"])
 
         XCTAssertEqual(result, """
           appId: com.example.new
@@ -19,6 +19,40 @@ final class RunnerSessionAppIdTests: XCTestCase {
         - launchApp
         """)
         XCTAssertEqual(result.components(separatedBy: "appId:").count - 1, 1)
+    }
+
+    /// C13-4 (IOS-239): a flow whose header names another app (Maps) runs
+    /// that app; the project's bundle ID does not replace it.
+    func testAFlowNamingAnotherAppKeepsItsAppId() {
+        let input = """
+        appId: com.apple.Maps
+        ---
+        - launchApp
+        """
+        XCTAssertEqual(
+            RunnerSession.injectAppId(input, bundleId: "com.kylebrowning.Landmarks", projectAppIDs: ["com.kylebrowning.Landmarks"]),
+            input
+        )
+    }
+
+    /// The project's own app, however the header spells it, still takes the
+    /// resolved ID: a placeholder, a configured ID, another case, or a
+    /// variant of it (brief A03: `com.kylebrowning.landmarks` header with
+    /// the `.paid` APK runs `.paid`).
+    func testTheProjectsOwnAppIdIsStillReplaced() {
+        func header(_ appId: String) -> String { "appId: \(appId)\n---\n- launchApp" }
+        let paid = "com.kylebrowning.landmarks.paid"
+        for written in ["${APP_ID}", "com.kylebrowning.landmarks", "com.kylebrowning.Landmarks.paid", "com.example.configured"] {
+            XCTAssertEqual(
+                RunnerSession.injectAppId(header(written), bundleId: paid, projectAppIDs: ["com.example.configured"]),
+                header(paid), written
+            )
+        }
+        // A shared prefix that is not a dot-separated variant is another app.
+        XCTAssertEqual(
+            RunnerSession.injectAppId(header("com.kylebrowning.landmarksbeta"), bundleId: "com.kylebrowning.landmarks"),
+            header("com.kylebrowning.landmarksbeta")
+        )
     }
 
     func testInsertsAppIdBeforeSeparatorAtStartOfFlow() {

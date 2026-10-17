@@ -222,6 +222,27 @@ final class RecordCommandTests: XCTestCase {
         }
     }
 
+    /// D2-12: with no config and no project here, `--device <serial>` or
+    /// `--emulator <avd>` names an Android target, so the Android container
+    /// applies, not the iOS default's.
+    func testAndroidTargetFlagWithNoProjectResolvesAndroid() throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("record-none-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let previous = FileManager.default.currentDirectoryPath
+        FileManager.default.changeCurrentDirectoryPath(dir.path)
+        defer { restoreDirectory((dir, previous)) }
+        let viaDevice = try RecordCommand.parse(["--duration", "1", "--device", "emulator-5560", "--output", "clip.mp4"])
+        XCTAssertEqual(try viaDevice.platformOptions.resolve(fallback: viaDevice.fallbackPlatform), .android)
+        XCTAssertNoThrow(try RecordCommand.parse(["--duration", "1", "--emulator", "Pixel", "--output", "clip.mp4"]))
+        XCTAssertThrowsError(try RecordCommand.parse(["--duration", "1", "--device", "emulator-5560", "--output", "clip.mov"])) { error in
+            XCTAssertTrue(RecordCommand.message(for: error).contains("must end in .mp4 on Android"), RecordCommand.message(for: error))
+        }
+        // No target flag keeps the iOS default.
+        XCTAssertThrowsError(try RecordCommand.parse(["--duration", "1", "--output", "clip.mp4"])) { error in
+            XCTAssertTrue(RecordCommand.message(for: error).contains("must end in .mov on iOS"), RecordCommand.message(for: error))
+        }
+    }
+
     /// A05: a static screen gives screenrecord one frame at 0 ms and a zero
     /// duration. The last frame is held to --duration, so 1000 ms resolves to it.
     func testAndroidStaticScreenRecordingHoldsTheLastFrameToTheRequestedDuration() async throws {
@@ -521,5 +542,34 @@ final class RecordCommandTests: XCTestCase {
             }
         }
         XCTAssertNoThrow(try GrantivaCommand.parseAsRoot(["record", "--duration", "2", "--output", "a.mov", "--platform", "ios"]))
+    }
+}
+
+/// N3-08: a missing required option is a usage error of the same shape as the
+/// others, an Error line, then Usage and See, with no Help line between them.
+final class UsageErrorShapeTests: XCTestCase {
+    func testEveryUsageErrorHasTheSameShape() {
+        let cases: [[String]] = [
+            ["record", "--output", "a.mp4"],
+            ["record", "--output", "a.mov"],
+            ["record", "--duration", "0"],
+            ["record", "--device", "a", "--emulator", "b"],
+            ["record", "--duration", "2", "--output", "a.mp4", "--platform", "ios"],
+            ["record", "--duration", "2", "--device", "a", "--emulator", "b"],
+            ["emulator", "teardown", "--serial", "emulator-9999", "--all"],
+        ]
+        for arguments in cases {
+            XCTAssertThrowsError(try GrantivaCommand.parseAsRoot(arguments), "\(arguments)") { error in
+                XCTAssertEqual(GrantivaCommand.exitCode(for: error), .validationFailure, "\(arguments)")
+                let lines = GrantivaCommand.usageErrorMessage(for: error)
+                    .components(separatedBy: "\n").filter { !$0.isEmpty }
+                XCTAssertEqual(lines.count, 3, "\(arguments): \(lines)")
+                XCTAssertTrue(lines.first?.hasPrefix("Error: ") == true, "\(arguments): \(lines)")
+                XCTAssertFalse(lines.joined().contains("Invalid argument"), "\(arguments): \(lines)")
+                XCTAssertTrue(lines.count > 1 && lines[1].hasPrefix("Usage: grantiva \(arguments[0])"), "\(arguments): \(lines)")
+                XCTAssertTrue(lines.last?.trimmingCharacters(in: .whitespaces).hasPrefix("See 'grantiva \(arguments[0])") == true, "\(arguments): \(lines)")
+                XCTAssertTrue(lines.last?.hasSuffix("--help' for more information.") == true, "\(arguments): \(lines)")
+            }
+        }
     }
 }

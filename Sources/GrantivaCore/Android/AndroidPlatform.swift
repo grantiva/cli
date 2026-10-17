@@ -20,6 +20,9 @@ public struct AndroidPlatform: DevicePlatform {
     private let execute: @Sendable (String) async throws -> String
     private let options: Options
     private let environment: [String: String]
+    /// Where grantiva-runner keeps its UIAutomator2 socket and pid file
+    /// (`uia2-<serial>.sock`, `uia2-<serial>.pid`). Overridable for tests.
+    var runnerSocketDirectory = "/tmp"
 
     public init(
         sdk: AndroidSDK,
@@ -149,6 +152,10 @@ public struct AndroidPlatform: DevicePlatform {
         try await adb.launch(serial: deviceID, applicationId: appID)
     }
 
+    public func launch(appID: String, deviceID: String, environment: [String: String]) async throws {
+        try await adb.launch(serial: deviceID, applicationId: appID, extras: environment)
+    }
+
     public func terminate(appID: String, deviceID: String) async throws {
         try await adb.forceStop(serial: deviceID, applicationId: appID)
     }
@@ -158,7 +165,7 @@ public struct AndroidPlatform: DevicePlatform {
     }
 
     public func resolveBinary(_ path: String) async throws -> ResolvedBinary {
-        let absolute = (path as NSString).standardizingPath
+        let absolute = AppBinaryResolver.canonicalPath(path)
         guard absolute.lowercased().hasSuffix(".apk") else {
             throw GrantivaError.invalidBinary("Expected an .apk file for Android, got: \"\(URL(fileURLWithPath: absolute).lastPathComponent)\"")
         }
@@ -191,6 +198,13 @@ public struct AndroidPlatform: DevicePlatform {
             try await captureSettings.prepare(serial: deviceID)
         } catch {
             GrantivaLog.logger.warning("could not apply capture settings on \(deviceID): \(error)")
+        }
+        // Earlier key input must not leave a row highlighted in the captures
+        // (N-12); both the CLI and the MCP capture paths come through here.
+        do {
+            try await adb.restoreTouchMode(serial: deviceID)
+        } catch {
+            GrantivaLog.logger.warning("could not restore touch mode on \(deviceID): \(error)")
         }
     }
 
@@ -275,6 +289,28 @@ public struct AndroidPlatform: DevicePlatform {
         for package in ADB.uiAutomator2Packages {
             _ = try? await adb.forceStop(serial: deviceID, applicationId: package)
         }
+        await removeDeadRunnerSocketForward(serial: deviceID)
+    }
+
+    /// A runner killed with SIGKILL leaves its `localfilesystem:` forward to
+    /// the UIAutomator2 server (C14, N2-05). That serial's runner socket
+    /// forward is removed, with its socket and pid files, unless the pid file
+    /// names a live process: a runner still using it keeps it. No other
+    /// forward is touched.
+    func removeDeadRunnerSocketForward(serial: String) async {
+        let socket = "\(runnerSocketDirectory)/uia2-\(serial).sock"
+        let pidFile = "\(runnerSocketDirectory)/uia2-\(serial).pid"
+        if let text = try? String(contentsOfFile: pidFile, encoding: .utf8),
+           let pid = Int32(text.trimmingCharacters(in: .whitespacesAndNewlines)), pid > 1,
+           KeepAliveSessionStore.processIsAlive(pid) {
+            return
+        }
+        guard let listing = try? await adb.forwardListing(serial: serial),
+              ADB.listsSocketForward(listing, serial: serial, socket: socket)
+        else { return }
+        _ = try? await adb.removeSocketForward(serial: serial, socket: socket)
+        try? FileManager.default.removeItem(atPath: socket)
+        try? FileManager.default.removeItem(atPath: pidFile)
     }
 
     /// Removes a forward whose local port was recorded by the session being

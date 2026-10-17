@@ -59,7 +59,10 @@ public struct MaestroFlowParser {
             )
         }
 
-        return GrantivaConfig(bundleId: bundleId, screens: screens)
+        var config = GrantivaConfig(bundleId: bundleId, screens: screens)
+        config.environment = FlowEnvironment.headerEnvironment(content)
+        config.warnings = FlowEnvironment.headerKeyWarnings(content).map { "\(sourceName): \($0)" }
+        return config
     }
 
     /// Parse all Maestro flow files in a directory and merge into a single config.
@@ -208,6 +211,10 @@ public struct MaestroFlowParser {
             screens.append(screen)
         }
 
+        // The generated flow opens with its own launchApp, so a launchApp
+        // before any other command is that one; a later one is a relaunch.
+        var seenCommand = false
+
         func walk(_ commands: [Any], source: String, lines: [Int], directory: URL?, stack: [String]) throws {
             for (index, raw) in commands.enumerated() {
                 if let expansion = expandableSubFlow(raw, source: source, line: lines[safe: index], directory: directory, stack: stack) {
@@ -218,6 +225,7 @@ public struct MaestroFlowParser {
                     continue
                 }
                 guard let command = parseCommand(raw) else { continue }
+                defer { seenCommand = true }
 
                 switch command {
                 case .takeScreenshot(let name):
@@ -230,8 +238,11 @@ public struct MaestroFlowParser {
                     }
                     screenIndex += 1
 
-                case .launchApp, .stopApp:
-                    break
+                case .launchApp:
+                    if seenCommand { currentSteps.append(.init(app: .launchApp)) }
+
+                case .stopApp(let app):
+                    currentSteps.append(.init(app: app))
 
                 case .unsupported(let name):
                     guard allowUnsupportedCommands else {
@@ -247,8 +258,9 @@ public struct MaestroFlowParser {
         let rootPath = baseDirectory.map { $0.appendingPathComponent((sourceName as NSString).lastPathComponent).standardizedFileURL.path }
         try walk(commands, source: sourceName, lines: lineNumbers, directory: baseDirectory, stack: rootPath.map { [$0] } ?? [])
 
-        // Remaining steps after the last takeScreenshot → one more screen
-        if !currentSteps.isEmpty {
+        // Remaining steps after the last takeScreenshot → one more screen,
+        // unless they only stop the app (a cleanup step with nothing to see).
+        if currentSteps.contains(where: { $0.app == nil || $0.app == .launchApp }) {
             let name = "\(flowName ?? "Screen")_\(screenIndex)"
             screens.append(.init(name: name, path: .steps(currentSteps)))
         }
@@ -303,7 +315,8 @@ public struct MaestroFlowParser {
 
     enum ParsedCommand {
         case launchApp
-        case stopApp
+        /// `stopApp` or `killApp`.
+        case stopApp(GrantivaConfig.Screen.Step.AppCommand)
         case takeScreenshot(name: String?)
         case step(GrantivaConfig.Screen.Step)
         case unsupported(String)
@@ -315,7 +328,8 @@ public struct MaestroFlowParser {
         if let str = raw as? String {
             switch str {
             case "launchApp": return .launchApp
-            case "stopApp", "killApp": return .stopApp
+            case "stopApp": return .stopApp(.stopApp)
+            case "killApp": return .stopApp(.killApp)
             case "back": return .unsupported(str)
             case "scroll": return .step(.init(swipe: "up")) // default scroll down = swipe up
             case "waitForAnimationToEnd": return .step(.init(settle: defaultSettleSeconds))
@@ -327,9 +341,9 @@ public struct MaestroFlowParser {
 
         // --- Tap variants ---
 
-        for command in ["tapOn", "doubleTapOn", "longPressOn"] {
-            if let val = dict[command] {
-                return parseTapSelector(val, command: command)
+        for gesture in [GrantivaConfig.Screen.Step.TapGesture.tap, .doubleTap, .longPress] {
+            if let val = dict[gesture.rawValue] {
+                return parseTapSelector(val, gesture: gesture)
             }
         }
 
@@ -478,7 +492,8 @@ public struct MaestroFlowParser {
         // --- App lifecycle ---
 
         if dict.keys.contains("launchApp") { return .launchApp }
-        if dict.keys.contains("stopApp") || dict.keys.contains("killApp") { return .stopApp }
+        if dict.keys.contains("stopApp") { return .stopApp(.stopApp) }
+        if dict.keys.contains("killApp") { return .stopApp(.killApp) }
 
         // --- Unsupported (safe to ignore for VRT) ---
         // pressKey, setPermissions, setOrientation, setLocation, repeat, retry,
@@ -494,11 +509,13 @@ public struct MaestroFlowParser {
     static let defaultSettleSeconds = 5.0
 
     /// Parse a Maestro tap selector (string, or object with text/id).
-    private static func parseTapSelector(_ val: Any, command: String) -> ParsedCommand {
+    private static func parseTapSelector(_ val: Any, gesture: GrantivaConfig.Screen.Step.TapGesture) -> ParsedCommand {
         if let (label, byId) = selector(val) {
-            return .step(.init(tap: label, tapById: byId))
+            var step = GrantivaConfig.Screen.Step(tap: label, tapById: byId)
+            step.tapGesture = gesture
+            return .step(step)
         }
-        return .unsupported(command)
+        return .unsupported(gesture.rawValue)
     }
 
     /// A Maestro element selector: a bare string or `{text: X}` matches text,

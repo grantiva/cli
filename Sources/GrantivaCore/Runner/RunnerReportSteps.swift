@@ -125,7 +125,16 @@ enum RunnerReportSteps {
 
         /// `<flow>: <step>: <message>`, the line `run` reports.
         var line: String {
-            [flowName, action, message].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: ": ")
+            [flowName, detail].filter { !$0.isEmpty }.joined(separator: ": ")
+        }
+
+        /// `<step>: <message>`. A message that already starts with the step's
+        /// command (`launchApp: 'com…' crashed on launch`) names the step
+        /// itself, so the step is not said twice (C14).
+        var detail: String {
+            let command = action.prefix { $0 != ":" }
+            let named = !command.isEmpty && (message?.hasPrefix(command + ":") ?? false)
+            return [named ? nil : action, message].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: ": ")
         }
 
         /// Element-not-found and not-visible failures are about the UI tree,

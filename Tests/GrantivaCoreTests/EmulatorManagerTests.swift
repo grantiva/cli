@@ -282,6 +282,60 @@ final class EmulatorManagerTests: XCTestCase {
         XCTAssertEqual(spawn.calls.first?.1.prefix(4), ["-avd", "Pixel_8_API_35", "-port", "5556"])
     }
 
+    /// C13 (android-b 21:37): another process had just spawned an emulator on
+    /// emulator-5554 and recorded it, but adb did not list it yet and its
+    /// console was not bound. This boot chose 5554 too, replaced that record
+    /// with its own, then lost the port and removed "its" record, leaving the
+    /// other emulator unrecorded. A live record's serial is not free.
+    func testBootSkipsASerialALiveLedgerRecordHolds() async throws {
+        let other = Process()
+        other.executableURL = URL(fileURLWithPath: "/bin/sleep")
+        other.arguments = ["30"]
+        try other.run()
+        defer { other.terminate(); other.waitUntilExit() }
+        let provenance = AndroidProvenance(directory: scratch.path)
+        let theirs = StartedEmulatorRecord(
+            serial: "emulator-5554", avd: "cov13-b-2", pid: other.processIdentifier,
+            processStartTime: EmulatorManager.processStartTime(other.processIdentifier)
+        )
+        try provenance.register(theirs)
+
+        let spawn = SpawnRecorder()
+        let shell = ScriptedShell([
+            .success("List of devices attached"),
+            .success("1"), .success("package:x"), .success(""),
+        ])
+        let device = try await manager(shell, spawn: spawn).boot(avd: "Pixel_8_API_35")
+        XCTAssertEqual(device.udid, "emulator-5556")
+        XCTAssertEqual(spawn.calls.first?.1.prefix(4), ["-avd", "Pixel_8_API_35", "-port", "5556"])
+        XCTAssertTrue(try provenance.all().contains(theirs))
+    }
+
+    /// A boot that fails removes its own record only: a record another
+    /// process holds for the same serial stays.
+    func testAFailedBootRemovesOnlyItsOwnRecord() async throws {
+        let provenance = AndroidProvenance(directory: scratch.path)
+        let theirs = StartedEmulatorRecord(serial: "emulator-5554", avd: "cov13-b-2", pid: getpid())
+        try provenance.register(theirs)
+        try provenance.remove(serial: "emulator-5554", pid: 999_999)
+        XCTAssertEqual(try provenance.all(), [theirs])
+
+        let dead = Process()
+        dead.executableURL = URL(fileURLWithPath: "/usr/bin/true")
+        try dead.run()
+        dead.waitUntilExit()
+        let shell = ScriptedShell([])
+        do {
+            try await manager(shell).waitForBoot(serial: "emulator-5554", pid: dead.processIdentifier)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("exited"), "\(error)")
+        }
+        XCTAssertEqual(try provenance.all(), [theirs])
+        try provenance.remove(serial: "emulator-5554", pid: getpid())
+        XCTAssertEqual(try provenance.all(), [])
+    }
+
     func testBootArgumentsMatchTheSpec() {
         XCTAssertEqual(
             EmulatorManager.bootArguments(avd: "Pixel_8_API_35", port: 5556, headless: false),
@@ -1193,6 +1247,36 @@ final class EmulatorManagerTests: XCTestCase {
         XCTAssertEqual(outcome.temporaryDirectoriesRemoved, [])
         for path in temps { XCTAssertTrue(FileManager.default.fileExists(atPath: path), path) }
         XCTAssertTrue(FileManager.default.fileExists(atPath: SimulatorLease.leasePath(udid: "emulator-5554", directory: leases)))
+    }
+
+    /// B3-L35: three runs on one serial, each killed; the lease claim names
+    /// only the last, but the per-device ledger names all of them. A live
+    /// run's dirs and another serial's are left alone.
+    func testForceTeardownRemovesTheTempDirectoriesOfEveryKilledRun() async throws {
+        let leases = scratch.appendingPathComponent("leases").path
+        let serial = "emulator-5554"
+        let first = try makeTempDirectories(), second = try makeTempDirectories(), last = try makeTempDirectories()
+        let live = try makeTempDirectories(), other = try makeTempDirectories()
+        let (firstPID, secondPID, lastPID) = (try deadPID(), try deadPID(), try deadPID())
+        SimulatorLease.recordTemporaryDirectories(first, pid: firstPID, runnerPID: try deadPID(), udid: serial, directory: leases)
+        SimulatorLease.recordTemporaryDirectories(second, pid: secondPID, runnerPID: nil, udid: serial, directory: leases)
+        SimulatorLease.recordTemporaryDirectories(last, pid: lastPID, runnerPID: nil, udid: serial, directory: leases)
+        SimulatorLease.recordTemporaryDirectories(live, pid: getpid(), runnerPID: nil, udid: serial, directory: leases)
+        SimulatorLease.recordTemporaryDirectories(other, pid: try deadPID(), runnerPID: nil, udid: "emulator-5556", directory: leases)
+        var claim = SimulatorLeaseClaim(pid: lastPID, udid: serial, startedAt: Date())
+        claim.temporaryDirectories = last
+        try writeClaim(claim, leases: leases)
+        let shell = ScriptedShell()
+        shell.fallback = "List of devices attached"
+
+        let outcome = try await manager(shell, leaseDirectory: leases).teardown(serial: serial, force: true)
+
+        XCTAssertEqual(Set(outcome.temporaryDirectoriesRemoved), Set(first + second + last))
+        XCTAssertEqual(outcome.temporaryDirectoriesRemoved.count, 6, "each directory is listed once")
+        for path in first + second + last { XCTAssertFalse(FileManager.default.fileExists(atPath: path), path) }
+        for path in live + other { XCTAssertTrue(FileManager.default.fileExists(atPath: path), path) }
+        XCTAssertEqual(SimulatorLease.temporaryDirectoryRecords(udid: serial, directory: leases).map(\.pid), [getpid()])
+        XCTAssertEqual(SimulatorLease.temporaryDirectoryRecords(udid: "emulator-5556", directory: leases).count, 1)
     }
 
     // MARK: - L46: an app installed just before a teardown survives it

@@ -64,4 +64,168 @@ final class SignalRelayTests: XCTestCase {
         SignalRelay.shared.track(group: 12346, deviceNoun: "emulator")
         XCTAssertEqual(SignalRelay.shared.deviceNoun, "emulator")
     }
+
+    /// B4-L72.3: an interrupt ends what a tracked runner started outside its
+    /// group (WDA's xcodebuild). The hook runs after the group is stopped and
+    /// before the cleanups release the device, and only while the group is
+    /// tracked.
+    func testGroupHelperReapRunsAfterTheGroupStopsAndBeforeTheCleanups() throws {
+        let child = try ChildProcess.spawn(
+            executable: "/bin/sleep", arguments: ["30"],
+            stdout: FileHandle.nullDevice.fileDescriptor, stderr: FileHandle.nullDevice.fileDescriptor, logged: false
+        )
+        let reaper = DispatchQueue.global()
+        reaper.async { child.wait() }
+        let order = Locked<[String]>([])
+        SignalRelay.shared.track(group: child.processGroup, deviceNoun: "simulator")
+        SignalRelay.shared.afterGroupTermination(group: child.processGroup) {
+            order.append(child.isRunning ? "helpers (runner alive)" : "helpers")
+        }
+        let token = SignalRelay.shared.onTermination { order.append("cleanup") }
+        defer {
+            SignalRelay.shared.removeCleanup(token)
+            SignalRelay.shared.untrack(group: child.processGroup)
+            SignalRelay.shared.resetTerminationForTesting()
+        }
+
+        SignalRelay.shared.simulateTerminationForTesting()
+
+        XCTAssertEqual(order.value, ["helpers", "cleanup"])
+
+        // Untracked, the hook is gone with the group.
+        SignalRelay.shared.resetTerminationForTesting()
+        SignalRelay.shared.untrack(group: child.processGroup)
+        SignalRelay.shared.simulateTerminationForTesting()
+        XCTAssertEqual(order.value, ["helpers", "cleanup", "cleanup"])
+    }
+
+    /// C13-3: a `simctl status_bar` (any `shell` child) still running when
+    /// grantiva is interrupted is ended, not left to launchd: Foundation
+    /// starts it in a process group of its own, so no terminal signal or
+    /// runner-group kill reaches it.
+    func testAnInterruptEndsTheShellChildrenStillRunning() async throws {
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let started = Date()
+        let child = Task { try? await shell("trap '' INT; sleep 30") }
+        var pids: [Int32] = []
+        for _ in 0..<50 where pids.isEmpty {
+            try await Task.sleep(nanoseconds: 50_000_000)
+            pids = ShellChildren.shared.running
+        }
+        let pid = try XCTUnwrap(pids.first)
+        SignalRelay.shared.simulateTerminationForTesting()
+        _ = await child.value
+        XCTAssertLessThan(Date().timeIntervalSince(started), 15)
+        XCTAssertNotEqual(kill(pid, 0), 0, "the shell child outlived the interrupt")
+        XCTAssertTrue(ShellChildren.shared.running.isEmpty)
+    }
+
+    /// C15 (B4-L68.3): the relay killed every shell child first, so an
+    /// `adb forward tcp:0` in flight was cut off after adb had made the
+    /// forward but before grantiva learned its port: the forward leaked. An
+    /// `adb forward` call now finishes while the groups stop and the
+    /// cleanups run (they own what it makes); other children, a status-bar
+    /// override among them, still end first. Whatever is left goes at the end.
+    func testAnInterruptLetsAnAdbForwardFinishBeforeTheCleanups() async throws {
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let ordinary = Task { try? await shell("trap '' INT; sleep 30 # adb forward stand-in") }
+        let override = Task { try? await shell("trap '' INT; sleep 30 # simctl status_bar stand-in") }
+        defer { ordinary.cancel(); override.cancel() }
+        var pids: [Int32] = []
+        for _ in 0..<50 where pids.count < 2 {
+            try await Task.sleep(nanoseconds: 50_000_000)
+            pids = ShellChildren.shared.running
+        }
+        XCTAssertEqual(pids.count, 2)
+        let commands = ShellChildren.shared.runningCommands
+        let ordinaryPid = try XCTUnwrap(commands.first { $0.value.contains("adb forward") }?.key)
+        let overridePid = try XCTUnwrap(commands.first { $0.value.contains("status_bar") }?.key)
+        let seen = LockedFlags()
+        let token = SignalRelay.shared.onTermination {
+            seen.set("ordinary", kill(ordinaryPid, 0) == 0)
+            seen.set("override", kill(overridePid, 0) == 0)
+        }
+        defer { SignalRelay.shared.removeCleanup(token) }
+
+        SignalRelay.shared.simulateTerminationForTesting()
+
+        XCTAssertEqual(seen.value("ordinary"), true, "the in-flight child was killed before the cleanups")
+        XCTAssertEqual(seen.value("override"), false, "the status-bar override outlived the start of the cleanups")
+        _ = await ordinary.value
+        XCTAssertNotEqual(kill(ordinaryPid, 0), 0, "the ordinary child outlived the interrupt")
+    }
+
+    /// C15 (B2-K10, AND-075): a Ctrl-C mid-`run` printed only the relay's
+    /// line: the relay ran its cleanups and exited before the run, woken by
+    /// its runner's exit, printed the flow summary ("grantiva was
+    /// interrupted"). A run holds the exit; the cleanups (and the exit) wait,
+    /// bounded, until it has reported.
+    func testTheCleanupsWaitForAHeldExitToBeReleased() async throws {
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let order = Locked<[String]>([])
+        let hold = SignalRelay.shared.holdExit()
+        let token = SignalRelay.shared.onTermination { order.append("cleanup") }
+        defer { SignalRelay.shared.removeCleanup(token); SignalRelay.shared.releaseExit(hold) }
+        let done = DispatchSemaphore(value: 0)
+        DispatchQueue.global().async {
+            SignalRelay.shared.simulateTerminationForTesting()
+            done.signal()
+        }
+        try await Task.sleep(nanoseconds: 300_000_000)
+        order.append("summary")
+        SignalRelay.shared.releaseExit(hold)
+        XCTAssertEqual(done.wait(timeout: .now() + 5), .success)
+        XCTAssertEqual(order.value, ["summary", "cleanup"])
+    }
+
+    /// C15 (sigint-early): what a held run registers after the interrupt
+    /// began (a temp directory it created first) is cleaned up too.
+    func testACleanupRegisteredDuringAHeldExitStillRuns() async throws {
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let ran = Locked<[String]>([])
+        let hold = SignalRelay.shared.holdExit()
+        defer { SignalRelay.shared.releaseExit(hold) }
+        let done = DispatchSemaphore(value: 0)
+        DispatchQueue.global().async {
+            SignalRelay.shared.simulateTerminationForTesting()
+            done.signal()
+        }
+        try await Task.sleep(nanoseconds: 200_000_000)
+        let token = SignalRelay.shared.onTermination { ran.append("late") }
+        defer { SignalRelay.shared.removeCleanup(token) }
+        SignalRelay.shared.releaseExit(hold)
+        XCTAssertEqual(done.wait(timeout: .now() + 5), .success)
+        XCTAssertEqual(ran.value, ["late"])
+    }
+
+    /// A hold nobody releases delays the exit by its bound only.
+    func testAHeldExitThatIsNeverReleasedTimesOut() {
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let hold = SignalRelay.shared.holdExit()
+        defer { SignalRelay.shared.releaseExit(hold) }
+        let previous = SignalRelay.shared.exitHoldTimeout
+        SignalRelay.shared.exitHoldTimeout = 0.3
+        defer { SignalRelay.shared.exitHoldTimeout = previous }
+        let start = Date()
+        SignalRelay.shared.simulateTerminationForTesting()
+        XCTAssertLessThan(Date().timeIntervalSince(start), 3)
+    }
+
+    /// B3-L54.1: a teardown that lands before the runner exists ends the
+    /// start in order: the exit status is the provider's, not 128 + signal.
+    func testAnExitStatusProviderDecidesTheInterruptsStatus() {
+        defer { SignalRelay.shared.setExitStatus(nil) }
+        XCTAssertEqual(SignalRelay.shared.exitStatus(for: SIGINT), 130)
+        SignalRelay.shared.setExitStatus { 0 }
+        XCTAssertEqual(SignalRelay.shared.exitStatus(for: SIGINT), 0)
+        SignalRelay.shared.setExitStatus { nil }
+        XCTAssertEqual(SignalRelay.shared.exitStatus(for: SIGTERM), 143)
+    }
+}
+
+private final class LockedFlags: @unchecked Sendable {
+    private let lock = NSLock()
+    private var flags: [String: Bool] = [:]
+    func set(_ key: String, _ value: Bool) { lock.withLock { flags[key] = value } }
+    func value(_ key: String) -> Bool? { lock.withLock { flags[key] } }
 }

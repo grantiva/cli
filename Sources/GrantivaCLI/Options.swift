@@ -29,9 +29,20 @@ struct GlobalOptions: ParsableArguments {
     /// caller asking for a machine-readable result has not asked for a running
     /// commentary. Warnings and errors are not routed through here and are
     /// never suppressed.
+    ///
+    /// Once an interrupt is under way nothing narrated here prints: the log
+    /// handler drops it (the interrupt notice is the last line).
     func note(_ message: @autoclosure () -> String) {
         guard !json else { return }
         GrantivaLog.logger.info("\(message())")
+    }
+
+    /// The command's outcome when the interrupt itself produced it (a
+    /// teardown's stop of a foreground `runner start`): unlike `note`, it
+    /// prints after the interrupt notice.
+    func noteOutcome(_ message: String) {
+        guard !json else { return }
+        GrantivaLog.logger.info("\(message)", metadata: CLILogHandler.afterInterrupt)
     }
 
     /// Applies `--quiet`/`--json`/`--verbose` to the runner's relayed output
@@ -41,6 +52,16 @@ struct GlobalOptions: ParsableArguments {
         RunnerNarration.isSilenced = RunnerNarration.shouldSilence(
             json: json, quiet: verbosity.quiet, verbose: verbosity.verbose
         )
+    }
+
+    /// What a command that starts the runner does first: the narration
+    /// switch, and the interrupt handler. Installed here, before the device
+    /// is resolved or booted, a Ctrl-C in the first second ends the run
+    /// through `SignalRelay` (its children and cleanups) instead of killing
+    /// it silently by the default action (C14).
+    func prepareRunnerCommand(relay: SignalRelay = .shared) {
+        applyRunnerNarration()
+        relay.install()
     }
 }
 
@@ -166,12 +187,15 @@ struct PlatformOptions: ParsableArguments {
     /// GRANTIVA_PLATFORM, no config file, no project files in this directory)
     /// the answer is iOS: before Android support every command was iOS and ran
     /// fine without a project here (`--app-file` + `--bundle-id`, a project in
-    /// a subdirectory, `diff compare` over existing captures).
+    /// a subdirectory, `diff compare` over existing captures). A command
+    /// given an Android-only target (`--device`, `--emulator`) passes
+    /// `fallback: .android` so that target decides instead (D2-12).
     func resolve(
         directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true),
-        environment: [String: String] = ProcessInfo.processInfo.environment
+        environment: [String: String] = ProcessInfo.processInfo.environment,
+        fallback: Platform = .ios
     ) throws -> Platform {
-        try PlatformResolver(directory: directory, environment: environment).resolveOrDefault(flag: platform)
+        try PlatformResolver(directory: directory, environment: environment).resolveOrDefault(flag: platform, fallback: fallback)
     }
 
     /// Resolves the platform and loads its config file. A missing file yields
@@ -185,10 +209,11 @@ struct PlatformOptions: ParsableArguments {
     func loadConfig(
         directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true),
         environment: [String: String] = ProcessInfo.processInfo.environment,
-        includeMaestroDirectory: Bool = true
+        includeMaestroDirectory: Bool = true,
+        fallback: Platform = .ios
     ) throws -> (Platform, GrantivaConfig?) {
         let resolver = PlatformResolver(directory: directory, environment: environment)
-        let resolved = try resolve(directory: directory, environment: environment)
+        let resolved = try resolve(directory: directory, environment: environment, fallback: fallback)
         let envValue = environment[PlatformResolver.environmentKey] ?? ""
         let source: String? = platform != nil
             ? "--platform \(resolved.rawValue)"

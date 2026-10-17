@@ -19,6 +19,12 @@ public struct ManagedSimulatorSession: Codable, Equatable, Sendable {
     /// lives only as long as its owner process. nil is a record written by
     /// 2.0.1 or earlier and is treated as ephemeral.
     public var ephemeral: Bool?
+    /// The device's `lastUsedAt` when the record went active: which boot of
+    /// the device the record belongs to. While the device is booted, a
+    /// different value means it was shut down and booted again outside this
+    /// record (plain `simctl`), so the record is stale. nil (a pending
+    /// record, or one written before this field) is never compared.
+    public var bootedAt: String?
 
     public init(
         udid: String,
@@ -28,7 +34,8 @@ public struct ManagedSimulatorSession: Codable, Equatable, Sendable {
         acquiredAt: Date,
         state: State,
         bootedByGrantiva: Bool? = nil,
-        ephemeral: Bool? = nil
+        ephemeral: Bool? = nil,
+        bootedAt: String? = nil
     ) {
         self.udid = udid
         self.name = name
@@ -38,6 +45,7 @@ public struct ManagedSimulatorSession: Codable, Equatable, Sendable {
         self.state = state
         self.bootedByGrantiva = bootedByGrantiva
         self.ephemeral = ephemeral
+        self.bootedAt = bootedAt
     }
 
     /// Whether the record was taken by a run with no `GRANTIVA_SESSION_ID`.
@@ -146,7 +154,11 @@ public struct SimulatorCapacity: Sendable {
                             Self.foreignSessionMessage(device: device, sessionId: existing.sessionId), 1
                         )
                     }
-                    if existing.state == .pending && existing.ownerPID != getpid() {
+                    // A pending record whose owner died mid-boot (kept by
+                    // `prune` because it booted the device) is this
+                    // session's to take over, not a twin to wait for.
+                    if existing.state == .pending && existing.ownerPID != getpid()
+                        && Self.processIsAlive(existing.ownerPID) {
                         return ReservationOutcome.busy(existing, records)
                     }
                     return ReservationOutcome.acquired(existing)
@@ -199,13 +211,30 @@ public struct SimulatorCapacity: Sendable {
         }
     }
 
+    /// Records on the pending reservation that this process is about to
+    /// issue `simctl boot` for `udid` (IOS-015), before it does: an `ensure`
+    /// that never gets to `activate` (a hung boot wait, a failure, an
+    /// interrupt) still leaves `teardown --session-id` a record that shuts
+    /// the device down.
+    public func markBootIssued(udid: String) throws {
+        try withRegistryLock { records in
+            guard let index = records.firstIndex(where: { $0.udid == udid && $0.ownerPID == getpid() }) else { return }
+            records[index].bootedByGrantiva = true
+        }
+    }
+
     /// Marks the reservation active. `bootedByGrantiva` records that this
     /// process issued the boot; it never clears an earlier `true`.
-    public func activate(udid: String, bootedByGrantiva: Bool = false) throws {
+    /// `bootedAt` is the device's `lastUsedAt` now: a boot this process
+    /// issued replaces the recorded one, and a record with none adopts it.
+    public func activate(udid: String, bootedByGrantiva: Bool = false, bootedAt: String? = nil) throws {
         try withRegistryLock { records in
             guard let index = records.firstIndex(where: { $0.udid == udid }) else { return }
             records[index].state = .active
             if bootedByGrantiva { records[index].bootedByGrantiva = true }
+            if let bootedAt, bootedByGrantiva || records[index].bootedAt == nil {
+                records[index].bootedAt = bootedAt
+            }
         }
     }
 
@@ -372,12 +401,26 @@ public struct SimulatorCapacity: Sendable {
     static func prune(
         _ records: inout [ManagedSimulatorSession],
         devices: [SimulatorDevice],
-        isProcessAlive: (Int32) -> Bool = { kill($0, 0) == 0 || errno == EPERM }
+        isProcessAlive: (Int32) -> Bool = processIsAlive
     ) {
-        let states = Dictionary(uniqueKeysWithValues: devices.map { ($0.udid, $0.state) })
+        let byUDID = Dictionary(devices.map { ($0.udid, $0) }, uniquingKeysWith: { first, _ in first })
         records.removeAll { record in
-            guard let state = states[record.udid] else { return true }
-            if record.state == .pending && !isProcessAlive(record.ownerPID) { return true }
+            guard let device = byUDID[record.udid] else { return true }
+            let state = device.state
+            // Booted again since the record went active, by someone else:
+            // the boot the record describes is over.
+            if state == "Booted", record.state == .active,
+               let recorded = record.bootedAt, let current = device.lastUsedAt, recorded != current {
+                return true
+            }
+            if record.state == .pending && !isProcessAlive(record.ownerPID) {
+                // Its owner issued `simctl boot` and died before the record
+                // went active (IOS-015): a session's or an `ensure`'s record
+                // stays while the device is up, so teardown still shuts it down.
+                let durable = !record.isSessionless || record.ephemeral == false
+                let up = state == "Booted" || state == "Booting"
+                return !(record.bootedByGrantiva == true && durable && up)
+            }
             // A run without GRANTIVA_SESSION_ID has no ticket that will ever
             // tear it down by name, so its record lives only as long as the
             // process that took it.
@@ -389,6 +432,8 @@ public struct SimulatorCapacity: Sendable {
             return true
         }
     }
+
+    static func processIsAlive(_ pid: Int32) -> Bool { kill(pid, 0) == 0 || errno == EPERM }
 
     /// The owner recorded for a run that set no `GRANTIVA_SESSION_ID`.
     static func sessionlessOwner(udid: String) -> String { "simulator:\(udid)" }

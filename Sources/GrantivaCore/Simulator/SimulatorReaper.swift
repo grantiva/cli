@@ -180,6 +180,16 @@ public enum SimulatorReaper {
         }
         let psOutput = try await takeSnapshot()
         var targets = processes(owning: udid, psOutput: psOutput, excludingPID: getpid())
+        let helperOwnership = RunnerHelperReaper.live(runnerBase: runnerBase ?? RunnerManager.baseDir)
+        // A device can have an unrelated developer xcodebuild or simctl
+        // diagnose at the same time. Force teardown may reclaim only helpers
+        // writing into Grantiva's device home; the UDID alone is insufficient
+        // ownership proof. Runner/grantiva processes retain their exact argv
+        // ownership checks in `kind(of:owning:)` above.
+        targets.removeAll { target in
+            (target.kind == .webDriverAgent || target.kind == .diagnose)
+                && !helperOwnership.writesIntoDeviceHome(target.command, udid: udid)
+        }
         // Before anything is reaped: whether the lease is held is a question
         // about the processes that are about to be killed.
         let leaseHeld = SimulatorLease.isHeld(udid: udid, directory: leaseDirectory)
@@ -201,6 +211,9 @@ public enum SimulatorReaper {
             ))
         }
 
+        // A foreground `runner start` that has no runner yet holds only the
+        // lease: marked first, it ends in order instead of dying (B3-L54.1).
+        markHolders(targets, marker: sessions.stopMarkers)
         reap(&targets, gracePeriod: gracePeriod)
 
         // A dying runner can start a `simctl diagnose` for the device after
@@ -210,7 +223,10 @@ public enum SimulatorReaper {
         if !targets.isEmpty {
             let known = Set(targets.map(\.pid))
             var late = processes(owning: udid, psOutput: try await takeSnapshot(), excludingPID: getpid())
-                .filter { $0.kind == .diagnose && !known.contains($0.pid) }
+                .filter {
+                    $0.kind == .diagnose && !known.contains($0.pid)
+                        && helperOwnership.writesIntoDeviceHome($0.command, udid: udid)
+                }
             reap(&late, gracePeriod: gracePeriod)
             targets += late
         }
@@ -221,7 +237,7 @@ public enum SimulatorReaper {
 
         // A killed run never ran its cleanup: remove the temp dirs its claim
         // named, once the run and its runner are gone.
-        let temporaryDirectoriesRemoved = claim.map(removeTemporaryDirectories(of:)) ?? []
+        let temporaryDirectoriesRemoved = removeTemporaryDirectories(udid: udid, leaseDirectory: leaseDirectory, claim: claim)
 
         // Clear only stale capacity records for this device. The record of a
         // session that still owns other simulators is not stale: dropping it
@@ -248,16 +264,56 @@ public enum SimulatorReaper {
         )
     }
 
+    /// Writes a teardown stop marker naming each grantiva process about to
+    /// be signalled as its own holder. A `runner start` reads it from its
+    /// interrupt handler and ends as stopped by teardown (exit 0); any other
+    /// grantiva ignores it, and the marker is swept once its process is gone.
+    static func markHolders(_ targets: [ReapedProcess], marker: RunnerStopMarker) {
+        for target in targets where target.kind == .grantiva && target.pid != getpid() {
+            _ = try? marker.mark(runnerPid: target.pid, ownerPid: target.pid)
+        }
+    }
+
     /// Removes the temp directories `claim` recorded when neither its process
     /// nor its runner is alive. Only directories Grantiva creates in the temp
     /// directory (`grantiva-…`) are touched, so a claim can never name a
     /// preserved `--report-dir` or anything else for removal.
     static func removeTemporaryDirectories(of claim: SimulatorLeaseClaim) -> [String] {
         guard !claim.isLive else { return [] }
+        return removeTemporaryDirectories(claim.temporaryDirectories ?? [])
+    }
+
+    /// The temp directories of every run on `udid` that is gone: the
+    /// claim's (the last run's) and those the device's ledger names for
+    /// earlier runs the claim no longer does (B3-L35). A live run's are
+    /// kept, as are its ledger record and the records of directories that
+    /// could not be removed. Each path is listed once.
+    public static func removeTemporaryDirectories(
+        udid: String, leaseDirectory: String?, claim: SimulatorLeaseClaim?
+    ) -> [String] {
+        var removed = claim.map(removeTemporaryDirectories(of:)) ?? []
+        var kept: [TemporaryDirectoryRecord] = []
+        for record in SimulatorLease.temporaryDirectoryRecords(udid: udid, directory: leaseDirectory) {
+            guard !record.isLive else {
+                kept.append(record)
+                continue
+            }
+            let pending = record.paths.filter { !removed.contains($0) }
+            removed += removeTemporaryDirectories(pending)
+            let left = pending.filter { FileManager.default.fileExists(atPath: $0) }
+            if !left.isEmpty { kept.append(TemporaryDirectoryRecord(pid: record.pid, runnerPID: record.runnerPID, paths: left)) }
+        }
+        SimulatorLease.saveTemporaryDirectoryRecords(kept, udid: udid, directory: leaseDirectory)
+        return removed
+    }
+
+    /// Removes `paths` that are Grantiva temp directories (`grantiva-…` in
+    /// the temp directory); anything else is never touched.
+    static func removeTemporaryDirectories(_ paths: [String]) -> [String] {
         let fm = FileManager.default
         let temp = fm.temporaryDirectory.resolvingSymlinksInPath().path
         var removed: [String] = []
-        for path in claim.temporaryDirectories ?? [] {
+        for path in paths {
             let url = URL(fileURLWithPath: path).standardizedFileURL
             let resolved = url.resolvingSymlinksInPath().path
             guard url.lastPathComponent.hasPrefix("grantiva-"),

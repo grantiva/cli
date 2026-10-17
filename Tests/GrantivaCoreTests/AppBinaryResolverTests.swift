@@ -13,9 +13,68 @@ final class AppBinaryResolverTests: XCTestCase {
     func testValidSimulatorAppResolvesAndExposesBundleId() throws {
         let app = try makeApp(platforms: ["iPhoneSimulator"], bundleId: "com.example.app")
         let result = try AppBinaryResolver.resolve(app.path)
-        XCTAssertEqual(result.appPath, app.path)
+        XCTAssertEqual(result.appPath, AppBinaryResolver.canonicalPath(app.path))
         XCTAssertNil(result.tempDir)
         XCTAssertEqual(AppBinaryResolver.bundleId(from: app.path), "com.example.app")
+    }
+
+    /// B4-L53.P5: `appPath` is reported in realpath(3) spelling, as the
+    /// other reported paths are (`dataContainerPath`, keep-alive owners):
+    /// `/tmp/x` and `/private/tmp/x` both report `/private/tmp/x`, rather
+    /// than `standardizingPath` turning `/private/tmp/x` into `/tmp/x`.
+    func testAppPathIsReportedInItsRealpathSpellingWhicheverSpellingIsGiven() throws {
+        let dir = URL(fileURLWithPath: "/tmp/grantiva-binary-tests-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        addTeardownBlock { try? FileManager.default.removeItem(at: dir) }
+        let app = dir.appendingPathComponent("Fixture.app")
+        try FileManager.default.createDirectory(at: app, withIntermediateDirectories: true)
+        let plist = try PropertyListSerialization.data(
+            fromPropertyList: ["CFBundleIdentifier": "com.example.app", "CFBundleSupportedPlatforms": ["iPhoneSimulator"]],
+            format: .xml, options: 0
+        )
+        try plist.write(to: app.appendingPathComponent("Info.plist"))
+        let expected = "/private" + app.path
+        XCTAssertEqual(try AppBinaryResolver.resolve(app.path).appPath, expected)
+        XCTAssertEqual(try AppBinaryResolver.resolve("/private" + app.path).appPath, expected)
+        XCTAssertEqual(try AppBinaryResolver.resolve(app.path + "/").appPath, expected)
+    }
+
+    /// C13-2 (IOS-024): a built product (`--derived-data-path /tmp/...`, a
+    /// scheme's build products, a Gradle APK) reports the same realpath
+    /// spelling as `--app-file` does.
+    func testABuiltProductPathIsReportedInItsRealpathSpelling() throws {
+        let dir = URL(fileURLWithPath: "/tmp/grantiva-product-tests-\(UUID().uuidString)", isDirectory: true)
+        let products = dir.appendingPathComponent("Build/Products/Debug-iphonesimulator", isDirectory: true)
+        try FileManager.default.createDirectory(at: products, withIntermediateDirectories: true)
+        addTeardownBlock { try? FileManager.default.removeItem(at: dir) }
+        for name in ["Fixture.app", "app-debug.apk"] {
+            let built = products.appendingPathComponent(name).path
+            let result = BuildResult(success: true, duration: 0, warnings: [], errors: [], productPath: built)
+            XCTAssertEqual(result.productPath, "/private" + built)
+        }
+        XCTAssertNil(BuildResult(success: false, duration: 0, warnings: [], errors: [], productPath: nil).productPath)
+    }
+
+    func testAnExtractedIPAReportsItsRealpathSpelling() throws {
+        let app = try makeApp(platforms: ["iPhoneSimulator"], bundleId: "com.example.ipa")
+        let staging = app.deletingLastPathComponent().appendingPathComponent("ipa-staging")
+        try FileManager.default.createDirectory(at: staging.appendingPathComponent("Payload"), withIntermediateDirectories: true)
+        try FileManager.default.copyItem(at: app, to: staging.appendingPathComponent("Payload/\(app.lastPathComponent)"))
+        let ipa = app.deletingLastPathComponent().appendingPathComponent("Fixture.ipa")
+        let zip = Process()
+        zip.executableURL = URL(fileURLWithPath: "/usr/bin/zip")
+        zip.currentDirectoryURL = staging
+        zip.arguments = ["-qr", ipa.path, "Payload"]
+        try zip.run(); zip.waitUntilExit()
+        let resolved = try AppBinaryResolver.resolve(ipa.path)
+        defer { resolved.cleanup() }
+        XCTAssertEqual(resolved.appPath, AppBinaryResolver.canonicalPath(resolved.appPath))
+        XCTAssertFalse(resolved.appPath.hasPrefix("/var/"), resolved.appPath)
+    }
+
+    func testCanonicalPathKeepsTheLastComponentAndFallsBackForAMissingParent() {
+        XCTAssertEqual(AppBinaryResolver.canonicalPath("/private/tmp/x/../y.app"), "/private/tmp/y.app")
+        XCTAssertEqual(AppBinaryResolver.canonicalPath("/definitely/missing/Test.app"), "/definitely/missing/Test.app")
     }
 
     func testDeviceBuildIsRejected() throws {

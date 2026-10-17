@@ -95,6 +95,32 @@ public struct ADB: Sendable {
         }
     }
 
+    /// `launch` with string extras on the launch intent, the channel the
+    /// runner's `launchApp: arguments:` uses. monkey cannot carry extras, so
+    /// the launcher activity is resolved and started with `am start`.
+    public func launch(serial: String, applicationId: String, extras: [String: String]) async throws {
+        guard !extras.isEmpty else { return try await launch(serial: serial, applicationId: applicationId) }
+        let resolved = try await shell(
+            serial: serial,
+            "cmd package resolve-activity --brief -c android.intent.category.LAUNCHER \(shellQuoted(applicationId))"
+        )
+        guard let component = resolved.components(separatedBy: .newlines)
+            .map({ $0.trimmingCharacters(in: .whitespaces) })
+            .last(where: { $0.hasPrefix("\(applicationId)/") })
+        else {
+            throw Self.launchFailure(output: Self.monkeyNoActivities, applicationId: applicationId, serial: serial)
+        }
+        let extraArguments = extras.keys.sorted().map { "--es \($0) \(shellQuoted(extras[$0] ?? ""))" }
+        let output = try await shell(
+            serial: serial,
+            "am start -W -n \(shellQuoted(component)) -a android.intent.action.MAIN -c android.intent.category.LAUNCHER "
+                + extraArguments.joined(separator: " ")
+        )
+        if let error = output.components(separatedBy: .newlines).first(where: { $0.hasPrefix("Error") }) {
+            throw GrantivaError.commandFailed("Could not launch \(applicationId) on \(serial): \(error)", 1)
+        }
+    }
+
     static let monkeyNoActivities = "No activities found to run"
 
     /// monkey says "No activities found" for a package that is not installed
@@ -156,6 +182,35 @@ public struct ADB: Sendable {
         return value(after: "Override size:") ?? value(after: "Physical size:")
     }
 
+    /// Puts the display back in touch mode when key input (`pressKey`, a
+    /// D-pad event) has taken it out, which leaves the focused view
+    /// highlighted in every screenshot after it (N-12). A touch DOWN then
+    /// CANCEL at the bottom-left corner pixel: that pixel is the navigation
+    /// bar (or, with none, the very edge of the app), a cancelled touch fires
+    /// no click, and the status bar is avoided because a touch there opens
+    /// the notification shade. Nothing is sent when the display is already
+    /// in touch mode or its state cannot be read. Returns whether it touched.
+    @discardableResult
+    public func restoreTouchMode(serial: String) async throws -> Bool {
+        let output = try await shell(serial: serial, "dumpsys window | grep -E 'mInTouchMode=|cur=[0-9]+x[0-9]+'; true")
+        guard let state = Self.parseTouchModeState(output), !state.inTouchMode else { return false }
+        let y = state.height - 1
+        try await shell(serial: serial, "input motionevent DOWN 0 \(y) && input motionevent CANCEL 0 \(y)")
+        return true
+    }
+
+    /// The touch-mode flag and the current logical (rotated) display height
+    /// from `dumpsys window`; nil when either is missing.
+    static func parseTouchModeState(_ output: String) -> (inTouchMode: Bool, height: Int)? {
+        let lines = output.components(separatedBy: "\n").map { $0.trimmingCharacters(in: .whitespaces) }
+        guard let flag = lines.first(where: { $0.hasPrefix("mInTouchMode=") }) else { return nil }
+        guard let sizeLine = lines.first(where: { $0.contains("cur=") }),
+              let range = sizeLine.range(of: "cur=") else { return nil }
+        let size = sizeLine[range.upperBound...].prefix { !$0.isWhitespace }.split(separator: "x")
+        guard size.count == 2, let height = Int(size[1]), height > 0 else { return nil }
+        return (flag == "mInTouchMode=true", height)
+    }
+
     public func density(serial: String) async throws -> Int {
         let output = try await shell(serial: serial, "wm density")
         guard let density = Self.parseDensity(output) else {
@@ -197,6 +252,23 @@ public struct ADB: Sendable {
 
     public func removeForward(serial: String, localPort: Int) async throws {
         _ = try await execute(line(serial, "forward --remove tcp:\(localPort)"))
+    }
+
+    /// `adb forward --list` as printed.
+    public func forwardListing(serial: String) async throws -> String {
+        try await execute(line(serial, "forward --list"))
+    }
+
+    /// True when `listing` has `serial`'s forward from `localfilesystem:<socket>`.
+    public static func listsSocketForward(_ listing: String, serial: String, socket: String) -> Bool {
+        listing.components(separatedBy: "\n").contains { raw in
+            let fields = raw.split(whereSeparator: { $0 == " " || $0 == "\t" }).map(String.init)
+            return fields.count >= 2 && fields[0] == serial && fields[1] == "localfilesystem:\(socket)"
+        }
+    }
+
+    public func removeSocketForward(serial: String, socket: String) async throws {
+        _ = try await execute(line(serial, "forward --remove \(shellQuoted("localfilesystem:\(socket)"))"))
     }
 
     /// Local tcp ports forwarded for `serial`, from `adb forward --list`.

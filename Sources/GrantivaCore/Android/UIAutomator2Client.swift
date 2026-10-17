@@ -103,9 +103,9 @@ public enum UIAutomator2 {
 enum UIAutomator2Requests {
     static func send(
         _ transport: UIAutomator2Transport, _ method: String, _ url: String,
-        _ body: [String: Any]? = nil, failure: String
+        _ body: [String: Any]? = nil, failure: String, timeoutInterval: TimeInterval = 60
     ) async throws -> [String: Any] {
-        var request = URLRequest(url: URL(string: url)!, timeoutInterval: 60)
+        var request = URLRequest(url: URL(string: url)!, timeoutInterval: timeoutInterval)
         request.httpMethod = method
         if let body {
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -118,12 +118,62 @@ enum UIAutomator2Requests {
         return (try? JSONSerialization.jsonObject(with: data) as? [String: Any]) ?? [:]
     }
 
-    static func sourceXML(_ transport: UIAutomator2Transport, session: String) async throws -> String {
-        let json = try await send(transport, "GET", "\(session)/source", failure: "Failed to get hierarchy from UIAutomator2")
-        guard let xml = json["value"] as? String, !xml.isEmpty else {
-            throw GrantivaError.commandFailed("Empty hierarchy response", 1)
+    static func sourceXML(
+        _ transport: UIAutomator2Transport, session: String,
+        toastRetryNanoseconds: UInt64 = 400_000_000, maxToastAttempts: Int = 12
+    ) async throws -> String {
+        let url = URL(string: "\(session)/source")!
+        let clock = ContinuousClock()
+        var toastDeadline: ContinuousClock.Instant?
+        for attempt in 1...max(1, maxToastAttempts) {
+            let requestTimeout: TimeInterval
+            if let toastDeadline {
+                let remaining = toastDeadline - clock.now
+                let parts = remaining.components
+                let seconds = Double(parts.seconds) + Double(parts.attoseconds) / 1_000_000_000_000_000_000
+                guard seconds > 0 else {
+                    throw GrantivaError.commandFailed("Failed to get hierarchy from UIAutomator2 after the clipboard toast expired", 1)
+                }
+                requestTimeout = max(0.001, min(60, seconds))
+            } else {
+                // The ordinary source request retains its normal timeout. The
+                // additional four-second recovery window begins only after the
+                // server proves this is the API 35 transient-toast defect.
+                requestTimeout = 60
+            }
+            var request = URLRequest(url: url, timeoutInterval: requestTimeout)
+            request.httpMethod = "GET"
+            let (data, status) = try await transport.send(request)
+            if status == 200 {
+                let json = (try? JSONSerialization.jsonObject(with: data) as? [String: Any]) ?? [:]
+                guard let xml = json["value"] as? String, !xml.isEmpty else {
+                    throw GrantivaError.commandFailed("Empty hierarchy response", 1)
+                }
+                return xml
+            }
+
+            // UIAutomator2 9.11.1 tries to reflect AccessibilityNodeInfo.mSealed
+            // while adding a transient clipboard toast. Android API 35 removed
+            // that field, so source temporarily fails until this specific toast
+            // expires. Do not hide or retry any other hierarchy failure.
+            let response = String(decoding: data, as: UTF8.self)
+            let transientToastBug = response.contains("UiElementSnapshot.addToastMsg")
+                && response.contains("mSealed")
+            guard transientToastBug, attempt < max(1, maxToastAttempts) else {
+                throw GrantivaError.commandFailed("Failed to get hierarchy from UIAutomator2 (HTTP \(status))", 1)
+            }
+            if toastDeadline == nil {
+                toastDeadline = clock.now.advanced(by: .seconds(4))
+            }
+            if toastRetryNanoseconds > 0, let toastDeadline {
+                let nextAttempt = clock.now.advanced(by: .nanoseconds(Int64(toastRetryNanoseconds)))
+                guard nextAttempt <= toastDeadline else {
+                    throw GrantivaError.commandFailed("Failed to get hierarchy from UIAutomator2 after the clipboard toast expired", 1)
+                }
+                try await clock.sleep(until: nextAttempt)
+            }
         }
-        return xml
+        preconditionFailure("source retry loop must return or throw")
     }
 
     static func pointer(_ transport: UIAutomator2Transport, session: String, _ steps: [[String: Any]], failure: String) async throws {
@@ -181,10 +231,64 @@ extension DriverClient {
                 // succeed, so ask for the focused element first.
                 var active = URLRequest(url: URL(string: "\(session)/element/active")!, timeoutInterval: 60)
                 active.httpMethod = "GET"
-                let (_, activeStatus) = try await transport.send(active)
+                let (activeData, activeStatus) = try await transport.send(active)
                 if activeStatus == 404 { throw DriverClient.noFocusedField(text) }
                 guard activeStatus == 200 else {
                     throw GrantivaError.commandFailed("Failed to read the focused element (HTTP \(activeStatus))", 1)
+                }
+                if text.unicodeScalars.contains(where: { !$0.isASCII }) {
+                    let response = (try? JSONSerialization.jsonObject(with: activeData)) as? [String: Any]
+                    let value = response?["value"] as? [String: Any]
+                    guard let elementID = (value?["element-6066-11e4-a52e-4f735466cecf"] ?? value?["ELEMENT"]) as? String,
+                          !elementID.isEmpty else {
+                        throw DriverClient.noFocusedField(text)
+                    }
+                    // UIAutomator2 key actions split extended grapheme clusters and
+                    // its element value endpoint rejects some valid Unicode strings.
+                    // Paste the complete UTF-8 string through the server clipboard API.
+                    let clipboardURL = "\(session)/appium/device/get_clipboard"
+                    let previous = try await R.send(
+                        transport, "POST", clipboardURL,
+                        ["contentType": "plaintext"], failure: "Failed to read the Android clipboard"
+                    )
+                    guard let previousBase64 = previous["value"] as? String else {
+                        throw GrantivaError.commandFailed("Failed to decode the Android clipboard response", 1)
+                    }
+                    let encoded = Data(text.utf8).base64EncodedString()
+                    _ = try await R.send(
+                        transport, "POST", "\(session)/appium/device/set_clipboard",
+                        ["content": encoded, "contentType": "plaintext"],
+                        failure: "Failed to stage Unicode text on the Android clipboard"
+                    )
+                    var pasteError: Error?
+                    do {
+                        _ = try await R.send(
+                            transport, "POST", "\(session)/appium/device/press_keycode",
+                            ["keycode": 279], failure: "Failed to paste Unicode text"
+                        )
+                    } catch {
+                        pasteError = error
+                    }
+                    let restore = Task.detached {
+                        _ = try await R.send(
+                            transport, "POST", "\(session)/appium/device/set_clipboard",
+                            ["content": previousBase64, "contentType": "plaintext"],
+                            failure: "Failed to restore the Android clipboard", timeoutInterval: 5
+                        )
+                    }
+                    do {
+                        _ = try await restore.value
+                    } catch {
+                        if let pasteError {
+                            if pasteError is CancellationError { throw pasteError }
+                            throw GrantivaError.commandFailed(
+                                "\(pasteError.localizedDescription); also failed to restore the Android clipboard: \(error.localizedDescription)", 1
+                            )
+                        }
+                        throw error
+                    }
+                    if let pasteError { throw pasteError }
+                    return
                 }
                 var steps: [[String: String]] = []
                 for character in text {

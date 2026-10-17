@@ -107,6 +107,17 @@ final class AndroidPlatformTests: XCTestCase {
         XCTAssertFalse(allowed.commands.isEmpty)
     }
 
+    /// N-12: a capture never starts with a key-focused row highlighted.
+    func testPrepareRestoresTouchModeOnAnEmulator() async {
+        let shell = ScriptedShell()
+        shell.fallback = "cur=1080x2400\nmInTouchMode=false\n"
+        await platform(shell).prepareForCapture(deviceID: "emulator-5554")
+        XCTAssertTrue(
+            shell.commands.contains { $0.contains("input motionevent DOWN 0 2399 && input motionevent CANCEL 0 2399") },
+            "\(shell.commands)"
+        )
+    }
+
     func testPrepareRestoresACrashedRunFirst() async throws {
         let state = AndroidCaptureSettings.statePath(serial: "emulator-5554", directory: scratch.path)
         try JSONEncoder().encode(["global/window_animation_scale": "1.0"] as [String: String?]).write(to: URL(fileURLWithPath: state))
@@ -125,11 +136,13 @@ final class AndroidPlatformTests: XCTestCase {
         try Data().write(to: URL(fileURLWithPath: apk))
         let shell = ScriptedShell([.success(""), .success("com.example.app\n")])
         let resolved = try await platform(shell).resolveBinary(apk)
-        XCTAssertEqual(resolved.appPath, apk)
+        // The realpath(3) spelling, as on iOS (B4-L53.P5).
+        let canonical = AppBinaryResolver.canonicalPath(apk)
+        XCTAssertEqual(resolved.appPath, canonical)
         XCTAssertEqual(resolved.appID, "com.example.app")
         XCTAssertEqual(shell.commands, [
             "/usr/libexec/java_home",
-            "'/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(apk))",
+            "'/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(canonical))",
         ])
 
         do {
@@ -194,7 +207,46 @@ final class AndroidPlatformTests: XCTestCase {
         XCTAssertEqual(shell.commands, [
             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'io.appium.uiautomator2.server'",
             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'io.appium.uiautomator2.server.test'",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --list",
         ])
+    }
+
+    /// C14 (N2-05): a `kill -9`'d runner never removed its UIAutomator2
+    /// socket forward; the cleanup after it removes that serial's runner
+    /// socket forward when no live process owns it, and nothing else.
+    func testOrphanCleanupRemovesTheDeadRunnersSocketForward() async throws {
+        let sockets = scratch.appendingPathComponent("sockets").path
+        try FileManager.default.createDirectory(atPath: sockets, withIntermediateDirectories: true)
+        let socket = "\(sockets)/uia2-emulator-5554.sock"
+        try "999999".write(toFile: "\(sockets)/uia2-emulator-5554.pid", atomically: true, encoding: .utf8)
+        let shell = ScriptedShell([
+            .success(""), .success(""),
+            .success("emulator-5554 localfilesystem:\(socket) tcp:6790\nemulator-5556 localfilesystem:\(sockets)/uia2-emulator-5556.sock tcp:6790\nemulator-5554 tcp:61211 tcp:16791"),
+            .success(""),
+        ])
+        var android = platform(shell)
+        android.runnerSocketDirectory = sockets
+        await android.cleanupOrphans(deviceID: "emulator-5554")
+        XCTAssertEqual(shell.commands.suffix(2), [
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --list",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove 'localfilesystem:\(socket)'",
+        ])
+        XCTAssertFalse(FileManager.default.fileExists(atPath: "\(sockets)/uia2-emulator-5554.pid"))
+    }
+
+    /// A runner that is alive (its pid file names a live process) keeps its forward.
+    func testOrphanCleanupKeepsALiveRunnersSocketForward() async throws {
+        let sockets = scratch.appendingPathComponent("sockets").path
+        try FileManager.default.createDirectory(atPath: sockets, withIntermediateDirectories: true)
+        let socket = "\(sockets)/uia2-emulator-5554.sock"
+        try "\(getpid())".write(toFile: "\(sockets)/uia2-emulator-5554.pid", atomically: true, encoding: .utf8)
+        let shell = ScriptedShell([
+            .success(""), .success(""), .success("emulator-5554 localfilesystem:\(socket) tcp:6790"),
+        ])
+        var android = platform(shell)
+        android.runnerSocketDirectory = sockets
+        await android.cleanupOrphans(deviceID: "emulator-5554")
+        XCTAssertFalse(shell.commands.contains { $0.contains("--remove") }, "\(shell.commands)")
     }
 
     func testOrphanCleanupRemovesOnlyTheRecordedOwnedForward() async {
@@ -306,7 +358,7 @@ final class AndroidPlatformTests: XCTestCase {
         XCTAssertEqual(resolved.appID, "com.example.app")
         XCTAssertEqual(shell.commands, [
             "/usr/libexec/java_home",
-            "JAVA_HOME='/jdk' '/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(apk))",
+            "JAVA_HOME='/jdk' '/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(AppBinaryResolver.canonicalPath(apk)))",
         ])
     }
 

@@ -334,6 +334,9 @@ final class SimulatorCommandTests: XCTestCase {
         typealias T = SimulatorCommand.Teardown
         let record = ManagedSimulatorSession(udid: "MANAGED", name: "n", sessionId: "S1", ownerPID: 1, acquiredAt: Date(), state: .active)
         XCTAssertEqual(T.runnerStopTargets(udid: "UNMANAGED", sessionId: nil, force: false, managed: [record]), [])
+        XCTAssertEqual(T.runnerStopTargets(
+            udid: "UNMANAGED", sessionId: nil, force: false, managed: [record], hasForegroundOwner: true
+        ), ["UNMANAGED"])
         XCTAssertEqual(T.runnerStopTargets(udid: "UNMANAGED", sessionId: nil, force: true, managed: [record]), ["UNMANAGED"])
         XCTAssertEqual(T.runnerStopTargets(udid: "MANAGED", sessionId: nil, force: false, managed: [record]), ["MANAGED"])
         XCTAssertEqual(T.runnerStopTargets(udid: nil, sessionId: "S1", force: false, managed: [record]), ["MANAGED"])
@@ -409,6 +412,11 @@ final class SimulatorCommandTests: XCTestCase {
         let alive = TeardownLocked<Set<Int32>>([700, 701])
         let events = TeardownLocked<[String]>([])
         let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { alive.value.contains($0) })
+        XCTAssertTrue(DeviceRunnerSessions.hasForegroundOwner(udid: udid, store: store))
+        XCTAssertFalse(DeviceRunnerSessions.hasForegroundOwner(udid: "FOREIGN-UDID", store: store))
+        XCTAssertEqual(SimulatorCommand.Teardown.runnerStopTargets(
+            udid: udid, sessionId: nil, force: false, managed: [], hasForegroundOwner: true
+        ), [udid], "a validated shared owner is actionable without a capacity-ledger record")
         let stopper = RunnerSessionStopper(
             store: store,
             isProcessAlive: { alive.value.contains($0) },
@@ -431,12 +439,52 @@ final class SimulatorCommandTests: XCTestCase {
             loadSession: { nil }, removeSession: {},
             stopSessions: { udid, file, _ in await stopper.stopSessions(udid: udid, runnerStartSession: file) }
         )
-        let (stopped, lines, _) = await SimulatorCommand.Teardown.stopRunnerSessions(udids: [udid]) { await sessions.stop(udid: $0) }
+        let (stopped, lines, _, _) = await SimulatorCommand.Teardown.stopRunnerSessions(udids: [udid]) { await sessions.stop(udid: $0) }
         XCTAssertEqual(stopped, [udid])
         XCTAssertEqual(lines, ["Stopped runner session (pid 701) for \(udid)."])
         XCTAssertEqual(events.value, ["terminate 701", "files 701"])
         let outcome = SimulatorTeardownOutcome(udid: udid, session: nil, deleted: true)
         XCTAssertEqual(SimulatorCommand.Teardown.marking([outcome], stopped: stopped).first?.runnerSessionStopped, true)
+    }
+
+    /// B3-L12/B4-L73.6: the orderly preliminary stop can remove the only
+    /// session metadata before the force reaper takes its snapshot. Preserve
+    /// both facts in the final JSON instead of reporting an empty reclaim.
+    func testForceResultKeepsFilesRemovedByThePreliminaryLiveSessionStop() async throws {
+        let udid = "921A0945-7157-4533-BA1F-21E8132D3E40"
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-preliminary-stop-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let session = directory.appendingPathComponent("701-1791747326192132000.grantiva").path
+        let owner = directory.appendingPathComponent("701.owner.json").path
+        try Data().write(to: URL(fileURLWithPath: session))
+        try Data().write(to: URL(fileURLWithPath: owner))
+
+        let preliminary = await SimulatorCommand.Teardown.stopRunnerSessions(
+            udids: [udid], sessionFiles: { _ in [session, owner] }
+        ) { target in
+            try? FileManager.default.removeItem(atPath: session)
+            try? FileManager.default.removeItem(atPath: owner)
+            return [.terminated(runnerPid: 701, udid: target, killed: false)]
+        }
+        let emptyReaper = ForceTeardownResult(
+            udid: udid, processes: [], leaseReleased: false, capacityRecordsCleared: 0
+        )
+        let result = try XCTUnwrap(SimulatorCommand.Teardown.addingReaped(
+            preliminary.reaped, to: [emptyReaper], stopped: preliminary.stopped,
+            sessionFilesRemoved: preliminary.sessionFilesRemoved
+        ).first)
+
+        XCTAssertTrue(result.runnerSessionStopped)
+        XCTAssertTrue(result.reclaimed)
+        XCTAssertEqual(result.sessionFilesRemoved, [session, owner].sorted())
+        XCTAssertTrue(result.processes.isEmpty, "the later force snapshot is clean after the orderly stop")
+        let json = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: JSONEncoder().encode(result)) as? [String: Any]
+        )
+        XCTAssertEqual(json["runnerSessionStopped"] as? Bool, true)
+        XCTAssertEqual(json["sessionFilesRemoved"] as? [String], [session, owner].sorted())
     }
 }
 

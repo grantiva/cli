@@ -163,6 +163,100 @@ final class RunnerHelperReaperTests: XCTestCase {
         XCTAssertFalse(alive.value.contains(102))
     }
 
+    /// B4-L72.3: Ctrl-C while `runner start` (or `run`) is still starting.
+    /// The runner is gone, but WebDriverAgent's xcodebuild, in a group of its
+    /// own, was reparented to launchd and later starts a diagnose. The
+    /// interrupt reap ends it with SIGKILL at once (SIGINT is what makes it
+    /// start the diagnose) and takes a diagnose already running with it,
+    /// blocking because the signal relay's cleanups are synchronous.
+    func testAnInterruptReapKillsTheOrphanedXcodebuildAtOnceAndItsDiagnose() {
+        let run = "\(base)/versions/1.1.28/devices/\(udid)/cache/wda-builds/sim-ios26.0-iphone-wda16.12.8-r1/devices/\(udid)/run-100-1792089048161055000"
+        let orphan = "101     1   101 /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building "
+            + "-xctestrun \(run)/Products/WebDriverAgentRunner_iphonesimulator27.0-arm64.xctestrun "
+            + "-destination platform=iOS Simulator,arch=arm64,id=\(udid) -derivedDataPath \(run)/DerivedData"
+        let otherRun = orphan.replacingOccurrences(of: "run-100-", with: "run-200-").replacingOccurrences(of: "101 ", with: "103 ")
+        let table = Locked([orphan, diagnose(ppid: 101), otherRun].joined(separator: "\n"))
+        let signals = Locked<[String]>([])
+        let alive = Locked<Set<Int32>>([101, 102, 103])
+        let reaper = reaper(table: table, signals: signals, alive: alive)
+
+        let reaped = reaper.reapAfterInterrupt(runnerPid: 100, udid: udid)
+
+        XCTAssertEqual(reaped.map(\.pid), [101, 102])
+        XCTAssertTrue(signals.value.contains("KILL 101"), "\(signals.value)")
+        XCTAssertTrue(signals.value.contains("KILL -101"), "\(signals.value)")
+        XCTAssertFalse(signals.value.contains("INT 101"), "xcodebuild must not get SIGINT: \(signals.value)")
+        XCTAssertFalse(signals.value.contains { $0.hasSuffix(" 103") }, "another run's xcodebuild is not ours: \(signals.value)")
+        XCTAssertEqual(alive.value, [103])
+    }
+
+    /// Side finding 7: `runner stop` after the runner was `kill -9`'d. Its
+    /// WebDriverAgent xcodebuild, orphaned, starts a 600 s `simctl diagnose`
+    /// when it gets SIGINT, after the reap has looked. The sweep of an exited
+    /// runner kills that xcodebuild at once, and looks again for a diagnose.
+    func testTheSweepOfAnExitedRunnerKillsItsXcodebuildAtOnceAndReapsALateDiagnose() async {
+        let run = "\(base)/versions/1.1.28/devices/\(udid)/cache/wda-builds/sim-ios26.0-iphone-wda16.12.8-r1/devices/\(udid)/run-100-1792089048161055000"
+        let orphan = "101     1   101 /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building "
+            + "-xctestrun \(run)/Products/WebDriverAgentRunner_iphonesimulator27.0-arm64.xctestrun "
+            + "-destination platform=iOS Simulator,arch=arm64,id=\(udid) -derivedDataPath \(run)/DerivedData"
+        let table = Locked(orphan)
+        let signals = Locked<[String]>([])
+        let alive = Locked<Set<Int32>>([101, 102])
+        var reaper = reaper(table: table, signals: signals, alive: alive)
+        let late = diagnose(ppid: 1)
+        reaper.signal = { pid, signal in
+            signals.append("\(signal == SIGKILL ? "KILL" : signal == SIGINT ? "INT" : "\(signal)") \(pid)")
+            alive.mutate { $0.remove(abs(pid)) }
+            // The dying xcodebuild leaves a diagnose behind.
+            if abs(pid) == 101 { table.mutate { $0 = late } }
+        }
+
+        let reaped = await reaper.sweep(exitedRunnerPid: 100, udid: udid)
+
+        XCTAssertEqual(reaped.map(\.pid), [101, 102])
+        XCTAssertFalse(signals.value.contains("INT 101"), "xcodebuild must not get SIGINT: \(signals.value)")
+        XCTAssertTrue(signals.value.contains("KILL 101"), "\(signals.value)")
+        XCTAssertTrue(alive.value.isEmpty, "\(alive.value)")
+    }
+
+    /// `runner stop` of a live runner: once the runner is gone its xcodebuild
+    /// takes SIGINT, and the diagnose that starts in that window is reaped by
+    /// a second look, as the exited-runner sweep does.
+    func testStoppingALiveRunnerReapsTheDiagnoseItsXcodebuildStartsAfterSIGINT() async {
+        let table = Locked("\(runner)\n\(xcodebuild)")
+        let signals = Locked<[String]>([])
+        let alive = Locked<Set<Int32>>([101, 102])
+        var reaper = reaper(table: table, signals: signals, alive: alive)
+        let late = diagnose(ppid: 1)
+        let orphan = orphanedXcodebuild
+        reaper.signal = { pid, signal in
+            signals.append("\(signal == SIGKILL ? "KILL" : signal == SIGINT ? "INT" : "\(signal)") \(pid)")
+            alive.mutate { $0.remove(abs(pid)) }
+            if abs(pid) == 101 { table.mutate { $0 = late } }
+        }
+
+        let (_, reaped) = await reaper.stopping(runnerPid: 100, udid: udid) { () async -> Int in
+            // The runner's group stopped; its xcodebuild, reparented, lives on.
+            table.mutate { $0 = orphan }
+            return 0
+        }
+
+        XCTAssertEqual(reaped.map(\.pid), [101, 102])
+        XCTAssertTrue(signals.value.contains("INT 102"), "\(signals.value)")
+        XCTAssertTrue(alive.value.isEmpty, "\(alive.value)")
+    }
+
+    /// xcodebuild spells a `/private/tmp` runner home `/tmp` in the
+    /// diagnose it starts; the live reaper knows both spellings.
+    func testTheLiveReaperMatchesBothSpellingsOfAPrivateRunnerHome() {
+        let live = RunnerHelperReaper.live(runnerBase: "/private/tmp/grantiva-l04-tests/runner-home")
+        XCTAssertTrue(live.writesIntoRunDirectory(diagnose(ppid: 1), runnerPid: 100, udid: udid))
+        let tmp = RunnerHelperReaper.live(runnerBase: base)
+        XCTAssertTrue(tmp.writesIntoRunDirectory(
+            diagnose(ppid: 1, base: "/private/tmp/grantiva-l04-tests/runner-home"), runnerPid: 100, udid: udid
+        ))
+    }
+
     func testParsesPidParentGroupAndCommand() {
         let rows = HostProcess.parse("  101   100   100 /usr/bin/xcodebuild test-without-building\nnot a row\n")
         XCTAssertEqual(rows, [HostProcess(pid: 101, ppid: 100, pgid: 100, command: "/usr/bin/xcodebuild test-without-building")])
